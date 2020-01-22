@@ -1,0 +1,46 @@
+Type: Package
+Package: DecisionAnalysisModel
+Title: Markov Model for Decision Analysis 
+Version: 0.1.0
+Authors@R: 
+    c(person(given = "Sheeja",
+             family = "Manchira Krishnan",
+             role = c("aut", "cre"),
+             email = "sheeja.manchirakrishnan@york.ac.uk",
+             comment = c(ORCID = "0000-0001-5076-1172"))
+      )
+Maintainer: Sheeja Manchira Krishnan<sheeja.manchirakrishnan@york.ac.uk>
+Description: A collection of functions to construct Markov model for model-based cost-effectiveness analysis.
+License: GNU General Public License
+Depends:
+    R (>= 3.5.0)
+Imports:
+    pryr,
+    dplyr,
+    ggplot2,
+    ggfortify,
+    ggiraphExtra,
+    reshape2,
+    utils,
+    stats,
+    stringr,
+    data.table,
+    methods,
+    SurvRegCensCov,
+    survival,
+    survminer,
+    lme4,
+    flexsurv,
+    IPDFileCheck,
+    valueEQ5D
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+Roxygen: list(markdown = TRUE)
+URL: https://github.com/sheejamk/DecisionAnalysisModel
+BugReports: https://github.com/sheejamk/DecisionAnalysisModel/issues
