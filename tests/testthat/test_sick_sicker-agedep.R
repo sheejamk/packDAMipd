@@ -21,21 +21,18 @@ tm <- transition_matrix(4, tmat, c("p_HH","p_HS1","p_HD","p_S1H",
 tm_cost <- transition_cost_util(4, tmat_cost, c("ic_HS1","ic_D","ic_D","ic_D" ), colnames(tmat_cost) )
 tm_util <- transition_cost_util(4, tmat_util, c("du_HS1" ), colnames(tmat_util) )
 
-lt_usa_2005 <- read.csv(system.file("extdata", "LifeTable_USA_Mx_2015.csv",  package = "DecisionAnalysisModel"))
-v_r_mort_by_age <- lt_usa_2005$Total
-
 a <- define_parameters(p_HD = 0.002, p_HS1  = 0.15, p_S1H = 0.5,
-                     p_S1S2  = 0.105,hr_S1   = 3,hr_S2   = 10,
-                     p_S1D  = "1 - exp(log(1 - p_HD) * hr_S1)",
-                     p_S2D  = "1 - exp(log(1 - p_HD) * hr_S2)",
-                     p_HH = "1 - (p_HS1 + p_HD)",
-                     p_S1S1 = "1 - (p_S1H + p_S1S2+ p_S1D)",
-                     p_S2S2 = "1 - ( p_S2D)",
-                     p_DD = 1,
-                     c_H   = 2000,c_S1  = 4000,c_S2  = 15000,
-                     c_D   = 0, c_Trt = 12000,u_H   = 1,
-                     u_S1  = 0.75,u_S2  = 0.5,u_D   = 0,
-                     u_Trt = 0.95, du_HS1 = -0.01,ic_HS1 = 1000,ic_D   = 2000 )
+                       p_S1S2  = 0.105,hr_S1   = 3,hr_S2   = 10,
+                       p_S1D  = "1 - exp(log(1 - p_HD) * hr_S1)",
+                       p_S2D  = "1 - exp(log(1 - p_HD) * hr_S2)",
+                       p_HH = "1 - (p_HS1 + p_HD)",
+                       p_S1S1 = "1 - (p_S1H + p_S1S2+ p_S1D)",
+                       p_S2S2 = "1 - ( p_S2D)",
+                       p_DD = 1,
+                       c_H   = 2000,c_S1  = 4000,c_S2  = 15000,
+                       c_D   = 0, c_Trt = 12000,u_H   = 1,
+                       u_S1  = 0.75,u_S2  = 0.5,u_D   = 0,
+                       u_Trt = 0.95, du_HS1 = -0.01,ic_HS1 = 1000,ic_D   = 2000 )
 health_states <- combine_state(H,S1,S2,D)
 uc_strategy <- strategy(tm, health_states, "Usual care",tm_cost,tm_util)
 uc_markov <- markov_model(uc_strategy, 85, c(1, 0,0,0),c(0,0,0,0),discount = c(0.03,0.03),a)

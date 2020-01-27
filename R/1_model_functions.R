@@ -13,8 +13,8 @@
 
 #' Definition of health state class or health state constructor
 #' @param name  name of the health state
-#' @param cost_expr value or expression that represents cost of the health state
-#' @param utility_expr value or expression that represents utility of the health state
+#' @param cost value or expression that represents cost of the health state
+#' @param utility value or expression that represents utility of the health state
 #' @param time denoting how long in the state
 #' @param absorb boolean indicating health state abosribing or not
 #' @return value of the state
@@ -22,21 +22,21 @@
 #' st <- health_state("IT", 100, 0.4, 0, FALSE)
 #' @import data.table
 #' @export
-health_state <- function(name, cost_expr, utility_expr, time=0, absorb = FALSE) {
-  if (is.character(cost_expr)) {
-    costexpr <- parse(text = cost_expr)
+health_state <- function(name, cost, utility, time=0, absorb = FALSE) {
+  if (is.character(cost)) {
+    cost <- parse(text = cost)
   }
-  if (is.numeric(cost_expr))
-    costexpr <- cost_expr
-  if (is.character(utility_expr)) {
-    utilexpr <- parse(text = utility_expr)
+  if (is.numeric(cost))
+    cost <- cost
+  if (is.character(utility)) {
+    utility <- parse(text = utility)
   }
-  if (is.numeric(utility_expr))
-    utilexpr <- utility_expr
+  if (is.numeric(utility))
+    utility <- utility
 
   dt <- structure(list(name = name,
-  cost = costexpr,
-  utility = utilexpr,
+  cost = cost,
+  utility = utility,
   state_time = time,
   absorb = absorb),
   class = "health_state")
@@ -122,7 +122,7 @@ check_names_states <- function(health_states) {
   no_states <- length(health_states)
   for (j in 1:no_states) {
     this_state <- health_states[[j]]
-    if(class(this_state)!="health_state")
+    if (class(this_state) != "health_state")
       stop("Class of object shoudl be a health_state")
     reqd_names <- c("name", "cost", "utility", "state_time", "absorb")
     if (sum(names(this_state) == reqd_names) < length(reqd_names)) {
@@ -157,21 +157,21 @@ eval_assign_values_states <- function(health_states, assigned_param) {
     for (i in seq_len(names_length)) {
       this_name <- names(this_state)[i]
       if (this_name %in% c("cost", "utility")) {
-         entry<-this_state[[this_name]]
-        if(!is.numeric(entry)){
-          string_entry<-toString(entry)
-          string_entry_evalu<-eval(substitute(string_entry))
-          if(!is.numeric(string_entry_evalu)){
-            all_params_expr<-find_parameters_btn_operators(string_entry_evalu)
-            for(m in 1:length(all_params_expr)){
+         entry <- this_state[[this_name]]
+        if (!is.numeric(entry)) {
+          string_entry <- toString(entry)
+          string_entry_evalu <- eval(substitute(string_entry))
+          if (!is.numeric(string_entry_evalu)) {
+            all_params_expr <- find_parameters_btn_operators(string_entry_evalu)
+            for (m in 1:length(all_params_expr)) {
               this_par_name <- all_params_expr[[m]]
-              this_ind<-match(this_par_name,names(assigned_param))
+              this_ind <- match(this_par_name,names(assigned_param))
               assign(this_par_name,assigned_param[[this_ind]])
             }
-            this_state<-set_var_state(this_state,this_name,eval(parse(text = entry)))
+            this_state <- set_var_state(this_state,this_name,eval(parse(text = entry)))
           }
         }else{
-          this_state<-set_var_state(this_state,this_name,entry)
+          this_state <- set_var_state(this_state,this_name,entry)
         }
       }
     }
@@ -268,16 +268,16 @@ transition_matrix <- function(no_states, tmat, list_prob,name_states = NULL) {
   tmat_list <- as.vector(tmat)
   # only given the non NA probabilities
   if (length(list_prob) == nonmissing) {
-    for (i in seq_len(length(list_prob))){
-      index <- which(tmat_list==i)
-       tmat_list[index]<- list_prob[i]
+    for (i in seq_len(length(list_prob))) {
+      index <- which(tmat_list == i)
+       tmat_list[index] <- list_prob[i]
     }
   }else{
       stop("Length of probabilites not same as the number of required probabilities")
   }
   index_na <- which(is.na(tmat_list))
-  tmat_list[index_na]<-0
-  mat<- matrix(tmat_list, ncol=no_states)
+  tmat_list[index_na] <- 0
+  mat <- matrix(tmat_list, ncol = no_states)
   colnames(mat) <- names
   rownames(mat) <- names
   value <- list(trans_matrix = mat, name_states = names, no_states = no_states)
@@ -347,11 +347,11 @@ check_trans_prob <- function(trans_mat) {
   if (is.numeric(trans_mat) == TRUE) {
     if (any(rowSums(trans_mat) != 1)) {
       sums <- rowSums(trans_mat)
-      diff <- abs(sums-1)
-      if(any(diff < 1e-8 & diff >0)){
+      diff <- abs(sums - 1)
+      if (any(diff < 1e-8 & diff > 0)) {
         index <- which(diff < 1e-8 & diff > 0)
-        for(ind in seq_len(length(index))){
-          trans_mat[ind,1] <- 1-sum(trans_mat[ind,2:ncol(trans_mat)])
+        for (ind in seq_len(length(index))) {
+          trans_mat[ind,1] <- 1 - sum(trans_mat[ind,2:ncol(trans_mat)])
         }
       }else{
         stop("Transition matrix not valid - row sum not  equal to 1")
@@ -363,11 +363,54 @@ check_trans_prob <- function(trans_mat) {
   }
 }
 #######################################################################
+# 2e.  Create the valus of cost and utility while transitioning
+#' Create the the valus of cost and utility while transitioning
+#' @param no_states  number of the health states
+#' @param tmat_cost_util A transition matrix for the cost/utility values in the format from thepackage 'mstate'
+#'  use NA to indicate if the value is zero
+#' @param list_values list of probabilities as in the order of transitions (row wise)
+#' @param name_states names of the health states
+#' @return value of the transition matrix
+#' @examples
+#' tmat_cost <- rbind(c(NA, 1), c(NA, NA))
+#' colnames(tmat_cost) <- rownames(tmat_cost) <- c("Healthy", "Dead")
+#' transition_cost_util(2, tmat_cost, list_costs = c(500))
+#' @export
+transition_cost_util <- function(no_states, tmat_cost_util, list_values, name_states = NULL) {
+  if (is.null(name_states)) {
+    names <- seq(1:no_states)
+  } else {
+    names <- name_states
+  }
+  nonmissing <- no_states * no_states - length(which(is.na(tmat_cost_util)))
+  tmat_list <- as.vector(tmat_cost_util)
+  # only given the non NA values
+  if (length(list_values) == nonmissing) {
+    for (i in seq_len(length(tmat_cost_util))) {
+      index <- which(tmat_list == i)
+      tmat_list[index] <- list_values[i]
+    }
+  }else{
+    stop("Length of values not same as the number of required")
+  }
+  index_na <- which(is.na(tmat_list))
+  tmat_list[index_na] <- 0
+  mat <- matrix(tmat_list, ncol = no_states)
+  colnames(mat) <- names
+  rownames(mat) <- names
+  value <- list(trans_matrix = mat, name_states = names, no_states = no_states)
+  attr(value, "class") <- "transition_cost_util"
+  value
+}
+
+#######################################################################
 # 3. Define the treatment strategy
 #' Definition of strategy -or arm
 #' @param trans_mat  tranisiton matrix
 #' @param states heatlh states
 #' @param name name of the strategy
+#' @param trans_cost values of costs if these are attached to transitions
+#' @param trans_util values of utility if these are attached to transitions
 #' @return object strategy
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))
@@ -378,7 +421,7 @@ check_trans_prob <- function(trans_mat) {
 #' states <- combine_state(a, b)
 #' strategy(tm, states, "intervention")
 #' @export
-strategy <- function(trans_mat, states, name) {
+strategy <- function(trans_mat, states, name, trans_cost = NULL, trans_util = NULL) {
   if (class(trans_mat) != "transition_matrix") {
     stop("class is not a transition matrix")
   }
@@ -387,8 +430,16 @@ strategy <- function(trans_mat, states, name) {
       stop("state objects should of class health_state")
     }
   }
+  if (!is.null(trans_cost) & class(trans_cost) != "transition_cost_util") {
+    stop("Error - transiiton cost should be of type transition_cost_util with same dimentions are transition matrix")
+  }
+  if (!is.null(trans_util) & class(trans_util) != "transition_cost_util") {
+    stop("Error - transiiton utility should be of type transition_cost_util with same dimentions are transition matrix")
+  }
   name_strategy <- name
-  value <- list(name_strategy = name_strategy, transition_matrix = trans_mat, states = states)
+  transition_cost <- trans_cost
+  transition_utility <- trans_util
+  value <- list(name_strategy = name_strategy, transition_matrix = trans_mat, states = states, transition_cost = transition_cost, transition_utility = transition_utility)
   attr(value, "class") <- "strategy"
   value
 }
@@ -470,24 +521,30 @@ markov_model <- function(this_strat, cycles, initial_state, overhead_costs, disc
   ending <- cycles + 1
   for (i in 2:ending) {
     markov_cycle = i
-    extended_parameter_values <- c(markov_cycle = i,parameter_values)
+    extended_parameter_values <- c(markov_cycle = markov_cycle ,parameter_values)
     assigned_param <- assign_parameters(extended_parameter_values)
     health_states_assigned <- eval_assign_values_states(health_states, assigned_param )
     param_matrix[i,] <- unlist(assigned_param)
     trans_mat <- eval_assign_trans_prob(this_strat$transition_matrix, assigned_param)
+    trans_cost <- eval_assign_trans_prob(this_strat$transition_cost, assigned_param)
+    trans_util <- eval_assign_trans_prob(this_strat$transition_utility, assigned_param)
     if (check_trans_prob(trans_mat) != 0) {
       stop("Row sum of transition probability matrix is not 1")
     }
     for (j in 1:no_states) {
+      transitions_made_state <- trace_matrix[i - 1,] * trans_mat$trans_matrix[,j]
+      cost_occured_due_transitions <- transitions_made_state %*% trans_cost$trans_matrix[,j]
+      utility_occured_due_transitions <- transitions_made_state %*% trans_util$trans_matrix[,j]
       trace_matrix[i, j] <- trace_matrix[i, j] + trace_matrix[i - 1,] %*% trans_mat$trans_matrix[,j]
-      cost_matrix[i, j] <- trace_matrix[i, j] * as.numeric(unlist(health_states_assigned[[j]]$cost))
-      utility_matrix[i, j] <- trace_matrix[i, j] * as.numeric(unlist(health_states_assigned[[j]]$utility))
+      cost_matrix[i, j] <- trace_matrix[i, j] * (as.numeric(unlist(health_states_assigned[[j]]$cost))) + cost_occured_due_transitions
+      utility_matrix[i, j] <- trace_matrix[i, j] * (as.numeric(unlist(health_states_assigned[[j]]$utility))) + utility_occured_due_transitions
     }
     if (sum(trace_matrix[i, ]) - sum(initial_state) > 1e-4) {
       stop(paste("Population loss - check at cycle", i, sep = ""))
     }
   }
   nozeros <- rep(0, cycles + 1)
+
   cost_matrix <- cbind(cost_matrix,nozeros,nozeros)
   utility_matrix <- cbind(utility_matrix,nozeros,nozeros)
   trace_matrix <- cbind(trace_matrix,nozeros)
@@ -586,13 +643,11 @@ plot_model <- function(markov){
   if (class(markov) != "markov_model")
     stop("The object has to be of class markov_model")
    this_trace <- data.frame(markov$trace_matrix)
-   states <- length(markov$health_states)
    columnnames <- colnames(this_trace)
-   index <- which(columnnames == "Cycles")
    this_trace_melted <- reshape2::melt(this_trace, id.var = "Cycles")
-   p<-ggplot2::ggplot(this_trace_melted, ggplot2::aes( x = this_trace_melted$Cycles, y = this_trace_melted$value, col = this_trace_melted$variable)) +
+   p <- ggplot2::ggplot(this_trace_melted, ggplot2::aes( x = this_trace_melted$Cycles, y = this_trace_melted$value, col = this_trace_melted$variable)) +
      ggplot2::geom_line() + ggplot2::labs(x = "Cycles") + ggplot2::labs(y = "States") +
-     ggplot2::theme(legend.title=ggplot2::element_blank())
+     ggplot2::theme(legend.title = ggplot2::element_blank())
    return(p)
 }
 #######################################################################
