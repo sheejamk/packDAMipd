@@ -336,12 +336,18 @@ find_survreg_distribution<-function(text){
     keyword = "weibull"
   if (text  ==  "GAUSSIAN")
     keyword = "gaussian"
+  if (text  ==  "LOGGAUSSIAN" |text  ==  "LOG GAUSSIAN")
+    keyword = "loggaussian"
+  if (text  ==  "RAYLEIGH")
+    keyword = "rayleigh"
   if (text  ==  "LOGISTIC")
     keyword = "logistic"
   if (text  ==  "LOGNORMAL" |text  ==  "LOG NORMAL")
     keyword = "lognormal"
   if (text  ==  "LOG LOGISTIC" |text  ==  "LOGLOGISTIC")
     keyword = "loglogistic"
+  if(is.null(keyword))
+    stop("Error - Survreg - family of distribution not matching  ")
   return(keyword)
 }
 #' Function to find the keyword for family of distribution in glm

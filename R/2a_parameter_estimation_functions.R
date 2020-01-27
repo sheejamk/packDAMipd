@@ -115,11 +115,10 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
 #' @param info_distribution distribution name  eg. for logistic regression -binomial
 #' @param covariates list of covariates - calculations to be done before passing
-#' @param strategycol column name containing arm details, default is NA
-#' @param strategyname name of the  arm, default is NA
-#' @param timevar_survival time variable for survival analysis, default is NA
-#' @param interaction boolean value to indicate interaction in the case of linear regression,
-#'  false by default
+#' @param strategycol column name containing arm details
+#' @param strategyname name of the  arm
+#' @param timevar_survival time variable for survival analysis
+#' @param interaction boolean value to indicate interaction in the case of linear regression
 #' @return the results of the regression analysis
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
@@ -128,8 +127,8 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' @export
 get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, method,
                                       indep_var, info_get_method, info_distribution,
-                                      covariates = NA, strategycol = NA,
-                                      strategyname = NA, timevar_survival = NA, interaction = FALSE){
+                                      covariates=NA, strategycol=NA,
+                                      strategyname=NA, timevar_survival=NA, interaction=NA ){
   if (is.null(dataset))
     stop("Need to provide a data set to lookup")
   if (is.na(method))
@@ -151,18 +150,18 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
   }
   caps_method = toupper(method)
   if (caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS") {
-    results <- use_survival_analysis(param_to_be_estimated, dataset, method,
-                                    indep_var, info_get_method, info_distribution,covariates_list , timevar_survival)
+    results <- use_survival_analysis(param_to_be_estimated, dataset, indep_var, info_get_method,
+                                     info_distribution,covariates_list , timevar_survival)
   }
-  if(caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR" ){
-    results <- use_linear_rgression(param_to_be_estimated, dataset, method,indep_var,covariates, interaction)
+  if(caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR"){
+    results <- use_linear_rgression(param_to_be_estimated, dataset,indep_var,covariates, interaction)
   }
   if(caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC"){
-    results <- use_logistic_rgression(param_to_be_estimated, dataset, method, indep_var, info_distribution, covariates_list)
+    results <- use_logistic_rgression(param_to_be_estimated, dataset,indep_var, info_distribution, covariates_list)
   }
   if(caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
      | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" ){
-    results <- use_mixed_effect_model(param_to_be_estimated, dataset, method,indep_var,covariates)
+    results <- use_mixed_effect_model(param_to_be_estimated, dataset,indep_var,covariates)
   }
   return(results)
 }
@@ -170,7 +169,6 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
 #' Get the parameter values using the survival analysis
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
 #' @param info_distribution distribution name  eg. for logistic regression -binomial
@@ -180,36 +178,35 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
 #' @examples
 #' data_for_survival<-survival::aml
 #' surv_estimated_aml <- use_survival_analysis("status", data_for_survival,
-#' "survival analysis", "x", info_get_method="parametric", info_distribution = "binomial",
+#' "x", info_get_method="parametric", info_distribution = "weibull",
 #' covariates_list=NA,"time")
-
-use_survival_analysis <- function(param_to_be_estimated, dataset, method,
+#' @export
+use_survival_analysis <- function(param_to_be_estimated, dataset,
                                  indep_var, info_get_method, info_distribution,
                                  covariates_list, timevar_survival) {
   if (is.na(info_get_method))
     stop("Please provide  information statistical method")
   caps_info_method <- toupper(info_get_method)
   if (caps_info_method == "PARAMETRIC REGRESSION" | caps_info_method == "PARAMETRIC") {
-    results <- use_parametric_regression(param_to_be_estimated, dataset, method,
-                                         indep_var, info_distribution,covariates_list,
-                                         timevar_survival)
+    results <- use_parametric_regression(param_to_be_estimated, dataset,indep_var,
+                                         info_distribution,covariates_list,timevar_survival)
   }
   if (caps_info_method == "KAPLAN-MEIER" | caps_info_method == "KM") {
-    results <- use_km_survival(param_to_be_estimated, dataset, method,
-                               indep_var,covariates_list, timevar_survival)
+    results <- use_km_survival(param_to_be_estimated, dataset, indep_var,covariates_list,
+                               timevar_survival)
   }
   if (caps_info_method == "FLEMING-HARRINGTON" | caps_info_method == "FH") {
-    results <- use_fh_survival(param_to_be_estimated, dataset, method,
-                               indep_var,covariates_list,timevar_survival)
+    results <- use_fh_survival(param_to_be_estimated, dataset,indep_var,covariates_list,
+                               timevar_survival)
   }
   if (caps_info_method == "FH2") {
-    results <- use_fh2_survival(param_to_be_estimated, dataset, method,
-                                indep_var,covariates_list, timevar_survival)
+    results <- use_fh2_survival(param_to_be_estimated, dataset,indep_var,covariates_list,
+                                timevar_survival)
   }
   if (caps_info_method %in% c("COX-PROPORTIONAL-HAZARD","COX PROPORTIONAL HAZARD","COX-PH",
                               "COX PH","COXPH")){
-    results <- use_coxph_survival(param_to_be_estimated, dataset, method,
-                                  indep_var, covariates_list,  timevar_survival)
+    results <- use_coxph_survival(param_to_be_estimated, dataset, indep_var, covariates_list,
+                                  timevar_survival)
   }
   return(results)
 
@@ -218,7 +215,6 @@ use_survival_analysis <- function(param_to_be_estimated, dataset, method,
 #' Get the parameter values using the survival analysis parametric regression
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param info_distribution distribution name  eg. for logistic regression -binomial
 #' @param covariates_list list of covariates - calculations to be done before passing
@@ -226,9 +222,10 @@ use_survival_analysis <- function(param_to_be_estimated, dataset, method,
 #' @return the results of the regression analysis
 #' @examples
 #' data_for_survival<-survival::aml
-#' surv_estimated_aml <- use_parametric_regression("status", data_for_survival,
-#' "survival analysis", "x", info_distribution="binomial", covariates_list=NA,"time")
-use_parametric_regression <- function(param_to_be_estimated, dataset, method,
+#' surv_estimated_aml <- use_parametric_regression("status", data_for_survival,"x",
+#' info_distribution="weibull", covariates_list=NA,"time")
+#' @export
+use_parametric_regression <- function(param_to_be_estimated, dataset,
                                       indep_var, info_distribution,covariates_list,
                                       timevar_survival){
   if (is.na(timevar_survival))
@@ -262,16 +259,15 @@ use_parametric_regression <- function(param_to_be_estimated, dataset, method,
 #' Get the parameter values using the Kaplan-Meier survival analysis
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param covariates_list list of covariates - calculations to be done before passing
 #' @param timevar_survival time variable for survival analysis, default is NA
 #' @return the results of the regression analysis
 #' @examples
 #' data_for_survival<-survival::aml
-#' surv_estimated_aml<-use_km_survival("status", data_for_survival,
-#' "survival analysis", "x", covariates_list=NA, "time")
-use_km_survival <- function(param_to_be_estimated, dataset, method,
+#' surv_estimated_aml<-use_km_survival("status", data_for_survival, "x", covariates_list=NA, "time")
+#' @export
+use_km_survival <- function(param_to_be_estimated, dataset,
                             indep_var, covariates_list, timevar_survival){
   if (is.na(timevar_survival))
     stop("For survival analysis, please provide the varaible to use as time ")
@@ -287,7 +283,11 @@ use_km_survival <- function(param_to_be_estimated, dataset, method,
                                    ,"data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
-  plot_result <- ggplot2::autoplot(param_estimated)
+  fit <- param_estimated
+  fit$call$formula <- param_estimated$call$formula
+  fit$call$data = param_estimated$call$data
+  the_data = eval(fit$call$data)
+  plot_result <- survminer::ggsurvplot(fit,data=the_data)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
@@ -299,16 +299,15 @@ use_km_survival <- function(param_to_be_estimated, dataset, method,
 #' Get the parameter values using the survival analysis methid FH
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param covariates_list list of covariates - calculations to be done before passing
 #' @param timevar_survival time variable for survival analysis, default is NA
 #' @return the results of the regression analysis
 #' @examples
 #' data_for_survival<-survival::aml
-#' surv_estimated_aml<-use_fh_survival("status", data_for_survival,
-#' "survival analysis", "x", covariates_list=NA, "time")
-use_fh_survival <- function(param_to_be_estimated, dataset, method,
+#' surv_estimated_aml<-use_fh_survival("status", data_for_survival, "x", covariates_list=NA, "time")
+#' @export
+use_fh_survival <- function(param_to_be_estimated, dataset,
                             indep_var, covariates_list, timevar_survival){
   if (is.na(timevar_survival))
     stop("For survival analysis, please provide the varaible to use as time ")
@@ -325,7 +324,11 @@ use_fh_survival <- function(param_to_be_estimated, dataset, method,
                                    "data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
-  plot_result <- ggplot2::autoplot(param_estimated)
+  fit <- param_estimated
+  fit$call$formula <- param_estimated$call$formula
+  fit$call$data = param_estimated$call$data
+  the_data = eval(fit$call$data)
+  plot_result <- survminer::ggsurvplot(fit,data=the_data)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
@@ -337,7 +340,6 @@ use_fh_survival <- function(param_to_be_estimated, dataset, method,
 #' Get the parameter values using the survival analysis using FH2 method
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param covariates_list list of covariates - calculations to be done before passing
 #' @param timevar_survival time variable for survival analysis, default is NA
@@ -345,9 +347,9 @@ use_fh_survival <- function(param_to_be_estimated, dataset, method,
 #' @return the results of the regression analysis
 #' @examples
 #' data_for_survival<-survival::aml
-#' surv_estimated_aml<-use_fh2_survival("status", data_for_survival,
-#' "survival analysis", "x", covariates_list=NA, "time")
-use_fh2_survival <- function(param_to_be_estimated, dataset, method,
+#' surv_estimated_aml<-use_fh2_survival("status", data_for_survival, "x", covariates_list=NA, "time")
+#' @export
+use_fh2_survival <- function(param_to_be_estimated, dataset,
                              indep_var,covariates_list, timevar_survival){
   if (is.na(timevar_survival))
     stop("For survival analysis, please provide the varaible to use as time ")
@@ -363,7 +365,11 @@ use_fh2_survival <- function(param_to_be_estimated, dataset, method,
                                    " + ", covariates_list,", type =", "\"fh2\"",", ","data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
-  plot_result <- ggplot2::autoplot(param_estimated)
+  fit <- param_estimated
+  fit$call$formula <- param_estimated$call$formula
+  fit$call$data = param_estimated$call$data
+  the_data = eval(fit$call$data)
+  plot_result <- survminer::ggsurvplot(fit,data=the_data)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
@@ -375,7 +381,6 @@ use_fh2_survival <- function(param_to_be_estimated, dataset, method,
 #' Get the parameter values using the survival analysis using cox proportional hazard
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param covariates_list list of covariates - calculations to be done before passing
 #' @param timevar_survival time variable for survival analysis, default is NA
@@ -383,9 +388,10 @@ use_fh2_survival <- function(param_to_be_estimated, dataset, method,
 #' @return the results of the regression analysis
 #' @examples
 #' data_for_survival<-survival::aml
-#' surv_estimated_aml <- use_coxph_survival("status", data_for_survival,
-#' "survival analysis", "x", covariates_list=NA, "time")
-use_coxph_survival <- function(param_to_be_estimated, dataset, method,indep_var,
+#' surv_estimated_aml <- use_coxph_survival("status", data_for_survival, "x",
+#' covariates_list = NA, "time")
+#' @export
+use_coxph_survival <- function(param_to_be_estimated, dataset,indep_var,
                                covariates_list, timevar_survival){
   if (is.na(timevar_survival))
     stop("For survival analysis, please provide the varaible to use as time ")
@@ -400,7 +406,11 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, method,indep_var,
                                    covariates_list,", ", "data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
-  plot_result <- ggplot2::autoplot(survival::survfit(param_estimated))
+  fit <- survival::survfit(param_estimated, data = "param_estimated$call$data")
+  fit$call$formula <- param_estimated$call$formula
+  fit$call$data = param_estimated$call$data
+  the_data = eval(fit$call$data)
+  plot_result <- survminer::ggsurvplot(fit,data=the_data)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
@@ -412,17 +422,17 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, method,indep_var,
 #' Get the parameter values using logistic regression
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param info_distribution distribution name  eg. for logistic regression -binomial
 #' @param covariates_list list of covariates - calculations to be done before passing
 #' @return the results of the regression analysis
 #' @examples
-# mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-# mydata$rank <- factor(mydata$rank)
-# results_logit <- use_logistic_rgression("admit", dataset=mydata,method="logistic regression",
-# indep_var = "gre", info_distribution ="binomial", covariates = NA)
-use_logistic_rgression <- function(param_to_be_estimated, dataset, method,indep_var,
+#' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+#' mydata$rank <- factor(mydata$rank)
+#' results_logit <- use_logistic_rgression("admit", dataset=mydata,
+#' indep_var = "gre", info_distribution ="binomial", covariates_list = NA)
+#' @export
+use_logistic_rgression <- function(param_to_be_estimated, dataset,indep_var,
                                    info_distribution,covariates_list){
   if (is.na(info_distribution))
     stop("Error - information on distribution is missing")
@@ -430,7 +440,7 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, method,indep_
     this_dist <- find_glm_distribution(info_distribution)
   if (is.na(covariates_list))
     expression_recreated <- paste0("glm","(", param_to_be_estimated, " ~ ", indep_var,
-                                   ", family =", this_dist, "data = dataset) ", sep = "")
+                                   ", family = ", this_dist, ", data = dataset) ", sep = "")
   else
     expression_recreated <- paste0("glm","(", param_to_be_estimated, " ~ ", indep_var, " + ",
                                    covariates_list, ", family = ", this_dist, ", data = dataset) ",
@@ -454,7 +464,6 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, method,indep_
 #' Get the parameter values using the linear regression
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param covariates list of covariates - calculations to be done before passing
 #' @param interaction boolean value to indicate interaction in the case of linear regression,
@@ -462,15 +471,15 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, method,indep_
 #' @return the results of the regression analysis
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-#  results_logit <- use_linear_rgression("gre", dataset=mydata,
-# indep_var = "gpa", covariates = NA, interaction = FALSE)
-use_linear_rgression<-function(param_to_be_estimated, dataset,indep_var,covariates,
-                               interaction=FALSE){
+#' results_logit <- use_linear_rgression("gre", dataset=mydata,
+#' indep_var = "gpa", covariates = NA, interaction = FALSE)
+#' @export
+use_linear_rgression<-function(param_to_be_estimated, dataset,indep_var,covariates,interaction=FALSE){
   if(length(covariates)==0 | is.na(covariates)){
     # no need to check for interaction
-    fmla <- as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,collapse= "+")))
-    fit<lm(fmla,data=dataset)
-    p_plt<-ggPredict(fit,se=TRUE,interactive=TRUE)
+    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,collapse= "+")))
+    fit<-stats::lm(fmla,data=dataset)
+    p_plt<- ggiraphExtra::ggPredict(fit,se=TRUE,interactive=TRUE)
   }else{
     expre=paste(covariates[1],sep="")
     i=2
@@ -480,9 +489,9 @@ use_linear_rgression<-function(param_to_be_estimated, dataset,indep_var,covariat
       i=i+1
     }
     if(interaction==FALSE){
-      fmla <- as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"+",sep=""),
+      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"+",sep=""),
                                paste(expre, collapse= "+")))
-      fit<-lm(fmla,data=dataset)
+      fit<-stats::lm(fmla,data=dataset)
     }else{
       expre=paste(covariates[1],sep="")
       i=2
@@ -491,9 +500,9 @@ use_linear_rgression<-function(param_to_be_estimated, dataset,indep_var,covariat
         expre=paste(expre,this,sep="*")
         i=i+1
       }
-      fmla <- as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"*",sep=""),
+      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"*",sep=""),
                                paste(expre, collapse= "*")))
-      fit <- lm(fmla,data=dataset)
+      fit <- stats::lm(fmla,data=dataset)
     }
   }
   summary_regression_results = summary(fit)
@@ -530,12 +539,12 @@ use_mixed_effect_model<-function(param_to_be_estimated, dataset, indep_var,covar
       expre=paste(expre,this,sep="+")
       i=i+1
     }
-    fmla <- as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"+"),
+    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"+"),
                              paste(expre, collapse= "+")))
     fit <- lme4::lmer(fmla,data=dataset)
   }else{
-    fmla <- as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,collapse= "+")))
-    fit <- lm(fmla,data=dataset)
+    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,collapse= "+")))
+    fit <- stats::lm(fmla,data=dataset)
   }
   summary_regression_results = summary(fit)
   vcov_param_estimated <- stats::vcov(fit)

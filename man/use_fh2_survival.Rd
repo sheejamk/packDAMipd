@@ -5,15 +5,13 @@
 \title{##########################################################################################################
 Get the parameter values using the survival analysis using FH2 method}
 \usage{
-use_fh2_survival(param_to_be_estimated, dataset, method, indep_var,
+use_fh2_survival(param_to_be_estimated, dataset, indep_var,
   covariates_list, timevar_survival)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
 
 \item{dataset}{data set to be provided}
-
-\item{method}{methd of estimation (for example, linear, logistic regression etc)}
 
 \item{indep_var}{the independent variable (column name in data file)}
 
@@ -31,6 +29,5 @@ Get the parameter values using the survival analysis using FH2 method
 }
 \examples{
 data_for_survival<-survival::aml
-surv_estimated_aml<-use_fh2_survival("status", data_for_survival,
-"survival analysis", "x", covariates_list=NA, "time")
+surv_estimated_aml<-use_fh2_survival("status", data_for_survival, "x", covariates_list=NA, "time")
 }

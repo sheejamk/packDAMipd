@@ -19,8 +19,6 @@ use_linear_rgression(param_to_be_estimated, dataset, indep_var, covariates,
 
 \item{interaction}{boolean value to indicate interaction in the case of linear regression,
 false by default}
-
-\item{method}{methd of estimation (for example, linear, logistic regression etc)}
 }
 \value{
 the results of the regression analysis
@@ -31,4 +29,6 @@ Get the parameter values using the linear regression
 }
 \examples{
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+results_logit <- use_linear_rgression("gre", dataset=mydata,
+indep_var = "gpa", covariates = NA, interaction = FALSE)
 }

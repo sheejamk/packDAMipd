@@ -5,15 +5,13 @@
 \title{##########################################################################################################
 Get the parameter values using logistic regression}
 \usage{
-use_logistic_rgression(param_to_be_estimated, dataset, method, indep_var,
+use_logistic_rgression(param_to_be_estimated, dataset, indep_var,
   info_distribution, covariates_list)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
 
 \item{dataset}{data set to be provided}
-
-\item{method}{methd of estimation (for example, linear, logistic regression etc)}
 
 \item{indep_var}{the independent variable (column name in data file)}
 
@@ -27,4 +25,10 @@ the results of the regression analysis
 \description{
 ##########################################################################################################
 Get the parameter values using logistic regression
+}
+\examples{
+mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+mydata$rank <- factor(mydata$rank)
+results_logit <- use_logistic_rgression("admit", dataset=mydata,
+indep_var = "gre", info_distribution ="binomial", covariates_list = NA)
 }

@@ -5,15 +5,13 @@
 \title{##########################################################################################################
 Get the parameter values using the survival analysis parametric regression}
 \usage{
-use_parametric_regression(param_to_be_estimated, dataset, method,
-  indep_var, info_distribution, covariates_list, timevar_survival)
+use_parametric_regression(param_to_be_estimated, dataset, indep_var,
+  info_distribution, covariates_list, timevar_survival)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
 
 \item{dataset}{data set to be provided}
-
-\item{method}{methd of estimation (for example, linear, logistic regression etc)}
 
 \item{indep_var}{the independent variable (column name in data file)}
 
@@ -32,6 +30,6 @@ Get the parameter values using the survival analysis parametric regression
 }
 \examples{
 data_for_survival<-survival::aml
-surv_estimated_aml <- use_parametric_regression("status", data_for_survival,
-"survival analysis", "x", info_distribution="binomial", covariates_list=NA,"time")
+surv_estimated_aml <- use_parametric_regression("status", data_for_survival,"x",
+info_distribution="weibull", covariates_list=NA,"time")
 }

@@ -7,7 +7,7 @@
 get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
   indep_var, info_get_method, info_distribution, covariates = NA,
   strategycol = NA, strategyname = NA, timevar_survival = NA,
-  interaction = FALSE)
+  interaction = NA)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -24,14 +24,13 @@ get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
 
 \item{covariates}{list of covariates - calculations to be done before passing}
 
-\item{strategycol}{column name containing arm details, default is NA}
+\item{strategycol}{column name containing arm details}
 
-\item{strategyname}{name of the  arm, default is NA}
+\item{strategyname}{name of the  arm}
 
-\item{timevar_survival}{time variable for survival analysis, default is NA}
+\item{timevar_survival}{time variable for survival analysis}
 
-\item{interaction}{boolean value to indicate interaction in the case of linear regression,
-false by default}
+\item{interaction}{boolean value to indicate interaction in the case of linear regression}
 }
 \value{
 the results of the regression analysis
