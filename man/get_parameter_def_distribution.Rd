@@ -25,6 +25,6 @@ Parameter,	Description,	Strategy,	Value,	Distribution,	Param1_name, Param1_value
 Param2_name,	Param2_value
 }
 \examples{
-a <- get_parameter_def_distribution("rr", paramfile=
-system.file("extdata", "table_param.csv", package = "MarkovModel"))
+a <- get_parameter_def_distribution("rr", paramfile = system.file("extdata", "table_param.csv",
+package = "packDAMipd"))
 }

@@ -54,7 +54,8 @@ tm <- transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
 "tpBtoB", "tpBtoC", "tpBtoD","tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
 health_states <- combine_state(A,B,C,D)
 mono_strategy <- strategy(tm, health_states, "mono")
-mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),discount=c(0.06,0),param_list)
+mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),c(0,0,0,0),
+discount=c(0.06,0),param_list)
 param_table<-define_parameters_sens_anal(param_list, low_values, upp_values)
 result<-do_sensitivity_analysis(mono_markov,param_table)
 plot_dsa(result,"cost")

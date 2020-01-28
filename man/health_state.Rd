@@ -4,14 +4,14 @@
 \alias{health_state}
 \title{Definition of health state class or health state constructor}
 \usage{
-health_state(name, cost_expr, utility_expr, time = 0, absorb = FALSE)
+health_state(name, cost, utility, time = 0, absorb = FALSE)
 }
 \arguments{
 \item{name}{name of the health state}
 
-\item{cost_expr}{value or expression that represents cost of the health state}
+\item{cost}{value or expression that represents cost of the health state}
 
-\item{utility_expr}{value or expression that represents utility of the health state}
+\item{utility}{value or expression that represents utility of the health state}
 
 \item{time}{denoting how long in the state}
 

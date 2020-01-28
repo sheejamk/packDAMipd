@@ -9,7 +9,8 @@ summary_plot_psa(result_psa_params_control,
   comparator = NULL)
 }
 \arguments{
-\item{result_psa_params_control}{result from determnistic sensitivity analysis for first or control model}
+\item{result_psa_params_control}{result from determnistic sensitivity analysis
+for first or control model}
 
 \item{result_psa_params_treat}{result from determnistic sensitivity analysis
 for the compartive markov mdoel}
@@ -45,7 +46,8 @@ tm <- transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
 "tpBtoB", "tpBtoC", "tpBtoD","tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
 health_states <- combine_state(A,B,C,D)
 mono_strategy <- strategy(tm, health_states, "mono")
-mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),discount=c(0.06,0),param_list)
+mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),c(0,0,0,0),
+discount=c(0.06,0),param_list)
 sample_list <-define_parameters(cost_zido ="gamma(mean = 2756, sd = sqrt(2756))")
 param_table <- define_parameters_psa(param_list, sample_list)
 result<-do_psa(mono_markov,param_table,10)

@@ -1,6 +1,6 @@
 Type: Package
-Package: DecisionAnalysisModel
-Title: Markov Model for Decision Analysis 
+Package: packDAMipd
+Title: Decision analysis modelling package that inputs parameter from individual patient level data
 Version: 0.1.0
 Authors@R: 
     c(person(given = "Sheeja",

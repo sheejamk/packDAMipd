@@ -25,5 +25,5 @@ Parameter,	Description,	Strategy,	Value
 }
 \examples{
 a <- get_parameter_read("cost_IT", paramfile=system.file("extdata","table_param.csv",
-package = "MarkovModel"), strategycol="Strategy", strategyname="Intervention")
+package = "packDAMipd"))
 }

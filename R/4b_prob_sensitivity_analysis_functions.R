@@ -25,13 +25,14 @@ define_parameters_psa  <-  function(base_param_list, sample_list){
   long  <-  names(base_param_list)
   index1  <-  match(short1,long)
   len = length(index1)
-  for(i in 1:len){
-    if(!is.na(index1[i])){
-      this_name <-names(sample_list_all[index1[i]])
+  for(i in 1:len) {
+    if (!is.na(index1[i])){
+      this_name <- names(sample_list_all[index1[i]])
       sample_list_all[index1[i]] = sample_list[this_name]
     }
   }
-  psa_table  <-  structure(list(base_param_list = base_param_list, sample_list = sample_list_all))
+  psa_table  <-  structure(list(base_param_list = base_param_list,
+                                sample_list = sample_list_all))
   return(psa_table)
 }
 #######################################################################
@@ -62,7 +63,8 @@ define_parameters_psa  <-  function(base_param_list, sample_list){
 #' "tpBtoB", "tpBtoC", "tpBtoD","tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
 #' health_states <- combine_state(A,B,C,D)
 #' mono_strategy <- strategy(tm, health_states, "mono")
-#' mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),discount=c(0.06,0),param_list)
+#' mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),c(0,0,0,0),
+#' discount=c(0.06,0),param_list)
 #' sample_list <-define_parameters(cost_zido ="gamma(mean = 2756, sd = sqrt(2756))")
 #' param_table <- define_parameters_psa(param_list, sample_list)
 #' result<-do_psa(mono_markov,param_table,10)
@@ -72,7 +74,8 @@ do_psa <- function(this_markov,psa_table,num_rep){
     stop("Error - the model should be of class markov_model")
   check =  sum(names(psa_table) ==   c("base_param_list","sample_list"))
   if (check != 2) {
-    stop("parameter table should have  2 entries  - default parameter values, and parameters with sampling distributions")
+    stop("parameter table should have  2 entries  - default parameter values,
+         and parameters with sampling distributions")
   }
   this_markov_param  <-  this_markov
   no_entries  <-  length(psa_table$base_param_list)
@@ -93,8 +96,11 @@ do_psa <- function(this_markov,psa_table,num_rep){
     if (is.null(this_param_list)) {
       this_param_list <- psa_table$base_param_list
     }
-    this_markov_rep  <-  markov_model(this_markov$strategy, this_markov$cycles, this_markov$initial_state,
-                                      this_markov$overhead_costs, this_markov$discount,this_param_list)
+    this_markov_rep  <-  markov_model(this_markov$strategy, this_markov$cycles,
+                                      this_markov$initial_state,
+                                      this_markov$initial_state_costs,
+                                      this_markov$initial_state_utilities,
+                                      this_markov$discount,this_param_list)
     this_markov_rep_all  <-  append(this_markov_rep_all,list(this_markov_rep))
     names_rep =  append(names_rep, paste("rep_",j,sep =  ""))
   }
@@ -108,7 +114,8 @@ do_psa <- function(this_markov,psa_table,num_rep){
 }
 #######################################################################
 #' Function to do deterministic sensitivity analysis
-#' @param result_psa_params_control  result from determnistic sensitivity analysis for first or control model
+#' @param result_psa_params_control  result from determnistic sensitivity analysis
+#' for first or control model
 #' @param result_psa_params_treat result from determnistic sensitivity analysis
 #' for the compartive markov mdoel
 #' @param threshold threshold value of WTP
@@ -135,13 +142,15 @@ do_psa <- function(this_markov,psa_table,num_rep){
 #' "tpBtoB", "tpBtoC", "tpBtoD","tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
 #' health_states <- combine_state(A,B,C,D)
 #' mono_strategy <- strategy(tm, health_states, "mono")
-#' mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),discount=c(0.06,0),param_list)
+#' mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),c(0,0,0,0),
+#' discount=c(0.06,0),param_list)
 #' sample_list <-define_parameters(cost_zido ="gamma(mean = 2756, sd = sqrt(2756))")
 #' param_table <- define_parameters_psa(param_list, sample_list)
 #' result<-do_psa(mono_markov,param_table,10)
 #' list_paramwise_psa_result(result, NULL,NULL,NULL)
 #' @export
-list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_params_treat,threshold,comparator){
+list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_params_treat,
+                                        threshold,comparator){
   len =  length(result_psa_params_control) - 1
   results_all_param_mat  <-  data.frame()
   results_cost_util  <-  data.frame()
@@ -151,7 +160,8 @@ list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_par
   for (i in 1:len) {
     this_var_result_name <- names(result_psa_params_control)[i]
     if (!is.null(result_psa_params_treat)) {
-      list_markov  <-  combine_markov(result_psa_params_control[[this_var_result_name]], result_psa_params_treat[[this_var_result_name]])
+      list_markov  <-  combine_markov(result_psa_params_control[[this_var_result_name]],
+                                      result_psa_params_treat[[this_var_result_name]])
       res_icer_nmb  <-  calculate_icer_nmb(list_markov,threshold,comparator)
       results_icer_nmb  <-  rbind(results_icer_nmb,res_icer_nmb)
      }else{
@@ -184,7 +194,8 @@ list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_par
 }
 #######################################################################
 #' Function to do deterministic sensitivity analysis
-#' @param result_psa_params_control  result from determnistic sensitivity analysis for first or control model
+#' @param result_psa_params_control  result from determnistic sensitivity analysis
+#' for first or control model
 #' @param result_psa_params_treat result from determnistic sensitivity analysis
 #' for the compartive markov mdoel
 #' @param threshold threshold value of WTP
@@ -211,7 +222,8 @@ list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_par
 #' "tpBtoB", "tpBtoC", "tpBtoD","tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
 #' health_states <- combine_state(A,B,C,D)
 #' mono_strategy <- strategy(tm, health_states, "mono")
-#' mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),discount=c(0.06,0),param_list)
+#' mono_markov <-markov_model(mono_strategy, 20, c(1, 0,0,0),c(0,0,0,0),c(0,0,0,0),
+#' discount=c(0.06,0),param_list)
 #' sample_list <-define_parameters(cost_zido ="gamma(mean = 2756, sd = sqrt(2756))")
 #' param_table <- define_parameters_psa(param_list, sample_list)
 #' result<-do_psa(mono_markov,param_table,10)
@@ -220,23 +232,28 @@ list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_par
 
 summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat =  NULL, threshold = NULL, comparator =  NULL ){
   if (!is.null(result_psa_params_treat)) {
-    list_all <- list_paramwise_psa_result(result_psa_params_control, result_psa_params_treat,threshold,comparator)
+    list_all <- list_paramwise_psa_result(result_psa_params_control, result_psa_params_treat,
+                                          threshold,comparator)
     mean_icer <- mean(list_all[,1])
     mean_nmb <- mean(list_all[,2])
     sd_icer <- stats::sd(list_all[,1])
     sd_nmb <- stats::sd(list_all[,2])
-    plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$ICER, y = list_all$NMB)) + ggplot2::geom_point(color = "blue", size =  3) +
+    plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$ICER,
+                                                           y = list_all$NMB)) +
+      ggplot2::geom_point(color = "blue", size =  3) +
       ggplot2::labs(x = "ICER") + ggplot2::labs(y = "NMB") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
     plot2 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$ICER)) +
       ggplot2::geom_histogram(bins = 20,color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of ICER", x = "ICER", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$ICER)), color = "blue", linetype = "dashed", size = 1) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$ICER)),
+                          color = "blue", linetype = "dashed", size = 1) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
     plot3 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$NMB)) +
       ggplot2::geom_histogram(bins = 20,color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of NMB",x = "NMB", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$NMB)),color = "red", linetype = "dashed", size = 1) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$NMB)),
+                          color = "red", linetype = "dashed", size = 1) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
     result  <-  structure(list(
       mean_icer = mean_icer,
@@ -248,7 +265,8 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
       hist_nmb = plot3
     ))
   }else{
-    list_all <- list_paramwise_psa_result(result_psa_params_control, result_psa_params_treat =  NULL, threshold = NULL, comparator =   NULL)
+    list_all <- list_paramwise_psa_result(result_psa_params_control,
+                                          result_psa_params_treat =  NULL, threshold = NULL, comparator =   NULL)
     no_entries = ncol(list_all) - 1
     mean_all  <- data.frame()
     sd_all  <-  data.frame()
@@ -260,18 +278,21 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
     }
     names(mean_all) <- colnames(list_all[1:no_entries])
     names(sd_all) <- colnames(list_all[1:no_entries])
-    plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$utility, y = list_all$cost)) + ggplot2::geom_point(color = "blue", size =  3) +
+    plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$utility,
+                                                           y = list_all$cost)) + ggplot2::geom_point(color = "blue", size =  3) +
       ggplot2::labs(x = "Utility / Effect") + ggplot2::labs(y = "Cost") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
     plot2 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$cost)) +
       ggplot2::geom_histogram(bins = 20, color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of cost",x = "Cost", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$cost)), color = "blue", linetype = "dashed", size = 1) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$cost)),
+                          color = "blue", linetype = "dashed", size = 1) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
     plot3 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$utility)) +
       ggplot2::geom_histogram(bins = 20,color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of utility values",x = "Utility", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$utility)), color = "red", linetype = "dashed", size = 1) +
+      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$utility)),
+                          color = "red", linetype = "dashed", size = 1) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
     result  <-  structure(list(

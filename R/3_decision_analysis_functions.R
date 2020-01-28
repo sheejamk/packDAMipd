@@ -15,7 +15,7 @@
 #' tm <- transition_matrix(3, tmat, c(0.6,0.2,0.2,0.6,0.4,1), colnames(tmat) )
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "control")
-#' this_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0))
+#' this_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 #' well <-  health_state("well", cost=0,utility=1)
 #' disabled <- health_state("disabled", cost=10,utility=0.5)
 #' dead <- health_state("dead", cost=0,utility=0)
@@ -24,7 +24,7 @@
 #' tm <- transition_matrix(3, tmat, c(0.4,0.4,0.2,0.6,0.4,1), colnames(tmat))
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "intervention")
-#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0))
+#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 #' list_markov <- combine_markov(this_markov, sec_markov)
 #' calculate_icer_nmb(list_markov,20000, comparator = "control")
 #' @export
@@ -40,7 +40,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
     comparator_index = which(list_names_strategy == comparator)
   }
   if (sum(colnames(list_markov) == c("strategy","transition_matrix", "param_matrix","health_states",
-                                     "cycles",  "initial_state","overhead_costs","discount",
+                                     "cycles",  "initial_state","initial_state_costs","initial_state_utilities","discount",
                                      "trace_matrix", "cost_matrix", "utility_matrix"))
                                                      != ncol(list_markov)) {
     stop("column names of list of markov_model objects look different")
@@ -95,7 +95,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
 #' tm <- transition_matrix(3, tmat, c(0.6,0.2,0.2,0.6,0.4,1), colnames(tmat) )
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "example")
-#' this_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0))
+#' this_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 #' well <-  health_state("well", cost=0,utility=1)
 #' disabled <- health_state("disabled", cost=10,utility=0.5)
 #' dead <- health_state("dead", cost=0,utility=0)
@@ -104,7 +104,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
 #' tm <- transition_matrix(3, tmat, c(0.4,0.4,0.2,0.6,0.4,1), colnames(tmat))
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "example")
-#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0))
+#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 #' list_markov <- combine_markov(this_markov, sec_markov)
 #' check_list_markov_models(list_markov)
 #' @export
@@ -145,7 +145,7 @@ check_list_markov_models <- function(list_markov){
 #' tm <- transition_matrix(3, tmat, c(0.6,0.2,0.2,0.6,0.4,1), colnames(tmat) )
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "control")
-#' this_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0))
+#' this_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 #' well <-  health_state("well", cost=0,utility=1)
 #' disabled <- health_state("disabled", cost=10,utility=0.5)
 #' dead <- health_state("dead", cost=0,utility=0)
@@ -154,7 +154,7 @@ check_list_markov_models <- function(list_markov){
 #' tm <- transition_matrix(3, tmat, c(0.4,0.4,0.2,0.6,0.4,1), colnames(tmat))
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "intervention")
-#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0))
+#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 #' list_markov <- combine_markov(this_markov, sec_markov)
 #' plot_ceac(list_markov,c(1000,2000,5000,7000,10000,150000,20000), comparator = "control")
 #' @export

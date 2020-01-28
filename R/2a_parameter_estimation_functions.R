@@ -7,7 +7,7 @@
 #' a <- get_parameter_direct("cost_IT", param_value=100)
 #'@export
 get_parameter_direct <- function(parameter, param_value){
-  if(!is.null(param_value)) {
+  if (!is.null(param_value)) {
     assigned_value <- assign(parameter, param_value)
     return(assigned_value)
   }else{
@@ -23,11 +23,11 @@ get_parameter_direct <- function(parameter, param_value){
 #' @return the paramvalue
 #' @examples
 #' a <- get_parameter_read("cost_IT", paramfile=system.file("extdata","table_param.csv",
-#' package = "MarkovModel"), strategycol="Strategy", strategyname="Intervention")
+#' package = "packDAMipd"))
 #' @description  the file should have these column names (atleast)
 #' Parameter,	Description,	Strategy,	Value
 #' @export
-get_parameter_read <- function(parameter, paramfile, strategycol=NA,strategyname = NA){
+get_parameter_read <- function(parameter, paramfile, strategycol=NA, strategyname = NA){
   if (is.null(paramfile))
     stop("Need to provide a parameter file to lookup")
   if (IPDFileCheck::test_file_exist_read(paramfile) != 0)
@@ -38,7 +38,7 @@ get_parameter_read <- function(parameter, paramfile, strategycol=NA,strategyname
     stop(paste("Parameter file should contain value in column name",sep = ""))
   }
   if (!is.na(strategycol)) {
-    if (IPDFileCheck::check_column_exists(strategycol,dataset) == 0){
+    if (IPDFileCheck::check_column_exists(strategycol,dataset) == 0) {
       dataset = dataset[dataset[[strategycol]] == strategyname,]
       answer <- dataset[dataset$Parameter == parameter,]$Value
     }else{
@@ -64,8 +64,8 @@ get_parameter_read <- function(parameter, paramfile, strategycol=NA,strategyname
 #' Parameter,	Description,	Strategy,	Value,	Distribution,	Param1_name, Param1_value,
 #' Param2_name,	Param2_value
 #' @examples
-#' a <- get_parameter_def_distribution("rr", paramfile=
-#' system.file("extdata", "table_param.csv", package = "MarkovModel"))
+#' a <- get_parameter_def_distribution("rr", paramfile = system.file("extdata", "table_param.csv",
+#' package = "packDAMipd"))
 #' @export
 get_parameter_def_distribution <- function(parameter, paramfile, strategycol = NA,
                                            strategyname = NA){
@@ -153,14 +153,14 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
     results <- use_survival_analysis(param_to_be_estimated, dataset, indep_var, info_get_method,
                                      info_distribution,covariates_list , timevar_survival)
   }
-  if(caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR"){
+  if (caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR"){
     results <- use_linear_rgression(param_to_be_estimated, dataset,indep_var,covariates, interaction)
   }
-  if(caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC"){
+  if (caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC"){
     results <- use_logistic_rgression(param_to_be_estimated, dataset,indep_var, info_distribution, covariates_list)
   }
-  if(caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
-     | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" ){
+  if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
+     | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" ) {
     results <- use_mixed_effect_model(param_to_be_estimated, dataset,indep_var,covariates)
   }
   return(results)
@@ -204,7 +204,7 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
                                 timevar_survival)
   }
   if (caps_info_method %in% c("COX-PROPORTIONAL-HAZARD","COX PROPORTIONAL HAZARD","COX-PH",
-                              "COX PH","COXPH")){
+                              "COX PH","COXPH")) {
     results <- use_coxph_survival(param_to_be_estimated, dataset, indep_var, covariates_list,
                                   timevar_survival)
   }
@@ -287,7 +287,7 @@ use_km_survival <- function(param_to_be_estimated, dataset,
   fit$call$formula <- param_estimated$call$formula
   fit$call$data = param_estimated$call$data
   the_data = eval(fit$call$data)
-  plot_result <- survminer::ggsurvplot(fit,data=the_data)
+  plot_result <- survminer::ggsurvplot(fit,data = the_data)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
@@ -328,7 +328,7 @@ use_fh_survival <- function(param_to_be_estimated, dataset,
   fit$call$formula <- param_estimated$call$formula
   fit$call$data = param_estimated$call$data
   the_data = eval(fit$call$data)
-  plot_result <- survminer::ggsurvplot(fit,data=the_data)
+  plot_result <- survminer::ggsurvplot(fit,data = the_data)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
@@ -369,7 +369,7 @@ use_fh2_survival <- function(param_to_be_estimated, dataset,
   fit$call$formula <- param_estimated$call$formula
   fit$call$data = param_estimated$call$data
   the_data = eval(fit$call$data)
-  plot_result <- survminer::ggsurvplot(fit,data=the_data)
+  plot_result <- survminer::ggsurvplot(fit,data = the_data)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
@@ -410,7 +410,7 @@ use_coxph_survival <- function(param_to_be_estimated, dataset,indep_var,
   fit$call$formula <- param_estimated$call$formula
   fit$call$data = param_estimated$call$data
   the_data = eval(fit$call$data)
-  plot_result <- survminer::ggsurvplot(fit,data=the_data)
+  plot_result <- survminer::ggsurvplot(fit,data = the_data)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
@@ -474,35 +474,35 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset,indep_var,
 #' results_logit <- use_linear_rgression("gre", dataset=mydata,
 #' indep_var = "gpa", covariates = NA, interaction = FALSE)
 #' @export
-use_linear_rgression<-function(param_to_be_estimated, dataset,indep_var,covariates,interaction=FALSE){
-  if(length(covariates)==0 | is.na(covariates)){
+use_linear_rgression <- function(param_to_be_estimated, dataset,indep_var,covariates,interaction=FALSE){
+  if (length(covariates) == 0 | is.na(covariates)) {
     # no need to check for interaction
-    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,collapse= "+")))
-    fit<-stats::lm(fmla,data=dataset)
-    p_plt<- ggiraphExtra::ggPredict(fit,se=TRUE,interactive=TRUE)
+    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,collapse = "+")))
+    fit <- stats::lm(fmla,data = dataset)
+    p_plt <- ggiraphExtra::ggPredict(fit,se = TRUE,interactive = TRUE)
   }else{
-    expre=paste(covariates[1],sep="")
-    i=2
-    while(i<=length(covariates)){
-      this=paste(covariates[i],sep="")
-      expre=paste(expre,this,sep="+")
-      i=i+1
+    expre = paste(covariates[1],sep = "")
+    i = 2
+    while (i <= length(covariates)) {
+      this = paste(covariates[i],sep = "")
+      expre = paste(expre,this,sep = "+")
+      i = i + 1
     }
-    if(interaction==FALSE){
-      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"+",sep=""),
-                               paste(expre, collapse= "+")))
-      fit<-stats::lm(fmla,data=dataset)
+    if (interaction == FALSE) {
+      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"+",sep = ""),
+                               paste(expre, collapse = "+")))
+      fit <- stats::lm(fmla,data = dataset)
     }else{
-      expre=paste(covariates[1],sep="")
-      i=2
-      while(i<=length(covariates)){
-        this=paste(covariates[i],sep="")
-        expre=paste(expre,this,sep="*")
-        i=i+1
+      expre = paste(covariates[1],sep ="")
+      i = 2
+      while (i <= length(covariates)) {
+        this = paste(covariates[i],sep = "")
+        expre = paste(expre,this,sep = "*")
+        i = i + 1
       }
-      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"*",sep=""),
-                               paste(expre, collapse= "*")))
-      fit <- stats::lm(fmla,data=dataset)
+      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"*",sep = ""),
+                               paste(expre, collapse = "*")))
+      fit <- stats::lm(fmla,data = dataset)
     }
   }
   summary_regression_results = summary(fit)
@@ -530,21 +530,21 @@ use_linear_rgression<-function(param_to_be_estimated, dataset,indep_var,covariat
 #  results_logit <- use_mixed_effect_model("gre", dataset=mydata,
 #                                          indep_var = "gpa", covariates = NA)
 #' @export
-use_mixed_effect_model<-function(param_to_be_estimated, dataset, indep_var,covariates=NA){
-  if(sum(is.na(covariates))==0) {
-    expre=paste("1|",covariates[1],sep="")
-    i=2
-    while(i<=length(covariates)){
-      this = paste("1|", covariates[i], sep="")
-      expre=paste(expre,this,sep="+")
-      i=i+1
+use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var,covariates=NA){
+  if (sum(is.na(covariates)) == 0) {
+    expre = paste("1|",covariates[1],sep = "")
+    i = 2
+    while (i <= length(covariates)) {
+      this = paste("1|", covariates[i], sep = "")
+      expre = paste(expre,this,sep = "+")
+      i = i + 1
     }
     fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,"+"),
-                             paste(expre, collapse= "+")))
-    fit <- lme4::lmer(fmla,data=dataset)
+                             paste(expre, collapse = "+")))
+    fit <- lme4::lmer(fmla,data = dataset)
   }else{
-    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,collapse= "+")))
-    fit <- stats::lm(fmla,data=dataset)
+    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),paste(indep_var,collapse = "+")))
+    fit <- stats::lm(fmla,data = dataset)
   }
   summary_regression_results = summary(fit)
   vcov_param_estimated <- stats::vcov(fit)

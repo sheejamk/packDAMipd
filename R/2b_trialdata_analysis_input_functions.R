@@ -7,11 +7,12 @@
 #' Function to load the file containing trial data and return it
 #' @param file, name of the file in full
 #' @return trial data if success, else -1
-#' @examples load_trial_data(system.file("extdata", "trial_data.csv", package = "DecisionAnalysisModel"))
+#' @examples load_trial_data(system.file("extdata", "trial_data.csv",
+#' package = "packDAMipd"))
 #' @export
 load_trial_data <- function(file = NULL){
   # Load trial data from file input or stored in package
-  if(!is.null(file)) {
+  if (!is.null(file)) {
     df_trial_data <- utils::read.csv(file = file)
   }else{
     df_trial_data <- trial_data
@@ -230,14 +231,14 @@ get_eq5d_details <- function(trialdata) {
                                       "paindepression", "anxiety"),
                              set4 = c("qol"), set5 = c("eq5d"),
                              set6 = c("MO", "SC", "UA", "PD", "AD")))
-  i=1
-  while(i <= length(words_set)){
+  i = 1
+  while (i <= length(words_set)) {
     this <- unlist(words_set[i])
-    result <-unlist(lapply(this, IPDFileCheck::check_colno_pattern_colname,names))
-    if(any(result == FALSE)){
-      i=i+1
+    result <- unlist(lapply(this, IPDFileCheck::check_colno_pattern_colname,names))
+    if (any(result == FALSE)) {
+      i = i + 1
     }else{
-      colnumbers=unlist(lapply(this, IPDFileCheck::get_colno_pattern_colname,names))
+      colnumbers = unlist(lapply(this, IPDFileCheck::get_colno_pattern_colname,names))
       i = length(words_set) + 1
     }
   }
@@ -297,7 +298,7 @@ get_colnames_codedvalues <- function(variable, name, code, nrcode=NA) {
 #' @export
 check_treatment_arm = function(arm) {
   allcaps = toupper(arm)
-  if(allcaps == "CONTROL" || allcaps == "INTERVENTION")
+  if (allcaps == "CONTROL" || allcaps == "INTERVENTION")
     return(0)
   else
     stop("Error specifying the treatment arm")

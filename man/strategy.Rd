@@ -4,7 +4,7 @@
 \alias{strategy}
 \title{Definition of strategy -or arm}
 \usage{
-strategy(trans_mat, states, name)
+strategy(trans_mat, states, name, trans_cost = NULL, trans_util = NULL)
 }
 \arguments{
 \item{trans_mat}{tranisiton matrix}
@@ -12,6 +12,10 @@ strategy(trans_mat, states, name)
 \item{states}{heatlh states}
 
 \item{name}{name of the strategy}
+
+\item{trans_cost}{values of costs if these are attached to transitions}
+
+\item{trans_util}{values of utility if these are attached to transitions}
 }
 \value{
 object strategy

@@ -26,6 +26,6 @@ Function to convert ADL scores to a T score based on
 file:///C:/Users/smk543/Downloads/PROMIS%20Pain%20Interference%20Scoring%20Manual.pdf
 }
 \examples{
-datafile = system.file("extdata", "trial_data.csv", package = "DecisionAnalysisModel")
+datafile = system.file("extdata", "trial_data.csv", package = "packDAMipd")
 trial_data = load_trial_data(datafile)
 }

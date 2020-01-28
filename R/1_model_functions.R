@@ -374,7 +374,7 @@ check_trans_prob <- function(trans_mat) {
 #' @examples
 #' tmat_cost <- rbind(c(NA, 1), c(NA, NA))
 #' colnames(tmat_cost) <- rownames(tmat_cost) <- c("Healthy", "Dead")
-#' transition_cost_util(2, tmat_cost, list_costs = c(500))
+#' transition_cost_util(2, tmat_cost, list_values = c(500))
 #' @export
 transition_cost_util <- function(no_states, tmat_cost_util, list_values, name_states = NULL) {
   if (is.null(name_states)) {
@@ -479,7 +479,8 @@ init_trace <- function(health_states, cycles) {
 #' @param this_strat  strategy object
 #' @param cycles no of cycles
 #' @param initial_state value of states initially
-#' @param overhead_costs any overhead costs for being in each state
+#' @param initial_state_costs any  costs for being in each state initially
+#' @param initial_state_utilities any  utilities for being in each state initially
 #' @param discount rate of discount for costs and qalys
 #' @param parameter_values parameter values for assigning health states and probabilities
 #' @return Markov trace
@@ -491,9 +492,9 @@ init_trace <- function(health_states, cycles) {
 #' b <- health_state("Dead", 1, 0, 0, TRUE)
 #' health_states <- combine_state(a, b)
 #' this.strategy <- strategy(tm, health_states, "intervention")
-#' markov_model(this.strategy, 10, c(1, 0),c(0,0))
+#' markov_model(this.strategy, 10, c(1, 0),c(0,0),c(0,0))
 #' @export
-markov_model <- function(this_strat, cycles, initial_state, overhead_costs, discount =c(0,0), parameter_values=NULL) {
+markov_model <- function(this_strat, cycles, initial_state, initial_state_costs, initial_state_utilities, discount =c(0,0), parameter_values=NULL) {
   if (length(discount) != 2) {
     stop("Please provide the discount rates for both qalys and costs")
   }
@@ -506,8 +507,11 @@ markov_model <- function(this_strat, cycles, initial_state, overhead_costs, disc
   if (length(initial_state) != no_states) {
     stop("number of intital values should be equal to number of health states")
   }
-  if (length(overhead_costs) != no_states) {
-    stop("number of overhead costs should be equal to number of health states")
+  if (length(initial_state_costs) != no_states) {
+    stop("number of initial state costs should be equal to number of health states")
+  }
+  if (length(initial_state_utilities) != no_states) {
+    stop("number of initial state utilities should be equal to number of health states")
   }
   if (!check_names_states(health_states)) {
     stop("Error in specifying state attributes")
@@ -516,7 +520,11 @@ markov_model <- function(this_strat, cycles, initial_state, overhead_costs, disc
   cost_matrix <- init_trace(health_states, cycles)
   utility_matrix <- init_trace(health_states, cycles)
   trace_matrix[1, ] <- initial_state
-  cost_matrix[1, ] <- overhead_costs
+  if (!is.numeric(initial_state_costs) | !is.numeric(initial_state_utilities)) {
+    stop("initial values of costs and utilities to be numeric")
+  }
+  cost_matrix[1, ] <- initial_state_costs
+  utility_matrix[1, ] <- initial_state_utilities
   param_matrix <- matrix(0, nrow = cycles + 1, ncol = length(parameter_values) + 1)
   ending <- cycles + 1
   for (i in 2:ending) {
@@ -526,15 +534,28 @@ markov_model <- function(this_strat, cycles, initial_state, overhead_costs, disc
     health_states_assigned <- eval_assign_values_states(health_states, assigned_param )
     param_matrix[i,] <- unlist(assigned_param)
     trans_mat <- eval_assign_trans_prob(this_strat$transition_matrix, assigned_param)
-    trans_cost <- eval_assign_trans_prob(this_strat$transition_cost, assigned_param)
-    trans_util <- eval_assign_trans_prob(this_strat$transition_utility, assigned_param)
+    if (!is.null(this_strat$transition_cost))
+      trans_cost <- eval_assign_trans_prob(this_strat$transition_cost, assigned_param)
+    else
+      trans_cost = NULL
+    if (!is.null(this_strat$transition_cost))
+      trans_util <- eval_assign_trans_prob(this_strat$transition_utility, assigned_param)
+    else
+      trans_util = NULL
     if (check_trans_prob(trans_mat) != 0) {
       stop("Row sum of transition probability matrix is not 1")
     }
     for (j in 1:no_states) {
       transitions_made_state <- trace_matrix[i - 1,] * trans_mat$trans_matrix[,j]
-      cost_occured_due_transitions <- transitions_made_state %*% trans_cost$trans_matrix[,j]
-      utility_occured_due_transitions <- transitions_made_state %*% trans_util$trans_matrix[,j]
+      if (is.null(trans_cost))
+        cost_occured_due_transitions = 0
+      else
+        cost_occured_due_transitions <- transitions_made_state %*% trans_cost$trans_matrix[,j]
+      if (is.null(trans_util))
+        utility_occured_due_transitions = 0
+      else
+        utility_occured_due_transitions <- transitions_made_state %*% trans_util$trans_matrix[,j]
+
       trace_matrix[i, j] <- trace_matrix[i, j] + trace_matrix[i - 1,] %*% trans_mat$trans_matrix[,j]
       cost_matrix[i, j] <- trace_matrix[i, j] * (as.numeric(unlist(health_states_assigned[[j]]$cost))) + cost_occured_due_transitions
       utility_matrix[i, j] <- trace_matrix[i, j] * (as.numeric(unlist(health_states_assigned[[j]]$utility))) + utility_occured_due_transitions
@@ -574,7 +595,8 @@ markov_model <- function(this_strat, cycles, initial_state, overhead_costs, disc
     health_states = health_states,
     cycles = cycles,
     initial_state = initial_state,
-    overhead_costs = overhead_costs,
+    initial_state_costs = initial_state_costs,
+    initial_state_utilities = initial_state_utilities,
     discount = discount,
     trace_matrix = trace_matrix,
     cost_matrix = cost_matrix,
@@ -598,7 +620,7 @@ markov_model <- function(this_strat, cycles, initial_state, overhead_costs, disc
 #' tm <- transition_matrix(3, tmat, c(0.6,0.2,0.2,0.6,0.4,1))
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "example")
-#' this_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0))
+#' this_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 #' well <-  health_state("well", cost=0,utility=1)
 #' disabled <- health_state("disabled", cost=10,utility=0.5)
 #' dead <- health_state("dead", cost=0,utility=0)
@@ -607,7 +629,7 @@ markov_model <- function(this_strat, cycles, initial_state, overhead_costs, disc
 #' tm <- transition_matrix(3, tmat, c(0.4,0.4,0.2,0.6,0.4,1))
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "example")
-#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0))
+#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 #' list_markov <- combine_markov(this_markov, sec_markov)
 #' @export
 #' @importFrom methods cbind2
@@ -636,7 +658,7 @@ combine_markov <- function(markov1, ...) {
 #' b <- health_state("Dead", 1, 0, 0, TRUE)
 #' health_states <- combine_state(a, b)
 #' this.strategy <- strategy(tm, health_states, "intervention")
-#' this_markov <- markov_model(this.strategy, 10, c(1, 0),c(0,0))
+#' this_markov <- markov_model(this.strategy, 10, c(1, 0),c(0,0),c(0,0))
 #' p<-plot_model(this_markov)
 #' @export
 plot_model <- function(markov){

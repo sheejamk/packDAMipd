@@ -4,8 +4,8 @@
 \alias{markov_model}
 \title{Definition of Markov model and trace}
 \usage{
-markov_model(this_strat, cycles, initial_state, overhead_costs,
-  discount = c(0, 0), parameter_values = NULL)
+markov_model(this_strat, cycles, initial_state, initial_state_costs,
+  initial_state_utilities, discount = c(0, 0), parameter_values = NULL)
 }
 \arguments{
 \item{this_strat}{strategy object}
@@ -14,7 +14,9 @@ markov_model(this_strat, cycles, initial_state, overhead_costs,
 
 \item{initial_state}{value of states initially}
 
-\item{overhead_costs}{any overhead costs for being in each state}
+\item{initial_state_costs}{any  costs for being in each state initially}
+
+\item{initial_state_utilities}{any  utilities for being in each state initially}
 
 \item{discount}{rate of discount for costs and qalys}
 
@@ -34,5 +36,5 @@ a <- health_state("Healthy", 1, 1, 0, FALSE)
 b <- health_state("Dead", 1, 0, 0, TRUE)
 health_states <- combine_state(a, b)
 this.strategy <- strategy(tm, health_states, "intervention")
-markov_model(this.strategy, 10, c(1, 0),c(0,0))
+markov_model(this.strategy, 10, c(1, 0),c(0,0),c(0,0))
 }
