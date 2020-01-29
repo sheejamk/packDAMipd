@@ -177,10 +177,10 @@ plot_ceac <- function(list_markov,threshold_values, comparator, currency ="GBP")
   colnames(nmb_all) <- c("NMB", "Threshold")
   for (i in seq_len(length(threshold_values))) {
     result <- calculate_icer_nmb(list_markov,threshold_values[i],comparator)
-    result <- c(result[2,"NMB"],threshold_values[i])
-    nmb_all <- rbind(nmb_all,result)
+    result_nmb <- c(as.numeric(result[2,"NMB"]),threshold_values[i])
+    nmb_all <- rbind(nmb_all,result_nmb)
   }
-  nmb_all <- nmb_all[-1,]
+  nmb_all <- (nmb_all[-1,])
   rownames(nmb_all) <- NULL
   nmb_all <- data.frame(nmb_all)
   p <- ggplot2::ggplot(data = nmb_all, ggplot2::aes(x = nmb_all$Threshold, y = nmb_all$NMB, group = 1)) +
