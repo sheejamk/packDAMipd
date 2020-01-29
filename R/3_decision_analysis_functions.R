@@ -66,20 +66,34 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
   }
   list_icer <- list()
   list_nmb <- list()
+  list_del_E = list()
+  list_del_C = list()
   for (i in seq_len(no_comparison)) {
     if (i != comparator_index) {
       del_E <- (av_cum_utility_pp[[i]] - av_cum_utility_pp[[comparator_index]])
       del_c <- (av_cum_cost_pp[[i]] - av_cum_cost_pp[[comparator_index]])
       icer <- del_c / del_E
       nmb <- del_E  - del_c/threshold
-      list_icer <- append(list_icer, icer)
-      list_nmb <- append(list_nmb, nmb)
+    }else{
+      del_E <- NA
+      del_c <- NA
+      icer <- NA
+      nmb <- NA
+
     }
+    list_icer <- append(list_icer, icer)
+    list_nmb <- append(list_nmb, nmb)
+    list_del_E <- append(list_del_E, del_E)
+    list_del_C <- append(list_del_C, del_c)
+
   }
-  icer_nmb <- matrix(c(unlist(list_icer), unlist(list_nmb)), ncol = 2 , byrow = TRUE)
-  colnames(icer_nmb) <- c("ICER", "NMB")
-  rownames(icer_nmb) <- c(list_names_strategy[-comparator_index])
-  return(icer_nmb)
+  results_cea <- matrix(c(unlist(list_names_strategy),unlist(av_cum_cost_pp),unlist(av_cum_utility_pp), unlist(list_del_C), unlist(list_del_E),
+                         unlist(list_icer), unlist(list_nmb)), ncol = 7 , byrow = FALSE)
+
+  colnames(results_cea) <- c("Strategy", "Cost", "Effect", "Inc_Cost", "Inc_Effect","ICER", "NMB")
+  rownames(results_cea) <- NULL
+
+  return(results_cea)
 }
 #######################################################################
 
@@ -156,26 +170,22 @@ check_list_markov_models <- function(list_markov){
 #' this.strategy <- strategy(tm, health_states, "intervention")
 #' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 #' list_markov <- combine_markov(this_markov, sec_markov)
-#' plot_ceac(list_markov,c(1000,2000,5000,7000,10000,150000,20000), comparator = "control")
+#' plot_ceac(list_markov,c(1000,2000,5000,7000,10000,15000,20000), comparator = "control")
 #' @export
-plot_ceac <-function(list_markov,threshold_values, comparator, currency ="GBP"){
-  icer_nmb=matrix(0, ncol=2)
-  colnames(icer_nmb) <- c("NMB", "Threshold")
-  for(i in seq_len(length(threshold_values))){
+plot_ceac <- function(list_markov,threshold_values, comparator, currency ="GBP"){
+  nmb_all = matrix(0, ncol = 2)
+  colnames(nmb_all) <- c("NMB", "Threshold")
+  for (i in seq_len(length(threshold_values))) {
     result <- calculate_icer_nmb(list_markov,threshold_values[i],comparator)
-    result<- c(result[2],threshold_values[i])
-    mat_result<- matrix(result, ncol=2)
-    icer_nmb <- rbind(icer_nmb,result)
+    result <- c(result[2,"NMB"],threshold_values[i])
+    nmb_all <- rbind(nmb_all,result)
   }
-  icer_nmb <- icer_nmb[-1,]
-  rownames(icer_nmb) <-NULL
-  icer_nmb<-data.frame(icer_nmb)
-  icer_nmb_melted <- reshape2::melt(icer_nmb, id.var="Threshold")
-  p<-ggplot2::ggplot(icer_nmb_melted, ggplot2::aes(x=icer_nmb_melted$Threshold, y=icer_nmb_melted$value, col=icer_nmb_melted$variable)) +
-    ggplot2::geom_line()+
-    ggplot2::labs(title="Cost-effectiveness acceptability curve",
-          x =paste("Threshold values",currency, sep=" "), y = "NMB")+
-    ggplot2::theme(legend.title = ggplot2::element_blank())+
-    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+  nmb_all <- nmb_all[-1,]
+  rownames(nmb_all) <- NULL
+  nmb_all <- data.frame(nmb_all)
+  p <- ggplot2::ggplot(data = nmb_all, ggplot2::aes(x = nmb_all$Threshold, y = nmb_all$NMB, group = 1)) +
+    ggplot2::geom_line(color = "red") +  ggplot2::geom_point() +
+    ggplot2::labs(title = "Cost-effectiveness acceptability curve",
+                  x = paste("Threshold values (",currency, ")", sep = " "), y = "NMB")
   return(p)
 }

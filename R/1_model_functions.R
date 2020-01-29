@@ -528,8 +528,8 @@ markov_model <- function(this_strat, cycles, initial_state, initial_state_costs,
   param_matrix <- matrix(0, nrow = cycles + 1, ncol = length(parameter_values) + 1)
   ending <- cycles + 1
   for (i in 2:ending) {
-    markov_cycle = i
-    extended_parameter_values <- c(markov_cycle = markov_cycle ,parameter_values)
+    markov_cycle = i - 1
+    extended_parameter_values <- c(markov_cycle = markov_cycle, parameter_values)
     assigned_param <- assign_parameters(extended_parameter_values)
     health_states_assigned <- eval_assign_values_states(health_states, assigned_param )
     param_matrix[i,] <- unlist(assigned_param)
@@ -569,7 +569,7 @@ markov_model <- function(this_strat, cycles, initial_state, initial_state_costs,
   cost_matrix <- cbind(cost_matrix,nozeros,nozeros)
   utility_matrix <- cbind(utility_matrix,nozeros,nozeros)
   trace_matrix <- cbind(trace_matrix,nozeros)
-  for (i in 1:cycles + 1) {
+  for (i in 1:ending) {
     cost_matrix[i, no_states + 1] <- sum(cost_matrix[i,])/((1 + discount[1]) ^ (i - 1))
     utility_matrix[i, no_states + 1] <- sum(utility_matrix[i,]) * (1/(1 + discount[2])^(i - 1))
   }
@@ -665,8 +665,7 @@ plot_model <- function(markov){
   if (class(markov) != "markov_model")
     stop("The object has to be of class markov_model")
    this_trace <- data.frame(markov$trace_matrix)
-   columnnames <- colnames(this_trace)
-   this_trace_melted <- reshape2::melt(this_trace, id.var = "Cycles")
+    this_trace_melted <- reshape2::melt(this_trace, id.var = "Cycles")
    p <- ggplot2::ggplot(this_trace_melted, ggplot2::aes( x = this_trace_melted$Cycles, y = this_trace_melted$value, col = this_trace_melted$variable)) +
      ggplot2::geom_line() + ggplot2::labs(x = "Cycles") + ggplot2::labs(y = "States") +
      ggplot2::theme(legend.title = ggplot2::element_blank())

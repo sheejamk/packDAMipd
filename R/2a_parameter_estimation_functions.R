@@ -559,23 +559,56 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var,cov
 }
 
 #######################################################################
-#' Get the parameter values using the provided statistical regression methods
-#' @param param_to_be_estimated  parameter of interest
-#' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
-#' @param indep_var the independent variable (column name in data file)
-#' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
-#' @param info_distribution distribution name  eg. for logistic regression -binomial
-#' @param covariates list of covariates - calculations to be done before passing
-#' @param strategycol column name containing arm details, default is NA
-#' @param strategyname name of the  arm, default is NA
-#' @param timevar_survival time variable for survival analysis, default is NA
-#' @return the results of the regression analysis
+#' Get the parameter values from reading a file
+#' @param paramfile  parameter file to get the moratlity eg.national life table data
+#' @param age age to get the age specific data
+#' @param gender gender details to get the gender specific mortality data
+#' @return the paramvalue
 #' @examples
-#' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-#' results_logit <- get_parameter_estimated_regression("admit", mydata,
-#' "logistic regression", "gre", NA,"binomial", c("gpa", "factor(rank)"))
-#' @export
+#' paramfile=system.file("extdata","LifeTable_USA_Mx_2015.csv",
+#' package = "packDAMipd")
+#' a <- get_mortality_from_file(paramfile, age = 10, gender = NULL)
+#'@export
+get_mortality_from_file <- function(paramfile, age, gender = NULL){
+  if (is.null(paramfile))
+    stop("Need to provide a parameter file to lookup")
+  if (IPDFileCheck::test_file_exist_read(paramfile) != 0)
+    stop("File doesnt exists or not able to access")
+  dataset <- data.frame(read.csv(paramfile,header = TRUE,sep = ",", stringsAsFactors = FALSE))
+  result <- IPDFileCheck::check_column_exists("age",dataset)
+  if (result != 0)
+    stop("Expecting the life tables to contain an age column")
+  age_columnno = IPDFileCheck::get_columnno_fornames(dataset, "age")
+  this.row = which(dataset[age_columnno] == age)
+  if (is.null(gender)) {
+    total_columnno = IPDFileCheck::get_colno_pattern_colname("total", colnames(dataset))
+    mortality <- dataset[[total_columnno]][this.row]
+  }else{
+    sex_columnno = IPDFileCheck::get_columnno_fornames(dataset, gender)
+    mortality <- dataset[[sex_columnno]][this.row]
+  }
+  return(mortality)
+}
+######################################################################
+
+#######################################################################
+##' Get the parameter values using the provided statistical regression methods
+##' @param param_to_be_estimated  parameter of interest
+##' @param dataset data set to be provided
+##' @param method methd of estimation (for example, linear, logistic regression etc)
+##' @param indep_var the independent variable (column name in data file)
+##' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
+##' @param info_distribution distribution name  eg. for logistic regression -binomial
+##' @param covariates list of covariates - calculations to be done before passing
+##' @param strategycol column name containing arm details, default is NA
+##' @param strategyname name of the  arm, default is NA
+##' @param timevar_survival time variable for survival analysis, default is NA
+##' @return the results of the regression analysis
+##' @examples
+##' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+##' results_logit <- get_parameter_estimated_regression("admit", mydata,
+##' "logistic regression", "gre", NA,"binomial", c("gpa", "factor(rank)"))
+##' @export
 # get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, method,
 #                                             indep_var, info_get_method, info_distribution,
 #                                             covariates = NA, strategycol = NA,

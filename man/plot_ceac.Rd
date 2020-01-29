@@ -41,5 +41,5 @@ health_states <- combine_state(well,disabled,dead)
 this.strategy <- strategy(tm, health_states, "intervention")
 sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
 list_markov <- combine_markov(this_markov, sec_markov)
-plot_ceac(list_markov,c(1000,2000,5000,7000,10000,150000,20000), comparator = "control")
+plot_ceac(list_markov,c(1000,2000,5000,7000,10000,15000,20000), comparator = "control")
 }
