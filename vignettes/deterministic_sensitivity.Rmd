@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(DecisionAnalysisModel)
+library(packDAMipd)
 ```
 
  Define health states for monotherapy - now the costs are just defined, but not defined any value.
@@ -91,7 +91,7 @@ cost_drug = "cost_zido")
 
  We run the model with strategy mono_strategy for 20 cycles with initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and qualys are discounted follwoing the values given in discount. Parameter values will have any parameter defined as health state values or tranisiton probabilties, but not their values were assgined
 ```{r}
-mono_markov <-markov_model(mono_strategy, 20,c(1,0,0,0),c(0,0,0,0),discount=c(0.06,0),mono_params)
+mono_markov <-markov_model(mono_strategy, 20,c(1,0,0,0),c(0,0,0,0),c(0,0,0,0),discount=c(0.06,0),mono_params)
 ```
  Now for combination therapy, the transition probabilites and cost are dependent on the years or the cylce number. Thus we need to define functions that given the correct output to calculate the probabilites and costs as a function of cycle
 ```{r}
@@ -191,7 +191,7 @@ comb_strategy <- strategy(tm, health_states, "comb")
 
 We run the model with strategy mono_strategy for 20 cycles with initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and qualys are discounted follwoing the values given in discount. Parameter values will have any parameter defined as health state values or tranisiton probabilties, but not their values were assgined
 ```{r}
-comb_markov <-markov_model(comb_strategy, 20, c(1, 0,0,0),c(0,0,0,0),discount=c(0.06,0.0),comb_params)
+comb_markov <-markov_model(comb_strategy, 20, c(1, 0,0,0),c(0,0,0,0),c(0,0,0,0),discount=c(0.06,0.0),comb_params)
 ```
 
 Now we will define the parameters for the sensitivity analysis. The parameters are already defined as mono_params and comb_params. Their lower value and upper value are defined using definer_parameters() and create parameter table using define_parameters_sens_anal(). Then deteministic sensitvity analysis is done for the markov model of the choice here the mono_markov using the function do_sensitivity_analysis. Using the result obtained, a full report or plot (for specfic variable) can be generated using report_sensitivity_analysis() and plot_dsa() respectively. To get a report or plot of senstivity analysis on  ICER on NMB, two markov models need to be passed on.
@@ -208,7 +208,7 @@ plot_dsa(result_dsa_control,"cost_direct_med_B",type="range")
 plot_dsa(result_dsa_control,"utility",type="range")
 
 ```
-If we generate the parameter table and deterministic sensitivityanalysis for markov model for combination treatment, we can use to generate the report and plot for both ICER and NMB. If we need
+If we generate the parameter table and deterministic sensitivityanalysis for markov model for combination treatment, we can use to generate the report and plot for both ICER and NMB.
 
 ```{r}
 min_values<-define_parameters(cost_direct_med_B = 177.4,cost_comm_care_C = 205.9)
