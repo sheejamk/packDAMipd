@@ -7,7 +7,7 @@ Authors@R:
              family = "Manchira Krishnan",
              role = c("aut", "cre"),
              email = "sheeja.manchirakrishnan@york.ac.uk",
-             comment = c(ORCID = "0000-0001-5076-1172"))
+             comment = c(ORCID = "0000-0001-8574-695X"))
       )
 Maintainer: Sheeja Manchira Krishnan<sheeja.manchirakrishnan@york.ac.uk>
 Description: A collection of functions to construct Markov model for model-based cost-effectiveness analysis.

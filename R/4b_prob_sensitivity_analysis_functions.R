@@ -163,7 +163,11 @@ list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_par
       list_markov  <-  combine_markov(result_psa_params_control[[this_var_result_name]],
                                       result_psa_params_treat[[this_var_result_name]])
       res_icer_nmb  <-  calculate_icer_nmb(list_markov,threshold,comparator)
-      results_icer_nmb  <-  rbind(results_icer_nmb,res_icer_nmb)
+      res_icer_nmb_df <- data.frame(res_icer_nmb)
+      comparator_row = which(res_icer_nmb_df$Strategy == comparator)
+
+      results_icer_nmb  <-  rbind(results_icer_nmb,res_icer_nmb_df[-comparator_row,])
+      colnames(results_icer_nmb) <- colnames(res_icer_nmb_df)
      }else{
        this_var_result <- result_psa_params_control[[this_var_result_name]]
        cost_matr <- this_var_result[["cost_matrix"]]
@@ -181,7 +185,7 @@ list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_par
      }
   }
   if (!is.null(result_psa_params_treat)) {
-    names(results_icer_nmb) <- c("ICER","NMB")
+    names(results_icer_nmb) <- colnames(res_icer_nmb)
     results_all <- as.data.frame(list(results_icer_nmb))
     results_all[["rep"]] <- seq(1:len)
   }
@@ -234,25 +238,29 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
   if (!is.null(result_psa_params_treat)) {
     list_all <- list_paramwise_psa_result(result_psa_params_control, result_psa_params_treat,
                                           threshold,comparator)
-    mean_icer <- mean(list_all[,1])
-    mean_nmb <- mean(list_all[,2])
-    sd_icer <- stats::sd(list_all[,1])
-    sd_nmb <- stats::sd(list_all[,2])
-    plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$ICER,
-                                                           y = list_all$NMB)) +
+
+    list_all_df <- data.frame(list_all, stringsAsFactors = FALSE)
+    this_icer <- as.numeric(as.character(list_all_df$ICER))
+    this_nmb <- as.numeric(as.character(list_all_df$NMB))
+    mean_icer <- mean(this_icer)
+    mean_nmb <- mean(this_nmb)
+    sd_icer <- stats::sd(this_icer)
+    sd_nmb <- stats::sd(this_nmb)
+    plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = this_icer,
+                                                           y = this_nmb)) +
       ggplot2::geom_point(color = "blue", size =  3) +
       ggplot2::labs(x = "ICER") + ggplot2::labs(y = "NMB") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-    plot2 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$ICER)) +
+    plot2 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = this_icer)) +
       ggplot2::geom_histogram(bins = 20,color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of ICER", x = "ICER", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$ICER)),
+      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(this_icer)),
                           color = "blue", linetype = "dashed", size = 1) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-    plot3 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$NMB)) +
+    plot3 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = this_nmb)) +
       ggplot2::geom_histogram(bins = 20,color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of NMB",x = "NMB", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$NMB)),
+      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(this_nmb)),
                           color = "red", linetype = "dashed", size = 1) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
     result  <-  structure(list(

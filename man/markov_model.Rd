@@ -4,11 +4,11 @@
 \alias{markov_model}
 \title{Definition of Markov model and trace}
 \usage{
-markov_model(this_strat, cycles, initial_state, initial_state_costs,
+markov_model(current_strategy, cycles, initial_state, initial_state_costs,
   initial_state_utilities, discount = c(0, 0), parameter_values = NULL)
 }
 \arguments{
-\item{this_strat}{strategy object}
+\item{current_strategy}{strategy object}
 
 \item{cycles}{no of cycles}
 

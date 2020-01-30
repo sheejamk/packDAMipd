@@ -24,7 +24,9 @@ D: Death.
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = ">"
+  comment = ">",
+ fig.width = 6, 
+ fig.height = 4
 )
 ```
 
@@ -204,14 +206,16 @@ sample_list <- define_parameters(rr = "lognormal(mean = 0.509, sd = 0.173)",
 
 param_table_mono <- define_parameters_psa(mono_param_list, sample_list)
 param_table_combo <- define_parameters_psa(comb_param_list,sample_list)
-result_psa_mono = do_psa(mono_markov,param_table_mono,4)
-result_psa_comb = do_psa(comb_markov,param_table_combo,4)
+result_psa_mono = do_psa(mono_markov,param_table_mono,500)
+result_psa_comb = do_psa(comb_markov,param_table_combo,500)
 
 list_result_psa_mono <- list_paramwise_psa_result(result_psa_mono,NULL,NULL,NULL)
 list_result_psa_comb <- list_paramwise_psa_result(result_psa_comb,NULL,NULL,NULL)
 list_all <- list_paramwise_psa_result(result_psa_mono,result_psa_comb,20000,"mono")
 
+summary_plot_psa(result_psa_mono,NULL,NULL,NULL)
+summary_plot_psa(result_psa_comb,NULL,NULL,NULL)
+summary_plot_psa(result_psa_mono,result_psa_comb,20000,"mono")
 ```
 
-```
 
