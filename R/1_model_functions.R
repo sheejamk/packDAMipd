@@ -476,7 +476,7 @@ init_trace <- function(health_states, cycles) {
 # 4b.Markov model and trace
 
 #' Definition of Markov model and trace
-#' @param this_strat  strategy object
+#' @param current_strategy  strategy object
 #' @param cycles no of cycles
 #' @param initial_state value of states initially
 #' @param initial_state_costs any  costs for being in each state initially
@@ -494,16 +494,16 @@ init_trace <- function(health_states, cycles) {
 #' this.strategy <- strategy(tm, health_states, "intervention")
 #' markov_model(this.strategy, 10, c(1, 0),c(0,0),c(0,0))
 #' @export
-markov_model <- function(this_strat, cycles, initial_state, initial_state_costs, initial_state_utilities, discount =c(0,0), parameter_values=NULL) {
+markov_model <- function(current_strategy, cycles, initial_state, initial_state_costs, initial_state_utilities, discount =c(0,0), parameter_values=NULL) {
   if (length(discount) != 2) {
     stop("Please provide the discount rates for both qalys and costs")
   }
-  if (class(this_strat) != "strategy") {
+  if (class(current_strategy) != "strategy") {
     stop("class is not a strategy")
   }
-  health_states <- this_strat$states
+  health_states <- current_strategy$states
   no_states <- length(health_states)
-  trans_mat <- this_strat$transition_matrix
+  trans_mat <- current_strategy$transition_matrix
   if (length(initial_state) != no_states) {
     stop("number of intital values should be equal to number of health states")
   }
@@ -533,13 +533,13 @@ markov_model <- function(this_strat, cycles, initial_state, initial_state_costs,
     assigned_param <- assign_parameters(extended_parameter_values)
     health_states_assigned <- eval_assign_values_states(health_states, assigned_param )
     param_matrix[i,] <- unlist(assigned_param)
-    trans_mat <- eval_assign_trans_prob(this_strat$transition_matrix, assigned_param)
-    if (!is.null(this_strat$transition_cost))
-      trans_cost <- eval_assign_trans_prob(this_strat$transition_cost, assigned_param)
+    trans_mat <- eval_assign_trans_prob(current_strategy$transition_matrix, assigned_param)
+    if (!is.null(current_strategy$transition_cost))
+      trans_cost <- eval_assign_trans_prob(current_strategy$transition_cost, assigned_param)
     else
       trans_cost = NULL
-    if (!is.null(this_strat$transition_cost))
-      trans_util <- eval_assign_trans_prob(this_strat$transition_utility, assigned_param)
+    if (!is.null(current_strategy$transition_cost))
+      trans_util <- eval_assign_trans_prob(current_strategy$transition_utility, assigned_param)
     else
       trans_util = NULL
     if (check_trans_prob(trans_mat) != 0) {
@@ -589,7 +589,7 @@ markov_model <- function(this_strat, cycles, initial_state, initial_state_costs,
   colnames(utility_matrix) <- names_utility_matrix
   colnames(param_matrix) <- c("cycle",names(parameter_values))
   value <- list(
-    strategy = this_strat,
+    strategy = current_strategy,
     transition_matrix = trans_mat,
     param_matrix = param_matrix,
     health_states = health_states,

@@ -57,7 +57,6 @@ tm <- transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
 ```
  Combine the health states and define the strategy. The current strategy ie. control or intervention - here it is monotherapy
 
-
 ```{r}
 health_states <- combine_state(A,B,C,D)
 mono_strategy <- strategy(tm, health_states, "mono")
