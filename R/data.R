@@ -44,7 +44,7 @@
 #' @source  created on Jan 15, 2020
 "trial_data"
 
-#' adl_soring table
+#' adl_scoring table
 #' @format A 41 by 3 dataframe
 #' @source  created on Jan 15, 2020
 "adl_scoring"

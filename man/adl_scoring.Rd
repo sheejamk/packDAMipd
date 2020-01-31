@@ -3,7 +3,7 @@
 \docType{data}
 \name{adl_scoring}
 \alias{adl_scoring}
-\title{adl_soring table}
+\title{adl_scoring table}
 \format{A 41 by 3 dataframe}
 \source{
 created on Jan 15, 2020
@@ -12,6 +12,6 @@ created on Jan 15, 2020
 adl_scoring
 }
 \description{
-adl_soring table
+adl_scoring table
 }
 \keyword{datasets}

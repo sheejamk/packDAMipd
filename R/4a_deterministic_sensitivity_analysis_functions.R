@@ -1,6 +1,6 @@
 #######################################################################
 #' Define parameter lists for deterministic sensitivity analysis
-#' @param param_list  list of parameters that used to define markov model
+#' @param param_list  list of parameters that used to define Markov model
 #' @param low_values list of lower values of those parameters for whom the sensitivity is to be estimated
 #' @param upp_values list of upper values of those parameters for whom the sensitivity is to be estimated
 #' @return table for sensitivity analysis
@@ -48,7 +48,7 @@ define_parameters_sens_anal <- function(param_list, low_values, upp_values){
 }
 #######################################################################
 #' Function to do deterministic sensitivity analysis
-#' @param this_markov  markov model object
+#' @param this_markov  Markov model object
 #' @param param_table table object from define_parameters_sens_anal()
 #' with parameters (base case value, lower and upper)
 #' @return result after sensitivity analysis
@@ -116,9 +116,9 @@ do_sensitivity_analysis <- function(this_markov,param_table){
 }
 
 #' Function to report deterministic sensitivity analysis
-#' @param result_dsa_control  result from determnistic sensitivity analysis for first or control model
-#' @param result_dsa_treat result from determnistic sensitivity analysis
-#' for the compartive markov mdoel
+#' @param result_dsa_control  result from deterministic sensitivity analysis for first or control model
+#' @param result_dsa_treat result from deterministic sensitivity analysis
+#' for the comparative Markov model
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
 #' @return report in the form of a table
@@ -234,12 +234,12 @@ report_sensitivity_analysis <- function(result_dsa_control,result_dsa_treat = NU
   }
 }
 #######################################################################
-#' Function to plot resulits of sensitivity analysis do_sensitivity_analysis()
-#' @param result_dsa_control  result from determnistic sensitivity analysis for first or control model
+#' Function to plot results of sensitivity analysis do_sensitivity_analysis()
+#' @param result_dsa_control  result from deterministic sensitivity analysis for first or control model
 #' @param plotfor the variable to plotfor e.g. cost, utility NMB etc
 #' @param type type of analysis, range or difference
-#' @param result_dsa_treat result from determnistic sensitivity analysis
-#' for the compartive markov mdoel
+#' @param result_dsa_treat result from deterministic sensitivity analysis
+#' for the comparative Markov model
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
 #' @param currency currency

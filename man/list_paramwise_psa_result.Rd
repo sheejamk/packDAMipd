@@ -12,7 +12,7 @@ list_paramwise_psa_result(result_psa_params_control,
 for first or control model}
 
 \item{result_psa_params_treat}{result from deterministic sensitivity analysis
-for the comparative markov mdoel}
+for the comparative Markov model}
 
 \item{threshold}{threshold value of WTP}
 

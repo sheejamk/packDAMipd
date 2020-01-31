@@ -8,7 +8,7 @@
 define_parameters_sens_anal(param_list, low_values, upp_values)
 }
 \arguments{
-\item{param_list}{list of parameters that used to define markov model}
+\item{param_list}{list of parameters that used to define Markov model}
 
 \item{low_values}{list of lower values of those parameters for whom the sensitivity is to be estimated}
 

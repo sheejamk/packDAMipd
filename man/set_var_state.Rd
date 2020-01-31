@@ -14,7 +14,7 @@ set_var_state(state, var, new_value)
 \item{new_value}{new value to be assigned}
 }
 \value{
-modified heatlh state
+modified health state
 }
 \description{
 Set the attribute for the health state

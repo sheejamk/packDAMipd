@@ -12,7 +12,7 @@ eval_assign_trans_prob(tm, parameter_values)
 \item{parameter_values}{name value pairs of parameter values in the probability matrix}
 }
 \value{
-the transition table with the probabilites
+the transition table with the probabilities
 }
 \description{
 Attribute parameters to probabilities of transition matrix

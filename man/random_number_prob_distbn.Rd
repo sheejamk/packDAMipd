@@ -7,7 +7,7 @@
 random_number_prob_distbn(prob_distbn, param = NULL)
 }
 \arguments{
-\item{prob_distbn}{a probabiltiy distribution and vector of parameters}
+\item{prob_distbn}{a probability distribution and vector of parameters}
 
 \item{param}{param values to define the probability distribution}
 }

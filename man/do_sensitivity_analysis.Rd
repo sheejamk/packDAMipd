@@ -8,7 +8,7 @@
 do_sensitivity_analysis(this_markov, param_table)
 }
 \arguments{
-\item{this_markov}{markov model object}
+\item{this_markov}{Markov model object}
 
 \item{param_table}{table object from define_parameters_sens_anal()
 with parameters (base case value, lower and upper)}

@@ -2,18 +2,18 @@
 % Please edit documentation in R/1_model_functions.R
 \name{plot_model}
 \alias{plot_model}
-\title{Plot a markov model}
+\title{Plot a Markov model}
 \usage{
 plot_model(markov)
 }
 \arguments{
-\item{markov}{markov_model object}
+\item{Markov}{markov_model object}
 }
 \value{
 plots
 }
 \description{
-Plot a markov model
+Plot a Markov model
 }
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))

@@ -47,7 +47,7 @@ health_state <- function(name, cost, utility, time=0, absorb = FALSE) {
 #' Get the attribute for the health state
 #' @param state  object of class health state
 #' @param var attribute of the health state
-#' @return modified heatlh state
+#' @return modified health state
 #' @examples
 #' get_var_state(health_state("IT", 100, 0.4, 0, FALSE), "cost")
 #' @export
@@ -66,7 +66,7 @@ get_var_state <- function(state, var) {
 #' @param state  object of class health state
 #' @param var attribute of the health state
 #' @param new_value new value to be assigned
-#' @return modified heatlh state
+#' @return modified health state
 #' @examples
 #' set_var_state(health_state("IT", 100, 0.4, 0, FALSE), "cost", 1)
 #' @export
@@ -137,7 +137,7 @@ check_names_states <- function(health_states) {
 #' Attribute values in health states
 #' @param health_states  list of health_state objects
 #' @param assigned_param name value pairs of parameter values in the probability matrix
-#' @return health states with assinged values
+#' @return health states with assigned values
 #' @examples
 #' well <-  health_state("well", cost="cost_A",utility=1)
 #' disabled <- health_state("disabled", cost=100,utility=1)
@@ -216,7 +216,7 @@ check_values_states <- function(health_states) {
 # 2a.  Define the table for transition
 #' Define the table for transition
 #' @param tmat transition matrix in the format as in package 'mstate'
-#' @return the transition table with the probabilites
+#' @return the transition table with the probabilities
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
@@ -273,7 +273,7 @@ transition_matrix <- function(no_states, tmat, list_prob,name_states = NULL) {
        tmat_list[index] <- list_prob[i]
     }
   }else{
-      stop("Length of probabilites not same as the number of required probabilities")
+      stop("Length of probabilities not same as the number of required probabilities")
   }
   index_na <- which(is.na(tmat_list))
   tmat_list[index_na] <- 0
@@ -289,7 +289,7 @@ transition_matrix <- function(no_states, tmat, list_prob,name_states = NULL) {
 #' Attribute parameters to probabilities of transition matrix
 #' @param tm A transition matrix in the format from the package 'mstate'
 #' @param parameter_values name value pairs of parameter values in the probability matrix
-#' @return the transition table with the probabilites
+#' @return the transition table with the probabilities
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
@@ -329,7 +329,7 @@ eval_assign_trans_prob <- function(tm, parameter_values) {
 
 #######################################################################
 # 2d. Check the transition matrix
-#' Check the transition probabilties row sum is 1
+#' Check the transition probabilities row sum is 1
 #' @param trans_mat  transition matrix
 #' @return rowsum if they add upto 1 else error
 #' @examples
@@ -362,8 +362,8 @@ check_trans_prob <- function(trans_mat) {
   }
 }
 #######################################################################
-# 2e.  Create the valus of cost and utility while transition
-#' Create the the valus of cost and utility while transition
+# 2e.  Create the values of cost and utility while transition
+#' Create the the values of cost and utility while transition
 #' @param no_states  number of the health states
 #' @param tmat_cost_util A transition matrix for the cost/utility values in the format from thepackage 'mstate'
 #'  use NA to indicate if the value is zero
@@ -405,8 +405,8 @@ transition_cost_util <- function(no_states, tmat_cost_util, list_values, name_st
 #######################################################################
 # 3. Define the treatment strategy
 #' Definition of strategy -or arm
-#' @param trans_mat  tranisiton matrix
-#' @param states heatlh states
+#' @param trans_mat  transition matrix
+#' @param states health states
 #' @param name name of the strategy
 #' @param trans_cost values of costs if these are attached to transitions
 #' @param trans_util values of utility if these are attached to transitions
@@ -448,7 +448,7 @@ strategy <- function(trans_mat, states, name, trans_cost = NULL, trans_util = NU
 # 4a. All zero trace matrix
 
 #' Define an all zero trace matrix
-#' @param health_states heatlh states
+#' @param health_states health states
 #' @param cycles no of cycles
 #' @return trace matrix -all zero
 #' @examples
@@ -605,8 +605,8 @@ markov_model <- function(current_strategy, cycles, initial_state, initial_state_
   value
 }
 #######################################################################
-# 4c Join markov model objects
-#' Join markov model objects
+# 4c Join Markov model objects
+#' Join Markov model objects
 #' @param markov1  object 1 of class markov_model
 #' @param ...  any additional objects
 #' @return joined objects of type markov_model
@@ -636,7 +636,7 @@ combine_markov <- function(markov1, ...) {
   if (class(markov1) == "markov_model") {
     all_markovs <- markov1
   } else {
-    stop("class is not a markov model")
+    stop("class is not a Markov model")
   }
   .dots <- list(...)
   for (i in seq_len(length(.dots))) {
@@ -646,8 +646,8 @@ combine_markov <- function(markov1, ...) {
   return(combined)
 }
 #######################################################################
-#' Plot a markov model
-#' @param markov  markov_model object
+#' Plot a Markov model
+#' @param Markov  markov_model object
 #' @return plots
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))

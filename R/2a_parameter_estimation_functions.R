@@ -106,7 +106,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' Get the parameter values using the provided statistical regression methods
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
-#' @param method methd of estimation (for example, linear, logistic regression etc)
+#' @param method method of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
 #' @param info_distribution distribution name  eg. for logistic regression -binomial
@@ -587,7 +587,7 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL){
 ##' Get the parameter values using the provided statistical regression methods
 ##' @param param_to_be_estimated  parameter of interest
 ##' @param dataset data set to be provided
-##' @param method methd of estimation (for example, linear, logistic regression etc)
+##' @param method method of estimation (for example, linear, logistic regression etc)
 ##' @param indep_var the independent variable (column name in data file)
 ##' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
 ##' @param info_distribution distribution name  eg. for logistic regression -binomial

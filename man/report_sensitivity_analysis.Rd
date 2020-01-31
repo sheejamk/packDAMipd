@@ -9,10 +9,10 @@ report_sensitivity_analysis(result_dsa_control, result_dsa_treat = NULL,
   threshold = NULL, comparator = NULL)
 }
 \arguments{
-\item{result_dsa_control}{result from determnistic sensitivity analysis for first or control model}
+\item{result_dsa_control}{result from deterministic sensitivity analysis for first or control model}
 
-\item{result_dsa_treat}{result from determnistic sensitivity analysis
-for the compartive markov mdoel}
+\item{result_dsa_treat}{result from deterministic sensitivity analysis
+for the comparative Markov model}
 
 \item{threshold}{threshold value of WTP}
 

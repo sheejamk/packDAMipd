@@ -2,7 +2,7 @@
 % Please edit documentation in R/additional_help_functions.R
 \name{checksum_rowprob}
 \alias{checksum_rowprob}
-\title{Function to check the sum of probabilites in a vector}
+\title{Function to check the sum of probabilities in a vector}
 \usage{
 checksum_rowprob(avector)
 }
@@ -13,7 +13,7 @@ checksum_rowprob(avector)
 sum of probabilities if success else error
 }
 \description{
-Function to check the sum of probabilites in a vector
+Function to check the sum of probabilities in a vector
 }
 \examples{
 checksum_rowprob(c(0.6,0.4))

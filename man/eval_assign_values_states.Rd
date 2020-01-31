@@ -12,7 +12,7 @@ eval_assign_values_states(health_states, assigned_param)
 \item{assigned_param}{name value pairs of parameter values in the probability matrix}
 }
 \value{
-health states with assinged values
+health states with assigned values
 }
 \description{
 Attribute values in health states

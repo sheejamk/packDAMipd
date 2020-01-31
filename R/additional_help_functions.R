@@ -17,7 +17,7 @@ add_probabilities <-  function(probs) {
   }
 }
 #######################################################################
-#' Function to check the sum of probabilites in a vector
+#' Function to check the sum of probabilities in a vector
 #' @param avector vector of probabilities
 #' @return sum of probabilities if success else error
 #' @examples checksum_rowprob(c(0.6,0.4))
@@ -31,7 +31,7 @@ checksum_rowprob <-  function(avector) {
 }
 #######################################################################
 #' Function to return random number given a distribution and parameters
-#' @param prob_distbn a probabiltiy distribution and vector of parameters
+#' @param prob_distbn a probability distribution and vector of parameters
 #' @param param  param values to define the probability distribution
 #' @return random number according to the specified distribution
 #' @examples random_number_prob_distbn("beta",c(0.6,0.2))
@@ -178,7 +178,7 @@ find_required_parameter_combs <- function(name_distri){
 #######################################################################
 #' Function to find the keyword for generating random numbers for given probability distribution
 #' @param text name of the probability distribution
-#' @return the keyword that shoudl be used in R for generating random numbers
+#' @return the keyword that should be used in R for generating random numbers
 #' @examples find_keyword_rand_generation("gamma")
 #' @export
 find_keyword_rand_generation <- function(text){
@@ -198,7 +198,7 @@ find_keyword_rand_generation <- function(text){
     keyword = "rnorm"
   if (text  ==  "WEIBULL")
     keyword = "rweibull"
-  if (text  ==  "EXPONENTIAL"|| text == "EXPO")
+  if (text  ==  "EXPONENTIAL" || text == "EXPO")
     keyword = "rexp"
   if (text  ==  "POISSON")
     keyword = "rpois"
@@ -207,14 +207,14 @@ find_keyword_rand_generation <- function(text){
   return(keyword)
 }
 #######################################################################
-#' Function to check if the parameters are sufficient to define a probabiltiy distribution and if not
+#' Function to check if the parameters are sufficient to define a probability distribution and if not
 #' see if we can estimate the parameters from the given parameters, e.g. for gamma distribution, shape and rate
 #' can be estimated from mean and sd
 #' @param params_found given parameters for generating ransom numbers
 #' @param required_params the required parameter by the R code (stats package)
 #' @param the_expr the expression that contain the definition
 #' @param distr_key the keyword used for generating random numbers in R stats package e.g. rgamma for gamma distribution
-#' @return the keyword that shoudl be used in R for generating random numbers
+#' @return the keyword that should be used in R for generating random numbers
 #' @examples check_estimating_required_params(c("mean,sd"),c("shape", "rate"), "gamma(mean =10 ,sd=1)", "gamma")
 #' @export
 check_estimating_required_params <- function(params_found,required_params,the_expr,distr_key){
@@ -253,7 +253,7 @@ check_estimating_required_params <- function(params_found,required_params,the_ex
 #' if not estimate the required parameters from given parameters, and substitute it for actual expression that can
 #' be used with R stats package
 #' @param the_expr given parameters for generating ransom numbers
-#' @return the keyword that shoudl be used in R for generating random numbers
+#' @return the keyword that should be used in R for generating random numbers
 #' @examples check_estimate_substitute_proper_params("gamma(mean = 10 ,sd=1)")
 #' @export
 check_estimate_substitute_proper_params <- function(the_expr){

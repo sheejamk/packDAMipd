@@ -7,7 +7,7 @@
 do_psa(this_markov, psa_table, num_rep)
 }
 \arguments{
-\item{this_markov}{markov model object}
+\item{this_markov}{Markov model object}
 
 \item{psa_table}{table object from define_parameters_psa()}
 

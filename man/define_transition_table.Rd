@@ -10,7 +10,7 @@ define_transition_table(tmat)
 \item{tmat}{transition matrix in the format as in package 'mstate'}
 }
 \value{
-the transition table with the probabilites
+the transition table with the probabilities
 }
 \description{
 Define the table for transition

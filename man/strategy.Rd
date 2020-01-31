@@ -7,9 +7,9 @@
 strategy(trans_mat, states, name, trans_cost = NULL, trans_util = NULL)
 }
 \arguments{
-\item{trans_mat}{tranisiton matrix}
+\item{trans_mat}{transition matrix}
 
-\item{states}{heatlh states}
+\item{states}{health states}
 
 \item{name}{name of the strategy}
 

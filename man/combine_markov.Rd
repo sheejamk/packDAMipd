@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_model_functions.R
 \name{combine_markov}
 \alias{combine_markov}
-\title{Join markov model objects}
+\title{Join Markov model objects}
 \usage{
 combine_markov(markov1, ...)
 }
@@ -15,7 +15,7 @@ combine_markov(markov1, ...)
 joined objects of type markov_model
 }
 \description{
-Join markov model objects
+Join Markov model objects
 }
 \examples{
 well <-  health_state("well", cost=0,utility=1)

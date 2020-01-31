@@ -7,7 +7,7 @@
 define_parameters_psa(base_param_list, sample_list)
 }
 \arguments{
-\item{base_param_list}{list of parameters that used to define markov model}
+\item{base_param_list}{list of parameters that used to define Markov model}
 
 \item{sample_list}{list of parameter values with their sampling distributions}
 }

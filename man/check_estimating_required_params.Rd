@@ -2,7 +2,7 @@
 % Please edit documentation in R/additional_help_functions.R
 \name{check_estimating_required_params}
 \alias{check_estimating_required_params}
-\title{Function to check if the parameters are sufficient to define a probabiltiy distribution and if not
+\title{Function to check if the parameters are sufficient to define a probability distribution and if not
 see if we can estimate the parameters from the given parameters, e.g. for gamma distribution, shape and rate
 can be estimated from mean and sd}
 \usage{
@@ -19,10 +19,10 @@ check_estimating_required_params(params_found, required_params, the_expr,
 \item{distr_key}{the keyword used for generating random numbers in R stats package e.g. rgamma for gamma distribution}
 }
 \value{
-the keyword that shoudl be used in R for generating random numbers
+the keyword that should be used in R for generating random numbers
 }
 \description{
-Function to check if the parameters are sufficient to define a probabiltiy distribution and if not
+Function to check if the parameters are sufficient to define a probability distribution and if not
 see if we can estimate the parameters from the given parameters, e.g. for gamma distribution, shape and rate
 can be estimated from mean and sd
 }

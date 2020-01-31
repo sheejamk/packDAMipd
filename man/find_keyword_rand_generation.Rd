@@ -10,7 +10,7 @@ find_keyword_rand_generation(text)
 \item{text}{name of the probability distribution}
 }
 \value{
-the keyword that shoudl be used in R for generating random numbers
+the keyword that should be used in R for generating random numbers
 }
 \description{
 Function to find the keyword for generating random numbers for given probability distribution

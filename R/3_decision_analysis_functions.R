@@ -1,11 +1,11 @@
 # 5. Estimate ICER and NMB
 
 #' Estimation of ICER and NMB
-#' @param list_markov  list of markov model objects with their markov trace, cost matrix and utility matrix
+#' @param list_markov  list of Markov model objects with their Markov trace, cost matrix and utility matrix
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
 #' @param currency currency
-#' @return ICER and NMB for all the stratgies compared to comparator
+#' @return ICER and NMB for all the strategies compared to comparator
 #' @examples
 #' well <-  health_state("well", cost=0,utility=1)
 #' disabled <- health_state("disabled", cost=100,utility=1)
@@ -46,7 +46,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
     stop("column names of list of markov_model objects look different")
   }
   if (check_list_markov_models(list_markov) != 0) {
-    stop("Error in defining or creating markov model for compairing strategies")
+    stop("Error in defining or creating Markov model for compairing strategies")
   }
   cost_matrix_all <- list_markov[,"cost_matrix"]
   utility_matrix_all <- list_markov[,"utility_matrix"]
@@ -97,8 +97,8 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
 }
 #######################################################################
 
-#' check the list of markov models
-#' @param list_markov  list of markov model objects with their markov trace, cost matrix and utility matrix
+#' check the list of Markov models
+#' @param list_markov  list of Markov model objects with their Markov trace, cost matrix and utility matrix
 #' @return 0 if success else error
 #' @examples
 #' well <-  health_state("well", cost=0,utility=1)

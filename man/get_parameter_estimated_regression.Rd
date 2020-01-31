@@ -14,7 +14,7 @@ get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
 
 \item{dataset}{data set to be provided}
 
-\item{method}{methd of estimation (for example, linear, logistic regression etc)}
+\item{method}{method of estimation (for example, linear, logistic regression etc)}
 
 \item{indep_var}{the independent variable (column name in data file)}
 

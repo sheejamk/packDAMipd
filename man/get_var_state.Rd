@@ -12,7 +12,7 @@ get_var_state(state, var)
 \item{var}{attribute of the health state}
 }
 \value{
-modified heatlh state
+modified health state
 }
 \description{
 Get the attribute for the health state

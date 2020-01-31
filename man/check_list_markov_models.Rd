@@ -2,18 +2,18 @@
 % Please edit documentation in R/3_decision_analysis_functions.R
 \name{check_list_markov_models}
 \alias{check_list_markov_models}
-\title{check the list of markov models}
+\title{check the list of Markov models}
 \usage{
 check_list_markov_models(list_markov)
 }
 \arguments{
-\item{list_markov}{list of markov model objects with their markov trace, cost matrix and utility matrix}
+\item{list_markov}{list of Markov model objects with their Markov trace, cost matrix and utility matrix}
 }
 \value{
 0 if success else error
 }
 \description{
-check the list of markov models
+check the list of Markov models
 }
 \examples{
 well <-  health_state("well", cost=0,utility=1)

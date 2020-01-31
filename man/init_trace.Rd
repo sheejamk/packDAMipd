@@ -7,7 +7,7 @@
 init_trace(health_states, cycles)
 }
 \arguments{
-\item{health_states}{heatlh states}
+\item{health_states}{health states}
 
 \item{cycles}{no of cycles}
 }

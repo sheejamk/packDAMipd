@@ -12,7 +12,7 @@ check_estimate_substitute_proper_params(the_expr)
 \item{the_expr}{given parameters for generating ransom numbers}
 }
 \value{
-the keyword that shoudl be used in R for generating random numbers
+the keyword that should be used in R for generating random numbers
 }
 \description{
 Function to get the expression, analyse it for what distribution it is, then check if it has all parameters requires,

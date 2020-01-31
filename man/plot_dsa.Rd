@@ -3,21 +3,21 @@
 %   R/4a_deterministic_sensitivity_analysis_functions.R
 \name{plot_dsa}
 \alias{plot_dsa}
-\title{Function to plot resulits of sensitivity analysis do_sensitivity_analysis()}
+\title{Function to plot results of sensitivity analysis do_sensitivity_analysis()}
 \usage{
 plot_dsa(result_dsa_control, plotfor, type = "range",
   result_dsa_treat = NULL, threshold = NULL, comparator = NULL,
   currency = "GBP")
 }
 \arguments{
-\item{result_dsa_control}{result from determnistic sensitivity analysis for first or control model}
+\item{result_dsa_control}{result from deterministic sensitivity analysis for first or control model}
 
 \item{plotfor}{the variable to plotfor e.g. cost, utility NMB etc}
 
 \item{type}{type of analysis, range or difference}
 
-\item{result_dsa_treat}{result from determnistic sensitivity analysis
-for the compartive markov mdoel}
+\item{result_dsa_treat}{result from deterministic sensitivity analysis
+for the comparative Markov model}
 
 \item{threshold}{threshold value of WTP}
 
@@ -29,7 +29,7 @@ for the compartive markov mdoel}
 plot of  sensitivity analysis
 }
 \description{
-Function to plot resulits of sensitivity analysis do_sensitivity_analysis()
+Function to plot results of sensitivity analysis do_sensitivity_analysis()
 }
 \examples{
 param_list<-define_parameters(cost_zido = 2278,cost_direct_med_A = 1701,

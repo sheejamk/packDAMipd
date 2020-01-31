@@ -1,5 +1,5 @@
 #' Define parameter lists for deterministic sensitivity analysis
-#' @param base_param_list  list of parameters that used to define markov model
+#' @param base_param_list  list of parameters that used to define Markov model
 #' @param sample_list list of parameter values with their sampling distributions
 #' @return table for probability sensitivity analysis
 #' @examples
@@ -38,7 +38,7 @@ define_parameters_psa  <-  function(base_param_list, sample_list){
 #######################################################################
 
 #' Function to do deterministic sensitivity analysis
-#' @param this_markov  markov model object
+#' @param this_markov  Markov model object
 #' @param psa_table table object from define_parameters_psa()
 #' @param num_rep number of repetitions
 #' @return result after sensitivity analysis
@@ -117,7 +117,7 @@ do_psa <- function(this_markov,psa_table,num_rep){
 #' @param result_psa_params_control  result from deterministic sensitivity analysis
 #' for first or control model
 #' @param result_psa_params_treat result from deterministic sensitivity analysis
-#' for the comparative markov mdoel
+#' for the comparative Markov model
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
 #' @return plot of  sensitivity analysis
@@ -201,7 +201,7 @@ list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_par
 #' @param result_psa_params_control  result from deterministic sensitivity analysis
 #' for first or control model
 #' @param result_psa_params_treat result from deterministic sensitivity analysis
-#' for the comparative markov mdoel
+#' for the comparative Markov model
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
 #' @return plot of  sensitivity analysis
