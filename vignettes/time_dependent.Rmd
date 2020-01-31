@@ -1,5 +1,5 @@
 ---
-title: "User Guide Time dependency"
+title: "User Guide time dependency"
 author: "Sheeja Manchira Krishnan"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

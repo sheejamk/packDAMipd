@@ -7,7 +7,7 @@
 plot_model(markov)
 }
 \arguments{
-\item{Markov}{markov_model object}
+\item{markov}{markov_model object}
 }
 \value{
 plots

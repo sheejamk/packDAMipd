@@ -647,7 +647,7 @@ combine_markov <- function(markov1, ...) {
 }
 #######################################################################
 #' Plot a Markov model
-#' @param Markov  markov_model object
+#' @param markov  markov_model object
 #' @return plots
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))
