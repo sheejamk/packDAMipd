@@ -362,8 +362,8 @@ check_trans_prob <- function(trans_mat) {
   }
 }
 #######################################################################
-# 2e.  Create the valus of cost and utility while transitioning
-#' Create the the valus of cost and utility while transitioning
+# 2e.  Create the valus of cost and utility while transition
+#' Create the the valus of cost and utility while transition
 #' @param no_states  number of the health states
 #' @param tmat_cost_util A transition matrix for the cost/utility values in the format from thepackage 'mstate'
 #'  use NA to indicate if the value is zero
@@ -491,9 +491,9 @@ init_trace <- function(health_states, cycles) {
 #' b <- health_state("Dead", 1, 0, 0, TRUE)
 #' health_states <- combine_state(a, b)
 #' this.strategy <- strategy(tm, health_states, "intervention")
-#' markov_model(this.strategy, 10, c(1, 0),c(0,0),c(0,0))
+#' markov_model(this.strategy, 10, c(1, 0), c(0,0), c(0,0))
 #' @export
-markov_model <- function(current_strategy, cycles, initial_state, initial_state_costs, initial_state_utilities, discount =c(0,0), parameter_values=NULL) {
+markov_model <- function(current_strategy, cycles, initial_state, initial_state_costs, initial_state_utilities, discount = c(0,0), parameter_values=NULL) {
   if (length(discount) != 2) {
     stop("Please provide the discount rates for both qalys and costs")
   }
@@ -694,41 +694,17 @@ assign_parameters <- function(param_list){
       assign(names(param_list[j]), this_value)
       assigned_list <-  append(assigned_list, this_value)
       names_assigned_list <- append(names_assigned_list, names(param_list[j]))
-    }
-    if (is.character(this_value)) {
-      string_this_value <- toString(this_value)
-      string_this_value_evalu <- eval(parse(text = string_this_value))
-      if (!is.numeric(string_this_value_evalu)) {
-        all_params_expr <- find_parameters_btn_operators(string_this_value)
-        listlen = length(all_params_expr)
-        i = 1
-        while (i <= listlen) {
-          ind <- match(all_params_expr[i], names(param_list))
-          if (ind > 0) {
-            if (is.numeric(param_list[[ind]])) {
-              assign(all_params_expr[[i]], param_list[[ind]])
-              assigned_list <-  append(assigned_list, param_list[[ind]])
-              names_assigned_list <- append(names_assigned_list, all_params_expr[[i]])
-            }else{
-              string_value <- toString(param_list[[ind]])
-              string_value_evalu <- eval(parse(text = string_value))
-            }
-            i = i + 1
-          }else{
-            all_params_expr <- find_parameters_btn_operators(toString(all_params_expr[i]))
-            listlen = length(all_params_expr)
-            i = 1
-          }
-          if (i > listlen) {
-            assign(names(param_list[j]), eval(parse(text = string_this_value)))
-            assigned_list <-  append(assigned_list, eval(parse(text = string_this_value)))
-            names_assigned_list <- append(names_assigned_list, names(param_list[j]))
-          }
+    }else{
+      if (is.character(this_value)) {
+        string_this_value <- toString(this_value)
+        string_this_value_evalu <- eval(parse(text = string_this_value))
+        if (!is.numeric(string_this_value_evalu)) {
+            stop("Error - the evaluation should bring a numerical value")
+        }else{
+          assign(names(param_list[j]),eval(parse(text = string_this_value)))
+          assigned_list <-  append(assigned_list,eval(parse(text = string_this_value)))
+          names_assigned_list <- append(names_assigned_list,names(param_list[j]))
         }
-      }else{
-        assign(names(param_list[j]),eval(parse(text = string_this_value)))
-        assigned_list <-  append(assigned_list,eval(parse(text = string_this_value)))
-        names_assigned_list <- append(names_assigned_list,names(param_list[j]))
       }
     }
     j = j + 1
@@ -736,3 +712,74 @@ assign_parameters <- function(param_list){
   names(assigned_list) <-  names_assigned_list
   return(assigned_list)
 }
+
+### This code below having an additional check in the assign_parameters().
+### It is found that the extra lines of the code was never executed, if the
+### parameter list were given carefully
+#' #######################################################################
+#' #' Function to assign the values of nested parameters from the parameter list
+#' #' @param param_list list of parameters, some of which can be nested
+#' #' @return list of assigned parameters
+#' #' @examples
+#' #' param_list =define_parameters(cost_direct_med_A = 1701, cost_comm_care_A = 1055,
+#' #' cost_direct_med_B = 1774, cost_comm_care_B = 1278, cost_direct_med_C = 6948,
+#' #' cost_comm_care_C = 2059,cost_zido = 2456,cost_health_A = "cost_direct_med_A+ cost_comm_care_A",
+#' #' cost_health_B = "cost_direct_med_B+ cost_comm_care_B",
+#' #' cost_health_C = "cost_direct_med_C + cost_comm_care_C",cost_drug = "cost_zido")
+#' #' assign_parameters(param_list)
+#' #' @export
+#' assign_parameters <- function(param_list){
+#'   list_len = length(param_list)
+#'   assigned_list <- list()
+#'   names_assigned_list <-  list()
+#'   j = 1
+#'   while (j <= list_len) {
+#'     this_name <- names(param_list[j])
+#'     this_value <- param_list[[this_name]]
+#'     if (is.numeric(this_value)) {
+#'       assign(names(param_list[j]), this_value)
+#'       assigned_list <-  append(assigned_list, this_value)
+#'       names_assigned_list <- append(names_assigned_list, names(param_list[j]))
+#'     }else{
+#'       if (is.character(this_value)) {
+#'         string_this_value <- toString(this_value)
+#'         string_this_value_evalu <- eval(parse(text = string_this_value))
+#'         if (!is.numeric(string_this_value_evalu)) {
+#'           all_params_expr <- find_parameters_btn_operators(string_this_value)
+#'           listlen = length(all_params_expr)
+#'           i = 1
+#'           while (i <= listlen) {
+#'             ind <- match(all_params_expr[i], names(param_list))
+#'             if (ind > 0) {
+#'               if (is.numeric(param_list[[ind]])) {
+#'                 assign(all_params_expr[[i]], param_list[[ind]])
+#'                 assigned_list <-  append(assigned_list, param_list[[ind]])
+#'                 names_assigned_list <- append(names_assigned_list, all_params_expr[[i]])
+#'               }else{
+#'                 string_value <- toString(param_list[[ind]])
+#'                 string_value_evalu <- eval(parse(text = string_value))
+#'               }
+#'               i = i + 1
+#'             }else{
+#'               all_params_expr <- find_parameters_btn_operators(toString(all_params_expr[i]))
+#'               listlen = length(all_params_expr)
+#'               i = 1
+#'             }
+#'             if (i > listlen) {
+#'               assign(names(param_list[j]), eval(parse(text = string_this_value)))
+#'               assigned_list <-  append(assigned_list, eval(parse(text = string_this_value)))
+#'               names_assigned_list <- append(names_assigned_list, names(param_list[j]))
+#'             }
+#'           }
+#'          }else{
+#'           assign(names(param_list[j]),eval(parse(text = string_this_value)))
+#'           assigned_list <-  append(assigned_list,eval(parse(text = string_this_value)))
+#'           names_assigned_list <- append(names_assigned_list,names(param_list[j]))
+#'         }
+#'       }
+#'     }
+#'     j = j + 1
+#'   }
+#'   names(assigned_list) <-  names_assigned_list
+#'   return(assigned_list)
+#' }

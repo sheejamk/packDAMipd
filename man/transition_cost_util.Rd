@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_model_functions.R
 \name{transition_cost_util}
 \alias{transition_cost_util}
-\title{Create the the valus of cost and utility while transitioning}
+\title{Create the the valus of cost and utility while transition}
 \usage{
 transition_cost_util(no_states, tmat_cost_util, list_values,
   name_states = NULL)
@@ -21,7 +21,7 @@ use NA to indicate if the value is zero}
 value of the transition matrix
 }
 \description{
-Create the the valus of cost and utility while transitioning
+Create the the valus of cost and utility while transition
 }
 \examples{
 tmat_cost <- rbind(c(NA, 1), c(NA, NA))

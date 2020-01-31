@@ -1,3 +1,4 @@
+
 #######################################################################
 #' Function to add the probabilities in a vector
 #' @param probs probabilities

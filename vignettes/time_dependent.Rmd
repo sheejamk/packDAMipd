@@ -40,7 +40,7 @@ library(packDAMipd)
 A <- health_state("A", cost = "cost_health_A+ cost_drug ",utility = 1)
 B <- health_state("B", cost = "cost_health_B + cost_drug",utility = 1)
 C <- health_state("C", cost = "cost_health_C + cost_drug",utility = 1)
-D <- health_state("D", cost = 0,utility = 0)
+D <- health_state("D", cost = 0, utility = 0)
 ```
 
  Define allowed transition probabilities and number them. The below matrix is numbered so that the maximum entry in the matrix gives the total number of allowed transitions. Column names and row names are just the names of the health states.
@@ -99,7 +99,7 @@ mono_markov <- markov_model(mono_strategy, 20,c(1,0,0,0),c(0,0,0,0), c(0,0,0,0),
 ```{r}
  #Define function to set the cost to be differnt for first two cycles
 define_comb_cost = function(cycle,cost_lami){
-  if (cycle == 2 || cycle == 3)
+  if (cycle == 1 || cycle == 2)
     return(cost_lami)
   else
     return(0)
@@ -107,7 +107,7 @@ define_comb_cost = function(cycle,cost_lami){
  #Define function to set the risk ratio to be differnt for first two cycles
 
 define_rr = function(cycle,rr){
-  if (cycle == 2 || cycle == 3)
+  if (cycle == 1 || cycle == 2)
     return(rr)
   else
     return(1)
@@ -120,7 +120,7 @@ define_rr = function(cycle,rr){
 A <-  health_state("A", cost = "cost_health_A + cost_drug",utility = 1)
 B <- health_state("B", cost = "cost_health_B + cost_drug",utility = 1)
 C <- health_state("C", cost = "cost_health_C + cost_drug",utility = 1)
-D <- health_state("D", cost = 0,utility = 0)
+D <- health_state("D", cost = 0, utility = 0)
 
 ```
 
@@ -224,7 +224,6 @@ for (i in 1:40) {
   nmb_all <- append(nmb_all, nmb)
 }
 threshold_values <- seq(1000,40000,1000)
-threshold_values
 plot_ceac(list_markov,threshold_values,"mono")
 ```
 

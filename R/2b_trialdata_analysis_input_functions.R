@@ -7,7 +7,8 @@
 #' Function to load the file containing trial data and return it
 #' @param file, name of the file in full
 #' @return trial data if success, else -1
-#' @examples load_trial_data(system.file("extdata", "trial_data.csv",
+#' @examples
+#' load_trial_data(system.file("extdata", "trial_data.csv",
 #' package = "packDAMipd"))
 #' @export
 load_trial_data <- function(file = NULL){

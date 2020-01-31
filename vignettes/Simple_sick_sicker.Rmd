@@ -107,12 +107,15 @@ trt_markov <- markov_model(current_strategy = trt_strategy, cycles = 85, initial
 Once we have the results form the markov models for both the strategies, we combine these two to define list_markov. Finally we obtain incremental cost effectiveness ratio (ICER) and net monetary benefit (NMB) for the cost effectiveness analysis using the function calculate_icer_nmb(). The results of the cost effectiveness acceptability curve(CEAC) can be plotted using plot_ceac function as shown below. 
 For calculating NMB, threshold value  and the name of the comparator should be provided, while for plotting CEAC, range of values of thresholds should be provided along with the name of the comparator.
 
+The \ref[alarid2020cohort]   reports the results as follows which is the same as obtained using packDAMipd.
+
+The cost of usual care is 157,890 USD while that of the new treatment is  289,251 USD.
+The  QALYs for the usual care and the new treatment are 22.066 and 22.800 respectively.
+The ICER obtained is 178947 
+
+
 ```{r}
 list_markov <- combine_markov(uc_markov, trt_markov)
 calculate_icer_nmb(list_markov, threshold = 20000, comparator = "Usual care" )
 plot_ceac(list_markov,threshold_values = c(1000,2000,5000,7000,10000,150000,20000), comparator = "Usual care" , currency = "USD")
 ```
-
-
-
-

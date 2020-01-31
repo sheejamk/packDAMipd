@@ -26,7 +26,9 @@ test_that("get parameter from estimated regression",  {
     "logistic regression", "gre", NA,"binomial", c("gpa", "factor(rank)"))
   results_logit2 <- get_parameter_estimated_regression("admit", mydata,
     "logistic regression", "gre", NA,"binomial")
-  expect_error(get_parameter_estimated_regression("admit", mydata,
+  expect_error(get_parameter_estimated_regression(NA, mydata,
+               "logistic regression", "gre", NA,"binomial", c("gpa", "factor(rank)")))
+  expect_error(get_parameter_estimated_regression("admit", NA,
         "logistic regression", "gre", NA,"binomial", c("gpa", "factor(rank)")))
   expect_error(get_parameter_estimated_regression("admit", mydata,
          NA, "gre", NA,"binomial", c("gpa", "factor(rank)")))
