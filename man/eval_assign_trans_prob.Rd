@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_model_functions.R
 \name{eval_assign_trans_prob}
 \alias{eval_assign_trans_prob}
-\title{Attribute parameters to probabilities of transiiton matrix}
+\title{Attribute parameters to probabilities of transition matrix}
 \usage{
 eval_assign_trans_prob(tm, parameter_values)
 }
@@ -12,10 +12,10 @@ eval_assign_trans_prob(tm, parameter_values)
 \item{parameter_values}{name value pairs of parameter values in the probability matrix}
 }
 \value{
-the transtion table with the probabilites
+the transition table with the probabilites
 }
 \description{
-Attribute parameters to probabilities of transiiton matrix
+Attribute parameters to probabilities of transition matrix
 }
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))

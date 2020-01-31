@@ -2,7 +2,7 @@
 % Please edit documentation in R/3_decision_analysis_functions.R
 \name{plot_ceac}
 \alias{plot_ceac}
-\title{Plot cost effectivess efficiency frontier}
+\title{Plot cost effectiveness efficiency frontier}
 \usage{
 plot_ceac(list_markov, threshold_values, comparator, currency = "GBP")
 }
@@ -19,7 +19,7 @@ plot_ceac(list_markov, threshold_values, comparator, currency = "GBP")
 plots
 }
 \description{
-Plot cost effectivess efficiency frontier
+Plot cost effectiveness efficiency frontier
 }
 \examples{
 well <-  health_state("well", cost=0,utility=1)

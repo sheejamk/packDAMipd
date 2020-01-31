@@ -144,7 +144,7 @@ check_list_markov_models <- function(list_markov){
 }
 #######################################################################
 
-#' Plot cost effectivess efficiency frontier
+#' Plot cost effectiveness efficiency frontier
 #' @param list_markov  markov_model objects
 #' @param threshold_values  list of threshold values
 #' @param comparator  the comparator

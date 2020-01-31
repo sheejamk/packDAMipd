@@ -15,7 +15,7 @@ health_state(name, cost, utility, time = 0, absorb = FALSE)
 
 \item{time}{denoting how long in the state}
 
-\item{absorb}{boolean indicating health state abosribing or not}
+\item{absorb}{boolean indicating health state absorbing or not}
 }
 \value{
 value of the state

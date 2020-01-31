@@ -3,7 +3,7 @@
 \name{use_fh_survival}
 \alias{use_fh_survival}
 \title{##########################################################################################################
-Get the parameter values using the survival analysis methid FH}
+Get the parameter values using the survival analysis method FH}
 \usage{
 use_fh_survival(param_to_be_estimated, dataset, indep_var, covariates_list,
   timevar_survival)
@@ -24,7 +24,7 @@ the results of the regression analysis
 }
 \description{
 ##########################################################################################################
-Get the parameter values using the survival analysis methid FH
+Get the parameter values using the survival analysis method FH
 }
 \examples{
 data_for_survival<-survival::aml

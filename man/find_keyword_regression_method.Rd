@@ -9,7 +9,7 @@ find_keyword_regression_method(text, additional_info = NA)
 \arguments{
 \item{text}{regresssion method}
 
-\item{additional_info}{additional infomration required}
+\item{additional_info}{additional information required}
 }
 \value{
 the keyword that should be used in R for regression analysis

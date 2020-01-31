@@ -10,7 +10,7 @@ add_probabilities(probs)
 \item{probs}{probabilities}
 }
 \value{
-sum of probabilities if sucess else -1
+sum of probabilities if success else -1
 }
 \description{
 Function to add the probabilities in a vector

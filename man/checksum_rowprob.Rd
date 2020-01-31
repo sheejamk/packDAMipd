@@ -10,7 +10,7 @@ checksum_rowprob(avector)
 \item{avector}{vector of probabilities}
 }
 \value{
-sum of probabilities if sucess else error
+sum of probabilities if success else error
 }
 \description{
 Function to check the sum of probabilites in a vector

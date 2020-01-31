@@ -34,9 +34,8 @@ get_parameter_read <- function(parameter, paramfile, strategycol=NA, strategynam
     stop("File doesnt exists or notable to access")
   dataset <- data.frame(read.csv(paramfile,header = TRUE,sep = ",", stringsAsFactors = FALSE))
   result <- IPDFileCheck::check_column_exists("value",dataset)
-  if (result != 0) {
+  if (result != 0)
     stop(paste("Parameter file should contain value in column name",sep = ""))
-  }
   if (!is.na(strategycol)) {
     if (IPDFileCheck::check_column_exists(strategycol,dataset) == 0) {
       dataset = dataset[dataset[[strategycol]] == strategyname,]
@@ -46,10 +45,9 @@ get_parameter_read <- function(parameter, paramfile, strategycol=NA, strategynam
     }
   }else{
     answer <- dataset[dataset$Parameter == parameter,]$Value
-    if (is.na(answer)) {
+    if (is.na(answer))
       warning("Error- Parameter value is NA-Did you use the wrong function
               to get the parameter?")
-    }
   }
   return(answer)
 }
@@ -80,16 +78,14 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
   if (result != 0) {
     stop(paste("Parameter file should contain distribution in column name",sep = ""))
   }
-  if (is.na(dataset[dataset$Parameter == parameter,]$Distribution)) {
+  if (is.na(dataset[dataset$Parameter == parameter,]$Distribution))
     stop("This parameter may not be estimated from a distribution- use get_parameter_read
          instead")
-  }
   param_distribution = c("Param1_name","Param1_value")
   result <- unlist(lapply(param_distribution,IPDFileCheck::check_column_exists,dataset))
-  if (sum(result) != 0) {
+  if (sum(result) != 0)
     stop(paste("Parameter file should contain parameters for the distribtution in
                column name",sep = ""))
-  }
   this_param <- dataset[dataset$Parameter == parameter,]$Parameter
   this_distr_name <- dataset[dataset$Parameter == parameter,]$Distribution
   param1 <- dataset[dataset$Parameter == parameter,]$Param1_name
@@ -128,7 +124,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, method,
                                       indep_var, info_get_method, info_distribution,
                                       covariates=NA, strategycol=NA,
-                                      strategyname=NA, timevar_survival=NA, interaction=NA ){
+                                      strategyname=NA, timevar_survival=NA, interaction=NA){
   if (is.null(dataset))
     stop("Need to provide a data set to lookup")
   if (is.na(method))
@@ -149,20 +145,16 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
     covariates_list = NA
   }
   caps_method = toupper(method)
-  if (caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS") {
+  if (caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS")
     results <- use_survival_analysis(param_to_be_estimated, dataset, indep_var, info_get_method,
                                      info_distribution,covariates_list , timevar_survival)
-  }
-  if (caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR"){
+  if (caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR")
     results <- use_linear_rgression(param_to_be_estimated, dataset,indep_var,covariates, interaction)
-  }
-  if (caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC"){
+  if (caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC")
     results <- use_logistic_rgression(param_to_be_estimated, dataset,indep_var, info_distribution, covariates_list)
-  }
   if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
-     | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" ) {
+     | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" )
     results <- use_mixed_effect_model(param_to_be_estimated, dataset,indep_var,covariates)
-  }
   return(results)
 }
 #' ##########################################################################################################
@@ -187,27 +179,22 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
   if (is.na(info_get_method))
     stop("Please provide  information statistical method")
   caps_info_method <- toupper(info_get_method)
-  if (caps_info_method == "PARAMETRIC REGRESSION" | caps_info_method == "PARAMETRIC") {
+  if (caps_info_method == "PARAMETRIC REGRESSION" | caps_info_method == "PARAMETRIC")
     results <- use_parametric_regression(param_to_be_estimated, dataset,indep_var,
                                          info_distribution,covariates_list,timevar_survival)
-  }
-  if (caps_info_method == "KAPLAN-MEIER" | caps_info_method == "KM") {
+  if (caps_info_method == "KAPLAN-MEIER" | caps_info_method == "KM")
     results <- use_km_survival(param_to_be_estimated, dataset, indep_var,covariates_list,
                                timevar_survival)
-  }
-  if (caps_info_method == "FLEMING-HARRINGTON" | caps_info_method == "FH") {
+  if (caps_info_method == "FLEMING-HARRINGTON" | caps_info_method == "FH")
     results <- use_fh_survival(param_to_be_estimated, dataset,indep_var,covariates_list,
                                timevar_survival)
-  }
-  if (caps_info_method == "FH2") {
+  if (caps_info_method == "FH2")
     results <- use_fh2_survival(param_to_be_estimated, dataset,indep_var,covariates_list,
                                 timevar_survival)
-  }
   if (caps_info_method %in% c("COX-PROPORTIONAL-HAZARD","COX PROPORTIONAL HAZARD","COX-PH",
-                              "COX PH","COXPH")) {
+                              "COX PH","COXPH"))
     results <- use_coxph_survival(param_to_be_estimated, dataset, indep_var, covariates_list,
                                   timevar_survival)
-  }
   return(results)
 
 }
@@ -296,7 +283,7 @@ use_km_survival <- function(param_to_be_estimated, dataset,
   return(results)
 }
 #' ##########################################################################################################
-#' Get the parameter values using the survival analysis methid FH
+#' Get the parameter values using the survival analysis method FH
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
 #' @param indep_var the independent variable (column name in data file)
@@ -560,7 +547,7 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var,cov
 
 #######################################################################
 #' Get the parameter values from reading a file
-#' @param paramfile  parameter file to get the moratlity eg.national life table data
+#' @param paramfile  parameter file to get the mortality eg.national life table data
 #' @param age age to get the age specific data
 #' @param gender gender details to get the gender specific mortality data
 #' @return the paramvalue
@@ -580,13 +567,18 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL){
     stop("Expecting the life tables to contain an age column")
   age_columnno = IPDFileCheck::get_columnno_fornames(dataset, "age")
   this.row = which(dataset[age_columnno] == age)
-  if (is.null(gender)) {
-    total_columnno = IPDFileCheck::get_colno_pattern_colname("total", colnames(dataset))
-    mortality <- dataset[[total_columnno]][this.row]
+  if(this.row > 0 ){
+    if (is.null(gender)) {
+      total_columnno = IPDFileCheck::get_colno_pattern_colname("total", colnames(dataset))
+      mortality <- dataset[[total_columnno]][this.row]
+    }else{
+      sex_columnno = IPDFileCheck::get_columnno_fornames(dataset, gender)
+      mortality <- dataset[[sex_columnno]][this.row]
+    }
   }else{
-    sex_columnno = IPDFileCheck::get_columnno_fornames(dataset, gender)
-    mortality <- dataset[[sex_columnno]][this.row]
+    stop("Error - Row corresponding to the specific age could not be found")
   }
+
   return(mortality)
 }
 ######################################################################

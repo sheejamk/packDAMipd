@@ -427,6 +427,5 @@ mydata <- data_for_coxph<-survival::lung
 results_lm <- use_linear_rgression("wt.loss", dataset=mydata,indep_var = "age", covariates = "sex", interaction = TRUE)
 
 mydata <- data_for_coxph<-survival::lung
-debug(use_mixed_effect_model)
 results_lm <- use_mixed_effect_model("wt.loss", dataset=mydata,indep_var = "age", covariates = "sex")
 

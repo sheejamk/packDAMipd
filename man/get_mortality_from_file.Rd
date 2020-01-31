@@ -7,7 +7,7 @@
 get_mortality_from_file(paramfile, age, gender = NULL)
 }
 \arguments{
-\item{paramfile}{parameter file to get the moratlity eg.national life table data}
+\item{paramfile}{parameter file to get the mortality eg.national life table data}
 
 \item{age}{age to get the age specific data}
 

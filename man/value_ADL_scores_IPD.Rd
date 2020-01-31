@@ -10,7 +10,7 @@ value_ADL_scores_IPD(ind_part_data, adl_related_words, adl_scoring,
 \arguments{
 \item{ind_part_data}{a dataframe containing IPD data}
 
-\item{adl_related_words}{reltaed words to find out which columns contain adl data}
+\item{adl_related_words}{related words to find out which columns contain adl data}
 
 \item{adl_scoring}{ADL scoring table}
 

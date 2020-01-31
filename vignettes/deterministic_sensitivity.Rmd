@@ -10,10 +10,10 @@ vignette: >
 ---
 
 In this example we will model the cost effectiveness of lamivudine/zidovudine
-combination therapy in HIV infection ([Chancellor, 1997] (https://www.ncbi.nlm.nih.gov/pubmed/10169387))) and also described in Decision Modelling for Health Economic Evaluation, page 32. We have implemented the scenario in which the effect of combination therapy of lamivudine/zidovudine (as the probbaility of moving to worse heatlh states and having to accrue more cost) is only seen in first 2 years. This means that the transition probability and costs are dependent on first two cycles (As the cycle length is years).
+combination therapy in HIV infection ([Chancellor, 1997] (https://www.ncbi.nlm.nih.gov/pubmed/10169387))) and also described in Decision Modelling for Health Economic Evaluation, page 32. We have implemented the scenario in which the effect of combination therapy of lamivudine/zidovudine (as the probability of moving to worse health states and having to accrue more cost) is only seen in first 2 years. This means that the transition probability and costs are dependent on first two cycles (As the cycle length is years).
 
 This model aims to compare costs and utilities of two treatment
-strategies, monotherapy and combined therapy.
+strategies, mono therapy and combined therapy.
 
 Four states are described, from best to worst health-wise:
 
@@ -34,7 +34,7 @@ knitr::opts_chunk$set(
 library(packDAMipd)
 ```
 
- Define health states for monotherapy - now the costs are just defined, but not defined any value.
+ Define health states for mono therapy - now the costs are just defined, but not defined any value.
 
 ```{r}
 A <- health_state("A", cost = "cost_health_A+ cost_drug ",utility = 1)
@@ -56,7 +56,7 @@ tm <- transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
                                    "tpBtoB", "tpBtoC", "tpBtoD",
                                    "tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
 ```
- Combine the health states and define the strategy. The current strategy ie. control or intervention - here it is monotherapy
+ Combine the health states and define the strategy. The current strategy ie. control or intervention - here it is mono therapy
 
 
 ```{r}
@@ -64,7 +64,7 @@ health_states <- combine_state(A,B,C,D)
 mono_strategy <- strategy(tm, health_states, "mono")
 
 ```
-Before we run the model, we need to give values to parameters, thus we define the parameter list. We need to make sure that the parameters with numerical values are given first and derived parameters later in the list. The parameters are assinged sequentially as given in the parameter list. So if there is any calcultions needed (or using functions), they are defined earlier.
+Before we run the model, we need to give values to parameters, thus we define the parameter list. We need to make sure that the parameters with numerical values are given first and derived parameters later in the list. The parameters are assigned sequentially as given in the parameter list. So if there is any calculations needed (or using functions), they are defined earlier.
 
 ```{r}
 mono_params = define_parameters(cost_zido = 2278,
@@ -91,11 +91,11 @@ cost_drug = "cost_zido")
 ```
 
 
- We run the model with strategy mono_strategy for 20 cycles with initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and qualys are discounted follwoing the values given in discount. Parameter values will have any parameter defined as health state values or tranisiton probabilties, but not their values were assgined
+ We run the model with strategy mono_strategy for 20 cycles with initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and quays are discounted following the values given in discount. Parameter values will have any parameter defined as health state values or transition probabilities, but not their values were assigned.
 ```{r}
 mono_markov <- markov_model(mono_strategy, 20, c(1,0,0,0), c(0,0,0,0), c(0,0,0,0), discount = c(0.06,0), mono_params)
 ```
- Now for combination therapy, the transition probabilites and cost are dependent on the years or the cylce number. Thus we need to define functions that given the correct output to calculate the probabilites and costs as a function of cycle
+ Now for combination therapy, the transition probabilities and cost are dependent on the years or the cycle number. Thus we need to define functions that given the correct output to calculate the probabilities and costs as a function of cycle
 ```{r}
  #Define function to set the cost to be differnt for first two cycles
 define_comb_cost = function(cycle,cost_lami){
@@ -191,12 +191,12 @@ comb_strategy <- strategy(tm, health_states, "comb")
 ```
 
 
-We run the model with strategy mono_strategy for 20 cycles with initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and qualys are discounted follwoing the values given in discount. Parameter values will have any parameter defined as health state values or tranisiton probabilties, but not their values were assgined
+We run the model with strategy mono_strategy for 20 cycles with initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and quays are discounted following the values given in discount. Parameter values will have any parameter defined as health state values or transition probabilities, but not their values were assigned
 ```{r}
 comb_markov <- markov_model(comb_strategy, 20, c(1, 0,0,0), c(0,0,0,0), c(0,0,0,0),discount = c(0.06,0.0), comb_params)
 ```
 
-Now we will define the parameters for the sensitivity analysis. The parameters are already defined as mono_params and comb_params. Their lower value and upper value are defined using definer_parameters() and create parameter table using define_parameters_sens_anal(). Then deteministic sensitvity analysis is done for the markov model of the choice here the mono_markov using the function do_sensitivity_analysis. Using the result obtained, a full report or plot (for specfic variable) can be generated using report_sensitivity_analysis() and plot_dsa() respectively. To get a report or plot of senstivity analysis on  ICER on NMB, two markov models need to be passed on.
+Now we will define the parameters for the sensitivity analysis. The parameters are already defined as mono_params and comb_params. Their lower value and upper value are defined using definer_parameters() and create parameter table using define_parameters_sens_anal(). Then deterministic sensitivity analysis is done for the Markov model of the choice here the mono_Markov using the function do_sensitivity_analysis. Using the result obtained, a full report or plot (for specific variable) can be generated using report_sensitivity_analysis() and plot_dsa() respectively. To get a report or plot of sensitivity analysis on  ICER on NMB, two Markov models need to be passed on.
 
 
 ```{r}
@@ -210,7 +210,7 @@ plot_dsa(result_dsa_control,"cost_direct_med_B",type = "range")
 plot_dsa(result_dsa_control,"utility",type = "range")
 
 ```
-If we generate the parameter table and deterministic sensitivity analysis for markov model for combination treatment, we can use to generate the report and plot for both ICER and NMB.
+If we generate the parameter table and deterministic sensitivity analysis for Markov model for combination treatment, we can use to generate the report and plot for both ICER and NMB.
 
 ```{r}
 min_values <- define_parameters(cost_direct_med_B = 177.4,cost_comm_care_C = 205.9)

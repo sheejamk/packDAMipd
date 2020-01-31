@@ -16,7 +16,7 @@
 #' @param cost value or expression that represents cost of the health state
 #' @param utility value or expression that represents utility of the health state
 #' @param time denoting how long in the state
-#' @param absorb boolean indicating health state abosribing or not
+#' @param absorb boolean indicating health state absorbing or not
 #' @return value of the state
 #' @examples
 #' st <- health_state("IT", 100, 0.4, 0, FALSE)
@@ -216,7 +216,7 @@ check_values_states <- function(health_states) {
 # 2a.  Define the table for transition
 #' Define the table for transition
 #' @param tmat transition matrix in the format as in package 'mstate'
-#' @return the transtion table with the probabilites
+#' @return the transition table with the probabilites
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
@@ -284,13 +284,12 @@ transition_matrix <- function(no_states, tmat, list_prob,name_states = NULL) {
   attr(value, "class") <- "transition_matrix"
   value
 }
-
 #######################################################################
-# 2c.  Attribute parameters to probabilities of transiiton matrix
-#' Attribute parameters to probabilities of transiiton matrix
+# 2c.  Attribute parameters to probabilities of transition matrix
+#' Attribute parameters to probabilities of transition matrix
 #' @param tm A transition matrix in the format from the package 'mstate'
 #' @param parameter_values name value pairs of parameter values in the probability matrix
-#' @return the transtion table with the probabilites
+#' @return the transition table with the probabilites
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
@@ -330,7 +329,7 @@ eval_assign_trans_prob <- function(tm, parameter_values) {
 
 #######################################################################
 # 2d. Check the transition matrix
-#' Check the tranisition probabilties row sum is 1
+#' Check the transition probabilties row sum is 1
 #' @param trans_mat  transition matrix
 #' @return rowsum if they add upto 1 else error
 #' @examples
@@ -431,10 +430,10 @@ strategy <- function(trans_mat, states, name, trans_cost = NULL, trans_util = NU
     }
   }
   if (!is.null(trans_cost) & class(trans_cost) != "transition_cost_util") {
-    stop("Error - transiiton cost should be of type transition_cost_util with same dimentions are transition matrix")
+    stop("Error - transition cost should be of type transition_cost_util with same dimentions are transition matrix")
   }
   if (!is.null(trans_util) & class(trans_util) != "transition_cost_util") {
-    stop("Error - transiiton utility should be of type transition_cost_util with same dimentions are transition matrix")
+    stop("Error - transition utility should be of type transition_cost_util with same dimentions are transition matrix")
   }
   name_strategy <- name
   transition_cost <- trans_cost

@@ -9,11 +9,11 @@ summary_plot_psa(result_psa_params_control,
   comparator = NULL)
 }
 \arguments{
-\item{result_psa_params_control}{result from determnistic sensitivity analysis
+\item{result_psa_params_control}{result from deterministic sensitivity analysis
 for first or control model}
 
-\item{result_psa_params_treat}{result from determnistic sensitivity analysis
-for the compartive markov mdoel}
+\item{result_psa_params_treat}{result from deterministic sensitivity analysis
+for the comparative markov mdoel}
 
 \item{threshold}{threshold value of WTP}
 

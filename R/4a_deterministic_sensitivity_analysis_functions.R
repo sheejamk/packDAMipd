@@ -1,8 +1,8 @@
 #######################################################################
 #' Define parameter lists for deterministic sensitivity analysis
 #' @param param_list  list of parameters that used to define markov model
-#' @param low_values list of lower values of those parameters for whom the sesitivity is to be estimated
-#' @param upp_values list of upper values of those parameters for whom the sesitivity is to be estimated
+#' @param low_values list of lower values of those parameters for whom the sensitivity is to be estimated
+#' @param upp_values list of upper values of those parameters for whom the sensitivity is to be estimated
 #' @return table for sensitivity analysis
 #' @examples
 #' param_list<-define_parameters(cost_zido = 2278,cost_direct_med_A = 1701,

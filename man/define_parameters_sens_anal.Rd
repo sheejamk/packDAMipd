@@ -10,9 +10,9 @@ define_parameters_sens_anal(param_list, low_values, upp_values)
 \arguments{
 \item{param_list}{list of parameters that used to define markov model}
 
-\item{low_values}{list of lower values of those parameters for whom the sesitivity is to be estimated}
+\item{low_values}{list of lower values of those parameters for whom the sensitivity is to be estimated}
 
-\item{upp_values}{list of upper values of those parameters for whom the sesitivity is to be estimated}
+\item{upp_values}{list of upper values of those parameters for whom the sensitivity is to be estimated}
 }
 \value{
 table for sensitivity analysis

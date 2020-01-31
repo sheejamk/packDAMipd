@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_model_functions.R
 \name{check_trans_prob}
 \alias{check_trans_prob}
-\title{Check the tranisition probabilties row sum is 1}
+\title{Check the transition probabilties row sum is 1}
 \usage{
 check_trans_prob(trans_mat)
 }
@@ -13,7 +13,7 @@ check_trans_prob(trans_mat)
 rowsum if they add upto 1 else error
 }
 \description{
-Check the tranisition probabilties row sum is 1
+Check the transition probabilties row sum is 1
 }
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))

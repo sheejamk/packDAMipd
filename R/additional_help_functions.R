@@ -1,7 +1,7 @@
 #######################################################################
 #' Function to add the probabilities in a vector
 #' @param probs probabilities
-#' @return sum of probabilities if sucess else -1
+#' @return sum of probabilities if success else -1
 #' @examples add_probabilities(c(0.6,0.2))
 #' @export
 add_probabilities <-  function(probs) {
@@ -18,7 +18,7 @@ add_probabilities <-  function(probs) {
 #######################################################################
 #' Function to check the sum of probabilites in a vector
 #' @param avector vector of probabilities
-#' @return sum of probabilities if sucess else error
+#' @return sum of probabilities if success else error
 #' @examples checksum_rowprob(c(0.6,0.4))
 #' @export
 checksum_rowprob <-  function(avector) {
@@ -289,7 +289,7 @@ check_estimate_substitute_proper_params <- function(the_expr){
 #######################################################################
 #' Function to find the keyword for regression methods
 #' @param text regresssion method
-#' @param additional_info additional infomration required
+#' @param additional_info additional information required
 #' @return the keyword that should be used in R for regression analysis
 #' @examples find_keyword_regression_method("linear")
 #' @export

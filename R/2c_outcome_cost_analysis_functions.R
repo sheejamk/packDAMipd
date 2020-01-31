@@ -133,7 +133,7 @@ map_eq5d5Lto3L_VanHout = function(ind_part_data,eq5d_nrcode){
 ##########################################################################################################
 #' Function to convert ADL scores to a T score
 #' @param ind_part_data a dataframe containing IPD data
-#' @param adl_related_words reltaed words to find out which columns contain adl data
+#' @param adl_related_words related words to find out which columns contain adl data
 #' @param adl_scoring ADL scoring table
 #' @param adl_scoring_data_columns, ADL scoring table columnnames
 #' @param adl_nrcode non response code for ADL

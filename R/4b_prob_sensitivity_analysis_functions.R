@@ -114,10 +114,10 @@ do_psa <- function(this_markov,psa_table,num_rep){
 }
 #######################################################################
 #' Function to do deterministic sensitivity analysis
-#' @param result_psa_params_control  result from determnistic sensitivity analysis
+#' @param result_psa_params_control  result from deterministic sensitivity analysis
 #' for first or control model
-#' @param result_psa_params_treat result from determnistic sensitivity analysis
-#' for the compartive markov mdoel
+#' @param result_psa_params_treat result from deterministic sensitivity analysis
+#' for the comparative markov mdoel
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
 #' @return plot of  sensitivity analysis
@@ -198,10 +198,10 @@ list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_par
 }
 #######################################################################
 #' Function to do deterministic sensitivity analysis
-#' @param result_psa_params_control  result from determnistic sensitivity analysis
+#' @param result_psa_params_control  result from deterministic sensitivity analysis
 #' for first or control model
-#' @param result_psa_params_treat result from determnistic sensitivity analysis
-#' for the compartive markov mdoel
+#' @param result_psa_params_treat result from deterministic sensitivity analysis
+#' for the comparative markov mdoel
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
 #' @return plot of  sensitivity analysis
