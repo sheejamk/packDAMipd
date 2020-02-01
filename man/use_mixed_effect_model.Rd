@@ -14,7 +14,7 @@ use_mixed_effect_model(param_to_be_estimated, dataset, indep_var,
 
 \item{indep_var}{column name of independent variable}
 
-\item{covariates, }{independent variables , NA by default}
+\item{covariates, }{independent variables, NA by default}
 }
 \value{
 result regression result with plot if success and -1, if failure

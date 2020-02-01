@@ -27,6 +27,6 @@ the results of the regression analysis
 Get the parameter values using the survival analysis method FH
 }
 \examples{
-data_for_survival<-survival::aml
-surv_estimated_aml<-use_fh_survival("status", data_for_survival, "x", covariates_list=NA, "time")
+data_for_survival <- survival::aml
+surv_estimated_aml <-use_fh_survival("status", data_for_survival, "x", covariates_list= NA, "time")
 }

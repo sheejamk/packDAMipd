@@ -17,5 +17,5 @@ if success, else error
 Function to get the details of the time point column
 }
 \examples{
-get_timepoint_details(data.frame("time" = c(21,15), "arm" = c("control", "intervention")))
+get_timepoint_details(data.frame("time" = c(21, 15), "arm" = c("control", "intervention")))
 }

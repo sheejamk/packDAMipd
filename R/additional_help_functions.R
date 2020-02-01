@@ -51,13 +51,13 @@ random_number_prob_distbn <-  function(prob_distbn, param = NULL) {
           }
         }
         if (prob_distbn ==  "beta")
-          this_rand  <-   rbeta(1, param[1], param[2])
+          this_rand <- rbeta(1, param[1], param[2])
         if (prob_distbn ==  "gamma")
-          this_rand  <-   rgamma(1, param[1], param[2])
+          this_rand <- rgamma(1, param[1], param[2])
         if (prob_distbn ==  "normal")
-          this_rand  <-   rnorm(1, param[1], param[2])
+          this_rand <- rnorm(1, param[1], param[2])
         if (prob_distbn ==  "normal")
-          this_rand  <-   rlnorm(1, param[1], param[2])
+          this_rand <- rlnorm(1, param[1], param[2])
         return(this_rand)
 
       }else{
@@ -103,7 +103,7 @@ find_parameters_btn_operators <-  function(expr){
     }else{
       end = posi[i] - 1
     }
-    params <- append(params,trimws(stringr::str_sub(parsed, start = start, end = end)))
+    params <- append(params, trimws(stringr::str_sub(parsed, start = start, end = end)))
   }
   return(params)
 }
@@ -131,7 +131,7 @@ find_param_from_def_prob_distrbn <- function(expr){
       end = posi[i] - 1
     }
     this_param <- trimws(stringr::str_sub(res, start = start, end = end))
-    expr_found <- append(expr_found,this_param)
+    expr_found <- append(expr_found, this_param)
   }
   final2 <-  length(expr_found)
   param_found <- list()
@@ -141,7 +141,7 @@ find_param_from_def_prob_distrbn <- function(expr){
       stop("Error - this expression has more than one equal sign")
     }
     this_param <- trimws(stringr::str_sub(expr_found[i], start = 1, end = posi[1 ] - 1))
-    param_found <- append(param_found,this_param)
+    param_found <- append(param_found, this_param)
   }
   param_found <- unlist(param_found)
   return(param_found)
@@ -217,7 +217,7 @@ find_keyword_rand_generation <- function(text){
 #' @return the keyword that should be used in R for generating random numbers
 #' @examples check_estimating_required_params(c("mean,sd"),c("shape", "rate"), "gamma(mean =10 ,sd=1)", "gamma")
 #' @export
-check_estimating_required_params <- function(params_found,required_params,the_expr,distr_key){
+check_estimating_required_params <- function(params_found,required_params, the_expr,distr_key){
   distr_key <- trimws(toupper(distr_key))
   res <- regmatches(the_expr, regexec('\\((.*?)\\)', the_expr))[[1]][2]
   posi <-  unlist(stringr::str_locate_all(res,","))
@@ -236,7 +236,7 @@ check_estimating_required_params <- function(params_found,required_params,the_ex
     }
     this_param <- trimws(stringr::str_sub(res, start = start, end = end))
     this_value = eval(parse(text = this_param))
-    values_found <- append(values_found,this_value)
+    values_found <- append(values_found, this_value)
   }
   values_found <- unlist(values_found)
   if (distr_key  ==  "GAMMA" && sum(params_found ==  c("mean","sd")) == 2) {
@@ -270,7 +270,7 @@ check_estimate_substitute_proper_params <- function(the_expr){
   }
   if (sum(is.na(index)) == length(index)) {
     required_params <- unlist(required_params[1])
-    estim_params <- check_estimating_required_params(params_found,required_params,the_expr,distr_key)
+    estim_params <- check_estimating_required_params(params_found,required_params, the_expr,distr_key)
     if (sum(estim_params)  ==  0)
       stop("Check parameters that define the probability distribution")
     create_expr = ""
@@ -289,7 +289,7 @@ check_estimate_substitute_proper_params <- function(the_expr){
 }
 #######################################################################
 #' Function to find the keyword for regression methods
-#' @param text regresssion method
+#' @param text regression method
 #' @param additional_info additional information required
 #' @return the keyword that should be used in R for regression analysis
 #' @examples find_keyword_regression_method("linear")

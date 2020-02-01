@@ -16,12 +16,12 @@ true or false
 Check if the values of health states are provided
 }
 \examples{
-well <-  health_state("well", cost=0,utility=1)
-disabled <- health_state("disabled", cost=100,utility=1)
-dead <- health_state("dead", cost=0,utility=0)
-tmat <- rbind(c(1, 2,3), c(NA, 4,5),c(NA,NA,6))
+well <-  health_state("well", cost = 0, utility = 1)
+disabled <- health_state("disabled", cost = 100, utility = 1)
+dead <- health_state("dead", cost = 0, utility = 0)
+tmat <- rbind(c(1, 2,3), c(NA, 4,5), c(NA,NA,6))
 colnames(tmat) <- rownames(tmat) <- c("well","disabled" ,"dead")
-tm <- transition_matrix(3, tmat, c(0.6,0.2,0.2,0.6,0.4,1))
+tm <- transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4,1))
 health_states <- combine_state(well,disabled,dead)
 check_values_states(health_states)
 }

@@ -18,5 +18,5 @@ the paramvalue
 Get the parameter values from reading a file
 }
 \examples{
-a <- get_parameter_direct("cost_IT", param_value=100)
+a <- get_parameter_direct("cost_IT", param_value= 100)
 }

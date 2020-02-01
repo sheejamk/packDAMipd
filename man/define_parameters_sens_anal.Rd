@@ -23,13 +23,13 @@ Define parameter lists for deterministic sensitivity analysis
 \examples{
 param_list<-define_parameters(cost_zido = 2278,cost_direct_med_A = 1701,
 cost_comm_care_A = 1055,cost_direct_med_B = 1774,cost_comm_care_B = 1278,
-cost_direct_med_C = 6948,cost_comm_care_C = 2059,tpAtoA = 1251/(1251+483),
-tpAtoB = 350/(350+1384),tpAtoC = 116/(116+1618),tpAtoD = 17/(17+1717),
-tpBtoB = 731/(731+527),tpBtoC = 512/(512+746),tpBtoD = 15/(15+1243),
-tpCtoC = 1312/(1312+437), tpCtoD = 437/(437+1312),tpDtoD = 1,
-cost_health_A = "cost_direct_med_A+ cost_comm_care_A",
-cost_health_B = "cost_direct_med_B+ cost_comm_care_B",
-cost_health_C = "cost_direct_med_C+ cost_comm_care_C",
+cost_direct_med_C = 6948,cost_comm_care_C = 2059, tpAtoA = 1251/(1251 + 483),
+tpAtoB = 350/(350 + 1384), tpAtoC = 116/(116 + 1618), tpAtoD = 17/(17 + 1717),
+tpBtoB = 731/(731 + 527), tpBtoC = 512/(512 + 746), tpBtoD = 15/(15 + 1243),
+tpCtoC = 1312/(1312 + 437), tpCtoD = 437/(437 + 1312), tpDtoD = 1,
+cost_health_A = "cost_direct_med_A +  cost_comm_care_A",
+cost_health_B = "cost_direct_med_B +  cost_comm_care_B",
+cost_health_C = "cost_direct_med_C +  cost_comm_care_C",
 cost_drug = "cost_zido")
 low_values<-define_parameters(cost_direct_med_B = 177.4,cost_comm_care_C = 205.9)
 upp_values<-define_parameters(cost_direct_med_B = 17740,cost_comm_care_C = 20590)

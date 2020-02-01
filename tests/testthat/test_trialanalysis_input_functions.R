@@ -1,4 +1,15 @@
 ###############################################################################
+context("testing loading trial data")
+test_that("testing loading trial data",  {
+  file = system.file("extdata", "trial_data.csv",package = "packDAMipd")
+  data <- read.csv(file)
+  expect_equal(load_trial_data(file),data)
+  this_data <- load_trial_data()
+  expect_equal(colnames(this_data),colnames(data))
+  expect_equal(names(load_trial_data()), names(data))
+})
+
+###############################################################################
 context("testing getting the trial arm details")
 test_that("testing getting the trial arm details",  {
   details <- get_trial_arm_details(data.table::data.table("Age" = c(21, 15), "arm" = c("control", "intervention")))
@@ -63,3 +74,14 @@ test_that("testing getting the outcome details",  {
   expect_error(get_eq5d_details(data.table::data.table("qol1" = c(1, 2), "qol2" = c(1, 2))))
   expect_error(get_eq5d_details(data.table::data.table("point" = c(21, 15))))
 })
+
+###############################################################################
+context("testing check treatment arm")
+test_that("testing check treatment arm",  {
+  expect_equal(check_treatment_arm("control"),0)
+  expect_equal(check_treatment_arm("intervention"),0)
+  expect_error(check_treatment_arm("inter"))
+  expect_error(check_treatment_arm("cntrl"))
+})
+
+

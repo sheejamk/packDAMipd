@@ -203,7 +203,6 @@ Now we will define the parameters for the sensitivity analysis. The parameters a
 ```{r}
 sample_list <- define_parameters(rr = "lognormal(mean = 0.509, sd = 0.173)",
                                  cost_comm_care_C = "gamma(mean = 2756, sd = sqrt(2756))")
-
 param_table_mono <- define_parameters_psa(mono_param_list, sample_list)
 param_table_combo <- define_parameters_psa(comb_param_list,sample_list)
 result_psa_mono = do_psa(mono_markov,param_table_mono,5)

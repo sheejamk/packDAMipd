@@ -29,7 +29,7 @@ the results of the regression analysis
 Get the parameter values using the survival analysis parametric regression
 }
 \examples{
-data_for_survival<-survival::aml
+data_for_survival <- survival::aml
 surv_estimated_aml <- use_parametric_regression("status", data_for_survival,"x",
-info_distribution="weibull", covariates_list=NA,"time")
+info_distribution="weibull", covariates_list= NA,"time")
 }

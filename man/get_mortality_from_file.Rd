@@ -20,7 +20,7 @@ the paramvalue
 Get the parameter values from reading a file
 }
 \examples{
-paramfile=system.file("extdata","LifeTable_USA_Mx_2015.csv",
+paramfile= system.file("extdata","LifeTable_USA_Mx_2015.csv",
 package = "packDAMipd")
 a <- get_mortality_from_file(paramfile, age = 10, gender = NULL)
 }

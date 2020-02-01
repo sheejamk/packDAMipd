@@ -23,7 +23,7 @@ test_that("testing probability distributions",  {
 ###############################################################################
 context("testing checksum row probabilities")
 test_that("testing checksum row probabilities",  {
-  expect_equal(checksum_rowprob(c(0.1, 0.3, 0.4,0.2)),1)
+  expect_equal(checksum_rowprob(c(0.1, 0.3, 0.4, 0.2)),1)
   expect_equal(checksum_rowprob(c(0.2, 0.8)),1)
   expect_error(checksum_rowprob(c(0.2, 0.1)))
   expect_error(checksum_rowprob(c(0.2, "g")))
@@ -32,7 +32,7 @@ test_that("testing checksum row probabilities",  {
 ###############################################################################
 context("testing random_number_prob_distbn")
 test_that("testing random_number_prob_distbn",  {
-  expect_error(random_number_prob_distbn("unif",c(1,0.2)))
+  expect_error(random_number_prob_distbn("unif",c(1, 0.2)))
   expect_error(random_number_prob_distbn("beta"))
   expect_error(random_number_prob_distbn("beta", c(1)))
 })

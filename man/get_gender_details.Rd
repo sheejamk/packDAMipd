@@ -17,5 +17,5 @@ if success, else error
 Function to get the details of the gender column
 }
 \examples{
-get_gender_details(data.frame("Age" = c(21,15), "sex" = c("m", "f")))
+get_gender_details(data.frame("Age" = c(21, 15), "sex" = c("m", "f")))
 }

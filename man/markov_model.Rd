@@ -36,5 +36,5 @@ a <- health_state("Healthy", 1, 1, 0, FALSE)
 b <- health_state("Dead", 1, 0, 0, TRUE)
 health_states <- combine_state(a, b)
 this.strategy <- strategy(tm, health_states, "intervention")
-markov_model(this.strategy, 10, c(1, 0), c(0,0), c(0,0))
+markov_model(this.strategy, 10, c(1, 0), c(0, 0), c(0, 0))
 }

@@ -28,7 +28,7 @@ the results of the regression analysis
 Get the parameter values using the survival analysis using cox proportional hazard
 }
 \examples{
-data_for_survival<-survival::aml
+data_for_survival <- survival::aml
 surv_estimated_aml <- use_coxph_survival("status", data_for_survival, "x",
 covariates_list = NA, "time")
 }

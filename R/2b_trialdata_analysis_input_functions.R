@@ -30,7 +30,7 @@ load_trial_data <- function(file = NULL){
 #' @return the name of the variable related to trial arm and the unique contents
 #' if success, else error
 #' @examples
-#' get_trial_arm_details(data.frame("Age" = c(21,15),
+#' get_trial_arm_details(data.frame("Age" = c(21, 15),
 #' "arm" = c("control", "intervention")))
 #' @export
 get_trial_arm_details  <-  function(trialdata) {
@@ -63,7 +63,7 @@ get_trial_arm_details  <-  function(trialdata) {
 #' @return the name of the variable related to gender and the unique contents
 #' if success, else error
 #' @examples
-#' get_gender_details(data.frame("Age" = c(21,15), "sex" = c("m", "f")))
+#' get_gender_details(data.frame("Age" = c(21, 15), "sex" = c("m", "f")))
 #' @importFrom IPDFileCheck  check_colno_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
@@ -97,7 +97,7 @@ get_gender_details  <-  function(trialdata) {
 #' @return the name of the variable related to age and the unique contents
 #' if success, else error
 #' @examples
-#' get_age_details(data.frame("Age" = c(21,15), "arm" = c("control", "intervention")))
+#' get_age_details(data.frame("Age" = c(21, 15), "arm" = c("control", "intervention")))
 #' @importFrom IPDFileCheck  check_colno_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
@@ -131,7 +131,7 @@ get_age_details  <-  function(trialdata) {
 #' @return the name of the variable related to time point and the unique contents
 #' if success, else error
 #' @examples
-#' get_timepoint_details(data.frame("time" = c(21,15), "arm" = c("control", "intervention")))
+#' get_timepoint_details(data.frame("time" = c(21, 15), "arm" = c("control", "intervention")))
 #' @importFrom IPDFileCheck  check_colno_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
@@ -162,7 +162,7 @@ get_timepoint_details <- function(trialdata) {
 # 2.3 Get the required fields and codes for qol measure -EQ5D and
 # anyother the analysis requires
 #######################################################################
-# 2.3,1 Get the colnames of outcome column
+# 2.3, 1 Get the colnames of outcome column
 #' Function to get the details of the outcome column
 #' @param trialdata, data containing individual level trial data
 #' @param name, name of the variable

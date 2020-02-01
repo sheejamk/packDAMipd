@@ -22,7 +22,7 @@
 #' st <- health_state("IT", 100, 0.4, 0, FALSE)
 #' @import data.table
 #' @export
-health_state <- function(name, cost, utility, time=0, absorb = FALSE) {
+health_state <- function(name, cost, utility, time= 0, absorb = FALSE) {
   if (is.character(cost)) {
     cost <- parse(text = cost)
   }
@@ -109,12 +109,12 @@ combine_state <- function(...) {
 #' @param health_states  list of health_state objects
 #' @return true or false
 #' @examples
-#' well <-  health_state("well", cost=0,utility=1)
-#' disabled <- health_state("disabled", cost=100,utility=1)
-#' dead <- health_state("dead", cost=0,utility=0)
-#' tmat <- rbind(c(1, 2,3), c(NA, 4,5),c(NA,NA,6))
+#' well <-  health_state("well", cost = 0, utility = 1)
+#' disabled <- health_state("disabled", cost = 100, utility = 1)
+#' dead <- health_state("dead", cost = 0, utility = 0)
+#' tmat <- rbind(c(1, 2,3), c(NA, 4,5), c(NA,NA,6))
 #' colnames(tmat) <- rownames(tmat) <- c("well","disabled" ,"dead")
-#' tm <- transition_matrix(3, tmat, c(0.6,0.2,0.2,0.6,0.4,1))
+#' tm <- transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4,1))
 #' health_states <- combine_state(well,disabled,dead)
 #' check_names_states(health_states)
 #' @export
@@ -139,14 +139,14 @@ check_names_states <- function(health_states) {
 #' @param assigned_param name value pairs of parameter values in the probability matrix
 #' @return health states with assigned values
 #' @examples
-#' well <-  health_state("well", cost="cost_A",utility=1)
-#' disabled <- health_state("disabled", cost=100,utility=1)
-#' dead <- health_state("dead", cost=0,utility=0)
-#' tmat <- rbind(c(1, 2,3), c(NA, 4,5),c(NA,NA,6))
+#' well <-  health_state("well", cost ="cost_A", utility = 1)
+#' disabled <- health_state("disabled", cost = 100, utility = 1)
+#' dead <- health_state("dead", cost = 0, utility = 0)
+#' tmat <- rbind(c(1, 2,3), c(NA, 4,5), c(NA,NA,6))
 #' colnames(tmat) <- rownames(tmat) <- c("well","disabled" ,"dead")
-#' tm <- transition_matrix(3, tmat, c(0.6,0.2,0.2,0.6,0.4,1))
+#' tm <- transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4,1))
 #' health_states <- combine_state(well,disabled,dead)
-#' eval_assign_values_states(health_states,c(cost_A=100))
+#' eval_assign_values_states(health_states, c(cost_A= 100))
 #' @export
 eval_assign_values_states <- function(health_states, assigned_param) {
   no_states <- length(health_states)
@@ -165,13 +165,13 @@ eval_assign_values_states <- function(health_states, assigned_param) {
             all_params_expr <- find_parameters_btn_operators(string_entry_evalu)
             for (m in 1:length(all_params_expr)) {
               this_par_name <- all_params_expr[[m]]
-              this_ind <- match(this_par_name,names(assigned_param))
-              assign(this_par_name,assigned_param[[this_ind]])
+              this_ind <- match(this_par_name, names(assigned_param))
+              assign(this_par_name, assigned_param[[this_ind]])
             }
-            this_state <- set_var_state(this_state,this_name,eval(parse(text = entry)))
+            this_state <- set_var_state(this_state, this_name, eval(parse(text = entry)))
           }
         }else{
-          this_state <- set_var_state(this_state,this_name,entry)
+          this_state <- set_var_state(this_state, this_name, entry)
         }
       }
     }
@@ -186,12 +186,12 @@ eval_assign_values_states <- function(health_states, assigned_param) {
 #' @param health_states  list of health_state objects
 #' @return true or false
 #' @examples
-#' well <-  health_state("well", cost=0,utility=1)
-#' disabled <- health_state("disabled", cost=100,utility=1)
-#' dead <- health_state("dead", cost=0,utility=0)
-#' tmat <- rbind(c(1, 2,3), c(NA, 4,5),c(NA,NA,6))
+#' well <-  health_state("well", cost = 0, utility = 1)
+#' disabled <- health_state("disabled", cost = 100, utility = 1)
+#' dead <- health_state("dead", cost = 0, utility = 0)
+#' tmat <- rbind(c(1, 2,3), c(NA, 4,5), c(NA,NA,6))
 #' colnames(tmat) <- rownames(tmat) <- c("well","disabled" ,"dead")
-#' tm <- transition_matrix(3, tmat, c(0.6,0.2,0.2,0.6,0.4,1))
+#' tm <- transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4,1))
 #' health_states <- combine_state(well,disabled,dead)
 #' check_values_states(health_states)
 #' @export
@@ -202,7 +202,7 @@ check_values_states <- function(health_states) {
     names_length <- length(names(this_state))
     for (i in seq_len(names_length)) {
       this_name <- names(this_state)[i]
-      if (this_name %in% c( "cost", "utility", "state_time")) {
+      if (this_name %in% c("cost", "utility", "state_time")) {
         if (is.language(this_state[this_name]) || is.na(as.numeric(this_state[this_name])))
           return(FALSE)
       }
@@ -258,7 +258,7 @@ define_transition_table <- function(tmat) {
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 #' transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0, 0.3))
 #' @export
-transition_matrix <- function(no_states, tmat, list_prob,name_states = NULL) {
+transition_matrix <- function(no_states, tmat, list_prob, name_states = NULL) {
   if (is.null(name_states)) {
     names <- seq(1:no_states)
   } else {
@@ -294,7 +294,7 @@ transition_matrix <- function(no_states, tmat, list_prob,name_states = NULL) {
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 #' tmat<-transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
-#' tmat_assigned<-eval_assign_trans_prob(tmat,c(p1=0.2, p2=0.3, p3=0.4, p4=0.5))
+#' tmat_assigned<-eval_assign_trans_prob(tmat, c(p1= 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5))
 #' @export
 eval_assign_trans_prob <- function(tm, parameter_values) {
   dimen <- dim(tm$trans_matrix)
@@ -310,7 +310,7 @@ eval_assign_trans_prob <- function(tm, parameter_values) {
           # if entry is character process them else numeric value
           if (is.character(entry)) {
             # entry should be there in parameter_values passed else error
-            index = match(entry,names(parameter_values))
+            index = match(entry, names(parameter_values))
             if (is.null(index) || is.na(index)) {
               stop("Cant determine the value of probability -please check the parameter values")
             }else{
@@ -323,7 +323,7 @@ eval_assign_trans_prob <- function(tm, parameter_values) {
       }
     }
   }
-  tm$trans_matrix <- apply(tm$trans_matrix,2,as.numeric)
+  tm$trans_matrix <- apply(tm$trans_matrix,2, as.numeric)
   return(tm)
 }
 
@@ -491,9 +491,9 @@ init_trace <- function(health_states, cycles) {
 #' b <- health_state("Dead", 1, 0, 0, TRUE)
 #' health_states <- combine_state(a, b)
 #' this.strategy <- strategy(tm, health_states, "intervention")
-#' markov_model(this.strategy, 10, c(1, 0), c(0,0), c(0,0))
+#' markov_model(this.strategy, 10, c(1, 0), c(0, 0), c(0, 0))
 #' @export
-markov_model <- function(current_strategy, cycles, initial_state, initial_state_costs, initial_state_utilities, discount = c(0,0), parameter_values=NULL) {
+markov_model <- function(current_strategy, cycles, initial_state, initial_state_costs, initial_state_utilities, discount = c(0, 0), parameter_values=NULL) {
   if (length(discount) != 2) {
     stop("Please provide the discount rates for both qalys and costs")
   }
@@ -565,9 +565,9 @@ markov_model <- function(current_strategy, cycles, initial_state, initial_state_
   }
   nozeros <- rep(0, cycles + 1)
 
-  cost_matrix <- cbind(cost_matrix,nozeros,nozeros)
-  utility_matrix <- cbind(utility_matrix,nozeros,nozeros)
-  trace_matrix <- cbind(trace_matrix,nozeros)
+  cost_matrix <- cbind(cost_matrix, nozeros, nozeros)
+  utility_matrix <- cbind(utility_matrix, nozeros, nozeros)
+  trace_matrix <- cbind(trace_matrix, nozeros)
   for (i in 1:ending) {
     cost_matrix[i, no_states + 1] <- sum(cost_matrix[i,])/((1 + discount[1]) ^ (i - 1))
     utility_matrix[i, no_states + 1] <- sum(utility_matrix[i,]) * (1/(1 + discount[2])^(i - 1))
@@ -581,12 +581,12 @@ markov_model <- function(current_strategy, cycles, initial_state, initial_state_
   names_cost_matrix[no_states + 2] <- "Cumulative cost"
   names_utility_matrix[no_states + 1] <- "Total utility"
   names_utility_matrix[no_states + 2] <- "Cumulative utility"
-  trace_matrix[,no_states + 1] <- c(0,seq_len(cycles))
+  trace_matrix[, no_states + 1] <- c(0,seq_len(cycles))
   names_trace_matrix[no_states + 1] <- "Cycles"
   colnames(trace_matrix) <- names_trace_matrix
   colnames(cost_matrix) <- names_cost_matrix
   colnames(utility_matrix) <- names_utility_matrix
-  colnames(param_matrix) <- c("cycle",names(parameter_values))
+  colnames(param_matrix) <- c("cycle", names(parameter_values))
   value <- list(
     strategy = current_strategy,
     transition_matrix = trans_mat,
@@ -611,24 +611,24 @@ markov_model <- function(current_strategy, cycles, initial_state, initial_state_
 #' @param ...  any additional objects
 #' @return joined objects of type markov_model
 #' @examples
-#' well <-  health_state("well", cost=0,utility=1)
-#' disabled <- health_state("disabled", cost=100,utility=1)
-#' dead <- health_state("dead", cost=0,utility=0)
-#' tmat <- rbind(c(1, 2,3), c(NA, 4,5),c(NA,NA,6))
+#' well <-  health_state("well", cost = 0, utility = 1)
+#' disabled <- health_state("disabled", cost = 100, utility = 1)
+#' dead <- health_state("dead", cost = 0, utility = 0)
+#' tmat <- rbind(c(1, 2,3), c(NA, 4,5), c(NA,NA,6))
 #' colnames(tmat) <- rownames(tmat) <- c("well","disabled" ,"dead")
-#' tm <- transition_matrix(3, tmat, c(0.6,0.2,0.2,0.6,0.4,1))
+#' tm <- transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4,1))
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "example")
-#' this_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
-#' well <-  health_state("well", cost=0,utility=1)
-#' disabled <- health_state("disabled", cost=10,utility=0.5)
-#' dead <- health_state("dead", cost=0,utility=0)
-#' tmat <- rbind(c(1, 2,3), c(NA, 4,5),c(NA,NA,6))
+#' this_markov <-markov_model(this.strategy, 24, c(1000, 0, 0), c(0, 0, 0), c(0, 0, 0))
+#' well <-  health_state("well", cost = 0, utility = 1)
+#' disabled <- health_state("disabled", cost = 10, utility = 0.5)
+#' dead <- health_state("dead", cost = 0, utility = 0)
+#' tmat <- rbind(c(1, 2,3), c(NA, 4,5), c(NA,NA,6))
 #' colnames(tmat) <- rownames(tmat) <- c("well","disabled" ,"dead")
-#' tm <- transition_matrix(3, tmat, c(0.4,0.4,0.2,0.6,0.4,1))
+#' tm <- transition_matrix(3, tmat, c(0.4, 0.4, 0.2, 0.6, 0.4,1))
 #' health_states <- combine_state(well,disabled,dead)
 #' this.strategy <- strategy(tm, health_states, "example")
-#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0,0),c(0,0,0),c(0,0,0))
+#' sec_markov <-markov_model(this.strategy, 24, c(1000, 0, 0), c(0, 0, 0), c(0, 0, 0))
 #' list_markov <- combine_markov(this_markov, sec_markov)
 #' @export
 #' @importFrom methods cbind2
@@ -657,7 +657,7 @@ combine_markov <- function(markov1, ...) {
 #' b <- health_state("Dead", 1, 0, 0, TRUE)
 #' health_states <- combine_state(a, b)
 #' this.strategy <- strategy(tm, health_states, "intervention")
-#' this_markov <- markov_model(this.strategy, 10, c(1, 0),c(0,0),c(0,0))
+#' this_markov <- markov_model(this.strategy, 10, c(1, 0), c(0, 0), c(0, 0))
 #' p<-plot_model(this_markov)
 #' @export
 plot_model <- function(markov){
@@ -665,7 +665,7 @@ plot_model <- function(markov){
     stop("The object has to be of class markov_model")
    this_trace <- data.frame(markov$trace_matrix)
     this_trace_melted <- reshape2::melt(this_trace, id.var = "Cycles")
-   p <- ggplot2::ggplot(this_trace_melted, ggplot2::aes( x = this_trace_melted$Cycles, y = this_trace_melted$value, col = this_trace_melted$variable)) +
+   p <- ggplot2::ggplot(this_trace_melted, ggplot2::aes(x = this_trace_melted$Cycles, y = this_trace_melted$value, col = this_trace_melted$variable)) +
      ggplot2::geom_line() + ggplot2::labs(x = "Cycles") + ggplot2::labs(y = "States") +
      ggplot2::theme(legend.title = ggplot2::element_blank())
    return(p)
@@ -675,11 +675,11 @@ plot_model <- function(markov){
 #' @param param_list list of parameters, some of which can be nested
 #' @return list of assigned parameters
 #' @examples
-#' param_list =define_parameters(cost_direct_med_A = 1701, cost_comm_care_A = 1055,
+#' param_list = define_parameters(cost_direct_med_A = 1701, cost_comm_care_A = 1055,
 #' cost_direct_med_B = 1774, cost_comm_care_B = 1278, cost_direct_med_C = 6948,
-#' cost_comm_care_C = 2059,cost_zido = 2456,cost_health_A = "cost_direct_med_A+ cost_comm_care_A",
+#' cost_comm_care_C = 2059, cost_zido = 2456, cost_health_A = "cost_direct_med_A+ cost_comm_care_A",
 #' cost_health_B = "cost_direct_med_B+ cost_comm_care_B",
-#' cost_health_C = "cost_direct_med_C + cost_comm_care_C",cost_drug = "cost_zido")
+#' cost_health_C = "cost_direct_med_C + cost_comm_care_C", cost_drug = "cost_zido")
 #' assign_parameters(param_list)
 #' @export
 assign_parameters <- function(param_list){
@@ -701,9 +701,9 @@ assign_parameters <- function(param_list){
         if (!is.numeric(string_this_value_evalu)) {
             stop("Error - the evaluation should bring a numerical value")
         }else{
-          assign(names(param_list[j]),eval(parse(text = string_this_value)))
-          assigned_list <-  append(assigned_list,eval(parse(text = string_this_value)))
-          names_assigned_list <- append(names_assigned_list,names(param_list[j]))
+          assign(names(param_list[j]), eval(parse(text = string_this_value)))
+          assigned_list <-  append(assigned_list, eval(parse(text = string_this_value)))
+          names_assigned_list <- append(names_assigned_list, names(param_list[j]))
         }
       }
     }
@@ -721,11 +721,11 @@ assign_parameters <- function(param_list){
 #' #' @param param_list list of parameters, some of which can be nested
 #' #' @return list of assigned parameters
 #' #' @examples
-#' #' param_list =define_parameters(cost_direct_med_A = 1701, cost_comm_care_A = 1055,
+#' #' param_list = define_parameters(cost_direct_med_A = 1701, cost_comm_care_A = 1055,
 #' #' cost_direct_med_B = 1774, cost_comm_care_B = 1278, cost_direct_med_C = 6948,
-#' #' cost_comm_care_C = 2059,cost_zido = 2456,cost_health_A = "cost_direct_med_A+ cost_comm_care_A",
+#' #' cost_comm_care_C = 2059, cost_zido = 2456, cost_health_A = "cost_direct_med_A+ cost_comm_care_A",
 #' #' cost_health_B = "cost_direct_med_B+ cost_comm_care_B",
-#' #' cost_health_C = "cost_direct_med_C + cost_comm_care_C",cost_drug = "cost_zido")
+#' #' cost_health_C = "cost_direct_med_C + cost_comm_care_C", cost_drug = "cost_zido")
 #' #' assign_parameters(param_list)
 #' #' @export
 #' assign_parameters <- function(param_list){
@@ -772,9 +772,9 @@ assign_parameters <- function(param_list){
 #'             }
 #'           }
 #'          }else{
-#'           assign(names(param_list[j]),eval(parse(text = string_this_value)))
-#'           assigned_list <-  append(assigned_list,eval(parse(text = string_this_value)))
-#'           names_assigned_list <- append(names_assigned_list,names(param_list[j]))
+#'           assign(names(param_list[j]), eval(parse(text = string_this_value)))
+#'           assigned_list <-  append(assigned_list, eval(parse(text = string_this_value)))
+#'           names_assigned_list <- append(names_assigned_list, names(param_list[j]))
 #'         }
 #'       }
 #'     }

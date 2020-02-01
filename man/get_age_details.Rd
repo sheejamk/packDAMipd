@@ -17,5 +17,5 @@ if success, else error
 Function to get the details of the age column
 }
 \examples{
-get_age_details(data.frame("Age" = c(21,15), "arm" = c("control", "intervention")))
+get_age_details(data.frame("Age" = c(21, 15), "arm" = c("control", "intervention")))
 }
