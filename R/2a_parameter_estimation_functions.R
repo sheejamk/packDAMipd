@@ -180,8 +180,8 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
   if (is.na(info_get_method))
     stop("Please provide  information statistical method")
   caps_info_method <- toupper(info_get_method)
-  if (caps_info_method == "PARAMETRIC REGRESSION" | caps_info_method == "PARAMETRIC")
-    results <- use_parametric_regression(param_to_be_estimated, dataset, indep_var,
+  if (caps_info_method == "PARAMETRIC SURVIVAL" | caps_info_method == "PARAMETRIC")
+    results <- use_parametric_survival(param_to_be_estimated, dataset, indep_var,
                                          info_distribution, covariates_list,timevar_survival)
   if (caps_info_method == "KAPLAN-MEIER" | caps_info_method == "KM")
     results <- use_km_survival(param_to_be_estimated, dataset, indep_var, covariates_list,
@@ -200,7 +200,7 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
 
 }
 #' ##########################################################################################################
-#' Get the parameter values using the survival analysis parametric regression
+#' Get the parameter values using the survival analysis parametric survival
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
 #' @param indep_var the independent variable (column name in data file)
@@ -210,10 +210,10 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
 #' @return the results of the regression analysis
 #' @examples
 #' data_for_survival <- survival::aml
-#' surv_estimated_aml <- use_parametric_regression("status", data_for_survival,"x",
+#' surv_estimated_aml <- use_parametric_survival("status", data_for_survival,"x",
 #' info_distribution="weibull", covariates_list= NA,"time")
 #' @export
-use_parametric_regression <- function(param_to_be_estimated, dataset,
+use_parametric_survival <- function(param_to_be_estimated, dataset,
                                       indep_var, info_distribution, covariates_list,
                                       timevar_survival){
   if (is.na(timevar_survival))
