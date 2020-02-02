@@ -1,4 +1,12 @@
-
+#' Function to get extension of a filename
+#' @param file name of a file
+#' @return the extension
+#' @examples get_extension("data.txt")
+#' @export
+get_extension <- function(file){
+  ex <- strsplit(basename(file), split="\\.")[[1]]
+  return(ex[-1])
+}
 #######################################################################
 #' Function to add the probabilities in a vector
 #' @param probs probabilities

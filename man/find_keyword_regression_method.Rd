@@ -7,7 +7,7 @@
 find_keyword_regression_method(text, additional_info = NA)
 }
 \arguments{
-\item{text}{regresssion method}
+\item{text}{regression method}
 
 \item{additional_info}{additional information required}
 }

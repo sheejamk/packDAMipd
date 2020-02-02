@@ -14,7 +14,12 @@
 load_trial_data <- function(file = NULL){
   # Load trial data from file input or stored in package
   if (!is.null(file)) {
-    df_trial_data <- utils::read.csv(file = file)
+    if(get_extension(file) == "txt")
+      df_trial_data <- read.table(file = file, header  =  TRUE,  sep  =  "\t",  quote = "\"",
+                                  dec  = ",",  fill  =  TRUE,  na.strings  =  c(""), as.is = 1:4)
+    if(get_extension(file) == "csv")
+      df_trial_data <- read.csv(file = file, header  =  TRUE)
+
   }else{
     df_trial_data <- trial_data
   }
