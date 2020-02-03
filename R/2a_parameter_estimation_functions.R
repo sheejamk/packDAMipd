@@ -463,7 +463,7 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
 #' indep_var = "gpa", covariates = NA, interaction = FALSE)
 #' @export
 use_linear_rgression <- function(param_to_be_estimated, dataset, indep_var, covariates, interaction=FALSE){
-  if (length(covariates) == 0 | is.na(covariates)) {
+  if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
     # no need to check for interaction
     fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(indep_var, collapse = "+")))
     fit <- stats::lm(fmla,data = dataset)
@@ -527,11 +527,13 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
       expre = paste(expre,this, sep = "+")
       i = i + 1
     }
-    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(indep_var,"+"),
+    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),
+                                    paste(indep_var,"+"),
                              paste(expre, collapse = "+")))
     fit <- lme4::lmer(fmla,data = dataset)
   }else{
-    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(indep_var, collapse = "+")))
+    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),
+                                    paste(indep_var, collapse = "+")))
     fit <- stats::lm(fmla,data = dataset)
   }
   summary_regression_results = summary(fit)
@@ -545,7 +547,6 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
   ))
   return(results)
 }
-
 #######################################################################
 #' Get the parameter values from reading a file
 #' @param paramfile  parameter file to get the mortality eg.national life table data
