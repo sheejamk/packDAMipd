@@ -568,7 +568,7 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL){
     stop("Expecting the life tables to contain an age column")
   age_columnno = IPDFileCheck::get_columnno_fornames(dataset, "age")
   this_row = which(dataset[age_columnno] == age)
-  if (installr::is.empty(this_row)) {
+  if (length(this_row) == 0) {
     i = 1
     while (i <= nrow(dataset)) {
       the_string = dataset[[age_columnno]][i]
@@ -589,7 +589,7 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL){
       }
     }
   }
-  if (installr::is.empty(this_row))
+  if (length(this_row) == 0)
       stop("Error - Row corresponding to the specific age could not be found")
   if (is.null(gender)) {
     total_columnno = IPDFileCheck::get_colno_pattern_colname("total", colnames(dataset))

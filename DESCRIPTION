@@ -17,7 +17,7 @@ Depends:
 Imports:
     foreign,
     tools,
-    installr,
+    rapport,
     pryr,
     dplyr,
     ggplot2,
