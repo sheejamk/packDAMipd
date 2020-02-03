@@ -1,8 +1,4 @@
 #######################################################################
-##  I-WOTCH study helper codes
-## Creatd by Sheeja Manchira Krishnan
-## Assumes the standard R package
-
 # A. Markov model definition
 
 # Markov model consists of health states
@@ -15,14 +11,14 @@
 #' @param name  name of the health state
 #' @param cost value or expression that represents cost of the health state
 #' @param utility value or expression that represents utility of the health state
-#' @param time denoting how long in the state
+#' @param state_time denoting how long in the state
 #' @param absorb boolean indicating health state absorbing or not
 #' @return value of the state
 #' @examples
 #' st <- health_state("IT", 100, 0.4, 0, FALSE)
 #' @import data.table
 #' @export
-health_state <- function(name, cost, utility, time= 0, absorb = FALSE) {
+health_state <- function(name, cost, utility, state_time = 0, absorb = FALSE) {
   if (is.character(cost)) {
     cost <- parse(text = cost)
   }
@@ -37,7 +33,7 @@ health_state <- function(name, cost, utility, time= 0, absorb = FALSE) {
   dt <- structure(list(name = name,
   cost = cost,
   utility = utility,
-  state_time = time,
+  state_time = state_time,
   absorb = absorb),
   class = "health_state")
   dt

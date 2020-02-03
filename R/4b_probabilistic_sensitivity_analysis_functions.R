@@ -18,18 +18,18 @@
 #' @export
 define_parameters_psa  <-  function(base_param_list, sample_list){
   if (typeof(base_param_list) !=   "list" || typeof(sample_list) !=   "list") {
-    stop("Error - Parameter list should be of type list - use define_parameters() to create such list")
+    stop("Error - Parameter list should be of type list - use define_parameters to create such list")
   }
   sample_list_all  <-  base_param_list
   short1  <-  names(sample_list)
   long  <-  names(base_param_list)
   index1  <-  match(short1, long)
-  if(sum(is.na(index1)) == length(short1)){
+  if (sum(is.na(index1)) == length(short1)) {
     stop("Error- parmaeters given in sample list should be there in base parameter list")
   }
   len = length(index1)
-  for(i in 1:len) {
-    if (!is.na(index1[i])){
+  for (i in 1:len) {
+    if (!is.na(index1[i])) {
       this_name <- names(sample_list_all[index1[i]])
       sample_list_all[index1[i]] = sample_list[this_name]
     }
@@ -41,7 +41,7 @@ define_parameters_psa  <-  function(base_param_list, sample_list){
 #######################################################################
 #' Function to do probabilistic sensitivity analysis
 #' @param this_markov  Markov model object
-#' @param psa_table table object from define_parameters_psa()
+#' @param psa_table table object from define_parameters_psa
 #' @param num_rep number of repetitions
 #' @return result after sensitivity analysis
 #' @examples
@@ -85,7 +85,7 @@ do_psa <- function(this_markov, psa_table, num_rep){
   names_rep = list()
   this_markov_rep_all <- list()
   this_param_list <- NULL
-  if(num_rep <= 0)
+  if (num_rep <= 0)
     warning("Returning only the base case scenario as no of rep given is  <= 0 ")
   for (j in 1:num_rep) {
     for (i in 1:no_entries) {
@@ -165,10 +165,10 @@ list_paramwise_psa_result  <-  function(result_psa_params_control,result_psa_par
     this_var_result_name <- names(result_psa_params_control)[i]
     if (!is.null(result_psa_params_treat)) {
       var_name_treat <- names(result_psa_params_treat)[i]
-      if(this_var_result_name != var_name_treat)
+      if (this_var_result_name != var_name_treat)
         stop("variable names are different, please check the markov model lists")
       treat_len =  length(result_psa_params_treat) - 1
-      if(treat_len != len)
+      if (treat_len != len)
         stop("no of repetitions are different, please check the markov model lists")
       list_markov  <-  combine_markov(result_psa_params_control[[this_var_result_name]],
                                       result_psa_params_treat[[this_var_result_name]])
@@ -311,7 +311,6 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
       ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$utility)),
                           color = "red", linetype = "dashed", size = 1) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-
     result  <-  structure(list(
       mean_cost = mean_all$cost,
       mean_utility = mean_all$utility,
@@ -321,7 +320,6 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
       hist_cost = plot2,
       hist_utility = plot3
     ))
-
   }
   return(result)
 }

@@ -14,11 +14,13 @@
 load_trial_data <- function(file = NULL){
   # Load trial data from file input or stored in package
   if (!is.null(file)) {
-    if(get_extension(file) == "txt")
+    if (get_extension(file) == "txt")
       df_trial_data <- read.table(file = file, header  =  TRUE,  sep  =  "\t",  quote = "\"",
                                   dec  = ",",  fill  =  TRUE,  na.strings  =  c(""), as.is = 1:4)
-    if(get_extension(file) == "csv")
+    if (get_extension(file) == "csv")
       df_trial_data <- read.csv(file = file, header  =  TRUE)
+    if (get_extension(file) == "dta")
+      df_trial_data <- foreign::read.dta(file = file)
 
   }else{
     df_trial_data <- trial_data
@@ -74,7 +76,7 @@ get_trial_arm_details  <-  function(trialdata) {
 #' @export
 get_gender_details  <-  function(trialdata) {
   names  <-  colnames(trialdata)
-  related_words  <-  c("sex", "gender", "female", "male")
+  related_words  <-  c("sex", "gender", "female", "male","females", "males")
   exists  <-  unlist(lapply(related_words,
                             IPDFileCheck::check_colno_pattern_colname, names))
   ind  <-  which(exists  ==  TRUE)

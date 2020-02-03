@@ -567,19 +567,37 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL){
   if (result != 0)
     stop("Expecting the life tables to contain an age column")
   age_columnno = IPDFileCheck::get_columnno_fornames(dataset, "age")
-  this.row = which(dataset[age_columnno] == age)
-  if(this.row > 0 ){
-    if (is.null(gender)) {
-      total_columnno = IPDFileCheck::get_colno_pattern_colname("total", colnames(dataset))
-      mortality <- dataset[[total_columnno]][this.row]
-    }else{
-      sex_columnno = IPDFileCheck::get_columnno_fornames(dataset, gender)
-      mortality <- dataset[[sex_columnno]][this.row]
+  this_row = which(dataset[age_columnno] == age)
+  if (installr::is.empty(this_row)) {
+    i = 1
+    while (i <= nrow(dataset)) {
+      the_string = dataset[[age_columnno]][i]
+      pos = stringr::str_locate(the_string, "-")
+      if (sum(is.na(pos)) < 2) {
+        minage = as.numeric(substr(the_string, 1, pos[1] - 1))
+        maxage = as.numeric(substr(the_string, pos[1] + 1, nchar(the_string)))
+      }else{
+        pos = stringr::str_locate(the_string, "and over")
+        minage = as.numeric(substr(the_string, 1, pos[1] - 1))
+        maxage = 120
+      }
+      if (minage <= age & maxage >= age) {
+        this_row = i
+        i = nrow(dataset) + 1
+      }else{
+        i = i + 1
+      }
     }
-  }else{
-    stop("Error - Row corresponding to the specific age could not be found")
   }
-
+  if (installr::is.empty(this_row))
+      stop("Error - Row corresponding to the specific age could not be found")
+  if (is.null(gender)) {
+    total_columnno = IPDFileCheck::get_colno_pattern_colname("total", colnames(dataset))
+    mortality <- dataset[[total_columnno]][this_row]
+  }else{
+    sex_columnno = IPDFileCheck::get_columnno_fornames(dataset, gender)
+    mortality <- dataset[[sex_columnno]][this_row]
+  }
   return(mortality)
 }
 ######################################################################

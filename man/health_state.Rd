@@ -4,7 +4,7 @@
 \alias{health_state}
 \title{Definition of health state class or health state constructor}
 \usage{
-health_state(name, cost, utility, time = 0, absorb = FALSE)
+health_state(name, cost, utility, state_time = 0, absorb = FALSE)
 }
 \arguments{
 \item{name}{name of the health state}
@@ -13,7 +13,7 @@ health_state(name, cost, utility, time = 0, absorb = FALSE)
 
 \item{utility}{value or expression that represents utility of the health state}
 
-\item{time}{denoting how long in the state}
+\item{state_time}{denoting how long in the state}
 
 \item{absorb}{boolean indicating health state absorbing or not}
 }

@@ -10,7 +10,7 @@ do_psa(this_markov, psa_table, num_rep)
 \arguments{
 \item{this_markov}{Markov model object}
 
-\item{psa_table}{table object from define_parameters_psa()}
+\item{psa_table}{table object from define_parameters_psa}
 
 \item{num_rep}{number of repetitions}
 }

@@ -61,20 +61,20 @@ test_that("get parameter using survival analysis",  {
 })
 test_that("get parameter using parametric regression survival analysis",  {
   data_for_survival<-survival::aml
-  surv_estimated_aml <- use_parametric_regression("status", data_for_survival, "x",
+  surv_estimated_aml <- use_parametric_survival("status", data_for_survival, "x",
                         info_distribution="weibull", covariates_list = NA, "time")
-  expect_error(use_parametric_regression(NA, data_for_survival, "x",
+  expect_error(use_parametric_survival(NA, data_for_survival, "x",
                                          info_distribution="weibull", covariates_list = NA,
                                          "time"))
-  expect_error(use_parametric_regression("status", NA, "x",
+  expect_error(use_parametric_survival("status", NA, "x",
                                          info_distribution="weibull", covariates_list = NA,
                                          "time"))
-  expect_error(use_parametric_regression("status", data_for_survival, NA,
+  expect_error(use_parametric_survival("status", data_for_survival, NA,
                                          info_distribution="weibull", covariates_list = NA,
                                          "time"))
-  expect_error(use_parametric_regression("status", data_for_survival, "x",
+  expect_error(use_parametric_survival("status", data_for_survival, "x",
                                          NA, covariates_list = NA, "time"))
-  expect_error(use_parametric_regression("status", data_for_survival, "x",
+  expect_error(use_parametric_survival("status", data_for_survival, "x",
                                          info_distribution="weibull", covariates_list = NA, NA))
 })
 test_that("get parameter using parametric regression survival analysis",  {

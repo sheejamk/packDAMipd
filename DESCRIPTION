@@ -15,7 +15,9 @@ License: GNU General Public License
 Depends:
     R (>= 3.5.0)
 Imports:
+    foreign,
     tools,
+    installr,
     pryr,
     dplyr,
     ggplot2,
@@ -43,5 +45,5 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
-URL: https://github.com/sheejamk/DecisionAnalysisModel
-BugReports: https://github.com/sheejamk/DecisionAnalysisModel/issues
+URL: https://github.com/sheejamk/packDAMipd
+BugReports: https://github.com/sheejamk/packDAMipd/issues
