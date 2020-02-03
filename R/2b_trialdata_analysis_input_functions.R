@@ -238,7 +238,13 @@ get_eq5d_details <- function(trialdata) {
                              set3 = c("mobility", "selfcare", "usualactivity",
                                       "paindepression", "anxiety"),
                              set4 = c("qol"), set5 = c("eq5d"),
-                             set6 = c("MO", "SC", "UA", "PD", "AD")))
+                             set6 = c("MO", "SC", "UA", "PD", "AD"),
+                             set7 = c("mobility", "selfcare", "usualact", "pain", "anxiety"),
+                             set8 = c("mobility", "selfcare", "usualact", "paindep", "anxiety"),
+                             set9 = c("mob", "selfcare", "usualact", "paindep", "anxiety"),
+                             set10 = c("mob", "selfcare", "usualact", "pain", "anxiety"),
+                             set11 = c("mob", "selfcare", "usualact", "paindep", "anx"),
+                             set12 = c("mob", "selfcare", "usualact", "pain", "anx")))
   i = 1
   while (i <= length(words_set)) {
     this <- unlist(words_set[i])
@@ -258,10 +264,10 @@ get_eq5d_details <- function(trialdata) {
   codes <- 0
   for (j in seq_len(length(this_name))) {
       this_ind <- this_name[j]
-      this_codes <- sort(unique(trialdata[[this_ind]]))
+      this_codes <- (unique(trialdata[[this_ind]]))
       codes <- append(codes, this_codes)
   }
-  codes <- sort(unique(codes[-1]))
+  codes <- (unique(codes[-1]))
   result <- list(name = this_name, codes = codes)
   return(result)
 }
