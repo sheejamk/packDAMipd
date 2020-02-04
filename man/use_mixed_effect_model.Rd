@@ -5,7 +5,7 @@
 \title{Function for mixed effect regression}
 \usage{
 use_mixed_effect_model(param_to_be_estimated, dataset, indep_var,
-  covariates = NA)
+  covariates = NA, random_effect = NA)
 }
 \arguments{
 \item{param_to_be_estimated}{column name of dependent variable}
@@ -15,6 +15,8 @@ use_mixed_effect_model(param_to_be_estimated, dataset, indep_var,
 \item{indep_var}{column name of independent variable}
 
 \item{covariates, }{independent variables, NA by default}
+
+\item{random_effect}{random effect variable(s) for the mixed effect models}
 }
 \value{
 result regression result with plot if success and -1, if failure

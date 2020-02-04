@@ -116,6 +116,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' @param strategyname name of the  arm
 #' @param timevar_survival time variable for survival analysis
 #' @param interaction boolean value to indicate interaction in the case of linear regression
+#' @param random_effect random effect variable(s) for the mixed effect models
 #' @return the results of the regression analysis
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
@@ -125,7 +126,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, method,
                                       indep_var, info_get_method, info_distribution,
                                       covariates= NA, strategycol= NA,
-                                      strategyname= NA, timevar_survival= NA, interaction= NA){
+                                      strategyname= NA, timevar_survival= NA, interaction= NA, random_effect = NA){
   if (is.null(dataset))
     stop("Need to provide a data set to lookup")
   if (is.na(method))
@@ -155,7 +156,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
     results <- use_logistic_rgression(param_to_be_estimated, dataset, indep_var, info_distribution, covariates_list)
   if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
      | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" )
-    results <- use_mixed_effect_model(param_to_be_estimated, dataset, indep_var, covariates)
+    results <- use_mixed_effect_model(param_to_be_estimated, dataset, indep_var, covariates, random_effect)
   return(results)
 }
 #' ##########################################################################################################
@@ -467,7 +468,6 @@ use_linear_rgression <- function(param_to_be_estimated, dataset, indep_var, cova
     # no need to check for interaction
     fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(indep_var, collapse = "+")))
     fit <- stats::lm(fmla,data = dataset)
-    p_plt <- ggiraphExtra::ggPredict(fit, se = TRUE, interactive = TRUE)
   }else{
     expre = paste(covariates[1], sep = "")
     i = 2
@@ -481,7 +481,7 @@ use_linear_rgression <- function(param_to_be_estimated, dataset, indep_var, cova
                                paste(expre, collapse = "+")))
       fit <- stats::lm(fmla,data = dataset)
     }else{
-      expre = paste(covariates[1], sep ="")
+      expre = paste(covariates[1], sep = "")
       i = 2
       while (i <= length(covariates)) {
         this = paste(covariates[i], sep = "")
@@ -513,29 +513,53 @@ use_linear_rgression <- function(param_to_be_estimated, dataset, indep_var, cova
 #' @param indep_var column name of independent variable
 #' @param covariates, independent variables, NA by default
 #' @return result regression result with plot if success and -1, if failure
+#' @param random_effect random effect variable(s) for the mixed effect models
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 #  results_logit <- use_mixed_effect_model("gre", dataset=mydata,
 #                                          indep_var = "gpa", covariates = NA)
 #' @export
-use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, covariates= NA){
-  if (sum(is.na(covariates)) == 0) {
-    expre = paste("1|", covariates[1], sep = "")
-    i = 2
-    while (i <= length(covariates)) {
-      this = paste("1|", covariates[i], sep = "")
-      expre = paste(expre,this, sep = "+")
-      i = i + 1
+use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, covariates= NA, random_effect = NA){
+    random = list()
+    expre = list()
+    if (sum(is.na(covariates)) == 0) {
+      expre = paste(covariates[1], sep = "")
+      i = 2
+      while (i <= length(covariates)) {
+        this = paste(covariates[i], sep = "")
+        expre = paste(expre, this, sep = "+")
+        i = i + 1
+      }
     }
-    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),
-                                    paste(indep_var,"+"),
-                             paste(expre, collapse = "+")))
-    fit <- lme4::lmer(fmla,data = dataset)
-  }else{
-    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"),
-                                    paste(indep_var, collapse = "+")))
-    fit <- stats::lm(fmla,data = dataset)
-  }
+    if (sum(is.na(random_effect)) == 0) {
+       random = paste("1|",random_effect[1], sep = "")
+       j = 2
+       while (i <= length(random_effect)) {
+         this = paste("1|",random_effect[j], sep = "")
+         random = paste(random, this, sep = "+")
+         j = j + 1
+       }
+    }
+    if (length(random) != 0 & length(expre) != 0) {
+      expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var, " + ", expre, ", random = ", random, ", data = dataset)")
+      fit <- eval(parse(text = expression_recreated))
+
+    }else{
+      if (length(random) != 0 & length(expre) == 0) {
+        expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var, ", random = ", random, ", data = dataset)")
+        fit <- eval(parse(text = expression_recreated))
+      }else{
+        if (length(random) == 0 & length(expre) != 0) {
+          expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", indep_var, " + ", expre, ", data = dataset)")
+          fit <- eval(parse(text = expression_recreated))
+        }else{
+          expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", indep_var, ", data = dataset)")
+          fit <- eval(parse(text = expression_recreated))
+        }
+      }
+
+    }
+
   summary_regression_results = summary(fit)
   vcov_param_estimated <- stats::vcov(fit)
   chol_decomp_matrix <- chol(vcov_param_estimated)

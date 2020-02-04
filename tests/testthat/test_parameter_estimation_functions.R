@@ -39,46 +39,46 @@ test_that("get parameter from estimated regression",  {
 
 })
 test_that("get parameter using survival analysis",  {
-  data_for_survival<-survival::aml
+  data_for_survival <- survival::aml
   surv_estimated_aml <- use_survival_analysis("status", data_for_survival,
-                          "x", info_get_method="parametric", info_distribution = "weibull",
+                          "x", info_get_method = "parametric", info_distribution = "weibull",
                           covariates_list = NA, "time")
   expect_error(use_survival_analysis("status", NA,
-                                     "x", info_get_method="parametric", info_distribution
+                                     "x", info_get_method = "parametric", info_distribution
                                      = "weibull", covariates_list = NA, "time"))
   expect_error(use_survival_analysis("status", data_for_survival,
-                                     NA, info_get_method="parametric", info_distribution
+                                     NA, info_get_method = "parametric", info_distribution
                                      = "weibull",covariates_list = NA, "time"))
   expect_error(use_survival_analysis("status", data_for_survival, "x", NA,
                                      info_distribution = "weibull", covariates_list = NA,
                                      "time"))
   expect_error(use_survival_analysis("status", data_for_survival,
-                                     "x", info_get_method="parametric", NA,
+                                     "x", info_get_method = "parametric", NA,
                                      covariates_list = NA, "time"))
   expect_error(use_survival_analysis("status", data_for_survival,
-                                     "x", info_get_method="parametric",  "weibull",
+                                     "x", info_get_method = "parametric",  "weibull",
                                      covariates_list = NA, NA))
 })
 test_that("get parameter using parametric regression survival analysis",  {
-  data_for_survival<-survival::aml
+  data_for_survival <- survival::aml
   surv_estimated_aml <- use_parametric_survival("status", data_for_survival, "x",
-                        info_distribution="weibull", covariates_list = NA, "time")
+                        info_distribution = "weibull", covariates_list = NA, "time")
   expect_error(use_parametric_survival(NA, data_for_survival, "x",
-                                         info_distribution="weibull", covariates_list = NA,
+                                         info_distribution = "weibull", covariates_list = NA,
                                          "time"))
   expect_error(use_parametric_survival("status", NA, "x",
-                                         info_distribution="weibull", covariates_list = NA,
+                                         info_distribution = "weibull", covariates_list = NA,
                                          "time"))
   expect_error(use_parametric_survival("status", data_for_survival, NA,
-                                         info_distribution="weibull", covariates_list = NA,
+                                         info_distribution = "weibull", covariates_list = NA,
                                          "time"))
   expect_error(use_parametric_survival("status", data_for_survival, "x",
                                          NA, covariates_list = NA, "time"))
   expect_error(use_parametric_survival("status", data_for_survival, "x",
-                                         info_distribution="weibull", covariates_list = NA, NA))
+                                         info_distribution = "weibull", covariates_list = NA, NA))
 })
 test_that("get parameter using parametric regression survival analysis",  {
-  data_for_survival<-survival::aml
+  data_for_survival <- survival::aml
   surv_estimated_aml <- use_km_survival("status", data_for_survival, "x", covariates_list = NA, "time")
   expect_error(use_km_survival(NA, data_for_survival, "x", covariates_list = NA, "time"))
   expect_error(use_km_survival("status", NA, "x", covariates_list = NA, "time"))
@@ -86,7 +86,7 @@ test_that("get parameter using parametric regression survival analysis",  {
   expect_error(use_km_survival("status", data_for_survival, "x", covariates_list = NA, NA))
 })
 test_that("get parameter using parametric regression survival analysis",  {
-  data_for_survival<-survival::aml
+  data_for_survival <- survival::aml
   surv_estimated_aml <- use_fh_survival("status", data_for_survival, "x", covariates_list = NA, "time")
   expect_error(use_fh_survival(NA, data_for_survival, "x", covariates_list = NA, "time"))
   expect_error(use_fh_survival("status", NA, "x", covariates_list = NA, "time"))
@@ -94,7 +94,7 @@ test_that("get parameter using parametric regression survival analysis",  {
   expect_error(use_fh_survival("status", data_for_survival, "x", covariates_list = NA, NA))
 })
 test_that("get parameter using parametric regression survival analysis",  {
-  data_for_survival<-survival::aml
+  data_for_survival <- survival::aml
   surv_estimated_aml <- use_fh2_survival("status", data_for_survival, "x", covariates_list = NA, "time")
   expect_error(use_fh2_survival(NA, data_for_survival, "x", covariates_list = NA, "time"))
   expect_error(use_fh2_survival("status", NA, "x", covariates_list = NA, "time"))
@@ -102,7 +102,7 @@ test_that("get parameter using parametric regression survival analysis",  {
   expect_error(use_fh2_survival("status", data_for_survival, "x", covariates_list = NA, NA))
 })
 test_that("get parameter using parametric regression survival analysis",  {
-  data_for_survival<-survival::aml
+  data_for_survival <- survival::aml
   surv_estimated_aml <- use_coxph_survival("status", data_for_survival, "x", covariates_list = NA, "time")
   expect_error(use_coxph_survival(NA, data_for_survival, "x", covariates_list = NA, "time"))
   expect_error(use_coxph_survival("status", NA, "x", covariates_list = NA, "time"))
@@ -112,15 +112,15 @@ test_that("get parameter using parametric regression survival analysis",  {
 test_that("get parameter using parametric regression survival analysis",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
   results_logit <- use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = "gre", info_distribution ="binomial", covariates_list = NA)
+                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA)
   expect_error(use_logistic_rgression("admit", dataset = NA,
-                      indep_var = "gre", info_distribution ="binomial", covariates_list = NA))
+                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA))
   expect_error(use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = NA, info_distribution ="binomial", covariates_list = NA))
+                      indep_var = NA, info_distribution = "binomial", covariates_list = NA))
   expect_error(use_logistic_rgression("admit", dataset = mydata,
                       indep_var = "gre", info_distribution = NA, covariates_list = NA))
   expect_error(use_logistic_rgression(NA, dataset = mydata,
-                      indep_var = "gre", info_distribution ="binomial", covariates_list = NA))
+                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA))
 })
 test_that("get parameter using parametric regression survival analysis",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
@@ -130,18 +130,18 @@ test_that("get parameter using parametric regression survival analysis",  {
                                     indep_var = "gpa", covariates = NA, interaction = FALSE) )
   expect_error(use_linear_rgression("gre", dataset = NA,
                                     indep_var = NA, covariates = NA, interaction = FALSE) )
-  expect_error(use_linear_rgression("gre", dataset = NA,indep_var = "gpa" ))
+  expect_error(use_linear_rgression("gre", dataset = NA, covariates = NA,indep_var = "gpa" ))
  })
 test_that("get parameter using parametric regression survival analysis",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-  results_logit <- use_mixed_effect_model("gre", dataset = mydata, indep_var = "gpa", covariates = NA)
-  expect_error(use_mixed_effect_model(NA, dataset = mydata, indep_var = "gpa", covariates = NA))
-  expect_error(use_mixed_effect_model("gre", dataset = NA, indep_var = "gpa", covariates = NA))
-  expect_error(use_mixed_effect_model("gre", dataset = mydata, indep_var = NA, covariates = NA))
+  results_logit <- use_mixed_effect_model("gre", dataset = mydata, indep_var = "gpa", covariates = NA, random_effect = NA)
+  expect_error(use_mixed_effect_model(NA, dataset = mydata, indep_var = "gpa", covariates = NA, random_effect = NA))
+  expect_error(use_mixed_effect_model("gre", dataset = NA, indep_var = "gpa", covariates = NA, random_effect = NA))
+  expect_error(use_mixed_effect_model("gre", dataset = mydata, indep_var = NA, covariates = NA, random_effect = NA))
 })
 
 test_that("get parameter using parametric regression survival analysis",  {
-  paramfile=system.file("extdata", "LifeTable_USA_Mx_2015.csv",package = "packDAMipd")
+  paramfile = system.file("extdata", "LifeTable_USA_Mx_2015.csv",package = "packDAMipd")
   nofile = system.file("extdata", "blank.csv", package = "packDAMipd")
   mortality <- get_mortality_from_file(paramfile, age = 10, gender = NULL)
   expect_equal(get_mortality_from_file(paramfile, age = 10, gender = NULL),0.000107)

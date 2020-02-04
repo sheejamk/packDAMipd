@@ -7,7 +7,7 @@
 get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
   indep_var, info_get_method, info_distribution, covariates = NA,
   strategycol = NA, strategyname = NA, timevar_survival = NA,
-  interaction = NA)
+  interaction = NA, random_effect = NA)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -31,6 +31,8 @@ get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
 \item{timevar_survival}{time variable for survival analysis}
 
 \item{interaction}{boolean value to indicate interaction in the case of linear regression}
+
+\item{random_effect}{random effect variable(s) for the mixed effect models}
 }
 \value{
 the results of the regression analysis
