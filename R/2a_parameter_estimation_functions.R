@@ -541,12 +541,12 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
        }
     }
     if (length(random) != 0 & length(expre) != 0) {
-      expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var, " + ", expre, ", random = ", random, ", data = dataset)")
+      expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var, " + ", expre, ", random = ~", random, ", data = dataset)")
       fit <- eval(parse(text = expression_recreated))
 
     }else{
       if (length(random) != 0 & length(expre) == 0) {
-        expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var, ", random = ", random, ", data = dataset)")
+        expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var, ", random = ~", random, ", data = dataset)")
         fit <- eval(parse(text = expression_recreated))
       }else{
         if (length(random) == 0 & length(expre) != 0) {
