@@ -1,10 +1,11 @@
+
 #' Function to get extension of a filename
 #' @param file name of a file
 #' @return the extension
 #' @examples get_extension("data.txt")
 #' @export
 get_extension <- function(file){
-  ex <- strsplit(basename(file), split="\\.")[[1]]
+  ex <- strsplit(basename(file), split = "\\.")[[1]]
   return(ex[-1])
 }
 #######################################################################
@@ -304,7 +305,7 @@ check_estimate_substitute_proper_params <- function(the_expr){
 #' @export
 find_keyword_regression_method <- function(text, additional_info = NA){
   text <- trimws(toupper(text))
-  additional_words<-trimws(toupper(additional_info))
+  additional_words <- trimws(toupper(additional_info))
   keyword <- NULL
   if (text  ==  "LINEAR REGRESSION" | text  ==  "LINEAR")
     keyword = "lm"
@@ -313,19 +314,19 @@ find_keyword_regression_method <- function(text, additional_info = NA){
   if (text  ==  "MULTILEVEL MODELLING" | text  ==  "MULTILEVEL")
     keyword = "lmer"
   if (text  ==  "SURVIVAL" | text  ==  "SURVIVAL ANALYSIS") {
-    if(is.na(additional_info))
+    if (is.na(additional_info))
       stop("Need to provide additional info for survival analysis - hazard model or KM")
     km_match <- c("KAPLAN-MEIER","KM","FLEMING-HARRINGTON", "FH2","FH")
     index <- unlist(lapply(km_match,match, additional_words))
-    if(any(!is.na(index)))
+    if (any(!is.na(index)))
       keyword = "survival::survfit"
     cox_match <- c("COX-PROPORTIONAL-HAZARD","COX PROPORTIONAL HAZARD","COX-PH", "COX PH","COXPH")
     index <- unlist(lapply(cox_match,match, additional_words))
-    if(any(!is.na(index)))
+    if (any(!is.na(index)))
       keyword = "survival::coxph"
     pa_match <- c("PARAMETRIC REGRESSION", "PARAMETRIC")
     index <- unlist(lapply(pa_match,match, additional_words))
-    if(any(!is.na(index)))
+    if (any(!is.na(index)))
       keyword = "flexsurv::flexsurvreg"
   }
   return(keyword)
@@ -336,7 +337,7 @@ find_keyword_regression_method <- function(text, additional_info = NA){
 #' @return the keyword - the name of distribution
 #' @examples find_survreg_distribution("weibull")
 #' @export
-find_survreg_distribution<-function(text){
+find_survreg_distribution <- function(text){
   text <- trimws(toupper(text))
   keyword <- NULL
   if (text  ==  "EXPONENTIAL" | text  ==  "EXPO")
@@ -345,17 +346,17 @@ find_survreg_distribution<-function(text){
     keyword = "weibull"
   if (text  ==  "GAUSSIAN")
     keyword = "gaussian"
-  if (text  ==  "LOGGAUSSIAN" |text  ==  "LOG GAUSSIAN")
+  if (text  ==  "LOGGAUSSIAN" | text  ==  "LOG GAUSSIAN")
     keyword = "loggaussian"
   if (text  ==  "RAYLEIGH")
     keyword = "rayleigh"
   if (text  ==  "LOGISTIC")
     keyword = "logistic"
-  if (text  ==  "LOGNORMAL" |text  ==  "LOG NORMAL")
+  if (text  ==  "LOGNORMAL" | text  ==  "LOG NORMAL")
     keyword = "lognormal"
-  if (text  ==  "LOG LOGISTIC" |text  ==  "LOGLOGISTIC")
+  if (text  ==  "LOG LOGISTIC" | text  ==  "LOGLOGISTIC")
     keyword = "loglogistic"
-  if(is.null(keyword))
+  if (is.null(keyword))
     stop("Error - Survreg - family of distribution not matching  ")
   return(keyword)
 }
@@ -364,7 +365,7 @@ find_survreg_distribution<-function(text){
 #' @return the keyword - the name of distribution
 #' @examples find_glm_distribution("weibull")
 #' @export
-find_glm_distribution<-function(text){
+find_glm_distribution <- function(text){
   text <- trimws(toupper(text))
   keyword <- NULL
   if (text  ==  "EXPONENTIAL" | text  ==  "EXPO")
@@ -375,11 +376,11 @@ find_glm_distribution<-function(text){
     keyword = "gaussian"
   if (text  ==  "LOGISTIC")
     keyword = "logistic"
-  if (text  ==  "LOGNORMAL" |text  ==  "LOG NORMAL")
+  if (text  ==  "LOGNORMAL" | text  ==  "LOG NORMAL")
     keyword = "lognormal"
-  if (text  ==  "LOG LOGISTIC" |text  ==  "LOGLOGISTIC")
+  if (text  ==  "LOG LOGISTIC" | text  ==  "LOGLOGISTIC")
     keyword = "loglogistic"
-  if (text  ==  "BINOMIAL" |text  ==  "BI NOMIAL")
+  if (text  ==  "BINOMIAL" | text  ==  "BI NOMIAL")
     keyword = "binomial"
   if (text  ==  "POISSON")
     keyword = "poisson"

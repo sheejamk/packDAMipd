@@ -117,6 +117,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' @param timevar_survival time variable for survival analysis
 #' @param interaction boolean value to indicate interaction in the case of linear regression
 #' @param random_effect random effect variable(s) for the mixed effect models
+#' @param naaction what action to be taken for the missing values, default is a missing value.
 #' @return the results of the regression analysis
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
@@ -126,7 +127,8 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, method,
                                       indep_var, info_get_method, info_distribution,
                                       covariates= NA, strategycol= NA,
-                                      strategyname= NA, timevar_survival= NA, interaction= NA, random_effect = NA){
+                                      strategyname= NA, timevar_survival= NA, interaction= NA,
+                                      random_effect = NA, naaction = "stats::na.omit"){
   if (is.null(dataset))
     stop("Need to provide a data set to lookup")
   if (is.na(method))
@@ -153,7 +155,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
   if (caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR")
     results <- use_linear_rgression(param_to_be_estimated, dataset, indep_var, covariates, interaction)
   if (caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC")
-    results <- use_logistic_rgression(param_to_be_estimated, dataset, indep_var, info_distribution, covariates_list)
+    results <- use_logistic_rgression(param_to_be_estimated, dataset, indep_var, info_distribution, covariates_list, naaction)
   if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
      | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" )
     results <- use_mixed_effect_model(param_to_be_estimated, dataset, indep_var, covariates, random_effect)
@@ -229,18 +231,22 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
     expression_recreated <- paste0("survival::survreg","(", surv_object, " ~ ", indep_var, ", ",
                                    "data = dataset,  dist = \"", this_dist, "\" ) ", sep = "")
   else
-    expression_recreated <- paste0("survival::survreg","(", surv_object, " ~ ", indep_var, " + ",
-                                   covariates_list, ", ","data = dataset,  dist = \"",
+    expression_recreated <- paste0("survival::survreg","(", surv_object, " ~ ", covariates_list, " + ",
+                                   indep_var, ", ","data = dataset,  dist = \"",
                                    this_dist, "\" ) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
+  if(toupper(this_dist) == "WEIBULL"){
+    distribution_parameters <- SurvRegCensCov::ConvertWeibull(param_estimated, conf.level = 0.95)
+  }
   vcov_param_estimated <- stats::vcov(param_estimated)
   chol_decomp_matrix <- chol(vcov_param_estimated)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
     variance_covariance = vcov_param_estimated,
-    cholesky_decomp_matrix = chol_decomp_matrix
+    cholesky_decomp_matrix = chol_decomp_matrix,
+    distribution_parameters = distribution_parameters
   ))
   return(results)
 }
@@ -267,8 +273,8 @@ use_km_survival <- function(param_to_be_estimated, dataset,
     expression_recreated <- paste0("survival::survfit","(", surv_object, " ~ ", indep_var,",type =",
                                    "\"kaplan-meier\"", ", ","data = dataset) ", sep = "")
   else
-    expression_recreated <- paste0("survival::survfit","(", surv_object, " ~ ", indep_var, " + ",
-                                   covariates_list,", type =", "\"kaplan-meier\"",", "
+    expression_recreated <- paste0("survival::survfit","(", surv_object, " ~ ", covariates_list, " + ",
+                                   indep_var,", type =", "\"kaplan-meier\"",", "
                                    ,"data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
@@ -308,8 +314,8 @@ use_fh_survival <- function(param_to_be_estimated, dataset,
                                    type =","\"fleming-harrington\"",", ","data = dataset) ",
                                    sep = "")
   else
-    expression_recreated <- paste0("survival::survfit","(", surv_object, " ~ ", indep_var, " + ",
-                                   covariates_list,", type =", "\"fleming-harrington\"",", ",
+    expression_recreated <- paste0("survival::survfit","(", surv_object, " ~ ", covariates_list, " + ",
+                                   indep_var,", type =", "\"fleming-harrington\"",", ",
                                    "data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
@@ -350,8 +356,8 @@ use_fh2_survival <- function(param_to_be_estimated, dataset,
                                    ", type =", "\"fh2\"",
                                    ", ","data = dataset) ", sep = "")
   else
-    expression_recreated <- paste0("survival::survfit","(", surv_object, " ~ ", indep_var,
-                                   " + ", covariates_list,", type =", "\"fh2\"",", ","data = dataset) ", sep = "")
+    expression_recreated <- paste0("survival::survfit","(", surv_object, " ~ ", covariates_list,
+                                   " + ", indep_var,", type =", "\"fh2\"",", ","data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
   fit <- param_estimated
@@ -391,8 +397,8 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
     expression_recreated <- paste0("survival::coxph","(", surv_object, " ~ ", indep_var, ", ",
                                    "data = dataset) ", sep = "")
   else
-    expression_recreated <- paste0("survival::coxph","(", surv_object, " ~ ", indep_var, " + ",
-                                   covariates_list,", ", "data = dataset) ", sep = "")
+    expression_recreated <- paste0("survival::coxph","(", surv_object, " ~ ", covariates_list, " + ",
+                                   indep_var,", ", "data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
   fit <- survival::survfit(param_estimated, data = "param_estimated$call$data")
@@ -414,37 +420,45 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
 #' @param indep_var the independent variable (column name in data file)
 #' @param info_distribution distribution name  eg. for logistic regression -binomial
 #' @param covariates_list list of covariates - calculations to be done before passing
+#' @param naaction action to be taken with the missing values
 #' @return the results of the regression analysis
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 #' mydata$rank <- factor(mydata$rank)
 #' results_logit <- use_logistic_rgression("admit", dataset=mydata,
-#' indep_var = "gre", info_distribution ="binomial", covariates_list = NA)
+#' indep_var = "gre", info_distribution ="binomial", covariates_list = NA, naaction = "stats::na.omit")
 #' @export
 use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
-                                   info_distribution, covariates_list){
+                                   info_distribution, covariates_list, naaction){
   if (is.na(info_distribution))
     stop("Error - information on distribution is missing")
   else
     this_dist <- find_glm_distribution(info_distribution)
   if (is.na(covariates_list))
     expression_recreated <- paste0("glm","(", param_to_be_estimated, " ~ ", indep_var,
-                                   ", family = ", this_dist, ", data = dataset) ", sep = "")
+                                   ", family = ", this_dist, ", data = dataset, na.action =", naaction, ") ", sep = "")
   else
-    expression_recreated <- paste0("glm","(", param_to_be_estimated, " ~ ", indep_var, " + ",
-                                   covariates_list, ", family = ", this_dist, ", data = dataset) ",
+    expression_recreated <- paste0("glm","(", param_to_be_estimated, " ~ ", covariates_list, " + ",
+                                   indep_var, ", family = ", this_dist, ", data = dataset, na.action = ", naaction, ") ",
                                    sep = "")
 
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
   vcov_param_estimated <- stats::vcov(param_estimated)
   chol_decomp_matrix <- chol(vcov_param_estimated)
-  plot_result <- ggplot2::autoplot(param_estimated)
+  name_file_plot <-paste0("glm_", param_estimated, "_", indep_var, ".pdf", sep="")
+  plot_result <- ggplot2::autoplot(param_estimated, toPdf= TRUE, file = name_file_plot)
+  table_this <- broom::tidy(param_estimated)
+  OR <- exp(table_this$estimate)
+  LCI <- exp(table_this$estimate - stats::qnorm(0.975,  0,  1) * table_this$std.error)
+  UCI <- exp(table_this$estimate + stats::qnorm(0.975,  0,  1) * table_this$std.error)
+  or_from_glm <- data.frame(cbind(term = table_this$term, LCI, OR, UCI))
   results =  structure(list(
     param_estimated = param_estimated,
     variance_covariance = vcov_param_estimated,
     summary_regression_results = summary_regression_results,
     cholesky_decomp_matrix = chol_decomp_matrix,
+    odds_ratio_ci = or_from_glm,
     plot = plot_result
   ))
   return(results)
@@ -477,8 +491,8 @@ use_linear_rgression <- function(param_to_be_estimated, dataset, indep_var, cova
       i = i + 1
     }
     if (interaction == FALSE) {
-      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(indep_var,"+", sep = ""),
-                               paste(expre, collapse = "+")))
+      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(expre, "+", sep = ""),
+                                      paste(indep_var,collapse = "+")))
       fit <- stats::lm(fmla,data = dataset)
     }else{
       expre = paste(covariates[1], sep = "")
@@ -488,15 +502,16 @@ use_linear_rgression <- function(param_to_be_estimated, dataset, indep_var, cova
         expre = paste(expre,this, sep = "*")
         i = i + 1
       }
-      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(indep_var,"*", sep = ""),
-                               paste(expre, collapse = "*")))
+      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(expre, "*", sep = ""),
+                                      paste(indep_var,collapse = "*")))
       fit <- stats::lm(fmla,data = dataset)
     }
   }
   summary_regression_results = summary(fit)
   vcov_param_estimated <- stats::vcov(fit)
   chol_decomp_matrix <- chol(vcov_param_estimated)
-  plot_result <- ggplot2::autoplot(fit)
+  name_file_plot <-paste0("lm_", param_to_be_estimated, "_", indep_var, ".pdf", sep="")
+  plot_result <- ggplot2::autoplot(fit, toPdf= TRUE, file = name_file_plot)
   results =  structure(list(
     param_estimated = fit,
     variance_covariance = vcov_param_estimated,
@@ -541,7 +556,7 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
        }
     }
     if (length(random) != 0 & length(expre) != 0) {
-      expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var, " + ", expre, ", random = ~", random, ", data = dataset)")
+      expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", expre, " + ", indep_var, ", random = ~", random, ", data = dataset)")
       fit <- eval(parse(text = expression_recreated))
 
     }else{
@@ -550,7 +565,7 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
         fit <- eval(parse(text = expression_recreated))
       }else{
         if (length(random) == 0 & length(expre) != 0) {
-          expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", indep_var, " + ", expre, ", data = dataset)")
+          expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", expre, " + ", indep_var, ", data = dataset)")
           fit <- eval(parse(text = expression_recreated))
         }else{
           expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", indep_var, ", data = dataset)")

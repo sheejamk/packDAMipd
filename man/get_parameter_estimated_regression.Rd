@@ -7,7 +7,7 @@
 get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
   indep_var, info_get_method, info_distribution, covariates = NA,
   strategycol = NA, strategyname = NA, timevar_survival = NA,
-  interaction = NA, random_effect = NA)
+  interaction = NA, random_effect = NA, naaction = "stats::na.omit")
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -33,6 +33,8 @@ get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
 \item{interaction}{boolean value to indicate interaction in the case of linear regression}
 
 \item{random_effect}{random effect variable(s) for the mixed effect models}
+
+\item{naaction}{what action to be taken for the missing values, default is a missing value.}
 }
 \value{
 the results of the regression analysis
