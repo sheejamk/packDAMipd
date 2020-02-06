@@ -397,7 +397,8 @@ find_glm_distribution <- function(text){
 #' false by default
 #' @return the results of the regression analysis
 #' @examples
-#' formula = form_expression_lm("gre", dataset = mydata, indep_var = "gpa", covariates = NA, interaction = FALSE)
+#' formula = form_expression_lm("gre", indep_var = "gpa", covariates = NA, interaction = FALSE)
+#' @export
 form_expression_lm <- function(param_to_be_estimated, indep_var, covariates, interaction){
   if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
     # no need to check for interaction

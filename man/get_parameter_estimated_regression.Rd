@@ -36,6 +36,12 @@ get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
 \item{random_effect}{random effect variable(s) for the mixed effect models}
 
 \item{naaction}{what action to be taken for the missing values, default is a missing value.}
+
+\item{param2_to_be_estimated}{parameter of interest for equation 2 in bivariate regression}
+
+\item{covariates2}{list of covariates - for equation 2 in bivariate regression}
+
+\item{interaction2}{boolean value to indicate interaction for equation 2 in bivariate regression}
 }
 \value{
 the results of the regression analysis

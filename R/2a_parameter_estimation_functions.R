@@ -118,6 +118,9 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' @param interaction boolean value to indicate interaction in the case of linear regression
 #' @param random_effect random effect variable(s) for the mixed effect models
 #' @param naaction what action to be taken for the missing values, default is a missing value.
+#' @param param2_to_be_estimated  parameter of interest for equation 2 in bivariate regression
+#' @param covariates2 list of covariates - for equation 2 in bivariate regression
+#' @param interaction2 boolean value to indicate interaction for equation 2 in bivariate regression
 #' @return the results of the regression analysis
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")

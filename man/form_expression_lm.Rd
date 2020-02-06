@@ -24,5 +24,6 @@ the results of the regression analysis
 Form expression to use with lm()
 }
 \examples{
-formula = form_expression_lm("gre", dataset = mydata, indep_var = "gpa", covariates = NA, interaction = FALSE)
+formula = form_expression_lm("gre", dataset = mydata, indep_var = "gpa",
+covariates = NA, interaction = FALSE)
 }
