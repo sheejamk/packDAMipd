@@ -15,6 +15,7 @@ License: GNU General Public License
 Depends:
     R (>= 3.5.0)
 Imports:
+    gvlma,
     broom,
     foreign,
     tools,
@@ -29,6 +30,7 @@ Imports:
     stringr,
     data.table,
     methods,
+    systemfit,
     SurvRegCensCov,
     survival,
     survminer,

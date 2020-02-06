@@ -1,4 +1,3 @@
-
 #' Function to get extension of a filename
 #' @param file name of a file
 #' @return the extension
@@ -360,6 +359,8 @@ find_survreg_distribution <- function(text){
     stop("Error - Survreg - family of distribution not matching  ")
   return(keyword)
 }
+#######################################################################
+
 #' Function to find the keyword for family of distribution in glm
 #' @param text distribution
 #' @return the keyword - the name of distribution
@@ -386,4 +387,43 @@ find_glm_distribution <- function(text){
     keyword = "poisson"
 
   return(keyword)
+}
+#######################################################################
+#' Form expression to use with lm()
+#' @param param_to_be_estimated  parameter of interest
+#' @param indep_var the independent variable (column name in data file)
+#' @param covariates list of covariates - calculations to be done before passing
+#' @param interaction boolean value to indicate interaction in the case of linear regression,
+#' false by default
+#' @return the results of the regression analysis
+#' @examples
+#' formula = form_expression_lm("gre", dataset = mydata, indep_var = "gpa", covariates = NA, interaction = FALSE)
+form_expression_lm <- function(param_to_be_estimated, indep_var, covariates, interaction){
+  if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
+    # no need to check for interaction
+    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(indep_var, collapse = "+")))
+  }else{
+    expre = paste(covariates[1], sep = "")
+    i = 2
+    while (i <= length(covariates)) {
+      this = paste(covariates[i], sep = "")
+      expre = paste(expre,this, sep = "+")
+      i = i + 1
+    }
+    if (interaction == FALSE) {
+      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(expre, "+", sep = ""),
+                                      paste(indep_var,collapse = "+")))
+     }else{
+      expre = paste(covariates[1], sep = "")
+      i = 2
+      while (i <= length(covariates)) {
+        this = paste(covariates[i], sep = "")
+        expre = paste(expre,this, sep = "*")
+        i = i + 1
+      }
+      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(expre, "*", sep = ""),
+                                      paste(indep_var,collapse = "*")))
+     }
+  }
+  return(fmla)
 }

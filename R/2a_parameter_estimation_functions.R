@@ -127,7 +127,8 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, method,
                                       indep_var, info_get_method, info_distribution,
                                       covariates= NA, strategycol= NA,
-                                      strategyname= NA, timevar_survival= NA, interaction= NA, random_effect = NA, naaction = "stats::na.omit"){
+                                      strategyname= NA, timevar_survival= NA, interaction= NA,
+                                      random_effect = NA, naaction = "stats::na.omit", param2_to_be_estimated= NA, covariates2 = NA, interaction2 = NA){
   if (is.null(dataset))
     stop("Need to provide a data set to lookup")
   if (is.na(method))
@@ -158,6 +159,15 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
   if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
      | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" )
     results <- use_mixed_effect_model(param_to_be_estimated, dataset, indep_var, covariates, random_effect)
+  if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
+      | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" )
+    results <- use_mixed_effect_model(param_to_be_estimated, dataset, indep_var, covariates, random_effect)
+  if (caps_method == "SEEMINGLY UNRELATED REGRESSION" | caps_method == "SEEMINGLY_UNRELATED_REGRESSION"
+      | caps_method == "SEEMINGLY_UNRELATED" | caps_method == "SEEMINGLY UNRELATED"
+      | caps_method == "BIVARIATE_REGRESSION" | caps_method == "BIVARIATE REGRESSION"
+      | caps_method == "BIVARIATE" )
+    results <- use_seemingly_unrelated_regression(param1_to_be_estimated  = param_to_be_estimated, param2_to_be_estimated,dataset,
+                                                  indep_var, covariates1 = covariates, covariates2, interaction1 = interaction, interaction2)
   return(results)
 }
 #' ##########################################################################################################
@@ -235,13 +245,17 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
                                    this_dist, "\" ) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
+  if (toupper(this_dist) == "WEIBULL") {
+    distribution_parameters <- SurvRegCensCov::ConvertWeibull(param_estimated, conf.level = 0.95)
+  }
   vcov_param_estimated <- stats::vcov(param_estimated)
   chol_decomp_matrix <- chol(vcov_param_estimated)
   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
     variance_covariance = vcov_param_estimated,
-    cholesky_decomp_matrix = chol_decomp_matrix
+    cholesky_decomp_matrix = chol_decomp_matrix,
+    distribution_parameters = distribution_parameters
   ))
   return(results)
 }
@@ -447,7 +461,13 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
   lci <- exp(table_this$estimate - stats::qnorm(0.975,  0,  1) * table_this$std.error)
   uci <- exp(table_this$estimate + stats::qnorm(0.975,  0,  1) * table_this$std.error)
   or_from_glm <- data.frame(cbind(term = table_this$term,lci, or, uci))
-
+  name_file_plot <- paste0("glm_", param_estimated, "_", indep_var, ".pdf", sep = "")
+  plot_result <- ggplot2::autoplot(param_estimated, toPdf = TRUE, file = name_file_plot)
+  table_this <- broom::tidy(param_estimated)
+  OR <- exp(table_this$estimate)
+  LCI <- exp(table_this$estimate - stats::qnorm(0.975,  0,  1) * table_this$std.error)
+  UCI <- exp(table_this$estimate + stats::qnorm(0.975,  0,  1) * table_this$std.error)
+  or_from_glm <- data.frame(cbind(term = table_this$term, LCI, OR, UCI))
   results =  structure(list(
     param_estimated = param_estimated,
     variance_covariance = vcov_param_estimated,
@@ -469,45 +489,31 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
 #' @return the results of the regression analysis
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-#' results_logit <- use_linear_rgression("gre", dataset=mydata,
+#' results_lm <- use_linear_rgression("gre", dataset = mydata,
 #' indep_var = "gpa", covariates = NA, interaction = FALSE)
 #' @export
-use_linear_rgression <- function(param_to_be_estimated, dataset, indep_var, covariates, interaction=FALSE){
-  if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
-    # no need to check for interaction
-    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(indep_var, collapse = "+")))
-    fit <- stats::lm(fmla,data = dataset)
-  }else{
-    expre = paste(covariates[1], sep = "")
-    i = 2
-    while (i <= length(covariates)) {
-      this = paste(covariates[i], sep = "")
-      expre = paste(expre,this, sep = "+")
-      i = i + 1
-    }
-    if (interaction == FALSE) {
-      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(expre, "+", sep = ""),
-                                      paste(indep_var,collapse = "+")))
-      fit <- stats::lm(fmla,data = dataset)
-    }else{
-      expre = paste(covariates[1], sep = "")
-      i = 2
-      while (i <= length(covariates)) {
-        this = paste(covariates[i], sep = "")
-        expre = paste(expre,this, sep = "*")
-        i = i + 1
-      }
-      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(expre, "*", sep = ""),
-                                      paste(indep_var,collapse = "*")))
-      fit <- stats::lm(fmla,data = dataset)
-    }
-  }
+use_linear_rgression <- function(param_to_be_estimated, dataset, indep_var, covariates, interaction){
+  formula <- form_expression_lm(param_to_be_estimated, indep_var, covariates, interaction)
+  fit <- stats::lm(formula,data = dataset)
   summary_regression_results = summary(fit)
+  ci_estimates <- stats::confint(fit)
   vcov_param_estimated <- stats::vcov(fit)
   chol_decomp_matrix <- chol(vcov_param_estimated)
-  plot_result <- ggplot2::autoplot(fit)
+  name_file_plot <- paste0("lm_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  plot_result <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
+  test_asumptions <- summary(gvlma::gvlma(fit))
+  corr_test <- lmtest::dwtest(fit)
+  Adj_R2 <- summary(fit)$adj.r.squared
+  AIC <- stats::AIC(fit)
+  BIC <- stats::BIC(fit)
+  check_model_fit <- data.frame(cbind(Adj_R2, AIC , BIC))
+  colnames(check_model_fit) <- c("Adj_R2", "AIC", "BIC")
   results =  structure(list(
     param_estimated = fit,
+    test_asumptions = test_asumptions,
+    corre_test = corr_test,
+    check_model_fit  = check_model_fit,
+    ci_estimates = ci_estimates,
     variance_covariance = vcov_param_estimated,
     summary_regression_results = summary_regression_results,
     cholesky_decomp_matrix = chol_decomp_matrix,
@@ -528,7 +534,7 @@ use_linear_rgression <- function(param_to_be_estimated, dataset, indep_var, cova
 #  results_logit <- use_mixed_effect_model("gre", dataset=mydata,
 #                                          indep_var = "gpa", covariates = NA)
 #' @export
-use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, covariates= NA, random_effect = NA){
+use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, covariates, random_effect){
     random = list()
     expre = list()
     if (sum(is.na(covariates)) == 0) {
@@ -635,6 +641,55 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL){
   return(mortality)
 }
 ######################################################################
+
+#' Get the parameter values using the linear regression
+#' @param param1_to_be_estimated  parameter of interest
+#' @param param2_to_be_estimated  parameter of interest
+#' @param dataset data set to be provided
+#' @param indep_var the independent variable (column name in data file)
+#' @param covariates1 list of covariates - for equaiton 1
+#' @param covariates2 list of covariates - for equaiton 2
+#' @param interaction1 boolean value to indicate interaction - for equaiton 1
+#' @param interaction2 boolean value to indicate interaction - for equaiton 2
+#' false by default
+#' @return the results of the regression analysis
+#' @examples
+#'hsb2 <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
+#'results_lm <- use_seemingly_unrelated_regression("read", "math", dataset = hsb2,
+#'indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
+#'covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,  interaction2 = FALSE)
+#' @export
+use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to_be_estimated, dataset, indep_var,
+                                              covariates1, covariates2, interaction1, interaction2) {
+  formula1 = form_expression_lm(param1_to_be_estimated,indep_var, covariates1,interaction1 )
+  formula2 = form_expression_lm(param2_to_be_estimated,indep_var, covariates2,interaction2 )
+  fitsur <- systemfit::systemfit(list(formula1, formula2), data = dataset)
+  summary_regression_results <- summary(fitsur)
+  ci_estimates <- stats::confint(fitsur)
+  vcov_param_estimated <- summary_regression_results$coefCov
+  chol_decomp_matrix <- chol(vcov_param_estimated)
+  std_error <- stats::coef(summary_regression_results)
+  #name_file_plot <- paste0("lm_", fitsur, "_", indep_var, ".pdf", sep = "")
+  #plot_result <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
+  corre_matrix <- summary_regression_results$residCor
+  OLS_R2 <- summary_regression_results$ols.r.squared
+  AIC <- stats::AIC(fitsur)
+  BIC <- stats::BIC(fitsur)
+  check_model_fit <- data.frame(cbind(OLS_R2, AIC , BIC))
+  colnames(check_model_fit) <- c("OLS_R2", "AIC", "BIC")
+  results =  structure(list(
+    param_estimated = fitsur,
+    std_error = std_error,
+    corre_matrix  = corre_matrix,
+    check_model_fit = check_model_fit,
+    ci_estimates = ci_estimates,
+    variance_covariance = vcov_param_estimated,
+    summary_regression_results = summary_regression_results,
+    cholesky_decomp_matrix = chol_decomp_matrix
+    #plot = plot_result
+  ))
+  return(results)
+}
 
 #######################################################################
 ##' Get the parameter values using the provided statistical regression methods

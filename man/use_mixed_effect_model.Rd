@@ -5,7 +5,7 @@
 \title{Function for mixed effect regression}
 \usage{
 use_mixed_effect_model(param_to_be_estimated, dataset, indep_var,
-  covariates = NA, random_effect = NA)
+  covariates, random_effect)
 }
 \arguments{
 \item{param_to_be_estimated}{column name of dependent variable}

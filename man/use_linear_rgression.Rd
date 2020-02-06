@@ -6,7 +6,7 @@
 Get the parameter values using the linear regression}
 \usage{
 use_linear_rgression(param_to_be_estimated, dataset, indep_var, covariates,
-  interaction = FALSE)
+  interaction)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -29,6 +29,6 @@ Get the parameter values using the linear regression
 }
 \examples{
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-results_logit <- use_linear_rgression("gre", dataset=mydata,
+results_lm <- use_linear_rgression("gre", dataset = mydata,
 indep_var = "gpa", covariates = NA, interaction = FALSE)
 }
