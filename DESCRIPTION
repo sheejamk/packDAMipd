@@ -34,6 +34,7 @@ Imports:
     SurvRegCensCov,
     survival,
     survminer,
+    lmtest,
     lme4,
     flexsurv,
     IPDFileCheck,
