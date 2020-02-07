@@ -112,15 +112,15 @@ test_that("get parameter using parametric regression survival analysis",  {
 test_that("get parameter using parametric regression survival analysis",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
   results_logit <- use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA)
+                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA, naaction = "na.omit")
   expect_error(use_logistic_rgression("admit", dataset = NA,
-                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA))
+                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA, naaction = "na.omit"))
   expect_error(use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = NA, info_distribution = "binomial", covariates_list = NA))
+                      indep_var = NA, info_distribution = "binomial", covariates_list = NA, naaction = "na.omit"))
   expect_error(use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = "gre", info_distribution = NA, covariates_list = NA))
+                      indep_var = "gre", info_distribution = NA, covariates_list = NA, naaction = "na.omit"))
   expect_error(use_logistic_rgression(NA, dataset = mydata,
-                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA))
+                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA, naaction = "na.omit"))
 })
 test_that("get parameter using parametric regression survival analysis",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
@@ -149,3 +149,27 @@ test_that("get parameter using parametric regression survival analysis",  {
   expect_error(get_mortality_from_file(paramfile, age = 120, gender = NULL))
   expect_error(get_mortality_from_file(paramfile, age = NULL))
 })
+test_that("Bivaraite regression for correlated values",  {
+  mydata <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
+  results_sureg <- use_seemingly_unrelated_regression("read", "math", dataset = mydata,
+  indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
+  covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,  interaction2 = FALSE)
+  expect_error(use_seemingly_unrelated_regression(NA, "math", dataset = mydata,
+                                                  indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
+                                                  covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,
+                                                  interaction2 = FALSE))
+  expect_error(use_seemingly_unrelated_regression("read", NA, dataset = mydata,
+                                                  indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
+                                                  covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,
+                                                  interaction2 = FALSE))
+  expect_error(use_seemingly_unrelated_regression("read", "math", dataset = NA,
+                                                  indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
+                                                  covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,
+                                                  interaction2 = FALSE))
+
+  expect_error(use_seemingly_unrelated_regression("read", "math", dataset = mydata,
+                                                  indep_var = NA, covariates1 = c("as.numeric(ses)", "socst"),
+                                                  covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,
+                                                 interaction2 = FALSE))
+
+  })

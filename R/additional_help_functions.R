@@ -369,24 +369,23 @@ find_survreg_distribution <- function(text){
 find_glm_distribution <- function(text){
   text <- trimws(toupper(text))
   keyword <- NULL
-  if (text  ==  "EXPONENTIAL" | text  ==  "EXPO")
-    keyword = "exponential"
-  if (text  ==  "WEIBULL")
-    keyword = "weibull"
-  if (text  ==  "GAUSSIAN")
-    keyword = "gaussian"
-  if (text  ==  "LOGISTIC")
-    keyword = "logistic"
-  if (text  ==  "LOGNORMAL" | text  ==  "LOG NORMAL")
-    keyword = "lognormal"
-  if (text  ==  "LOG LOGISTIC" | text  ==  "LOGLOGISTIC")
-    keyword = "loglogistic"
   if (text  ==  "BINOMIAL" | text  ==  "BI NOMIAL")
     keyword = "binomial"
+  if (text  ==  "GAUSSIAN")
+    keyword = "gaussian"
+  if (text  ==  "GAMMA" )
+    keyword = "gamma"
+  if (text  ==  "INVERSE.GAUSSIAN" | text  ==  "INVERSE GAUSSIAN" | text  ==  "INVERSE_GAUSSIAN" )
+    keyword = "inverse.gaussian"
   if (text  ==  "POISSON")
     keyword = "poisson"
-
-  return(keyword)
+  if (text  ==  "QUASI")
+    keyword = "quasi"
+  if (text  ==  "QUASI BINOMIAL" | text  ==  "QUASI_BINOMIAL")
+    keyword = "quasibinomial"
+  if (text  ==  "QUASI POISSON" | text  ==  "QUASI_POISSON")
+    keyword = "quasipoisson"
+   return(keyword)
 }
 #######################################################################
 #' Form expression to use with lm()
@@ -427,4 +426,37 @@ form_expression_lm <- function(param_to_be_estimated, indep_var, covariates, int
      }
   }
   return(fmla)
+}
+#######################################################################
+
+#' Function to find the keyword for family of distribution in glm
+#' @param family family of distribution
+#' @param link function to be used
+#' @return the link if they can be accepted else error
+#' @examples find_link_glm("weibull")
+#' @export
+find_link_glm <- function(family, link){
+  family <- tolower(trimws(toupper(family)))
+  link <-   tolower(trimws(toupper(link)))
+  if (family  ==  "gaussian")
+    link_accept = c("identity", "log" , "inverse")
+  if (family  ==  "binomial")
+    link_accept = c("logit", "probit" , "cauchit", "log", "loglog")
+  if (family  ==  "gamma")
+    link_accept = c("inverse", "identity" , "log")
+  if (family  ==  "poisson")
+    link_accept = c("sqrt", "identity" , "log")
+  if (family  ==  "inverse.gaussian")
+    link_accept = c("1/mu^2", "identity" , "log", "inverse")
+  if (family  ==  "quasi")
+    link_accept = c("logit", "probit" , "cloglog", "identity", "inverse", "log", "1/mu^2", "sqrt")
+  if (family  ==  "quasibinomial")
+    link_accept = c("logit", "probit" , "cloglog", "identity", "inverse", "log", "1/mu^2", "sqrt")
+  if (family  ==  "quasipoisson")
+    link_accept = c("logit", "probit" , "cloglog", "identity", "inverse", "log", "1/mu^2", "sqrt")
+  matching = match(link, link_accept)
+  if (is.na(matching))
+    stop(paste("Error - link given- ", link, " can not be accepted by family - ", family, sep = ""))
+  else
+    return(link)
 }

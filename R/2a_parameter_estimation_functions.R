@@ -121,6 +121,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' @param param2_to_be_estimated  parameter of interest for equation 2 in bivariate regression
 #' @param covariates2 list of covariates - for equation 2 in bivariate regression
 #' @param interaction2 boolean value to indicate interaction for equation 2 in bivariate regression
+#' @param link link function to be provided if not using the default link for each of the info_distribtion
 #' @return the results of the regression analysis
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
@@ -131,7 +132,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
                                       indep_var, info_get_method, info_distribution,
                                       covariates= NA, strategycol= NA,
                                       strategyname= NA, timevar_survival= NA, interaction= NA,
-                                      random_effect = NA, naaction = "stats::na.omit", param2_to_be_estimated= NA, covariates2 = NA, interaction2 = NA){
+                                      random_effect = NA, naaction = "stats::na.omit", param2_to_be_estimated= NA, covariates2 = NA, interaction2 = NA, link = NA){
   if (is.null(dataset))
     stop("Need to provide a data set to lookup")
   if (is.na(method))
@@ -158,7 +159,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
   if (caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR")
     results <- use_linear_rgression(param_to_be_estimated, dataset, indep_var, covariates, interaction)
   if (caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC")
-    results <- use_logistic_rgression(param_to_be_estimated, dataset, indep_var, info_distribution, covariates_list, naaction)
+    results <- use_logistic_rgression(param_to_be_estimated, dataset, indep_var, info_distribution, covariates_list, naaction, link)
   if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
      | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" )
     results <- use_mixed_effect_model(param_to_be_estimated, dataset, indep_var, covariates, random_effect)
@@ -430,28 +431,35 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
 #' @param indep_var the independent variable (column name in data file)
-#' @param info_distribution distribution name  eg. for logistic regression -binomial
+#' @param family distribution name  eg. for logistic regression -binomial
 #' @param covariates_list list of covariates - calculations to be done before passing
 #' @param naaction action to be taken with the missing values
+#' @param link link function if not the default for each family
 #' @return the results of the regression analysis
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 #' mydata$rank <- factor(mydata$rank)
 #' results_logit <- use_logistic_rgression("admit", dataset=mydata,
-#' indep_var = "gre", info_distribution ="binomial", covariates_list = NA, naaction = "stats::na.omit")
+#' indep_var = "gre", family ="binomial", covariates_list = NA, naaction = "stats::na.omit", link = NA)
 #' @export
 use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
-                                   info_distribution, covariates_list, naaction){
-  if (is.na(info_distribution))
+                                   family, covariates_list, naaction, link){
+  if (is.na(family))
     stop("Error - information on distribution is missing")
   else
-    this_dist <- find_glm_distribution(info_distribution)
+    this_dist <- find_glm_distribution(family)
+  if (!is.na(link)) {
+    link = find_link_glm(this_dist, link)
+    family_def = paste(this_dist,"(link = ", link, ")", sep = "")
+  }else{
+    family_def = paste(this_dist,"( )", sep = "")
+  }
   if (is.na(covariates_list))
     expression_recreated <- paste0("glm","(", param_to_be_estimated, " ~ ", indep_var,
-                                   ", family = ", this_dist, ", data = dataset, na.action =", naaction, ") ", sep = "")
+                                   ", family = ", family_def, ", data = dataset, na.action =", naaction, ") ", sep = "")
   else
     expression_recreated <- paste0("glm","(", param_to_be_estimated, " ~ ", covariates_list, " + ",
-                                   indep_var, ", family = ", this_dist, ", data = dataset, na.action = ", naaction, ") ",
+                                   indep_var, ", family = ", family_def, ", data = dataset, na.action = ", naaction, ") ",
                                    sep = "")
 
   param_estimated <- eval(parse(text = expression_recreated))
@@ -645,7 +653,7 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL){
 }
 ######################################################################
 
-#' Get the parameter values using the linear regression
+#' Bivaraite regression for correlated values
 #' @param param1_to_be_estimated  parameter of interest
 #' @param param2_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
@@ -657,10 +665,10 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL){
 #' false by default
 #' @return the results of the regression analysis
 #' @examples
-#'hsb2 <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
-#'results_lm <- use_seemingly_unrelated_regression("read", "math", dataset = hsb2,
-#'indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
-#'covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,  interaction2 = FALSE)
+#' mydata <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
+#' results_sureg <- use_seemingly_unrelated_regression("read", "math", dataset = mydata,
+#' indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
+#' covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,  interaction2 = FALSE)
 #' @export
 use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to_be_estimated, dataset, indep_var,
                                               covariates1, covariates2, interaction1, interaction2) {
