@@ -5,7 +5,10 @@
 #' @export
 get_extension <- function(file){
   ex <- strsplit(basename(file), split = "\\.")[[1]]
-  return(ex[-1])
+  if(length(ex[-1]) ==0)
+    warning("No character . found ")
+  else
+    return(ex[-1])
 }
 #######################################################################
 #' Function to add the probabilities in a vector
@@ -96,24 +99,30 @@ define_parameters <-  function(...){
 #' @export
 find_parameters_btn_operators <-  function(expr){
   parsed <-  toString(parse(text = expr))
-  characters <-  c("\\+","-","\\*","/","%%","%/%","\\^","<",">","<=",">=","==","!=","&","\\|","!","&&","\\|\\|")
-  posi <-  unlist(stringr::str_locate_all(parsed,characters))
+  characters <-  c("\\+","-","\\*","/","%%","%/%","\\^","<",">","<=",">=","==","!=","&","\\|","!")
+  posi <-  sort(unlist(stringr::str_locate_all(parsed,characters)))
   params <- list()
-  final <-  length(posi)/2 + 1
-  for (i in 1:final) {
-    if (i ==  1) {
+  final <-  length(posi) + 1
+  i=1
+  while(i<=final) {
+    if (i ==  1)
       start = 1
-    }else{
-      start = posi[i - 1] + 1
-    }
+    else
+      start = posi[i-1] + 1
     if (i ==  final) {
       end = nchar(parsed)
     }else{
-      end = posi[i] - 1
+      if(i == 1)
+         end = posi[i + 1] - 1
+      else
+        end = posi[i] - 1
     }
     params <- append(params, trimws(stringr::str_sub(parsed, start = start, end = end)))
+    i = i + 2
   }
-  return(params)
+  params <- unlist(params)
+  params_noempty_string <- params[!params == ""]
+  return(params_noempty_string)
 }
 
 #######################################################################
@@ -123,23 +132,32 @@ find_parameters_btn_operators <-  function(expr){
 #' @examples find_param_from_def_prob_distrbn("gamma(mean = 10, sd =1)")
 #' @export
 find_param_from_def_prob_distrbn <- function(expr){
-  res <- regmatches(expr, regexec('\\((.*?)\\)', expr))[[1]][2]
-  posi <-  unlist(stringr::str_locate_all(res,","))
-  final = length(posi)/2 + 1
+  posi_last <-  sort(unlist(stringr::str_locate_all(expr,'\\)')))
+  last <- posi_last[length(posi_last)]
+  posi_first <-  sort(unlist(stringr::str_locate_all(expr,'\\(')))
+  first <- posi_first[1]
+  res <- stringr::str_sub(expr, start = first + 1, end = last - 1)
+  #res <- regmatches(expr, regexec('\\((.*?)\\)', expr))[[1]][2]
+  posi <-  sort(unlist(stringr::str_locate_all(res,",")))
+  final <-  length(posi) + 1
   expr_found = list()
-  for (i in 1:final) {
-    if (i ==  1) {
+  i=1
+  while(i<=final) {
+    if (i ==  1)
       start = 1
-    }else{
-      start = posi[i] + 1
-    }
+    else
+      start = posi[i-1] + 1
     if (i ==  final) {
       end = nchar(res)
     }else{
-      end = posi[i] - 1
+      if(i == 1)
+        end = posi[i + 1] - 1
+      else
+        end = posi[i] - 1
     }
     this_param <- trimws(stringr::str_sub(res, start = start, end = end))
     expr_found <- append(expr_found, this_param)
+    i = i + 2
   }
   final2 <-  length(expr_found)
   param_found <- list()
@@ -166,21 +184,21 @@ find_required_parameter_combs <- function(name_distri){
   if (text ==  "LOGNORMAL" || text == "LOG NORMAL")
     keyword = list(c("meanlog", "sdlog"), c("mean", "sd"), c("mean", "sdlog"), c("meanlog", "sd"))
   if (text ==  "GAMMA")
-    keyword = list(c("shape", "rate"))
+    keyword = c("shape", "rate")
   if (text ==  "BINOMIAL" || text ==  "BI NORMAL")
-    keyword = list(c("size", "prob"))
+    keyword = c("size", "prob")
   if (text ==  "BETA")
-    keyword = list(c("shape1", "shape2"))
+    keyword = c("shape1", "shape2")
   if (text ==  "UNIFORM")
-    keyword = list(c("min", "max"))
-  if (text  ==  "GAUSSIAN" || text == "NOMRAL")
-    keyword = list(c("mean", "sd"))
+    keyword = c("min", "max")
+  if (text  ==  "GAUSSIAN" || text == "NORMAL")
+    keyword = c("mean", "sd")
   if (text  ==  "WEIBULL")
-    keyword = list(c("shape", "scale"))
+    keyword = c("shape", "scale")
   if (text  ==  "EXPONENTIAL" || text == "EXPO")
-    keyword = list(c("rate"))
+    keyword = c("rate")
   if (text  ==  "POISSON")
-    keyword =  list(c("lambda"))
+    keyword =  c("lambda")
   return(keyword)
 }
 #######################################################################
@@ -202,7 +220,7 @@ find_keyword_rand_generation <- function(text){
     keyword = "rbeta"
   if (text  ==  "UNIFORM")
     keyword = "runif"
-  if (text  ==  "GAUSSIAN" || text  ==  "NOMRAL")
+  if (text  ==  "GAUSSIAN" || text  ==  "NORMAL")
     keyword = "rnorm"
   if (text  ==  "WEIBULL")
     keyword = "rweibull"
@@ -215,39 +233,51 @@ find_keyword_rand_generation <- function(text){
   return(keyword)
 }
 #######################################################################
-#' Function to check if the parameters are sufficient to define a probability distribution and if not
-#' see if we can estimate the parameters from the given parameters, e.g. for gamma distribution, shape and rate
-#' can be estimated from mean and sd
+#' Function to check if the parameters are sufficient to define a probability distribution
+#' and if not see if we can estimate the parameters from the given parameters, e.g. for
+#' gamma distribution, shape and rate can be estimated from mean and sd
 #' @param params_found given parameters for generating ransom numbers
 #' @param required_params the required parameter by the R code (stats package)
 #' @param the_expr the expression that contain the definition
-#' @param distr_key the keyword used for generating random numbers in R stats package e.g. rgamma for gamma distribution
+#' @param distr_key the keyword used for generating random numbers in R stats package
+#' e.g. rgamma for gamma distribution
 #' @return the keyword that should be used in R for generating random numbers
-#' @examples check_estimating_required_params(c("mean,sd"),c("shape", "rate"), "gamma(mean =10 ,sd=1)", "gamma")
+#' @examples check_estimating_required_params(c("mean","sd"),c("shape", "rate"),
+#' "gamma(mean =10 ,sd=1)", "gamma")
 #' @export
-check_estimating_required_params <- function(params_found,required_params, the_expr,distr_key){
+check_estimating_required_params <- function(params_found, required_params, the_expr, distr_key){
   distr_key <- trimws(toupper(distr_key))
-  res <- regmatches(the_expr, regexec('\\((.*?)\\)', the_expr))[[1]][2]
-  posi <-  unlist(stringr::str_locate_all(res,","))
-  final = length(posi)/2 + 1
+  posi_last <-  sort(unlist(stringr::str_locate_all(the_expr,'\\)')))
+  last <- posi_last[length(posi_last)]
+  posi_first <-  sort(unlist(stringr::str_locate_all(the_expr,'\\(')))
+  first <- posi_first[1]
+  res <- stringr::str_sub(the_expr, start = first + 1, end = last  - 1)
+  posi <-  sort(unlist(stringr::str_locate_all(res,",")))
+  final <-  length(posi) + 1
   values_found = list()
-  for (i in 1:final) {
-    if (i  ==  1) {
+  i = 1
+  while(i <= final) {
+    if (i ==  1)
       start = 1
-    }else{
-      start = posi[i] + 1
-    }
-    if (i  ==  final) {
+    else
+      start = posi[i-1] + 1
+    if (i ==  final) {
       end = nchar(res)
     }else{
-      end = posi[i] - 1
+      if(i == 1)
+        end = posi[i + 1] - 1
+      else
+        end = posi[i] - 1
     }
     this_param <- trimws(stringr::str_sub(res, start = start, end = end))
     this_value = eval(parse(text = this_param))
+    if(!is.numeric(this_value))
+      stop("Error - the parameter = value expression could not be evaluated")
     values_found <- append(values_found, this_value)
+    i = i + 2
   }
   values_found <- unlist(values_found)
-  if (distr_key  ==  "GAMMA" && sum(params_found ==  c("mean","sd")) == 2) {
+  if (distr_key  ==  "GAMMA" & sum(params_found ==  c("mean","sd")) == 2) {
     shape = (values_found[1]/values_found[2]) ^ 2
     rate = values_found[1]/(values_found[2] ^ 2)
     esti_reqd_params <-  c(shape,rate)
@@ -272,26 +302,25 @@ check_estimate_substitute_proper_params <- function(the_expr){
   params_found <- find_param_from_def_prob_distrbn(the_expr)
   index = 0
   for (i in length(required_params)) {
-    index <- match(params_found,unlist(required_params[i]))
+    index <- match(params_found,unlist(required_params))
     if (sum(!is.na(index))  ==  length(index))
       i = length(required_params)
   }
   if (sum(is.na(index)) == length(index)) {
-    required_params <- unlist(required_params[1])
+    required_params <- unlist(required_params)
     estim_params <- check_estimating_required_params(params_found,required_params, the_expr,distr_key)
     if (sum(estim_params)  ==  0)
       stop("Check parameters that define the probability distribution")
     create_expr = ""
-
     for (i in 1:length(required_params)) {
-      create_expr <-  paste(create_expr, " ", required_params[i], "=", estim_params[i], sep = "")
+      create_expr <-  paste(create_expr, " ", required_params[i], " = ", estim_params[i], sep = "")
       if (i != length(required_params))
         create_expr <-  paste(create_expr,",",sep = "")
     }
     the_real_expr <- paste(rand_key,"(1,", create_expr,")", sep = "")
   }else{
     remaining = stringr::str_split(the_expr,"\\(")[[1]][2]
-    the_real_expr = paste(rand_key,"(1,",remaining, sep = "")
+    the_real_expr = paste(rand_key,"(1, ",remaining, sep = "")
   }
   return(the_real_expr)
 }
@@ -328,6 +357,8 @@ find_keyword_regression_method <- function(text, additional_info = NA){
     if (any(!is.na(index)))
       keyword = "flexsurv::flexsurvreg"
   }
+  if(is.null(keyword))
+    stop("No corresponding regression methods found")
   return(keyword)
 }
 #######################################################################
@@ -360,18 +391,17 @@ find_survreg_distribution <- function(text){
   return(keyword)
 }
 #######################################################################
-
 #' Function to find the keyword for family of distribution in glm
 #' @param text distribution
 #' @return the keyword - the name of distribution
-#' @examples find_glm_distribution("weibull")
+#' @examples find_glm_distribution("gamma")
 #' @export
 find_glm_distribution <- function(text){
   text <- trimws(toupper(text))
   keyword <- NULL
   if (text  ==  "BINOMIAL" | text  ==  "BI NOMIAL")
     keyword = "binomial"
-  if (text  ==  "GAUSSIAN")
+  if (text  ==  "GAUSSIAN" | text =="NORMAL")
     keyword = "gaussian"
   if (text  ==  "GAMMA" )
     keyword = "gamma"
@@ -385,7 +415,9 @@ find_glm_distribution <- function(text){
     keyword = "quasibinomial"
   if (text  ==  "QUASI POISSON" | text  ==  "QUASI_POISSON")
     keyword = "quasipoisson"
-   return(keyword)
+  if (is.null(keyword))
+    stop("Error - glm - family of distribution not found  ")
+  return(keyword)
 }
 #######################################################################
 #' Form expression to use with lm()
@@ -433,9 +465,9 @@ form_expression_lm <- function(param_to_be_estimated, indep_var, covariates, int
 #' @param family family of distribution
 #' @param link function to be used
 #' @return the link if they can be accepted else error
-#' @examples find_link_glm("weibull")
+#' @examples check_link_glm("gaussian","identity")
 #' @export
-find_link_glm <- function(family, link){
+check_link_glm <- function(family, link){
   family <- tolower(trimws(toupper(family)))
   link <-   tolower(trimws(toupper(link)))
   if (family  ==  "gaussian")

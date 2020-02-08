@@ -93,10 +93,10 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
   if (!is.na(dataset[dataset$Parameter == parameter,]$Param2_name)) {
     param2 <- dataset[dataset$Parameter == parameter,]$Param2_name
     param2_value <- dataset[dataset$Parameter == parameter,]$Param2_value
-    expression_created = paste(this_distr_name,"(", param1 ,"=", param1_value, "," ,
-                               param2, "=", param2_value,")", sep = "")
+    expression_created = paste(this_distr_name,"(", param1 ," = ", param1_value, "," ,
+                               param2, " = ", param2_value,")", sep = "")
   }else{
-    expression_created = paste(this_distr_name,"(", param1, "=" , param1_value,")", sep = "")
+    expression_created = paste(this_distr_name,"(", param1, " = " , param1_value,")", sep = "")
   }
   expression_recreated <- check_estimate_substitute_proper_params(expression_created)
   param_with_expression <- paste(this_param, " = ", expression_recreated, sep = "")
@@ -449,7 +449,7 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
   else
     this_dist <- find_glm_distribution(family)
   if (!is.na(link)) {
-    link = find_link_glm(this_dist, link)
+    link = check_link_glm(this_dist, link)
     family_def = paste(this_dist,"(link = ", link, ")", sep = "")
   }else{
     family_def = paste(this_dist,"( )", sep = "")

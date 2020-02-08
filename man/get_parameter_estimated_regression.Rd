@@ -8,7 +8,8 @@ get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
   indep_var, info_get_method, info_distribution, covariates = NA,
   strategycol = NA, strategyname = NA, timevar_survival = NA,
   interaction = NA, random_effect = NA, naaction = "stats::na.omit",
-  param2_to_be_estimated = NA, covariates2 = NA, interaction2 = NA)
+  param2_to_be_estimated = NA, covariates2 = NA, interaction2 = NA,
+  link = NA)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -42,6 +43,8 @@ get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
 \item{covariates2}{list of covariates - for equation 2 in bivariate regression}
 
 \item{interaction2}{boolean value to indicate interaction for equation 2 in bivariate regression}
+
+\item{link}{link function to be provided if not using the default link for each of the info_distribtion}
 }
 \value{
 the results of the regression analysis

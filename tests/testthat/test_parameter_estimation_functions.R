@@ -15,7 +15,7 @@ test_that("testing reading parameter from file",  {
 test_that("testing parameter using distribution read from file",  {
   file = system.file("extdata", "table_param.csv", package = "packDAMipd")
   nofile = system.file("extdata", "blank.csv", package = "packDAMipd")
-  expect_identical(get_parameter_def_distribution("rr", file), "rr = rexp(1,rate=0.3)")
+  expect_identical(get_parameter_def_distribution("rr", file), "rr = rexp(1, rate = 0.3)")
   expect_error(get_parameter_def_distribution("rr", NULL))
   expect_error(get_parameter_def_distribution("rr2", NULL))
 })
@@ -112,15 +112,23 @@ test_that("get parameter using parametric regression survival analysis",  {
 test_that("get parameter using parametric regression survival analysis",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
   results_logit <- use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA, naaction = "na.omit")
+                      indep_var = "gre", family = "binomial", covariates_list = NA,
+                      naaction = "na.omit", link = NA)
   expect_error(use_logistic_rgression("admit", dataset = NA,
-                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA, naaction = "na.omit"))
+                      indep_var = "gre", family = "binomial", covariates_list = NA,
+                      naaction = "na.omit", link = NA))
   expect_error(use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = NA, info_distribution = "binomial", covariates_list = NA, naaction = "na.omit"))
+                      indep_var = NA, family = "binomial", covariates_list = NA,
+                      naaction = "na.omit", link = NA))
   expect_error(use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = "gre", info_distribution = NA, covariates_list = NA, naaction = "na.omit"))
+                      indep_var = "gre", family = NA, covariates_list = NA,
+                      naaction = "na.omit", link = NA))
   expect_error(use_logistic_rgression(NA, dataset = mydata,
-                      indep_var = "gre", info_distribution = "binomial", covariates_list = NA, naaction = "na.omit"))
+                      indep_var = "gre", family = "binomial", covariates_list = NA,
+                      naaction = "na.omit", link = NA))
+  expect_error(use_logistic_rgression("admit", dataset = mydata,
+                                      indep_var = "gre", family = "binomial", covariates_list = NA,
+                                      naaction = "na.omit", link = "identity"))
 })
 test_that("get parameter using parametric regression survival analysis",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")

@@ -5,8 +5,8 @@
 \title{##########################################################################################################
 Get the parameter values using logistic regression}
 \usage{
-use_logistic_rgression(param_to_be_estimated, dataset, indep_var,
-  info_distribution, covariates_list, naaction)
+use_logistic_rgression(param_to_be_estimated, dataset, indep_var, family,
+  covariates_list, naaction, link)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -15,11 +15,13 @@ use_logistic_rgression(param_to_be_estimated, dataset, indep_var,
 
 \item{indep_var}{the independent variable (column name in data file)}
 
-\item{info_distribution}{distribution name  eg. for logistic regression -binomial}
+\item{family}{distribution name  eg. for logistic regression -binomial}
 
 \item{covariates_list}{list of covariates - calculations to be done before passing}
 
 \item{naaction}{action to be taken with the missing values}
+
+\item{link}{link function if not the default for each family}
 }
 \value{
 the results of the regression analysis
@@ -32,5 +34,5 @@ Get the parameter values using logistic regression
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 mydata$rank <- factor(mydata$rank)
 results_logit <- use_logistic_rgression("admit", dataset=mydata,
-indep_var = "gre", info_distribution ="binomial", covariates_list = NA, naaction = "stats::na.omit")
+indep_var = "gre", family ="binomial", covariates_list = NA, naaction = "stats::na.omit", link = NA)
 }
