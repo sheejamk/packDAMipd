@@ -240,26 +240,45 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
     stop("Error - information on distribution is missing")
   else
     this_dist <- find_survreg_distribution(info_distribution)
-  if (is.na(covariates_list))
-    expression_recreated <- paste0("survival::survreg","(", surv_object, " ~ ", indep_var, ", ",
+  if (is.na(covariates_list)){
+      expression_recreated <- paste0("survival::survreg","(", surv_object, " ~ ", indep_var, ", ",
                                    "data = dataset,  dist = \"", this_dist, "\" ) ", sep = "")
-  else
-    expression_recreated <- paste0("survival::survreg","(", surv_object, " ~ ", covariates_list, " + ",
+      expression_recreated_forsurfit <- paste0("survival::survfit","(", surv_object, " ~ ", indep_var, ", ",
+                                     "data = dataset)", sep = "")
+  }else{
+      expression_recreated <- paste0("survival::survreg","(", surv_object, " ~ ", covariates_list, " + ",
                                    indep_var, ", ","data = dataset,  dist = \"",
                                    this_dist, "\" ) ", sep = "")
-  param_estimated <- eval(parse(text = expression_recreated))
-  summary_regression_results = summary(param_estimated)
-  if (toupper(this_dist) == "WEIBULL") {
-    distribution_parameters <- SurvRegCensCov::ConvertWeibull(param_estimated, conf.level = 0.95)
+      expression_recreated_forsurfit <- paste0("survival::survfit","(", surv_object, " ~ ", covariates_list, " + ",
+                                     indep_var, ", ","data = dataset)", sep = "")
   }
+  param_estimated <- eval(parse(text = expression_recreated))
+  param_estimated_survift <- eval(parse(text = expression_recreated_forsurfit))
+  summary_regression_results = summary(param_estimated)
+  if (toupper(this_dist) == "WEIBULL")
+    distribution_parameters <- SurvRegCensCov::ConvertWeibull(param_estimated, conf.level = 0.95)
   vcov_param_estimated <- stats::vcov(param_estimated)
   chol_decomp_matrix <- chol(vcov_param_estimated)
-  results =  structure(list(
+  values = levels(dataset[[indep_var]])
+  name = indep_var
+  newdata1 = list(name = values[1])
+  names(newdata1) <-  name
+  newdata2 = list(name = values[2])
+  names(newdata2) <-  name
+  plot_result <- plot(param_estimated_survift, xlab = indep_var, ylab = "Survival probability", cex.lab = 1.2)
+  lines(predict(param_estimated, newdata = newdata1, type = "quantile",p = seq(.01,.99,by=.01)),
+        seq(.99,.01, by = -.01),col = "red")
+  lines(predict(param_estimated, newdata = newdata2, type = "quantile",p = seq(.01,.99,by=.01)),
+        seq(.99,.01, by = -.01),col = "blue")
+  legend("topright", inset = c(-0.4,0), legend = c(values[1], values[2]), col = c("red", "blue"),
+         seg.len = 0.6, y.intersp = 0.1, lty = 1, bty = 'n', cex= 1)
+   results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
     variance_covariance = vcov_param_estimated,
     cholesky_decomp_matrix = chol_decomp_matrix,
-    distribution_parameters = distribution_parameters
+    distribution_parameters = distribution_parameters,
+    plot = plot_result
   ))
   return(results)
 }
@@ -414,6 +433,8 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
                                    indep_var,", ", "data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
+  test.ph <- cox.zph(param_estimated)
+  ggcoxzph(test.ph)
   fit <- survival::survfit(param_estimated, data = "param_estimated$call$data")
   fit$call$formula <- param_estimated$call$formula
   fit$call$data = param_estimated$call$data

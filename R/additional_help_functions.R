@@ -460,7 +460,6 @@ form_expression_lm <- function(param_to_be_estimated, indep_var, covariates, int
   return(fmla)
 }
 #######################################################################
-
 #' Function to find the keyword for family of distribution in glm
 #' @param family family of distribution
 #' @param link function to be used
@@ -491,4 +490,23 @@ check_link_glm <- function(family, link){
     stop(paste("Error - link given- ", link, " can not be accepted by family - ", family, sep = ""))
   else
     return(link)
+}
+#######################################################################
+#' Function to extract parameters from survreg fit for variou
+#' @param model family of distribution
+#' @param conf.level function to be used
+#' @return the distributional parameters
+#' @examples check_link_glm("gaussian","identity")
+#' @export
+convert_exponential <- function(model, conf.level = 0.95){
+  level <- 1 - conf.level
+  qa <- qnorm(1 - level/2)
+  Int.Only <- (nrow(summary(model)$table) == 2)
+  lambda <- exp(-summary(model)$coefficients["(Intercept)"])
+  k <- length(summary(model)$coef)
+  beta <- summary(model)$coef[1:k]
+  tmp <- c(lambda, beta)
+  names(tmp) <- c("lambda", names(summary(model)$coef[1:k]))
+  coefficients_to_get_HR
+  vars <- summary(model)$var
 }
