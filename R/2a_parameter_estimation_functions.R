@@ -265,13 +265,13 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
   names(newdata1) <-  name
   newdata2 = list(name = values[2])
   names(newdata2) <-  name
-  plot_result <- plot(param_estimated_survift, xlab = indep_var, ylab = "Survival probability", cex.lab = 1.2)
-  lines(predict(param_estimated, newdata = newdata1, type = "quantile",p = seq(.01,.99,by=.01)),
+  plot_result <- graphics::plot(param_estimated_survift, xlab = indep_var, ylab = "Survival probability", cex.lab = 1.2)
+  graphics::lines(stats::predict(param_estimated, newdata = newdata1, type = "quantile",p = seq(.01,.99, by = .01)),
         seq(.99,.01, by = -.01),col = "red")
-  lines(predict(param_estimated, newdata = newdata2, type = "quantile",p = seq(.01,.99,by=.01)),
+  graphics::lines(stats::predict(param_estimated, newdata = newdata2, type = "quantile",p = seq(.01,.99, by = .01)),
         seq(.99,.01, by = -.01),col = "blue")
-  legend("topright", inset = c(-0.4,0), legend = c(values[1], values[2]), col = c("red", "blue"),
-         seg.len = 0.6, y.intersp = 0.1, lty = 1, bty = 'n', cex= 1)
+  graphics::legend("topright", inset = c(-0.4,0), legend = c(values[1], values[2]), col = c("red", "blue"),
+         seg.len = 0.6, y.intersp = 0.1, lty = 1, bty = 'n', cex = 1)
    results =  structure(list(
     param_estimated = param_estimated,
     summary_regression_results = summary_regression_results,
@@ -433,8 +433,8 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
                                    indep_var,", ", "data = dataset) ", sep = "")
   param_estimated <- eval(parse(text = expression_recreated))
   summary_regression_results = summary(param_estimated)
-  test.ph <- cox.zph(param_estimated)
-  ggcoxzph(test.ph)
+  test.ph <- survival::cox.zph(param_estimated)
+  survminer::ggcoxzph(test.ph)
   fit <- survival::survfit(param_estimated, data = "param_estimated$call$data")
   fit$call$formula <- param_estimated$call$formula
   fit$call$data = param_estimated$call$data

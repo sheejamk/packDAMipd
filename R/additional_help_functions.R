@@ -498,15 +498,15 @@ check_link_glm <- function(family, link){
 #' @return the distributional parameters
 #' @examples check_link_glm("gaussian","identity")
 #' @export
-convert_exponential <- function(model, conf.level = 0.95){
-  level <- 1 - conf.level
-  qa <- qnorm(1 - level/2)
-  Int.Only <- (nrow(summary(model)$table) == 2)
-  lambda <- exp(-summary(model)$coefficients["(Intercept)"])
-  k <- length(summary(model)$coef)
-  beta <- summary(model)$coef[1:k]
-  tmp <- c(lambda, beta)
-  names(tmp) <- c("lambda", names(summary(model)$coef[1:k]))
-  coefficients_to_get_HR
-  vars <- summary(model)$var
-}
+# convert_exponential <- function(model, conf.level = 0.95){
+#   level <- 1 - conf.level
+#   qa <- qnorm(1 - level/2)
+#   Int.Only <- (nrow(summary(model)$table) == 2)
+#   lambda <- exp(-summary(model)$coefficients["(Intercept)"])
+#   k <- length(summary(model)$coef)
+#   beta <- summary(model)$coef[1:k]
+#   tmp <- c(lambda, beta)
+#   names(tmp) <- c("lambda", names(summary(model)$coef[1:k]))
+#   coefficients_to_get_HR
+#   vars <- summary(model)$var
+# }
