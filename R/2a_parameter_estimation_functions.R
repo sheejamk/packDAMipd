@@ -132,7 +132,8 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
                                       indep_var, info_get_method, info_distribution,
                                       covariates= NA, strategycol= NA,
                                       strategyname= NA, timevar_survival= NA, interaction= NA,
-                                      random_effect = NA, naaction = "stats::na.omit", param2_to_be_estimated= NA, covariates2 = NA, interaction2 = NA, link = NA){
+                                      random_effect = NA, naaction = "stats::na.omit",
+                                      param2_to_be_estimated= NA, covariates2 = NA, interaction2 = NA, link = NA){
   if (is.null(dataset))
     stop("Need to provide a data set to lookup")
   if (is.na(method))
@@ -240,7 +241,7 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
     stop("Error - information on distribution is missing")
   else
     this_dist <- find_survreg_distribution(info_distribution)
-  if (is.na(covariates_list)){
+  if (is.na(covariates_list)) {
       expression_recreated <- paste0("survival::survreg","(", surv_object, " ~ ", indep_var, ", ",
                                    "data = dataset,  dist = \"", this_dist, "\" ) ", sep = "")
       expression_recreated_forsurfit <- paste0("survival::survfit","(", surv_object, " ~ ", indep_var, ", ",
@@ -473,7 +474,7 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
     link = check_link_glm(this_dist, link)
     family_def = paste(this_dist,"(link = ", link, ")", sep = "")
   }else{
-    family_def = paste(this_dist,"( )", sep = "")
+    family_def = paste(this_dist, sep = "")
   }
   if (is.na(covariates_list))
     expression_recreated <- paste0("glm","(", param_to_be_estimated, " ~ ", indep_var,
@@ -487,14 +488,29 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
   summary_regression_results = summary(param_estimated)
   vcov_param_estimated <- stats::vcov(param_estimated)
   chol_decomp_matrix <- chol(vcov_param_estimated)
-  plot_result <- ggplot2::autoplot(param_estimated)
   table_this <- broom::tidy(param_estimated)
   or <- exp(table_this$estimate)
   lci <- exp(table_this$estimate - stats::qnorm(0.975,  0,  1) * table_this$std.error)
   uci <- exp(table_this$estimate + stats::qnorm(0.975,  0,  1) * table_this$std.error)
   or_from_glm <- data.frame(cbind(term = table_this$term,lci, or, uci))
-  name_file_plot <- paste0("glm_", param_estimated, "_", indep_var, ".pdf", sep = "")
+
+  name_file_plot <- paste0("glm_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   plot_result <- ggplot2::autoplot(param_estimated, toPdf = TRUE, file = name_file_plot)
+  glm.predict <- predict(param_estimated, newdata = dataset, type = "response", se.fit = TRUE)
+  predict_lci <- (glm.predict$fit - 2 * glm.predict$se)
+  predict_uci <- (glm.predict$fit + 2 * glm.predict$se)
+  new_df <- data.frame(x = dataset[[indep_var]],y = glm.predict$fit, lci = predict_lci, uci = predict_uci)
+  new_df <- new_df[order(new_df$x),]
+
+  name_file_plot <- paste0("glm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  pdf(name_file_plot)
+  plot_prediction <- plot(new_df$x, jitter(dataset[[param_to_be_estimated]], factor = 0.1), col = rgb(0, 0, 0, 0.5), pch = 19,
+       xlab = indep_var, ylab = param_to_be_estimated, yaxt = "n")
+  lines(new_df$x, new_df$y, col = 2, lwd = 2)
+  lines(new_df$x, new_df$uci, col = 2, lty = 3)
+  lines(new_df$x, new_df$lci , col = 2, lty = 3)
+  abline(h = c(0, 1), col = "grey", lty = 3)
+  dev.off()
   table_this <- broom::tidy(param_estimated)
   OR <- exp(table_this$estimate)
   LCI <- exp(table_this$estimate - stats::qnorm(0.975,  0,  1) * table_this$std.error)
@@ -506,7 +522,8 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
     summary_regression_results = summary_regression_results,
     cholesky_decomp_matrix = chol_decomp_matrix,
     odds_ratio_ci = or_from_glm,
-    plot = plot_result
+    plot_prediction = plot_prediction,
+    plot_modefit = plot_result
   ))
   return(results)
 }
