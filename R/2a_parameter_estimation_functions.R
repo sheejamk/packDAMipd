@@ -126,7 +126,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 #' results_logit <- get_parameter_estimated_regression("admit", mydata,
-#' "logistic regression", "gre", NA,"binomial", c("gpa", "factor(rank)"))
+#' "logistic regression", "gre", NA,"binomial", c("gpa", "rank"))
 #' @export
 get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, method,
                                       indep_var, info_get_method, info_distribution,
@@ -260,13 +260,17 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
     distribution_parameters <- SurvRegCensCov::ConvertWeibull(param_estimated, conf.level = 0.95)
   vcov_param_estimated <- stats::vcov(param_estimated)
   chol_decomp_matrix <- chol(vcov_param_estimated)
+  fit <- param_estimated
+  fit$call$formula <- param_estimated$call$formula
+  fit$call$data = param_estimated$call$data
+  the_data = eval(fit$call$data)
   values = levels(dataset[[indep_var]])
   name = indep_var
   newdata1 = list(name = values[1])
   names(newdata1) <-  name
   newdata2 = list(name = values[2])
   names(newdata2) <-  name
-  plot_result <- graphics::plot(param_estimated_survift, xlab = indep_var, ylab = "Survival probability", cex.lab = 1.2)
+  plot_prediction <- graphics::plot(param_estimated_survift, xlab = indep_var, ylab = "Survival probability", cex.lab = 1.2)
   graphics::lines(stats::predict(param_estimated, newdata = newdata1, type = "quantile",p = seq(.01,.99, by = .01)),
         seq(.99,.01, by = -.01),col = "red")
   graphics::lines(stats::predict(param_estimated, newdata = newdata2, type = "quantile",p = seq(.01,.99, by = .01)),
@@ -279,7 +283,7 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
     variance_covariance = vcov_param_estimated,
     cholesky_decomp_matrix = chol_decomp_matrix,
     distribution_parameters = distribution_parameters,
-    plot = plot_result
+    plot_prediction = plot_prediction
   ))
   return(results)
 }
@@ -496,33 +500,45 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
 
   name_file_plot <- paste0("glm_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   plot_result <- ggplot2::autoplot(param_estimated, toPdf = TRUE, file = name_file_plot)
-  glm.predict <- predict(param_estimated, newdata = dataset, type = "response", se.fit = TRUE)
+
+  glm.predict <- stats::predict(param_estimated, newdata = dataset, type = "response", se.fit = TRUE)
   predict_lci <- (glm.predict$fit - 2 * glm.predict$se)
   predict_uci <- (glm.predict$fit + 2 * glm.predict$se)
-  new_df <- data.frame(x = dataset[[indep_var]],y = glm.predict$fit, lci = predict_lci, uci = predict_uci)
-  new_df <- new_df[order(new_df$x),]
-
+  if(is.na(covariates_list))
+    predict_expre <- paste0("~ ",indep_var,sep = "")
+  else
+   predict_expre <- paste0("~ ", covariates_list, " + ",indep_var,sep = "")
+  eval_predict_expre = eval(parse(text = predict_expre))
+  predictor_effect <- effects::predictorEffects(param_estimated, eval_predict_expre)
   name_file_plot <- paste0("glm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  pdf(name_file_plot)
-  plot_prediction <- plot(new_df$x, jitter(dataset[[param_to_be_estimated]], factor = 0.1), col = rgb(0, 0, 0, 0.5), pch = 19,
-       xlab = indep_var, ylab = param_to_be_estimated, yaxt = "n")
-  lines(new_df$x, new_df$y, col = 2, lwd = 2)
-  lines(new_df$x, new_df$uci, col = 2, lty = 3)
-  lines(new_df$x, new_df$lci , col = 2, lty = 3)
-  abline(h = c(0, 1), col = "grey", lty = 3)
-  dev.off()
+  grDevices::pdf(name_file_plot)
+  plot_prediction <- graphics::plot(predictor_effect, lines = list(multiline=TRUE))
+  grDevices::dev.off()
+  # if(!is.na(covariates_list)){
+  #   name_file_plot <- paste0("glm_prediction_separate_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  #   grDevices::pdf(name_file_plot)
+  #   covariates <- find_parameters_btn_operators(covariates_list)
+  #   par(mfrow=c(2,length(covariates)/2))
+  #   for(i in 1: length(covariates)){
+  #     predictor_effect <- effects::predictorEffect(covariates[i], param_estimated)
+  #     plot_prediction_separate <- graphics::plot(predictor_effect, lines = list(multiline=TRUE))
+  #   }
+  #   grDevices::dev.off()
+  # }
+
   table_this <- broom::tidy(param_estimated)
   OR <- exp(table_this$estimate)
   LCI <- exp(table_this$estimate - stats::qnorm(0.975,  0,  1) * table_this$std.error)
   UCI <- exp(table_this$estimate + stats::qnorm(0.975,  0,  1) * table_this$std.error)
   or_from_glm <- data.frame(cbind(term = table_this$term, LCI, OR, UCI))
-  results =  structure(list(
+  results =  (list(
     param_estimated = param_estimated,
     variance_covariance = vcov_param_estimated,
     summary_regression_results = summary_regression_results,
     cholesky_decomp_matrix = chol_decomp_matrix,
     odds_ratio_ci = or_from_glm,
     plot_prediction = plot_prediction,
+    # plot_prediction_cov = plot_prediction_separate,
     plot_modefit = plot_result
   ))
   return(results)

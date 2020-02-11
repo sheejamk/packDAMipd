@@ -30,6 +30,7 @@ Imports:
     stringr,
     data.table,
     methods,
+    effects,
     systemfit,
     SurvRegCensCov,
     survival,

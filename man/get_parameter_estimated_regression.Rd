@@ -55,5 +55,5 @@ Get the parameter values using the provided statistical regression methods
 \examples{
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 results_logit <- get_parameter_estimated_regression("admit", mydata,
-"logistic regression", "gre", NA,"binomial", c("gpa", "factor(rank)"))
+"logistic regression", "gre", NA,"binomial", c("gpa", "rank"))
 }
