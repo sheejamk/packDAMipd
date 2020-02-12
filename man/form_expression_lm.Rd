@@ -12,13 +12,13 @@ form_expression_lm(param_to_be_estimated, indep_var, covariates,
 
 \item{indep_var}{the independent variable (column name in data file)}
 
-\item{covariates}{list of covariates - calculations to be done before passing}
+\item{covariates}{list of covariates}
 
 \item{interaction}{boolean value to indicate interaction in the case of linear regression,
 false by default}
 }
 \value{
-the results of the regression analysis
+the formula for lm
 }
 \description{
 Form expression to use with lm()

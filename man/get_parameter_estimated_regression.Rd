@@ -7,9 +7,9 @@
 get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
   indep_var, info_get_method, info_distribution, covariates = NA,
   strategycol = NA, strategyname = NA, timevar_survival = NA,
-  interaction = NA, random_effect = NA, naaction = "stats::na.omit",
-  param2_to_be_estimated = NA, covariates2 = NA, interaction2 = NA,
-  link = NA)
+  interaction = FALSE, random_effect = NA,
+  naaction = "stats::na.omit", param2_to_be_estimated = NA,
+  covariates2 = NA, interaction2 = NA, link = NA)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -55,5 +55,5 @@ Get the parameter values using the provided statistical regression methods
 \examples{
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 results_logit <- get_parameter_estimated_regression("admit", mydata,
-"logistic regression", "gre", NA,"binomial", c("gpa", "rank"))
+"logistic regression", "gre", NA,"binomial", c("gpa", "rank"), interaction = FALSE)
 }

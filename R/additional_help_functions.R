@@ -5,7 +5,7 @@
 #' @export
 get_extension <- function(file){
   ex <- strsplit(basename(file), split = "\\.")[[1]]
-  if(length(ex[-1]) ==0)
+  if (length(ex[-1]) == 0)
     warning("No character . found ")
   else
     return(ex[-1])
@@ -103,16 +103,16 @@ find_parameters_btn_operators <-  function(expr){
   posi <-  sort(unlist(stringr::str_locate_all(parsed,characters)))
   params <- list()
   final <-  length(posi) + 1
-  i=1
-  while(i<=final) {
+  i = 1
+  while (i <= final) {
     if (i ==  1)
       start = 1
     else
-      start = posi[i-1] + 1
+      start = posi[i - 1] + 1
     if (i ==  final) {
       end = nchar(parsed)
     }else{
-      if(i == 1)
+      if (i == 1)
          end = posi[i + 1] - 1
       else
         end = posi[i] - 1
@@ -141,16 +141,16 @@ find_param_from_def_prob_distrbn <- function(expr){
   posi <-  sort(unlist(stringr::str_locate_all(res,",")))
   final <-  length(posi) + 1
   expr_found = list()
-  i=1
-  while(i<=final) {
+  i = 1
+  while (i <= final) {
     if (i ==  1)
       start = 1
     else
-      start = posi[i-1] + 1
+      start = posi[i - 1] + 1
     if (i ==  final) {
       end = nchar(res)
     }else{
-      if(i == 1)
+      if (i == 1)
         end = posi[i + 1] - 1
       else
         end = posi[i] - 1
@@ -256,22 +256,22 @@ check_estimating_required_params <- function(params_found, required_params, the_
   final <-  length(posi) + 1
   values_found = list()
   i = 1
-  while(i <= final) {
+  while (i <= final) {
     if (i ==  1)
       start = 1
     else
-      start = posi[i-1] + 1
+      start = posi[i - 1] + 1
     if (i ==  final) {
       end = nchar(res)
     }else{
-      if(i == 1)
+      if (i == 1)
         end = posi[i + 1] - 1
       else
         end = posi[i] - 1
     }
     this_param <- trimws(stringr::str_sub(res, start = start, end = end))
     this_value = eval(parse(text = this_param))
-    if(!is.numeric(this_value))
+    if (!is.numeric(this_value))
       stop("Error - the parameter = value expression could not be evaluated")
     values_found <- append(values_found, this_value)
     i = i + 2
@@ -357,7 +357,7 @@ find_keyword_regression_method <- function(text, additional_info = NA){
     if (any(!is.na(index)))
       keyword = "flexsurv::flexsurvreg"
   }
-  if(is.null(keyword))
+  if (is.null(keyword))
     stop("No corresponding regression methods found")
   return(keyword)
 }
@@ -401,7 +401,7 @@ find_glm_distribution <- function(text){
   keyword <- NULL
   if (text  ==  "BINOMIAL" | text  ==  "BI NOMIAL")
     keyword = "binomial"
-  if (text  ==  "GAUSSIAN" | text =="NORMAL")
+  if (text  ==  "GAUSSIAN" | text == "NORMAL")
     keyword = "gaussian"
   if (text  ==  "GAMMA" )
     keyword = "gamma"
@@ -423,42 +423,86 @@ find_glm_distribution <- function(text){
 #' Form expression to use with lm()
 #' @param param_to_be_estimated  parameter of interest
 #' @param indep_var the independent variable (column name in data file)
-#' @param covariates list of covariates - calculations to be done before passing
+#' @param covariates list of covariates
 #' @param interaction boolean value to indicate interaction in the case of linear regression,
 #' false by default
-#' @return the results of the regression analysis
+#' @return the formula for lm
 #' @examples
 #' formula = form_expression_lm("gre", indep_var = "gpa", covariates = NA, interaction = FALSE)
 #' @export
 form_expression_lm <- function(param_to_be_estimated, indep_var, covariates, interaction){
   if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
     # no need to check for interaction
-    fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(indep_var, collapse = "+")))
+    fmla <- paste("lm(", param_to_be_estimated, " ~ ", indep_var, ", data = dataset )", sep = "")
+    short_fmla <- paste( " ~ ", indep_var, sep = "")
+
   }else{
     expre = paste(covariates[1], sep = "")
     i = 2
     while (i <= length(covariates)) {
       this = paste(covariates[i], sep = "")
-      expre = paste(expre,this, sep = "+")
+      if (interaction)
+        expre = paste(expre,this, sep = " * ")
+      else
+        expre = paste(expre,this, sep = " + ")
       i = i + 1
     }
-    if (interaction == FALSE) {
-      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(expre, "+", sep = ""),
-                                      paste(indep_var,collapse = "+")))
-     }else{
-      expre = paste(covariates[1], sep = "")
-      i = 2
-      while (i <= length(covariates)) {
-        this = paste(covariates[i], sep = "")
-        expre = paste(expre,this, sep = "*")
-        i = i + 1
-      }
-      fmla <- stats::as.formula(paste(param_to_be_estimated, paste("~"), paste(expre, "*", sep = ""),
-                                      paste(indep_var,collapse = "*")))
-     }
+    fmla <- paste("lm(", param_to_be_estimated, " ~ ", expre, " + ", indep_var,", data = dataset )", sep = "")
+    short_fmla <- paste(" ~ ", expre, " + ", indep_var, ")", sep = "")
   }
-  return(fmla)
+  expressions <- list(formula = fmla, short_formula = short_fmla)
+  return(expressions)
 }
+#######################################################################
+#' Form expression to use with glm()
+#' @param param_to_be_estimated  parameter of interest
+#' @param indep_var the independent variable (column name in data file)
+#' @param family distribution name  eg. for logistic regression -binomial
+#' @param covariates list of covariates
+#' @param interaction boolean value to indicate interaction in the case of generalised linear models,
+#' false by default
+#' @param naaction action to be taken with the missing values
+#' @param link link function if not the default for each family
+#' @return the formula for glm
+#' @examples
+#' formula = form_expression_glm("admit", indep_var = "gre", family = "binomial",
+#' covariates = c("gpa","rank"), interaction = FALSE, naaction = "na.omit", link = NA)
+#' @export
+form_expression_glm <- function(param_to_be_estimated, indep_var, family, covariates, interaction, naaction,link){
+  if (is.na(family))
+    stop("Error - information on distribution is missing")
+  else
+    this_dist <- find_glm_distribution(family)
+  if (!is.na(link)) {
+    link = check_link_glm(this_dist, link)
+    family_def = paste(this_dist,"(link = ", link, ")", sep = "")
+  }else{
+    family_def = paste(this_dist, sep = "")
+  }
+  if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
+    # no need to check for interaction
+    fmla <- paste("glm(", param_to_be_estimated, " ~ ", indep_var, ", family = ", family_def,
+                  ", data = dataset, na.action =", naaction, ")", sep = "")
+    short_fmla <- paste( " ~ ", indep_var, sep = "")
+  }else{
+    expre = paste(covariates[1], sep = "")
+    i = 2
+    while (i <= length(covariates)) {
+      this = paste(covariates[i], sep = "")
+      if (interaction)
+        expre = paste(expre,this, sep = " * ")
+      else
+        expre = paste(expre,this, sep = " + ")
+      i = i + 1
+    }
+    fmla <- paste("glm(", param_to_be_estimated, " ~ ", expre, " + ", indep_var, ", family = ", family_def,
+                  ", data = dataset, na.action =", naaction, ")", sep = "")
+    short_fmla <- paste(" ~ ", expre, " + ", indep_var, sep = "")
+  }
+  expressions <- list(formula = fmla, short_formula = short_fmla)
+  return(expressions)
+}
+
 #######################################################################
 #' Function to find the keyword for family of distribution in glm
 #' @param family family of distribution

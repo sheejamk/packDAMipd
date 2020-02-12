@@ -6,7 +6,7 @@
 Get the parameter values using logistic regression}
 \usage{
 use_logistic_rgression(param_to_be_estimated, dataset, indep_var, family,
-  covariates_list, naaction, link)
+  covariates, interaction, naaction, link)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -17,7 +17,9 @@ use_logistic_rgression(param_to_be_estimated, dataset, indep_var, family,
 
 \item{family}{distribution name  eg. for logistic regression -binomial}
 
-\item{covariates_list}{list of covariates - calculations to be done before passing}
+\item{covariates}{list of covariates - calculations to be done before passing}
+
+\item{interaction}{boolean value to indicate interaction in the case of linear regression}
 
 \item{naaction}{action to be taken with the missing values}
 
@@ -34,5 +36,6 @@ Get the parameter values using logistic regression
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 mydata$rank <- factor(mydata$rank)
 results_logit <- use_logistic_rgression("admit", dataset=mydata,
-indep_var = "gre", family ="binomial", covariates_list = NA, naaction = "stats::na.omit", link = NA)
+indep_var = "gre", family ="binomial", covariates = NA,interaction = FALSE,
+ naaction = "stats::na.omit", link = NA)
 }
