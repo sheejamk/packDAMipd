@@ -52,6 +52,61 @@ get_parameter_read <- function(parameter, paramfile, strategycol= NA, strategyna
   return(answer)
 }
 #######################################################################
+#' Get the parameter values from reading a file
+#' @param paramfile  parameter file to get the mortality eg.national life table data
+#' @param age age to get the age specific data
+#' @param gender gender details to get the gender specific mortality data
+#' @return the paramvalue
+#' @examples
+#' paramfile= system.file("extdata","LifeTable_USA_Mx_2015.csv",
+#' package = "packDAMipd")
+#' a <- get_mortality_from_file(paramfile, age = 10, gender = NULL)
+#'@export
+get_mortality_from_file <- function(paramfile, age, gender = NULL){
+  if (is.null(paramfile))
+    stop("Need to provide a parameter file to lookup")
+  if (IPDFileCheck::test_file_exist_read(paramfile) != 0)
+    stop("File doesnt exists or not able to access")
+  dataset <- data.frame(read.csv(paramfile,header = TRUE, sep = ",", stringsAsFactors = FALSE))
+  result <- IPDFileCheck::check_column_exists("age",dataset)
+  if (result != 0)
+    stop("Expecting the life tables to contain an age column")
+  age_columnno = IPDFileCheck::get_columnno_fornames(dataset, "age")
+  this_row = which(dataset[age_columnno] == age)
+  if (length(this_row) == 0) {
+    i = 1
+    while (i <= nrow(dataset)) {
+      the_string = dataset[[age_columnno]][i]
+      pos = stringr::str_locate(the_string, "-")
+      if (sum(is.na(pos)) < 2) {
+        minage = as.numeric(substr(the_string, 1, pos[1] - 1))
+        maxage = as.numeric(substr(the_string, pos[1] + 1, nchar(the_string)))
+      }else{
+        pos = stringr::str_locate(the_string, "and over")
+        minage = as.numeric(substr(the_string, 1, pos[1] - 1))
+        maxage = 120
+      }
+      if (minage <= age & maxage >= age) {
+        this_row = i
+        i = nrow(dataset) + 1
+      }else{
+        i = i + 1
+      }
+    }
+  }
+  if (length(this_row) == 0)
+    stop("Error - Row corresponding to the specific age could not be found")
+  if (is.null(gender)) {
+    total_columnno = IPDFileCheck::get_colno_pattern_colname("total", colnames(dataset))
+    mortality <- dataset[[total_columnno]][this_row]
+  }else{
+    sex_columnno = IPDFileCheck::get_columnno_fornames(dataset, gender)
+    mortality <- dataset[[sex_columnno]][this_row]
+  }
+  return(mortality)
+}
+
+#######################################################################
 #' Get the definition of given parameter distribution defined in a file
 #' @param parameter  parameter of interest
 #' @param paramfile data file to be provided
@@ -319,11 +374,11 @@ use_km_survival <- function(param_to_be_estimated, dataset,
   fit$call$formula <- fit$call$formula
   fit$call$data = fit$call$data
   the_data = eval(fit$call$data)
-  plot_result <- survminer::ggsurvplot(fit,data = the_data)
+  plot_diagnostics <- survminer::ggsurvplot(fit,data = the_data)
   results =  structure(list(
     fit = fit,
     summary_regression_results = summary_regression_results,
-    plot = plot_result
+    plot = plot_diagnostics
   ))
   return(results)
 }
@@ -360,11 +415,11 @@ use_fh_survival <- function(param_to_be_estimated, dataset,
   fit$call$formula <- fit$call$formula
   fit$call$data = fit$call$data
   the_data = eval(fit$call$data)
-  plot_result <- survminer::ggsurvplot(fit,data = the_data)
+  plot_diagnostics <- survminer::ggsurvplot(fit,data = the_data)
   results =  structure(list(
     fit = fit,
     summary_regression_results = summary_regression_results,
-    plot = plot_result
+    plot = plot_diagnostics
   ))
   return(results)
 }
@@ -401,11 +456,11 @@ use_fh2_survival <- function(param_to_be_estimated, dataset,
   fit$call$formula <- fit$call$formula
   fit$call$data = fit$call$data
   the_data = eval(fit$call$data)
-  plot_result <- survminer::ggsurvplot(fit,data = the_data)
+  plot_diagnostics <- survminer::ggsurvplot(fit,data = the_data)
   results =  structure(list(
     fit = fit,
     summary_regression_results = summary_regression_results,
-    plot = plot_result
+    plot = plot_diagnostics
   ))
   return(results)
 }
@@ -444,11 +499,11 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
   surv_fit$call$formula <- fit$call$formula
   surv_fit$call$data = fit$call$data
   the_data = eval(surv_fit$call$data)
-  plot_result <- survminer::ggsurvplot(surv_fit,data = the_data)
+  plot_diagnostics <- survminer::ggsurvplot(surv_fit,data = the_data)
   results =  structure(list(
     fit = fit,
     summary_regression_results = summary_regression_results,
-    plot = plot_result
+    plot = plot_diagnostics
   ))
   return(results)
 }
@@ -485,7 +540,7 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
   or_from_glm <- data.frame(cbind(term = table_this$term,lci, or, uci))
   #
   name_file_plot <- paste0("glm_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  plot_result <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
+  plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
   #
   # # glm.predict <- stats::predict(fit, newdata = dataset, type = "response", se.fit = TRUE)
   # # predict_lci <- (glm.predict$fit - 2 * glm.predict$se)
@@ -502,7 +557,7 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
   R2 <- rsq::rsq(fit)
   AIC <- stats::AIC(fit)
   BIC <- stats::BIC(fit)
-  check_model_fit <- data.frame(cbind(R2, AIC , BIC))
+  fit_diagnostics <- data.frame(cbind(R2, AIC , BIC))
   table_this <- broom::tidy(fit)
   OR <- exp(table_this$estimate)
   LCI <- exp(table_this$estimate - stats::qnorm(0.975,  0,  1) * table_this$std.error)
@@ -510,15 +565,15 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
   or_from_glm <- data.frame(cbind(term = table_this$term, LCI, OR, UCI))
   results =  (list(
     fit = fit,
-    variance_covariance = vcov_fit,
     summary_regression_results = summary_regression_results,
+    variance_covariance = vcov_fit,
+    cholesky_decomp_matrix = chol_decomp_matrix,
+    fit_diagnostics  = fit_diagnostics,
     ci_estimates = ci_estimates,
     corre_test = corr_test,
-    check_model_fit  = check_model_fit,
-    cholesky_decomp_matrix = chol_decomp_matrix,
     odds_ratio_ci = or_from_glm,
     plot_prediction = plot_prediction,
-    plot_modelfit = plot_result
+    plot_diagnostics = plot_diagnostics
   ))
   return(results)
 }
@@ -544,7 +599,7 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
   vcov_fit <- stats::vcov(fit)
   chol_decomp_matrix <- chol(vcov_fit)
   name_file_plot <- paste0("lm_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  plot_modelfit <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
+  plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
   eval_predict_expre = eval(parse(text = expression_recreated$short_formula))
   predictor_effect <- effects::predictorEffects(fit, eval_predict_expre)
   # #name_file_plot <- paste0("glm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
@@ -556,20 +611,20 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
   Adj_R2 <- summary(fit)$adj.r.squared
   AIC <- stats::AIC(fit)
   BIC <- stats::BIC(fit)
-  check_model_fit <- data.frame(cbind(Adj_R2, AIC , BIC))
-  colnames(check_model_fit) <- c("Adj_R2", "AIC", "BIC")
+  fit_diagnostics <- data.frame(cbind(Adj_R2, AIC , BIC))
+  colnames(fit_diagnostics) <- c("Adj_R2", "AIC", "BIC")
 
 
   results =  structure(list(
     fit = fit,
     test_asumptions = test_asumptions,
     corre_test = corr_test,
-    check_model_fit  = check_model_fit,
+    fit_diagnostics  = fit_diagnostics,
     ci_estimates = ci_estimates,
     variance_covariance = vcov_fit,
     summary_regression_results = summary_regression_results,
     cholesky_decomp_matrix = chol_decomp_matrix,
-    plot_modelfit = plot_modelfit,
+    plot_diagnostics = plot_diagnostics,
     plot_prediction = plot_prediction
   ))
   return(results)
@@ -639,61 +694,6 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
   ))
   return(results)
 }
-#######################################################################
-#' Get the parameter values from reading a file
-#' @param paramfile  parameter file to get the mortality eg.national life table data
-#' @param age age to get the age specific data
-#' @param gender gender details to get the gender specific mortality data
-#' @return the paramvalue
-#' @examples
-#' paramfile= system.file("extdata","LifeTable_USA_Mx_2015.csv",
-#' package = "packDAMipd")
-#' a <- get_mortality_from_file(paramfile, age = 10, gender = NULL)
-#'@export
-get_mortality_from_file <- function(paramfile, age, gender = NULL){
-  if (is.null(paramfile))
-    stop("Need to provide a parameter file to lookup")
-  if (IPDFileCheck::test_file_exist_read(paramfile) != 0)
-    stop("File doesnt exists or not able to access")
-  dataset <- data.frame(read.csv(paramfile,header = TRUE, sep = ",", stringsAsFactors = FALSE))
-  result <- IPDFileCheck::check_column_exists("age",dataset)
-  if (result != 0)
-    stop("Expecting the life tables to contain an age column")
-  age_columnno = IPDFileCheck::get_columnno_fornames(dataset, "age")
-  this_row = which(dataset[age_columnno] == age)
-  if (length(this_row) == 0) {
-    i = 1
-    while (i <= nrow(dataset)) {
-      the_string = dataset[[age_columnno]][i]
-      pos = stringr::str_locate(the_string, "-")
-      if (sum(is.na(pos)) < 2) {
-        minage = as.numeric(substr(the_string, 1, pos[1] - 1))
-        maxage = as.numeric(substr(the_string, pos[1] + 1, nchar(the_string)))
-      }else{
-        pos = stringr::str_locate(the_string, "and over")
-        minage = as.numeric(substr(the_string, 1, pos[1] - 1))
-        maxage = 120
-      }
-      if (minage <= age & maxage >= age) {
-        this_row = i
-        i = nrow(dataset) + 1
-      }else{
-        i = i + 1
-      }
-    }
-  }
-  if (length(this_row) == 0)
-      stop("Error - Row corresponding to the specific age could not be found")
-  if (is.null(gender)) {
-    total_columnno = IPDFileCheck::get_colno_pattern_colname("total", colnames(dataset))
-    mortality <- dataset[[total_columnno]][this_row]
-  }else{
-    sex_columnno = IPDFileCheck::get_columnno_fornames(dataset, gender)
-    mortality <- dataset[[sex_columnno]][this_row]
-  }
-  return(mortality)
-}
-######################################################################
 
 #' Bivaraite regression for correlated values
 #' @param param1_to_be_estimated  parameter of interest
@@ -734,7 +734,7 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   chol_decomp_matrix <- chol(vcov_fit)
   std_error <- stats::coef(summary_regression_results)
   #name_file_plot <- paste0("lm_", fitsur, "_", indep_var, ".pdf", sep = "")
-  #plot_result <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
+  #plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
 
   sur.predict <- stats::predict(fitsur, newdata = dataset, type = "response", se.fit = TRUE)
   par(mfrow = c(1,2))
@@ -762,13 +762,13 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   OLS_R2 <- summary_regression_results$ols.r.squared
   AIC <- stats::AIC(fitsur)
   BIC <- stats::BIC(fitsur)
-  check_model_fit <- data.frame(cbind(OLS_R2, AIC , BIC))
-  colnames(check_model_fit) <- c("OLS_R2", "AIC", "BIC")
+  fit_diagnostics <- data.frame(cbind(OLS_R2, AIC , BIC))
+  colnames(fit_diagnostics) <- c("OLS_R2", "AIC", "BIC")
   results =  structure(list(
     fit = fitsur,
     std_error = std_error,
     corre_matrix  = corre_matrix,
-    check_model_fit = check_model_fit,
+    fit_diagnostics = fit_diagnostics,
     ci_estimates = ci_estimates,
     variance_covariance = vcov_fit,
     summary_regression_results = summary_regression_results,
@@ -777,6 +777,8 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   ))
   return(results)
 }
+######################################################################
+######################################################################
 
 #######################################################################
 ##' Get the parameter values using the provided statistical regression methods
@@ -893,12 +895,12 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
 #     chol_decomp_matrix <- chol(vcov_fit)
 #   }
 #   if (caps_info_method %in% c("PARAMETRIC REGRESSION","PARAMETRIC"))
-#     plot_result <- graphics::plot(fit)
+#     plot_diagnostics <- graphics::plot(fit)
 #   else{
 #     if (caps_info_method %in% c("COX-PROPORTIONAL-HAZARD","COX PROPORTIONAL HAZARD","COX-PH", "COX PH","COXPH"))
-#       plot_result <- ggplot2::autoplot(survival::survfit(fit))
+#       plot_diagnostics <- ggplot2::autoplot(survival::survfit(fit))
 #     else
-#     plot_result <- ggplot2::autoplot(fit)
+#     plot_diagnostics <- ggplot2::autoplot(fit)
 #   }
 #
 #   results =  structure(list(
@@ -906,7 +908,7 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
 #     variance_covariance = vcov_fit,
 #     summary_regression_results = summary_regression_results,
 #     cholesky_decomp_matrix = chol_decomp_matrix,
-#     plot = plot_result
+#     plot = plot_diagnostics
 #   ))
 #   # if(caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS"){
 #   #   if(!is.na(info_distribution) & trimws(toupper(info_distribution))== "WEIBULL"){
@@ -917,7 +919,7 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
 #   #       summary_regression_results = summary_regression_results,
 #   #       cholesky_decomp_matrix = chol_decomp_matrix,
 #   #       weibull_params_survival_analysis = params_hr_etr,
-#   #       plot = plot_result
+#   #       plot = plot_diagnostics
 #   #     ))
 #   #   }
 #   #}
