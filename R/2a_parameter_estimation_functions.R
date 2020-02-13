@@ -1,4 +1,4 @@
-#######################################################################
+#########################
 #' Get the parameter values from reading a file
 #' @param parameter  parameter of interest
 #' @param param_value parameter value to be assigned
@@ -158,10 +158,9 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
   return(param_with_expression)
 }
 #######################################################################
-
 #' Get the parameter values using the provided statistical regression methods
 #' @param param_to_be_estimated  parameter of interest
-#' @param dataset data set to be provided
+#' @param data data to be provided or the data file containing dataset
 #' @param method method of estimation (for example, linear, logistic regression etc)
 #' @param indep_var the independent variable (column name in data file)
 #' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
@@ -183,13 +182,25 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' results_logit <- get_parameter_estimated_regression("admit", mydata,
 #' "logistic regression", "gre", NA,"binomial", c("gpa", "rank"), interaction = FALSE)
 #' @export
-get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, method,
+get_parameter_estimated_regression <- function(param_to_be_estimated, data, method,
                                       indep_var, info_get_method, info_distribution,
                                       covariates = NA, strategycol= NA,
                                       strategyname= NA, timevar_survival= NA, interaction = FALSE,
                                       random_effect = NA, naaction = "stats::na.omit",
-                                      param2_to_be_estimated= NA, covariates2 = NA, interaction2 = NA, link = NA){
-  if (is.null(dataset))
+                                      param2_to_be_estimated= NA, covariates2 = NA, interaction2 = FALSE, link = NA){
+
+  if (is.null(data))
+    stop("Need to provide a data set or file to lookup the data")
+  if (is.character(data))
+    dataset = load_trial_data(data)
+  else
+    dataset = data
+  data_details = c(param_to_be_estimated, indep_var, covariates, timevar_survival, random_effect, param2_to_be_estimated, covariates2)
+  data_details = data_details[!is.na(data_details)]
+  check_cols_exist = unlist(lapply(data_details,IPDFileCheck::check_column_exists,dataset))
+  if (sum(check_cols_exist) != 0)
+    stop("Given column(s) can not be found !!!")
+  if (is.null(data))
     stop("Need to provide a data set to lookup")
   if (is.na(method))
     stop("Please provide  a statistical method")
@@ -213,10 +224,13 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, m
     results <- use_survival_analysis(param_to_be_estimated, dataset, indep_var, info_get_method,
                                      info_distribution, covariates_list , timevar_survival)
   if (caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR")
-    results <- use_linear_regression(param_to_be_estimated, dataset, indep_var, covariates, interaction)
+    results <- use_linear_regression(param_to_be_estimated, data, indep_var, covariates, interaction)
+  if (caps_method == "GENERALISED LINEAR MODEL" | caps_method == "GENERALISED_LINEAR_MODEL" | caps_method == "GLM")
+    results <- use_generalised_linear_model(param_to_be_estimated, dataset, indep_var, family = info_distribution,
+                                            covariates, interaction, naaction, link)
   if (caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC")
-    results <- use_logistic_rgression(param_to_be_estimated, dataset, indep_var, info_distribution,
-                                      covariates, interaction, naaction, link)
+    results <- use_generalised_linear_model(param_to_be_estimated, dataset, indep_var, family = "binomial",
+                                      covariates, interaction, naaction, link = "logit")
   if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
      | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" )
     results <- use_mixed_effect_model(param_to_be_estimated, dataset, indep_var, covariates, random_effect)
@@ -521,59 +535,56 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 #' mydata$rank <- factor(mydata$rank)
-#' results_logit <- use_logistic_rgression("admit", dataset=mydata,
+#' results_logit <- use_generalised_linear_model("admit", dataset=mydata,
 #' indep_var = "gre", family ="binomial", covariates = NA,interaction = FALSE,
 #'  naaction = "stats::na.omit", link = NA)
 #' @export
-use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
+use_generalised_linear_model <- function(param_to_be_estimated, dataset, indep_var,
                                    family, covariates, interaction, naaction, link){
+
   expression_recreated <- form_expression_glm(param_to_be_estimated, indep_var, family, covariates, interaction, naaction,link)
   fit <- eval(parse(text = expression_recreated$formula))
-  summary_regression_results = summary(fit)
-  ci_estimates <- stats::confint(fit)
-  vcov_fit <- stats::vcov(fit)
-  chol_decomp_matrix <- chol(vcov_fit)
-  table_this <- broom::tidy(fit)
-  or <- exp(table_this$estimate)
-  lci <- exp(table_this$estimate - stats::qnorm(0.975,  0,  1) * table_this$std.error)
-  uci <- exp(table_this$estimate + stats::qnorm(0.975,  0,  1) * table_this$std.error)
-  or_from_glm <- data.frame(cbind(term = table_this$term,lci, or, uci))
-  #
-  name_file_plot <- paste0("glm_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
-  #
-  # # glm.predict <- stats::predict(fit, newdata = dataset, type = "response", se.fit = TRUE)
-  # # predict_lci <- (glm.predict$fit - 2 * glm.predict$se)
-  # # predict_uci <- (glm.predict$fit + 2 * glm.predict$se)
-  #
-  eval_predict_expre = eval(parse(text = expression_recreated$short_formula))
-  predictor_effect <- effects::predictorEffects(fit, eval_predict_expre)
-  # #name_file_plot <- paste0("glm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  # #grDevices::pdf(name_file_plot)
-  plot_prediction <- graphics::plot(predictor_effect, lines = list(multiline = TRUE))
-  # #grDevices::dev.off()
+  summary = summary(fit)
+  ci_coeff <- stats::confint(fit)
+  variance_covariance_coeff <- stats::vcov(fit)
+  chol_decomp_matrix <- chol(variance_covariance_coeff)
+  autocorr_error_test <- lmtest::dwtest(fit)
 
-  corr_test <- lmtest::dwtest(fit)
+  name_file_plot <- paste0("glm_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+  plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
+  grDevices::dev.off()
+
+
   R2 <- rsq::rsq(fit)
   AIC <- stats::AIC(fit)
   BIC <- stats::BIC(fit)
   fit_diagnostics <- data.frame(cbind(R2, AIC , BIC))
+
+  eval_predict_expre = eval(parse(text = expression_recreated$short_formula))
+  predictor_effect <- effects::predictorEffects(fit, eval_predict_expre)
+  name_file_plot <- paste0("glm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+  plot_prediction <- graphics::plot(predictor_effect, lines = list(multiline = TRUE))
+  grDevices::dev.off()
+
   table_this <- broom::tidy(fit)
   OR <- exp(table_this$estimate)
   LCI <- exp(table_this$estimate - stats::qnorm(0.975,  0,  1) * table_this$std.error)
   UCI <- exp(table_this$estimate + stats::qnorm(0.975,  0,  1) * table_this$std.error)
   or_from_glm <- data.frame(cbind(term = table_this$term, LCI, OR, UCI))
+
   results =  (list(
     fit = fit,
-    summary_regression_results = summary_regression_results,
-    variance_covariance = vcov_fit,
+    summary = summary,
+    ci_coeff = ci_coeff,
+    variance_covariance_coeff = variance_covariance_coeff,
     cholesky_decomp_matrix = chol_decomp_matrix,
+    autocorr_error_test = autocorr_error_test,
+    plot_diagnostics = plot_diagnostics,
     fit_diagnostics  = fit_diagnostics,
-    ci_estimates = ci_estimates,
-    corre_test = corr_test,
-    odds_ratio_ci = or_from_glm,
     plot_prediction = plot_prediction,
-    plot_diagnostics = plot_diagnostics
+    odds_ratio_ci = or_from_glm
   ))
   return(results)
 }
@@ -594,39 +605,44 @@ use_logistic_rgression <- function(param_to_be_estimated, dataset, indep_var,
 use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, covariates, interaction){
   expression_recreated <- form_expression_lm(param_to_be_estimated, indep_var, covariates, interaction)
   fit <- eval(parse(text = expression_recreated$formula))
-  summary_regression_results = summary(fit)
-  ci_estimates <- stats::confint(fit)
-  vcov_fit <- stats::vcov(fit)
-  chol_decomp_matrix <- chol(vcov_fit)
-  name_file_plot <- paste0("lm_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  summary = summary(fit)
+  ci_coeff <- stats::confint(fit)
+  variance_covariance_coeff <- stats::vcov(fit)
+  chol_decomp_matrix <- chol(variance_covariance_coeff)
+  autocorr_error_test <- lmtest::dwtest(fit)
+
+  name_file_plot <- paste0("lm_residuals", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  grDevices::pdf(name_file_plot)
   plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
   eval_predict_expre = eval(parse(text = expression_recreated$short_formula))
-  predictor_effect <- effects::predictorEffects(fit, eval_predict_expre)
-  # #name_file_plot <- paste0("glm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  # #grDevices::pdf(name_file_plot)
-  plot_prediction <- graphics::plot(predictor_effect, lines = list(multiline = TRUE))
+  grDevices::dev.off()
 
-  test_asumptions <- summary(gvlma::gvlma(fit))
-  corr_test <- lmtest::dwtest(fit)
+  model_fit_asumptions <- summary(gvlma::gvlma(fit))
+
   Adj_R2 <- summary(fit)$adj.r.squared
   AIC <- stats::AIC(fit)
   BIC <- stats::BIC(fit)
   fit_diagnostics <- data.frame(cbind(Adj_R2, AIC , BIC))
   colnames(fit_diagnostics) <- c("Adj_R2", "AIC", "BIC")
 
+  predictor_effect <- effects::predictorEffects(fit, eval_predict_expre)
+  name_file_plot <- paste0("lm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+  plot_prediction <- graphics::plot(predictor_effect, lines = list(multiline = TRUE))
+  grDevices::dev.off()
 
-  results =  structure(list(
+   results =  (list(
     fit = fit,
-    test_asumptions = test_asumptions,
-    corre_test = corr_test,
-    fit_diagnostics  = fit_diagnostics,
-    ci_estimates = ci_estimates,
-    variance_covariance = vcov_fit,
-    summary_regression_results = summary_regression_results,
+    summary = summary,
+    ci_coeff = ci_coeff,
+    variance_covariance_coeff = variance_covariance_coeff,
     cholesky_decomp_matrix = chol_decomp_matrix,
+    autocorr_error_test = autocorr_error_test,
     plot_diagnostics = plot_diagnostics,
+    model_fit_asumptions = model_fit_asumptions,
+    fit_diagnostics  = fit_diagnostics,
     plot_prediction = plot_prediction
-  ))
+   ))
   return(results)
 }
 ##########################################################################################################
@@ -733,11 +749,9 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   vcov_fit <- summary_regression_results$coefCov
   chol_decomp_matrix <- chol(vcov_fit)
   std_error <- stats::coef(summary_regression_results)
-  #name_file_plot <- paste0("lm_", fitsur, "_", indep_var, ".pdf", sep = "")
-  #plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
-
+  name_file_plot <- paste0(param1_to_be_estimated, "_", param2_to_be_estimated, "_sureg_", indep_var, ".pdf", sep = "")
   sur.predict <- stats::predict(fitsur, newdata = dataset, type = "response", se.fit = TRUE)
-  par(mfrow = c(1,2))
+  graphics::par(mfrow = c(1,2))
   predict1 <- sur.predict$eq1.pred
   predict1_lci <- (sur.predict$eq1.pred - 2 * sur.predict$eq1.se.fit)
   predict1_uci <- (sur.predict$eq1.pred + 2 * sur.predict$eq1.se.fit)
@@ -747,18 +761,22 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
 
   new_df <- data.frame(x = dataset[[indep_var]], prediction1 = predict1, lci1 = predict1_lci, uci1 = predict1_uci,
                        prediction2 = predict2, lci2 = predict2_lci, uci2 = predict2_uci)
+  grDevices::pdf(name_file_plot)
   if (is.factor(new_df$x)) {
-    plot_prediction <- plot(new_df$x, new_df$prediction1, type = 'p', ylab = param1_to_be_estimated )
-    plot(new_df$x, new_df$prediction2, type = 'p',ylab = param2_to_be_estimated )
+    plot_prediction <- graphics::plot(new_df$x, new_df$prediction1, type = 'p', ylab = param1_to_be_estimated )
+    graphics::plot(new_df$x, new_df$prediction2, type = 'p',ylab = param2_to_be_estimated )
+    print(plot_prediction)
   }else{
-    plot_prediction <- plot(new_df$x, new_df$prediction1, type = 'p', ylab = param1_to_be_estimated )
-    lines(new_df$x, new_df$lci1)
-    lines(new_df$x, new_df$uci1)
-    plot(new_df$x, new_df$prediction2, type = 'p',ylab = param2_to_be_estimated )
-    lines(new_df$x, new_df$lci2)
-    lines(new_df$x, new_df$uci2)
+    plot_prediction <- graphics::plot(new_df$x, new_df$prediction1, type = 'p', ylab = param1_to_be_estimated )
+    graphics::lines(new_df$x, new_df$lci1)
+    graphics::lines(new_df$x, new_df$uci1)
+    graphics::plot(new_df$x, new_df$prediction2, type = 'p',ylab = param2_to_be_estimated )
+    graphics::lines(new_df$x, new_df$lci2)
+    graphics::lines(new_df$x, new_df$uci2)
+    print(plot_prediction)
   }
- corre_matrix <- summary_regression_results$residCor
+  grDevices::dev.off()
+  corre_matrix <- summary_regression_results$residCor
   OLS_R2 <- summary_regression_results$ols.r.squared
   AIC <- stats::AIC(fitsur)
   BIC <- stats::BIC(fitsur)

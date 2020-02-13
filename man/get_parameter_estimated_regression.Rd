@@ -4,17 +4,17 @@
 \alias{get_parameter_estimated_regression}
 \title{Get the parameter values using the provided statistical regression methods}
 \usage{
-get_parameter_estimated_regression(param_to_be_estimated, dataset, method,
+get_parameter_estimated_regression(param_to_be_estimated, data, method,
   indep_var, info_get_method, info_distribution, covariates = NA,
   strategycol = NA, strategyname = NA, timevar_survival = NA,
   interaction = FALSE, random_effect = NA,
   naaction = "stats::na.omit", param2_to_be_estimated = NA,
-  covariates2 = NA, interaction2 = NA, link = NA)
+  covariates2 = NA, interaction2 = FALSE, link = NA)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
 
-\item{dataset}{data set to be provided}
+\item{data}{data to be provided or the data file containing dataset}
 
 \item{method}{method of estimation (for example, linear, logistic regression etc)}
 

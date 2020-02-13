@@ -6,3 +6,5 @@
 ^doc$
 ^Meta$
 ^results$
+^Rplots\.pdf$
+^.*\.pdf$
