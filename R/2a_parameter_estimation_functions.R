@@ -187,7 +187,8 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
                                       covariates = NA, strategycol= NA,
                                       strategyname= NA, timevar_survival= NA, interaction = FALSE,
                                       random_effect = NA, naaction = "stats::na.omit",
-                                      param2_to_be_estimated= NA, covariates2 = NA, interaction2 = FALSE, link = NA){
+                                      param2_to_be_estimated= NA, covariates2 = NA, interaction2 = FALSE,
+                                      link = NA){
 
   if (is.null(data))
     stop("Need to provide a data set or file to lookup the data")
