@@ -612,10 +612,9 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
   chol_decomp_matrix <- chol(variance_covariance_coeff)
   autocorr_error_test <- lmtest::dwtest(fit)
 
-  name_file_plot <- paste0("lm_residuals", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  name_file_plot <- paste0("lm_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
-  eval_predict_expre = eval(parse(text = expression_recreated$short_formula))
   grDevices::dev.off()
 
   model_fit_asumptions <- summary(gvlma::gvlma(fit))
@@ -626,13 +625,14 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
   fit_diagnostics <- data.frame(cbind(Adj_R2, AIC , BIC))
   colnames(fit_diagnostics) <- c("Adj_R2", "AIC", "BIC")
 
+  eval_predict_expre = eval(parse(text = expression_recreated$short_formula))
   predictor_effect <- effects::predictorEffects(fit, eval_predict_expre)
   name_file_plot <- paste0("lm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   plot_prediction <- graphics::plot(predictor_effect, lines = list(multiline = TRUE))
   grDevices::dev.off()
 
-   results =  (list(
+  results =  (list(
     fit = fit,
     summary = summary,
     ci_coeff = ci_coeff,
@@ -657,7 +657,7 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 #  results_logit <- use_mixed_effect_model("gre", dataset=mydata,
-#                                          indep_var = "gpa", covariates = NA)
+#                                          indep_var = "gpa", covariates = NA, random_effect = "rank")
 #' @export
 use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, covariates, random_effect){
     random = list()
@@ -681,16 +681,19 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
        }
     }
     if (length(random) != 0 & length(expre) != 0) {
-      expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", expre, " + ", indep_var, ", random = ~", random, ", data = dataset)")
+      expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", expre, " + ", indep_var,
+                                     " + ", random, ", data = dataset)")
       fit <- eval(parse(text = expression_recreated))
 
     }else{
       if (length(random) != 0 & length(expre) == 0) {
-        expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var, ", random = ~", random, ", data = dataset)")
+        expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var,
+                                       " + ", random, ", data = dataset)")
         fit <- eval(parse(text = expression_recreated))
       }else{
         if (length(random) == 0 & length(expre) != 0) {
-          expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", expre, " + ", indep_var, ", data = dataset)")
+          expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", expre, " +
+                                         ", indep_var, ", data = dataset)")
           fit <- eval(parse(text = expression_recreated))
         }else{
           expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", indep_var, ", data = dataset)")
@@ -700,19 +703,35 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
 
     }
 
-  summary_regression_results = summary(fit)
-  vcov_fit <- stats::vcov(fit)
-  chol_decomp_matrix <- chol(vcov_fit)
-  results =  structure(list(
-    fit = fit,
-    summary_regression_results = summary_regression_results,
-    variance_covariance = vcov_fit,
-    cholesky_decomp_matrix = chol_decomp_matrix
-  ))
+    summary = summary(fit)
+    variance_covariance_coeff <- stats::vcov(fit)
+
+    std_error <- sqrt(diag(variance_covariance_coeff))
+    coefficients = fixef(fit)
+    upperCI <-  days_coef + 1.96*days_se
+    lowerCI <-  days_coef  - 1.96*days_se
+    ci_coeff =
+    chol_decomp_matrix <- chol(variance_covariance_coeff)
+
+    results =  (list(
+      fit = fit,
+      summary = summary,
+      ci_coeff = ci_coeff,
+      variance_covariance_coeff = variance_covariance_coeff,
+      cholesky_decomp_matrix = chol_decomp_matrix,
+      autocorr_error_test = autocorr_error_test,
+      plot_diagnostics = plot_diagnostics,
+      model_fit_asumptions = model_fit_asumptions,
+      fit_diagnostics  = fit_diagnostics,
+      plot_prediction = plot_prediction
+    ))
+
+
+
   return(results)
 }
-
-#' Bivaraite regression for correlated values
+##########################################################################################################
+#' Bivaraite regression for correlated observations
 #' @param param1_to_be_estimated  parameter of interest
 #' @param param2_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
@@ -744,14 +763,33 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   formula_1 <- stats::as.formula(string1)
   formula_2 <-  stats::as.formula(string2)
 
-  fitsur <- systemfit::systemfit(list(formula_1, formula_2), data = dataset)
-  summary_regression_results <- summary(fitsur)
-  ci_estimates <- stats::confint(fitsur)
-  vcov_fit <- summary_regression_results$coefCov
-  chol_decomp_matrix <- chol(vcov_fit)
-  std_error <- stats::coef(summary_regression_results)
+  fit <- systemfit::systemfit(list(formula_1, formula_2), data = dataset)
+  summary <- summary(fit)
+  ci_coeff <- stats::confint(fit)
+  variance_covariance_coeff <- summary$coefCov
+  chol_decomp_matrix <- chol(variance_covariance_coeff)
+  std_error <- stats::coef(summary)
+
+  fitted_values = fitted(fit)
+  residuals = residuals(fit)
+  sqrt_residuals = sqrt(abs(residuals))
+
+  name_file_plot <- paste0("sureg_residuals_", param1_to_be_estimated, "_", param1_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+
+  graphics::par(mfrow = c(2,4))
+  plot_diagnostics <- graphics::plot(fitted_values$eq1, residuals$eq1, type = 'p', xlab = paste("Fitted values",param1_to_be_estimated) , ylab = "residuals" )
+  graphics::plot(fitted_values$eq2, residuals$eq2, type = 'p', xlab = paste("Fitted values",param2_to_be_estimated) , ylab = "Residuals" )
+  graphics::plot(fitted_values$eq1, sqrt_residuals$eq1, type = 'p', xlab = paste("Fitted values",param1_to_be_estimated) , ylab = "Sqrt(residuals)" )
+  graphics::plot(fitted_values$eq2, sqrt_residuals$eq2, type = 'p', xlab = paste("Fitted values",param1_to_be_estimated) , ylab = "Sqrt(residuals)" )
+  qqnorm(residuals$eq1, main = "Normal Q-Q plot - Eq 1")
+  qqline(residuals$eq1)
+  qqnorm(residuals$eq2,main = "Normal Q-Q plot - Eq 2")
+  qqline(residuals$eq2)
+  grDevices::dev.off()
+
   name_file_plot <- paste0(param1_to_be_estimated, "_", param2_to_be_estimated, "_sureg_", indep_var, ".pdf", sep = "")
-  sur.predict <- stats::predict(fitsur, newdata = dataset, type = "response", se.fit = TRUE)
+  sur.predict <- stats::predict(fit, newdata = dataset, type = "response", se.fit = TRUE)
   graphics::par(mfrow = c(1,2))
   predict1 <- sur.predict$eq1.pred
   predict1_lci <- (sur.predict$eq1.pred - 2 * sur.predict$eq1.se.fit)
@@ -777,170 +815,25 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
     print(plot_prediction)
   }
   grDevices::dev.off()
-  corre_matrix <- summary_regression_results$residCor
-  OLS_R2 <- summary_regression_results$ols.r.squared
-  AIC <- stats::AIC(fitsur)
-  BIC <- stats::BIC(fitsur)
+
+  correlation_matrix <- summary$residCor
+  OLS_R2 <- summary$ols.r.squared
+  AIC <- stats::AIC(fit)
+  BIC <- stats::BIC(fit)
   fit_diagnostics <- data.frame(cbind(OLS_R2, AIC , BIC))
   colnames(fit_diagnostics) <- c("OLS_R2", "AIC", "BIC")
-  results =  structure(list(
-    fit = fitsur,
-    std_error = std_error,
-    corre_matrix  = corre_matrix,
-    fit_diagnostics = fit_diagnostics,
-    ci_estimates = ci_estimates,
-    variance_covariance = vcov_fit,
-    summary_regression_results = summary_regression_results,
+
+  results =  (list(
+    fit = fit,
+    summary = summary,
+    ci_coeff = ci_coeff,
+    std_error =  std_error,
+    correlation_matrix = correlation_matrix,
+    variance_covariance_coeff = variance_covariance_coeff,
     cholesky_decomp_matrix = chol_decomp_matrix,
+    plot_diagnostics = plot_diagnostics,
+    fit_diagnostics  = fit_diagnostics,
     plot_prediction = plot_prediction
   ))
   return(results)
 }
-######################################################################
-######################################################################
-
-#######################################################################
-##' Get the parameter values using the provided statistical regression methods
-##' @param param_to_be_estimated  parameter of interest
-##' @param dataset data set to be provided
-##' @param method method of estimation (for example, linear, logistic regression etc)
-##' @param indep_var the independent variable (column name in data file)
-##' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
-##' @param info_distribution distribution name  eg. for logistic regression -binomial
-##' @param covariates list of covariates - calculations to be done before passing
-##' @param strategycol column name containing arm details, default is NA
-##' @param strategyname name of the  arm, default is NA
-##' @param timevar_survival time variable for survival analysis, default is NA
-##' @return the results of the regression analysis
-##' @examples
-##' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-##' results_logit <- get_parameter_estimated_regression("admit", mydata,
-##' "logistic regression", "gre", NA,"binomial", c("gpa", "factor(rank)"))
-##' @export
-# get_parameter_estimated_regression <- function(param_to_be_estimated, dataset, method,
-#                                             indep_var, info_get_method, info_distribution,
-#                                             covariates = NA, strategycol = NA,
-#                                             strategyname = NA, timevar_survival = NA){
-#   if (is.null(dataset))
-#     stop("Need to provide a data set to lookup")
-#   if (is.na(method))
-#     stop("Please provide  a statistical method")
-#   if (!is.na(strategycol)) {
-#     if (IPDFileCheck::check_column_exists(strategycol,dataset) != 0)
-#       dataset = dataset[dataset[[strategycol]] == strategyname,]
-#   }
-#   method_rpack <- find_keyword_regression_method(method, info_get_method)
-#   caps_info_method <- toupper(info_get_method)
-#   caps_method = toupper(method)
-#   if (caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS") {
-#     if (is.na(timevar_survival)) {
-#       stop("For survival analysis, please provide the varaible to use as time ")
-#     }else{
-#       surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")", sep = "")
-#       object <- surv_object
-#     }
-#   }else{
-#     object <- param_to_be_estimated
-#   }
-#   if (sum(is.na(covariates)) == 0) {
-#     covariates_list = list()
-#     for (i in 1:length(covariates)) {
-#       if (i == length(covariates))
-#         covariates_list = paste(covariates_list, paste(covariates[i], sep = ""))
-#       else
-#         covariates_list = paste(covariates_list, paste(covariates[i], " + ", sep = ""))
-#     }
-#   }else{
-#     covariates_list = NA
-#   }
-#   if (caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS") {
-#     if (caps_info_method == "PARAMETRIC REGRESSION" | caps_info_method == "PARAMETRIC") {
-#       this_dist <- find_survreg_distribution(info_distribution)
-#       if (is.na(covariates_list))
-#         expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, ", ",
-#                                      "data = dataset,  dist = \"", this_dist, "\" ) ", sep = "")
-#       else
-#         expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, " + ",
-#                                      covariates_list, ", ","data = dataset,  dist = \"",
-#                                      this_dist, "\" ) ", sep = "")
-#     }else{
-#       if (caps_info_method == "KAPLAN-MEIER" | caps_info_method == "KM") {
-#         if (is.na(covariates_list))
-#               expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var,",type =",
-#                                            "\"kaplan-meier\"", ", ","data = dataset) ", sep = "")
-#         else
-#             expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, " + ", covariates_list,
-#                                          ", type =", "\"kaplan-meier\"",", ","data = dataset) ", sep = "")
-#       }else{
-#         if (caps_info_method == "FLEMING-HARRINGTON" | caps_info_method == "FH") {
-#           if (is.na(covariates_list))
-#                 expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var,", type =",
-#                                              "\"fleming-harrington\"",", ","data = dataset) ", sep = "")
-#           else
-#                 expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, " + ", covariates_list,
-#                                              ", type =", "\"fleming-harrington\"",", ","data = dataset) ", sep = "")
-#         }else{
-#           if (caps_info_method == "FH2") {
-#             if (is.na(covariates_list))
-#               expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, ", type =", "\"fh2\"",
-#                                            ", ","data = dataset) ", sep = "")
-#             else
-#               expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, " + ", covariates_list,
-#                                            ", type =", "\"fh2\"",", ","data = dataset) ", sep = "")
-#           }else{
-#             if (is.na(covariates_list))
-#               expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, ", ","data = dataset) ", sep = "")
-#             else
-#               expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, " + ", covariates_list,
-#                                            ", ", "data = dataset) ", sep = "")
-#           }
-#         }
-#       }
-#     }
-#   }else{
-#     if (is.na(covariates_list))
-#       expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, ", ","data = dataset) ", sep = "")
-#     else
-#       expression_recreated <- paste0(method_rpack,"(", object, " ~ ", indep_var, " + ", covariates_list,
-#                                    ", ", "data = dataset) ", sep = "")
-#   }
-#
-#   fit <- eval(parse(text = expression_recreated))
-#   summary_regression_results = summary(fit)
-#   if (caps_info_method %in% c("KAPLAN-MEIER","KM","FLEMING-HARRINGTON", "FH2","FH"))
-#     vcov_fit <- chol_decomp_matrix <- list()
-#   else{
-#     vcov_fit <- stats::vcov(fit)
-#     chol_decomp_matrix <- chol(vcov_fit)
-#   }
-#   if (caps_info_method %in% c("PARAMETRIC REGRESSION","PARAMETRIC"))
-#     plot_diagnostics <- graphics::plot(fit)
-#   else{
-#     if (caps_info_method %in% c("COX-PROPORTIONAL-HAZARD","COX PROPORTIONAL HAZARD","COX-PH", "COX PH","COXPH"))
-#       plot_diagnostics <- ggplot2::autoplot(survival::survfit(fit))
-#     else
-#     plot_diagnostics <- ggplot2::autoplot(fit)
-#   }
-#
-#   results =  structure(list(
-#     fit = fit,
-#     variance_covariance = vcov_fit,
-#     summary_regression_results = summary_regression_results,
-#     cholesky_decomp_matrix = chol_decomp_matrix,
-#     plot = plot_diagnostics
-#   ))
-#   # if(caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS"){
-#   #   if(!is.na(info_distribution) & trimws(toupper(info_distribution))== "WEIBULL"){
-#   #     params_hr_etr = SurvRegCensCov::ConvertWeibull(fit)
-#   #     results =  structure(list(
-#   #       fit = fit,
-#   #       variance_covariance = vcov_fit,
-#   #       summary_regression_results = summary_regression_results,
-#   #       cholesky_decomp_matrix = chol_decomp_matrix,
-#   #       weibull_params_survival_analysis = params_hr_etr,
-#   #       plot = plot_diagnostics
-#   #     ))
-#   #   }
-#   #}
-#   return(results)
-# }
