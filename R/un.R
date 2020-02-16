@@ -12,20 +12,8 @@
 # 11. Model prediction
 # 12. Extraction of distribution parameters
 ##############################################
-mydata <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
-debug(use_seemingly_unrelated_regression)
-results_sureg <- use_seemingly_unrelated_regression("read", "math", dataset = mydata,
-indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
-covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,  interaction2 = FALSE)
 
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-results_lm <- use_linear_regression("gre", dataset = mydata,
-indep_var = "gpa", covariates = NA, interaction = FALSE)
-
-
-y <- rnorm(2000)*4 - 4
-dd = qqnorm(y)
-cv = qqline(y, col = 2,lwd=2,lty=2)
-
-mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-results_logit <- use_mixed_effect_model("gre", dataset = mydata,  indep_var = "gpa", covariates = NA, random_effect = "rank")
+debug(use_mixed_effect_model)
+results_logit <- use_mixed_effect_model("gre", dataset = mydata,  indep_var = "gpa",
+                                        covariates = NA, random_effect = NA)

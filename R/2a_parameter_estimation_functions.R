@@ -659,7 +659,7 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
 #  results_logit <- use_mixed_effect_model("gre", dataset=mydata,
 #                                          indep_var = "gpa", covariates = NA, random_effect = "rank")
 #' @export
-use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, covariates, random_effect){
+use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, covariates, random_effect, interaction){
     random = list()
     expre = list()
     if (sum(is.na(covariates)) == 0) {
@@ -674,7 +674,7 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
     if (sum(is.na(random_effect)) == 0) {
        random = paste("1|",random_effect[1], sep = "")
        j = 2
-       while (i <= length(random_effect)) {
+       while (j <= length(random_effect)) {
          this = paste("1|",random_effect[j], sep = "")
          random = paste(random, this, sep = "+")
          j = j + 1
@@ -691,43 +691,34 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
                                        " + ", random, ", data = dataset)")
         fit <- eval(parse(text = expression_recreated))
       }else{
-        if (length(random) == 0 & length(expre) != 0) {
-          expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", expre, " +
-                                         ", indep_var, ", data = dataset)")
-          fit <- eval(parse(text = expression_recreated))
-        }else{
-          expression_recreated =  paste0("lm(", param_to_be_estimated, " ~ ", indep_var, ", data = dataset)")
-          fit <- eval(parse(text = expression_recreated))
-        }
+        if (length(random) == 0 & length(expre) != 0)
+          fit <- use_linear_regression(param_to_be_estimated, dataset, indep_var, covariates, interaction )
+        else
+          fit <- use_linear_regression(param_to_be_estimated, dataset, indep_var, interaction )
+        results <- fit$fit
+
       }
-
+      summary = summary(fit)
+      variance_covariance_coeff <- stats::vcov(fit)
+      std_error <- sqrt(diag(variance_covariance_coeff))
+      coefficients = fixef(fit)
+      upperCI <-  days_coef + 1.96*days_se
+      lowerCI <-  days_coef  - 1.96*days_se
+      ci_coeff =
+        chol_decomp_matrix <- chol(variance_covariance_coeff)
+      results =  (list(
+        fit = fit,
+        summary = summary,
+        ci_coeff = ci_coeff,
+        variance_covariance_coeff = variance_covariance_coeff,
+        cholesky_decomp_matrix = chol_decomp_matrix,
+        autocorr_error_test = autocorr_error_test,
+        plot_diagnostics = plot_diagnostics,
+        model_fit_asumptions = model_fit_asumptions,
+        fit_diagnostics  = fit_diagnostics,
+        plot_prediction = plot_prediction
+      ))
     }
-
-    summary = summary(fit)
-    variance_covariance_coeff <- stats::vcov(fit)
-
-    std_error <- sqrt(diag(variance_covariance_coeff))
-    coefficients = fixef(fit)
-    upperCI <-  days_coef + 1.96*days_se
-    lowerCI <-  days_coef  - 1.96*days_se
-    ci_coeff =
-    chol_decomp_matrix <- chol(variance_covariance_coeff)
-
-    results =  (list(
-      fit = fit,
-      summary = summary,
-      ci_coeff = ci_coeff,
-      variance_covariance_coeff = variance_covariance_coeff,
-      cholesky_decomp_matrix = chol_decomp_matrix,
-      autocorr_error_test = autocorr_error_test,
-      plot_diagnostics = plot_diagnostics,
-      model_fit_asumptions = model_fit_asumptions,
-      fit_diagnostics  = fit_diagnostics,
-      plot_prediction = plot_prediction
-    ))
-
-
-
   return(results)
 }
 ##########################################################################################################
