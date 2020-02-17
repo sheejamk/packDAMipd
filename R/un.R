@@ -15,5 +15,7 @@
 
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 debug(use_mixed_effect_model)
+debug(use_linear_regression)
+debug(form_expression_lm)
 results_logit <- use_mixed_effect_model("gre", dataset = mydata,  indep_var = "gpa",
-                                        covariates = NA, random_effect = NA)
+                                        covariates = NA, random_effect = NA, interaction =FALSE)

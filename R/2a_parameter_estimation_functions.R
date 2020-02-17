@@ -654,10 +654,11 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
 #' @param covariates, independent variables, NA by default
 #' @return result regression result with plot if success and -1, if failure
 #' @param random_effect random effect variable(s) for the mixed effect models
+#' @param interaction boolean value to indicate interaction in the case of linear regression,
 #' @examples
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 #  results_logit <- use_mixed_effect_model("gre", dataset=mydata,
-#                                          indep_var = "gpa", covariates = NA, random_effect = "rank")
+#                                          indep_var = "gpa", covariates = NA, random_effect = "rank", interaction = FALSE)
 #' @export
 use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, covariates, random_effect, interaction){
     random = list()
@@ -692,26 +693,37 @@ use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, co
         fit <- eval(parse(text = expression_recreated))
       }else{
         if (length(random) == 0 & length(expre) != 0)
-          fit <- use_linear_regression(param_to_be_estimated, dataset, indep_var, covariates, interaction )
+          lmfit <- use_linear_regression(param_to_be_estimated, dataset, indep_var, covariates, interaction )
         else
-          fit <- use_linear_regression(param_to_be_estimated, dataset, indep_var, interaction )
-        results <- fit$fit
-
+          lmfit <- use_linear_regression(param_to_be_estimated, dataset, indep_var, covariates, interaction = FALSE)
       }
-      summary = summary(fit)
-      variance_covariance_coeff <- stats::vcov(fit)
-      std_error <- sqrt(diag(variance_covariance_coeff))
-      coefficients = fixef(fit)
-      upperCI <-  days_coef + 1.96*days_se
-      lowerCI <-  days_coef  - 1.96*days_se
-      ci_coeff =
-        chol_decomp_matrix <- chol(variance_covariance_coeff)
+      if (length(random) == 0){
+        fit = lmfit$fit
+        summary = lmfit$summary
+        ci_coeff = lmfit$ci_coeff
+        variance_covariance_coeff = lmfit$variance_covariance_coeff
+        cholesky_decomp_matrix = lmfit$chol_decomp_matrix
+        autocorr_error_test = lmfit$autocorr_error_test
+        plot_diagnostics = lmfit$plot_diagnostics
+        model_fit_asumptions = lmfit$model_fit_asumptions
+        fit_diagnostics  = lmfit$fit_diagnostics
+        plot_prediction = lmfit$plot_prediction
+      }else{
+        summary = summary(fit)
+        variance_covariance_coeff <- stats::vcov(fit)
+        ci_coeff = fixef(fit)
+        std_error <- sqrt(diag(variance_covariance_coeff))
+
+        upperCI <-  days_coef + 1.96*days_se
+        lowerCI <-  days_coef  - 1.96*days_se
+        cholesky_decomp_matrix <- chol(variance_covariance_coeff)
+      }
       results =  (list(
         fit = fit,
         summary = summary,
         ci_coeff = ci_coeff,
         variance_covariance_coeff = variance_covariance_coeff,
-        cholesky_decomp_matrix = chol_decomp_matrix,
+        cholesky_decomp_matrix = cholesky_decomp_matrix,
         autocorr_error_test = autocorr_error_test,
         plot_diagnostics = plot_diagnostics,
         model_fit_asumptions = model_fit_asumptions,
