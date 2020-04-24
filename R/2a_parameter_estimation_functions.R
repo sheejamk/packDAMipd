@@ -46,7 +46,7 @@ get_parameter_read <- function(parameter, paramfile, strategycol= NA, strategyna
   }else{
     answer <- dataset[dataset$Parameter == parameter,]$Value
     if (is.na(answer))
-      warning("Error- Parameter value is NA - Did you use the wrong function
+      stop("Error- Parameter value is NA - Did you use the wrong function
               to get the parameter?")
   }
   return(answer)
@@ -126,7 +126,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
     stop("Need to provide a parameter file to lookup")
   dataset <- data.frame(read.csv(paramfile,header = TRUE, sep = ",", stringsAsFactors = FALSE))
   if (!is.na(strategycol)) {
-    if (IPDFileCheck::check_column_exists(strategycol,dataset) != 0)
+    if (IPDFileCheck::check_column_exists(strategycol,dataset) == 0)
       dataset = dataset[dataset[[strategycol]] == strategyname,]
   }
   result <- IPDFileCheck::check_column_exists("Distribution",dataset)
@@ -155,7 +155,8 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
   }
   expression_recreated <- check_estimate_substitute_proper_params(expression_created)
   param_with_expression <- paste(this_param, " = ", expression_recreated, sep = "")
-  return(param_with_expression)
+  param_obtained = eval(parse(text = param_with_expression))
+  return(param_obtained)
 }
 #######################################################################
 #' Get the parameter values using the provided statistical regression methods
@@ -166,11 +167,15 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
 #' @param info_distribution distribution name  eg. for logistic regression -binomial
 #' @param covariates list of covariates - calculations to be done before passing
-#' @param strategycol column name containing arm details
-#' @param strategyname name of the  arm
 #' @param timevar_survival time variable for survival analysis
 #' @param interaction boolean value to indicate interaction in the case of linear regression
-#' @param random_effect random effect variable(s) for the mixed effect models
+#' @param fix_eff boolean value to indicate interaction in the case of linear regression
+#' @param fix_eff_interact_vars boolean value to indicate interaction in the case of linear regression
+#' @param random_intercept_vars boolean value to indicate interaction in the case of linear regression
+#' @param nested_intercept_vars_pairs boolean value to indicate interaction in the case of linear regression
+#' @param cross_intercept_vars boolean value to indicate interaction in the case of linear regression
+#' @param uncorrel_slope_intercept_pairs boolean value to indicate interaction in the case of linear regression
+#' @param random_slope_intercept_pairs boolean value to indicate interaction in the case of linear regression
 #' @param naaction what action to be taken for the missing values, default is a missing value.
 #' @param param2_to_be_estimated  parameter of interest for equation 2 in bivariate regression
 #' @param covariates2 list of covariates - for equation 2 in bivariate regression
@@ -184,9 +189,10 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' @export
 get_parameter_estimated_regression <- function(param_to_be_estimated, data, method,
                                       indep_var, info_get_method, info_distribution,
-                                      covariates = NA, strategycol= NA,
-                                      strategyname= NA, timevar_survival= NA, interaction = FALSE,
-                                      random_effect = NA, naaction = "stats::na.omit",
+                                      covariates = NA, timevar_survival = NA, interaction = FALSE, fix_eff= NA,
+                                      fix_eff_interact_vars = NA, random_intercept_vars = NA, nested_intercept_vars_pairs = NA,
+                                      cross_intercept_vars = NA, uncorrel_slope_intercept_pairs = NA, random_slope_intercept_pairs = NA,
+                                      naaction = "stats::na.omit",
                                       param2_to_be_estimated= NA, covariates2 = NA, interaction2 = FALSE,
                                       link = NA){
 
@@ -196,7 +202,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
     dataset = load_trial_data(data)
   else
     dataset = data
-  data_details = c(param_to_be_estimated, indep_var, covariates, timevar_survival, random_effect, param2_to_be_estimated, covariates2)
+  data_details = c(param_to_be_estimated, indep_var, covariates, timevar_survival, param2_to_be_estimated, covariates2)
   data_details = data_details[!is.na(data_details)]
   check_cols_exist = unlist(lapply(data_details,IPDFileCheck::check_column_exists,dataset))
   if (sum(check_cols_exist) != 0)
@@ -205,11 +211,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
     stop("Need to provide a data set to lookup")
   if (is.na(method))
     stop("Please provide  a statistical method")
-  if (!is.na(strategycol)) {
-    if (IPDFileCheck::check_column_exists(strategycol,dataset) != 0)
-      dataset = dataset[dataset[[strategycol]] == strategyname,]
-  }
-  covariates_list = list()
+ covariates_list = list()
   if (sum(is.na(covariates)) == 0) {
     for (i in 1:length(covariates)) {
       if (i == length(covariates))
@@ -224,20 +226,32 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
   if (caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS")
     results <- use_survival_analysis(param_to_be_estimated, dataset, indep_var, info_get_method,
                                      info_distribution, covariates_list , timevar_survival)
+
   if (caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR")
     results <- use_linear_regression(param_to_be_estimated, data, indep_var, covariates, interaction)
+
   if (caps_method == "GENERALISED LINEAR MODEL" | caps_method == "GENERALISED_LINEAR_MODEL" | caps_method == "GLM")
     results <- use_generalised_linear_model(param_to_be_estimated, dataset, indep_var, family = info_distribution,
                                             covariates, interaction, naaction, link)
+
   if (caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC")
     results <- use_generalised_linear_model(param_to_be_estimated, dataset, indep_var, family = "binomial",
                                       covariates, interaction, naaction, link = "logit")
-  if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
-     | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" )
-    results <- use_mixed_effect_model(param_to_be_estimated, dataset, indep_var, covariates, random_effect)
-  if (caps_method == "MULTILEVEL MODELLING" | caps_method == "MULTILEVEL_MODELLING" | caps_method == "MULTILEVEL"
-      | caps_method == "MIXED EFFECT" | caps_method == "MIXED_EFFECT" )
-    results <- use_mixed_effect_model(param_to_be_estimated, dataset, indep_var, covariates, random_effect)
+
+  if (caps_method == "LINEAR MULTILEVEL MODELLING" | caps_method == "LINEAR_MULTILEVEL_MODELLING" |
+      caps_method == "LINEAR MULTILEVEL" | caps_method == "LINEAR_MULTILEVEL" |caps_method == "LINEAR MIXED EFFECT"
+      | caps_method == "LINEAR_MIXED_EFFECT")
+    results <- use_linear_mixed_model(param_to_be_estimated, dataset, fix_eff,fix_eff_interact_vars,
+                                      random_intercept_vars, nested_intercept_vars_pairs, cross_intercept_vars,
+                                      uncorrel_slope_intercept_pairs,random_slope_intercept_pairs)
+
+  if (caps_method == "GENERALISED MULTILEVEL MODELLING" | caps_method == "GENERALISED_MULTILEVEL_MODELLING" |
+      caps_method == "GENERALISED_MULTILEVEL" | caps_method == "GENERALISED MULTILEVEL"
+      | caps_method == "GENERALISED MIXED EFFECT" | caps_method == "GENERALISED_MIXED_EFFECT" )
+    results <- use_generalised_linear_mixed_model(param_to_be_estimated, dataset,  fix_eff,fix_eff_interact_vars,
+                                                  random_intercept_vars, nested_intercept_vars_pairs, cross_intercept_vars,
+                                                  uncorrel_slope_intercept_pairs,random_slope_intercept_pairs, family = info_distribution, link)
+
   if (caps_method == "SEEMINGLY UNRELATED REGRESSION" | caps_method == "SEEMINGLY_UNRELATED_REGRESSION"
       | caps_method == "SEEMINGLY_UNRELATED" | caps_method == "SEEMINGLY UNRELATED"
       | caps_method == "BIVARIATE_REGRESSION" | caps_method == "BIVARIATE REGRESSION"
@@ -617,7 +631,7 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
   plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
   grDevices::dev.off()
 
-  model_fit_asumptions <- summary(gvlma::gvlma(fit))
+  model_fit_assumptions <- summary(gvlma::gvlma(fit))
 
   Adj_R2 <- summary(fit)$adj.r.squared
   AIC <- stats::AIC(fit)
@@ -640,7 +654,7 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
     cholesky_decomp_matrix = chol_decomp_matrix,
     autocorr_error_test = autocorr_error_test,
     plot_diagnostics = plot_diagnostics,
-    model_fit_asumptions = model_fit_asumptions,
+    model_fit_assumptions = model_fit_assumptions,
     fit_diagnostics  = fit_diagnostics,
     plot_prediction = plot_prediction
    ))
@@ -650,87 +664,295 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
 #' Function for mixed effect regression
 #' @param param_to_be_estimated column name of dependent variable
 #' @param dataset a dataframe
-#' @param indep_var column name of independent variable
-#' @param covariates, independent variables, NA by default
+#' @param fix_eff names of variables as fixed effect predictors
+#' @param fix_eff_interact_vars, those of the fixed effect predictors that show interaction
+#' @param random_intercept_vars, names of variables for random intercept
+#' @param nested_intercept_vars_pairs, those of the random intercept varaibles with nested effect
+#' @param cross_intercept_vars, those of the random intercept varaibles with crossed effect
+#' @param uncorrel_slope_intercept_pairs, variables with no correlated intercepts
+#' @param random_slope_intercept_pairs, random slopes intercept pairs - this is alist of paired variables
 #' @return result regression result with plot if success and -1, if failure
-#' @param random_effect random effect variable(s) for the mixed effect models
-#' @param interaction boolean value to indicate interaction in the case of linear regression,
 #' @examples
-#' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-#  results_logit <- use_mixed_effect_model("gre", dataset=mydata,
-#                                          indep_var = "gpa", covariates = NA, random_effect = "rank", interaction = FALSE)
+#' dataset <-
+#' read.table("http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/R_SC/Module9/lmm.data.txt",
+#' header = TRUE, sep = ",", na.strings = "NA", dec = ".", strip.white = TRUE)
+#' result <- use_linear_mixed_model("extro", dataset = dataset,
+#'fix_eff = c("open" , "agree", "social"),fix_eff_interact_vars = NULL,
+#'random_intercept_vars = c("school", "class"),
+#'nested_intercept_vars_pairs = list(c("school", "class")),
+#'cross_intercept_vars = NULL,uncorrel_slope_intercept_pairs = NULL,
+#'random_slope_intercept_pairs = NULL)
 #' @export
-use_mixed_effect_model <- function(param_to_be_estimated, dataset, indep_var, covariates, random_effect, interaction){
-    random = list()
-    expre = list()
-    if (sum(is.na(covariates)) == 0) {
-      expre = paste(covariates[1], sep = "")
-      i = 2
-      while (i <= length(covariates)) {
-        this = paste(covariates[i], sep = "")
-        expre = paste(expre, this, sep = "+")
-        i = i + 1
+use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,fix_eff_interact_vars,
+                                   random_intercept_vars, nested_intercept_vars_pairs, cross_intercept_vars,
+                                   uncorrel_slope_intercept_pairs,random_slope_intercept_pairs){
+
+    expression_recreated = form_expression_mixed_model(param_to_be_estimated, dataset, fix_eff,fix_eff_interact_vars,
+                                                       random_intercept_vars, nested_intercept_vars_pairs, cross_intercept_vars,
+                                                       uncorrel_slope_intercept_pairs,random_slope_intercept_pairs, family =NA, link =NA)
+    fit <- eval(parse(text = expression_recreated))
+    summary <- summary(fit)
+    vcov_fixed_eff = stats::vcov(fit)
+    varcorr_random_eff = as.data.frame(lme4::VarCorr(fit))
+    to_extract = 2*length(random_slope_intercept_pairs)
+    if(is.null(nested_intercept_vars_pairs) & is.null(uncorrel_slope_intercept_pairs) & !is.null(random_slope_intercept_pairs)){
+      to_extract_corr = length(random_slope_intercept_pairs)
+      variances = varcorr_random_eff[1:to_extract,"vcov"]
+      correlation =  varcorr_random_eff[to_extract:to_extract + to_extract_corr,"sdcor"]
+      vcov_random_eff = matrix(rep(0,to_extract*to_extract), byrow = TRUE, ncol = to_extract)
+      diag(vcov_random_eff) <- variances
+      for(i in 1: to_extract){
+        j = i + 1
+        if(j <= to_extract){
+          covariance = correlation[i]*sqrt(variances[i]*variances[j])
+          vcov_random_eff[i, j] <- vcov_random_eff[j, i] <- covariance
+        }
+      }
+      cholesky_decomp_matrix_random_eff = chol(vcov_random_eff)
+    }
+
+    cholesky_decomp_matrix_fixed_eff = chol(vcov_fixed_eff)
+    fixed_coef = summary$coef[, 1, drop = FALSE]    #fixed-effect parameter estimates
+    fixed_coef_se = summary$coef[, 2, drop = FALSE] #fixed-effect parameter standard errors
+    upperCI <-  fixed_coef + 1.96*fixed_coef_se
+    lowerCI <-  fixed_coef - 1.96*fixed_coef_se
+    ci_coeff = cbind(fixed_coef, upperCI, lowerCI)
+    colnames(ci_coeff) = c("fixed-effect_coeff", "upper-ci", "lower-ci")
+
+    name_file_plot <- paste0("lmer_residuals_", param_to_be_estimated, ".pdf", sep = "")
+    grDevices::pdf(name_file_plot)
+    graphics::par(mfrow = c(3,1), mar=c(4,4,1,1))
+    plot_diagnostics <- graphics::plot(stats::fitted(fit), stats::resid(fit), type = 'p', xlab =
+                                         paste("Fitted values",param_to_be_estimated), ylab = "Residuals" , main = "Residuals vs Fitted")
+    graphics::plot(stats::fitted(fit), sqrt(abs(stats::resid(fit))), type = 'p', xlab =
+                     paste("Fitted values",param_to_be_estimated), ylab = "Sqrt(residuals)", main = "Scale  vs Location")
+    stats::qqnorm(stats::resid(fit), main = "Normal Q-Q plot")
+    stats::qqline(stats::resid(fit))
+    grDevices::dev.off()
+
+    predicted = stats::predict (fit, newdata = dataset)# deterministic and takes only fixed effect
+    simulated = stats::simulate (fit, newdata = dataset)[,1]# stochastic and takes both fixed effect and random effect
+    # source  https://gist.github.com/tmalsburg/df66e6c2ab494fad83ee
+    no_fixed_eff = length(fix_eff)
+    name_file_plot <- paste0("lmer_fixed_eff_predicted and simulated", param_to_be_estimated, ".pdf", sep = "")
+    grDevices::pdf(name_file_plot)
+    graphics::par(mfrow = c(no_fixed_eff, 3), mar = c(4,4,1,1))
+    for(i in 1:length(fix_eff)){
+      xvar = fix_eff[i]
+      with(dataset, plot(dataset[[param_to_be_estimated]],  dataset[[xvar]],
+                         main="Original data", ylab=param_to_be_estimated, xlab = xvar))
+      with(dataset, plot(predicted, dataset[[xvar]],
+                         main="Predicted data", xlab = xvar, ylab = ""))
+      with(dataset, plot(simulated, dataset[[xvar]],
+                         main="Simulated data", xlab = xvar, ylab = ""))
+      graphics::grid()
+    }
+    grDevices::dev.off()
+    no_random_eff = length(random_intercept_vars)
+    name_file_plot <- paste0("lmer_random_eff_predicted and simulated", param_to_be_estimated, ".pdf", sep = "")
+    grDevices::pdf(name_file_plot)
+    graphics::par(mfrow=c(no_random_eff,3), mar=c(4,4,1,1))
+    for(i in 1:length(random_intercept_vars)){
+      xvar = random_intercept_vars[i]
+      with(dataset, plot(tapply(dataset[[param_to_be_estimated]],  dataset[[xvar]], mean),
+                         main="Original data - mean", ylab=param_to_be_estimated, xlab = xvar))
+      with(dataset, plot(tapply(predicted, dataset[[xvar]], mean),
+                         main="Predicted data  - mean", xlab = xvar, ylab = ""))
+      with(dataset, plot(tapply(simulated, dataset[[xvar]], mean),
+                         main="Simulated data  - mean", xlab = xvar, ylab = ""))
+      graphics::grid()
+    }
+    grDevices::dev.off()
+    name_file_plot <- paste0("lmer_prediction_", param_to_be_estimated, ".pdf", sep = "")
+    grDevices::pdf(name_file_plot)
+    for( i in 1:no_fixed_eff){
+      for( j in 1:no_random_eff){
+        print(paste("i=", i, "and j = ", j))
+        xvar = dataset[[fix_eff[i]]]
+        yvar = dataset[[param_to_be_estimated]]
+        group = factor(dataset[[random_intercept_vars[j]]])
+        this_plot <- ggplot2::ggplot(dataset, ggplot2::aes(x = xvar , y = yvar, colour = group)) +
+          ggplot2::geom_point(size=3) +
+          ggplot2::geom_line(ggplot2::aes(y = predicted),size= 2) +
+          ggplot2::labs(color = random_intercept_vars[j]) +
+          ggplot2::xlab(fix_eff[i]) + ggplot2::ylab(param_to_be_estimated)
+        print(this_plot)
       }
     }
-    if (sum(is.na(random_effect)) == 0) {
-       random = paste("1|",random_effect[1], sep = "")
-       j = 2
-       while (j <= length(random_effect)) {
-         this = paste("1|",random_effect[j], sep = "")
-         random = paste(random, this, sep = "+")
-         j = j + 1
-       }
-    }
-    if (length(random) != 0 & length(expre) != 0) {
-      expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", expre, " + ", indep_var,
-                                     " + ", random, ", data = dataset)")
-      fit <- eval(parse(text = expression_recreated))
+    grDevices::dev.off()
 
-    }else{
-      if (length(random) != 0 & length(expre) == 0) {
-        expression_recreated =  paste0("lme4::lmer(", param_to_be_estimated, " ~ ", indep_var,
-                                       " + ", random, ", data = dataset)")
-        fit <- eval(parse(text = expression_recreated))
-      }else{
-        if (length(random) == 0 & length(expre) != 0)
-          lmfit <- use_linear_regression(param_to_be_estimated, dataset, indep_var, covariates, interaction )
-        else
-          lmfit <- use_linear_regression(param_to_be_estimated, dataset, indep_var, covariates, interaction = FALSE)
-      }
-      if (length(random) == 0){
-        fit = lmfit$fit
-        summary = lmfit$summary
-        ci_coeff = lmfit$ci_coeff
-        variance_covariance_coeff = lmfit$variance_covariance_coeff
-        cholesky_decomp_matrix = lmfit$chol_decomp_matrix
-        autocorr_error_test = lmfit$autocorr_error_test
-        plot_diagnostics = lmfit$plot_diagnostics
-        model_fit_asumptions = lmfit$model_fit_asumptions
-        fit_diagnostics  = lmfit$fit_diagnostics
-        plot_prediction = lmfit$plot_prediction
-      }else{
-        summary = summary(fit)
-        variance_covariance_coeff <- stats::vcov(fit)
-        ci_coeff = fixef(fit)
-        std_error <- sqrt(diag(variance_covariance_coeff))
-
-        upperCI <-  days_coef + 1.96*days_se
-        lowerCI <-  days_coef  - 1.96*days_se
-        cholesky_decomp_matrix <- chol(variance_covariance_coeff)
-      }
+    fit_diagnostics <- summary$AICtab
+    if(is.null(nested_intercept_vars_pairs) & is.null(uncorrel_slope_intercept_pairs) & !is.null(random_slope_intercept_pairs)){
       results =  (list(
         fit = fit,
         summary = summary,
         ci_coeff = ci_coeff,
-        variance_covariance_coeff = variance_covariance_coeff,
-        cholesky_decomp_matrix = cholesky_decomp_matrix,
-        autocorr_error_test = autocorr_error_test,
-        plot_diagnostics = plot_diagnostics,
-        model_fit_asumptions = model_fit_asumptions,
-        fit_diagnostics  = fit_diagnostics,
-        plot_prediction = plot_prediction
+        variance_covariance_coeff_fixed = vcov_fixed_eff,
+        variance_covariance_coeff_random = vcov_random_eff,
+        cholesky_decomp_matrix_fixed_eff = cholesky_decomp_matrix_fixed_eff,
+        cholesky_decomp_matrix_random_eff = cholesky_decomp_matrix_random_eff,
+        fit_diagnostics = fit_diagnostics
+      ))
+    }else{
+      results =  (list(
+        fit = fit,
+        summary = summary,
+        ci_coeff = ci_coeff,
+        variance_covariance_coeff_fixed = vcov_fixed_eff,
+        cholesky_decomp_matrix_fixed_eff = cholesky_decomp_matrix_fixed_eff,
+        fit_diagnostics = fit_diagnostics
       ))
     }
+
+  return(results)
+}
+##########################################################################################################
+#' Function for mixed effect regression
+#' @param param_to_be_estimated column name of dependent variable
+#' @param dataset a dataframe
+#' @param fix_eff names of variables as fixed effect predictors
+#' @param fix_eff_interact_vars, those of the fixed effect predictors that show interaction
+#' @param random_intercept_vars, names of variables for random intercept
+#' @param nested_intercept_vars_pairs, those of the random intercept varaibles with nested effect
+#' @param cross_intercept_vars, those of the random intercept varaibles with crossed effect
+#' @param uncorrel_slope_intercept_pairs, variables with no correlated intercepts
+#' @param random_slope_intercept_pairs, random slopes intercept pairs - this is alist of paired variables
+#' @param family, family of disributions for the response variable
+#' @param link, link function for the variances
+#' @return result regression result with plot if success and -1, if failure
+#' @examples
+#' hdp <- read.csv("https://stats.idre.ucla.edu/stat/data/hdp.csv")
+#' hdp <- within(hdp, {
+#'   Married <- factor(Married, levels = 0:1, labels = c("no", "yes"))
+#'   DID <- factor(DID)
+#'   HID <- factor(HID)
+#' })
+#' result <-
+#' use_generalised_linear_mixed_model("remission", dataset = hdp,
+#' fix_eff = c("IL6" , "CRP", "CancerStage","LengthofStay","Experience"),
+#' fix_eff_interact_vars = NULL, random_intercept_vars = c("DID"),
+#' nested_intercept_vars_pairs = NULL,cross_intercept_vars = c("DID"),
+#' uncorrel_slope_intercept_pairs = NULL, random_slope_intercept_pairs = NULL,
+#' family = "binomial", link = NA)
+#' @export
+use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,fix_eff_interact_vars,
+                                   random_intercept_vars, nested_intercept_vars_pairs, cross_intercept_vars,
+                                   uncorrel_slope_intercept_pairs,random_slope_intercept_pairs, family, link){
+
+  expression_recreated = form_expression_mixed_model(param_to_be_estimated, dataset, fix_eff,fix_eff_interact_vars,
+                                                     random_intercept_vars, nested_intercept_vars_pairs, cross_intercept_vars,
+                                                     uncorrel_slope_intercept_pairs,random_slope_intercept_pairs,family, link)
+  fit <- eval(parse(text = expression_recreated))
+  summary <- summary(fit)
+  vcov_fixed_eff = stats::vcov(fit)
+  varcorr_random_eff = as.data.frame(lme4::VarCorr(fit))
+  to_extract = 2*length(random_slope_intercept_pairs)
+  if(is.null(nested_intercept_vars_pairs) & is.null(uncorrel_slope_intercept_pairs) & !is.null(random_slope_intercept_pairs)){
+    to_extract_corr = length(random_slope_intercept_pairs)
+    variances = varcorr_random_eff[1:to_extract,"vcov"]
+    correlation =  varcorr_random_eff[to_extract:to_extract + to_extract_corr,"sdcor"]
+    vcov_random_eff = matrix(rep(0,to_extract*to_extract), byrow = TRUE, ncol = to_extract)
+    diag(vcov_random_eff) <- variances
+    for(i in 1: to_extract){
+      j = i + 1
+      if(j <= to_extract){
+        covariance = correlation[i]*sqrt(variances[i]*variances[j])
+        vcov_random_eff[i, j] <- vcov_random_eff[j, i] <- covariance
+      }
+    cholesky_decomp_matrix_random_eff = chol(vcov_random_eff)
+    }
+  }
+  cholesky_decomp_matrix_fixed_eff = chol(vcov_fixed_eff)
+  fixed_coef = summary$coef[, 1, drop = FALSE]    #fixed-effect parameter estimates
+  fixed_coef_se = summary$coef[, 2, drop = FALSE] #fixed-effect parameter standard errors
+  upperCI <-  fixed_coef + 1.96 * fixed_coef_se
+  lowerCI <-  fixed_coef - 1.96 * fixed_coef_se
+  ci_coeff = cbind(fixed_coef, upperCI,lowerCI)
+  colnames(ci_coeff) = c("fixed-effect_coeff", "upper-ci", "lower-ci")
+
+  name_file_plot <- paste0("glmer_residuals_", param_to_be_estimated, ".pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+  graphics::par(mfrow = c(3,1), mar=c(4,4,1,1))
+  plot_diagnostics <- graphics::plot(stats::fitted(fit), stats::resid(fit), type = 'p', xlab =
+                                       paste("Fitted values",param_to_be_estimated) , ylab = "Residuals" , main = "Residuals vs Fitted")
+  graphics::plot(stats::fitted(fit), sqrt(abs(stats::resid(fit))), type = 'p', xlab =
+                   paste("Fitted values",param_to_be_estimated) , ylab = "Sqrt(residuals)" ,main = "Scale  vs Location")
+  stats::qqnorm(stats::resid(fit), main = "Normal Q-Q plot")
+  stats::qqline(stats::resid(fit))
+  grDevices::dev.off()
+
+
+  predicted = stats::predict (fit, newdata = dataset)# deterministic and takes only fixed effect
+  simulated = stats::simulate (fit, newdata = dataset)[,1]# stochastic and takes both fixed effect and random effect
+  # source  https://gist.github.com/tmalsburg/df66e6c2ab494fad83ee
+  no_fixed_eff = length(fix_eff)
+  name_file_plot <- paste0("glmer_fixed_eff_predicted and simulated", param_to_be_estimated, ".pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+  graphics::par(mfrow = c(no_fixed_eff,3), mar = c(4,4,1,1))
+  for(i in 1:length(fix_eff)){
+    xvar = fix_eff[i]
+    with(dataset, plot(dataset[[param_to_be_estimated]],  dataset[[xvar]],
+                       main = "Original data", ylab = param_to_be_estimated, xlab = xvar))
+    with(dataset, plot(predicted, dataset[[xvar]],
+                       main = "Predicted data", xlab = xvar, ylab=""))
+    with(dataset, plot(simulated, dataset[[xvar]],
+                       main = "Simulated data", xlab = xvar, ylab=""))
+    graphics::grid()
+  }
+  grDevices::dev.off()
+  no_random_eff = length(random_intercept_vars)
+  name_file_plot <- paste0("glmer_random_eff_predicted and simulated", param_to_be_estimated, ".pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+  graphics::par(mfrow = c(no_random_eff,3), mar = c(4,4,1,1))
+  for(i in 1:length(random_intercept_vars)){
+    xvar = random_intercept_vars[i]
+    with(dataset, plot(tapply(dataset[[param_to_be_estimated]],  dataset[[xvar]], mean),
+                       main="Original data - mean", ylab=param_to_be_estimated, xlab = xvar))
+    with(dataset, plot(tapply(predicted, dataset[[xvar]], mean),
+                       main="Predicted data  - mean", xlab = xvar, ylab = ""))
+    with(dataset, plot(tapply(simulated, dataset[[xvar]], mean),
+                       main="Simulated data  - mean", xlab = xvar, ylab = ""))
+    graphics::grid()
+  }
+  grDevices::dev.off()
+  name_file_plot <- paste0("glmer_prediction_", param_to_be_estimated, ".pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+  for( i in 1:no_fixed_eff){
+    for( j in 1:no_random_eff){
+      xvar = dataset[[fix_eff[i]]]
+      yvar = dataset[[param_to_be_estimated]]
+      group = factor(dataset[[random_intercept_vars[j]]])
+      this_plot <- ggplot2::ggplot(dataset, ggplot2::aes(x = xvar, y = yvar, colour = group)) +
+        ggplot2::geom_point(size = 3) +
+        ggplot2::geom_line(ggplot2::aes(y = predicted),size = 2) +
+        ggplot2::labs(color = random_intercept_vars[j]) +
+        ggplot2::xlab(fix_eff[i]) + ggplot2::ylab(param_to_be_estimated)
+      print(this_plot)
+    }
+  }
+  grDevices::dev.off()
+  fit_diagnostics <- summary$AICtab
+  if(is.null(nested_intercept_vars_pairs) & is.null(uncorrel_slope_intercept_pairs) & !is.null(random_slope_intercept_pairs)){
+    results =  (list(
+      fit = fit,
+      summary = summary,
+      ci_coeff = ci_coeff,
+      variance_covariance_coeff_fixed = vcov_fixed_eff,
+      variance_covariance_coeff_random = vcov_random_eff,
+      cholesky_decomp_matrix_fixed_eff = cholesky_decomp_matrix_fixed_eff,
+      cholesky_decomp_matrix_random_eff = cholesky_decomp_matrix_random_eff,
+      fit_diagnostics = fit_diagnostics
+    ))
+  }else{
+    results =  (list(
+      fit = fit,
+      summary = summary,
+      ci_coeff = ci_coeff,
+      variance_covariance_coeff_fixed = vcov_fixed_eff,
+      cholesky_decomp_matrix_fixed_eff = cholesky_decomp_matrix_fixed_eff,
+      fit_diagnostics = fit_diagnostics
+    ))
+  }
   return(results)
 }
 ##########################################################################################################
@@ -773,8 +995,8 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   chol_decomp_matrix <- chol(variance_covariance_coeff)
   std_error <- stats::coef(summary)
 
-  fitted_values = fitted(fit)
-  residuals = residuals(fit)
+  fitted_values = stats::fitted(fit)
+  residuals = stats::residuals(fit)
   sqrt_residuals = sqrt(abs(residuals))
 
   name_file_plot <- paste0("sureg_residuals_", param1_to_be_estimated, "_", param1_to_be_estimated, "_", indep_var, ".pdf", sep = "")
@@ -785,10 +1007,10 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   graphics::plot(fitted_values$eq2, residuals$eq2, type = 'p', xlab = paste("Fitted values",param2_to_be_estimated) , ylab = "Residuals" )
   graphics::plot(fitted_values$eq1, sqrt_residuals$eq1, type = 'p', xlab = paste("Fitted values",param1_to_be_estimated) , ylab = "Sqrt(residuals)" )
   graphics::plot(fitted_values$eq2, sqrt_residuals$eq2, type = 'p', xlab = paste("Fitted values",param1_to_be_estimated) , ylab = "Sqrt(residuals)" )
-  qqnorm(residuals$eq1, main = "Normal Q-Q plot - Eq 1")
-  qqline(residuals$eq1)
-  qqnorm(residuals$eq2,main = "Normal Q-Q plot - Eq 2")
-  qqline(residuals$eq2)
+  stats::qqnorm(residuals$eq1, main = "Normal Q-Q plot - Eq 1")
+  stats::qqline(residuals$eq1)
+  stats::qqnorm(residuals$eq2, main = "Normal Q-Q plot - Eq 2")
+  stats::qqline(residuals$eq2)
   grDevices::dev.off()
 
   name_file_plot <- paste0(param1_to_be_estimated, "_", param2_to_be_estimated, "_sureg_", indep_var, ".pdf", sep = "")
@@ -823,7 +1045,7 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   OLS_R2 <- summary$ols.r.squared
   AIC <- stats::AIC(fit)
   BIC <- stats::BIC(fit)
-  fit_diagnostics <- data.frame(cbind(OLS_R2, AIC , BIC))
+  fit_diagnostics <- data.frame(cbind(OLS_R2, AIC, BIC))
   colnames(fit_diagnostics) <- c("OLS_R2", "AIC", "BIC")
 
   results =  (list(

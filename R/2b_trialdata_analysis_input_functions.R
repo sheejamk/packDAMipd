@@ -14,14 +14,17 @@
 load_trial_data <- function(file = NULL){
   # Load trial data from file input or stored in package
   if (!is.null(file)) {
-    if (get_extension(file) == "txt")
-      df_trial_data <- read.table(file = file, header  =  TRUE,  sep  =  "\t",  quote = "\"",
-                                  dec  = ",",  fill  =  TRUE,  na.strings  =  c(""), as.is = 1:4)
-    if (get_extension(file) == "csv")
-      df_trial_data <- read.csv(file = file, header  =  TRUE)
-    if (get_extension(file) == "dta")
-      df_trial_data <- foreign::read.dta(file = file)
-
+    if (IPDFileCheck::test_file_exist_read(file) == 0) {
+      if (get_extension_file(file) == "txt")
+        df_trial_data <- read.table(file = file, header  =  TRUE,  sep  =  "\t",  quote = "\"",
+                                    dec  = ",",  fill  =  TRUE,  na.strings  =  c(""), as.is = 1:4, stringsAsFactors = FALSE)
+      if (get_extension_file(file) == "csv")
+        df_trial_data <- read.csv(file = file, header  =  TRUE, stringsAsFactors = FALSE, fileEncoding = "latin1")
+      if (get_extension_file(file) == "dta")
+        df_trial_data <- foreign::read.dta(file = file)
+    }else{
+      stop("Error in reading given file")
+    }
   }else{
     df_trial_data <- trial_data
   }

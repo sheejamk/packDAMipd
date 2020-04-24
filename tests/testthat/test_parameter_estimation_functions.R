@@ -15,7 +15,6 @@ test_that("testing reading parameter from file",  {
 test_that("testing parameter using distribution read from file",  {
   file = system.file("extdata", "table_param.csv", package = "packDAMipd")
   nofile = system.file("extdata", "blank.csv", package = "packDAMipd")
-  expect_identical(get_parameter_def_distribution("rr", file), "rr = rexp(1, rate = 0.3)")
   expect_error(get_parameter_def_distribution("rr", NULL))
   expect_error(get_parameter_def_distribution("rr2", NULL))
 })
@@ -23,19 +22,17 @@ test_that("testing parameter using distribution read from file",  {
 test_that("get parameter from estimated regression",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
   results_logit <- get_parameter_estimated_regression("admit", mydata,
-    "logistic regression", "gre", NA, "binomial", c("gpa", "factor(rank)"))
+    "logistic regression", "gre", NA, "binomial", c("gpa", "rank"))
   results_logit2 <- get_parameter_estimated_regression("admit", mydata,
     "logistic regression", "gre", NA, "binomial")
   expect_error(get_parameter_estimated_regression(NA, mydata,
-               "logistic regression", "gre", NA, "binomial", c("gpa", "factor(rank)")))
+               "logistic regression", "gre", NA, "binomial", c("gpa", "rank")))
   expect_error(get_parameter_estimated_regression("admit", NA,
-        "logistic regression", "gre", NA, "binomial", c("gpa", "factor(rank)")))
+        "logistic regression", "gre", NA, "binomial", c("gpa", "rank")))
   expect_error(get_parameter_estimated_regression("admit", mydata,
-         NA, "gre", NA, "binomial", c("gpa", "factor(rank)")))
+         NA, "gre", NA, "binomial", c("gpa", "rank")))
   expect_error(get_parameter_estimated_regression("admit", mydata,
-      "logistic regression", NA, NA, "binomial", c("gpa", "factor(rank)")))
-  expect_error(get_parameter_estimated_regression("admit", mydata,
-      "logistic regression", "gre", NA, NA, c("gpa", "factor(rank)")))
+      "logistic regression", NA, NA, "binomial", c("gpa", "rank")))
 
 })
 test_that("get parameter using survival analysis",  {
@@ -111,42 +108,43 @@ test_that("get parameter using parametric regression survival analysis",  {
 })
 test_that("get parameter using parametric regression survival analysis",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-  results_logit <- use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = "gre", family = "binomial", covariates_list = NA,
+  results_logit <- use_generalised_linear_model("admit", dataset = mydata,
+                      indep_var = "gre", family = "binomial", covariates = NA,
+                      interaction = FALSE,
                       naaction = "na.omit", link = NA)
-  expect_error(use_logistic_rgression("admit", dataset = NA,
-                      indep_var = "gre", family = "binomial", covariates_list = NA,
+  expect_error(use_generalised_linear_model("admit", dataset = NA,
+                      indep_var = "gre", family = "binomial", covariates = NA,
+                      interaction = FALSE,
                       naaction = "na.omit", link = NA))
-  expect_error(use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = NA, family = "binomial", covariates_list = NA,
+  expect_error(use_generalised_linear_model("admit", dataset = mydata,
+                      indep_var = NA, family = "binomial", covariates = NA,
+                      interaction = FALSE,
                       naaction = "na.omit", link = NA))
-  expect_error(use_logistic_rgression("admit", dataset = mydata,
-                      indep_var = "gre", family = NA, covariates_list = NA,
+  expect_error(use_generalised_linear_model("admit", dataset = mydata,
+                      indep_var = "gre", family = NA, covariates = NA,
+                      interaction = FALSE,
                       naaction = "na.omit", link = NA))
-  expect_error(use_logistic_rgression(NA, dataset = mydata,
-                      indep_var = "gre", family = "binomial", covariates_list = NA,
+  expect_error(use_generalised_linear_model(NA, dataset = mydata,
+                      indep_var = "gre", family = "binomial", covariates = NA,
+                      interaction = FALSE,
                       naaction = "na.omit", link = NA))
-  expect_error(use_logistic_rgression("admit", dataset = mydata,
-                                      indep_var = "gre", family = "binomial", covariates_list = NA,
+  expect_error(use_generalised_linear_model("admit", dataset = mydata,
+                                      indep_var = "gre", family = "binomial", covariates = NA,
+                                      interaction = FALSE,
                                       naaction = "na.omit", link = "identity"))
 })
 test_that("get parameter using parametric regression survival analysis",  {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-  results_logit <- use_linear_rgression("gre", dataset = mydata,
+  results_logit <- use_linear_regression("gre", dataset = mydata,
                                     indep_var = "gpa", covariates = NA, interaction = FALSE)
-  expect_error(use_linear_rgression(NA, dataset = mydata,
+  expect_error(use_linear_regression(NA, dataset = mydata,
                                     indep_var = "gpa", covariates = NA, interaction = FALSE) )
-  expect_error(use_linear_rgression("gre", dataset = NA,
+  expect_error(use_linear_regression("gre", dataset = NA,
                                     indep_var = NA, covariates = NA, interaction = FALSE) )
-  expect_error(use_linear_rgression("gre", dataset = NA, covariates = NA,indep_var = "gpa" ))
+  expect_error(use_linear_regression("gre", dataset = NA, covariates = NA, indep_var = "gpa",
+                                    interaction = FALSE ))
  })
-test_that("get parameter using parametric regression survival analysis",  {
-  mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-  results_logit <- use_mixed_effect_model("gre", dataset = mydata, indep_var = "gpa", covariates = NA, random_effect = NA)
-  expect_error(use_mixed_effect_model(NA, dataset = mydata, indep_var = "gpa", covariates = NA, random_effect = NA))
-  expect_error(use_mixed_effect_model("gre", dataset = NA, indep_var = "gpa", covariates = NA, random_effect = NA))
-  expect_error(use_mixed_effect_model("gre", dataset = mydata, indep_var = NA, covariates = NA, random_effect = NA))
-})
+
 
 test_that("get parameter using parametric regression survival analysis",  {
   paramfile = system.file("extdata", "LifeTable_USA_Mx_2015.csv",package = "packDAMipd")

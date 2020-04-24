@@ -6,10 +6,13 @@
 \usage{
 get_parameter_estimated_regression(param_to_be_estimated, data, method,
   indep_var, info_get_method, info_distribution, covariates = NA,
-  strategycol = NA, strategyname = NA, timevar_survival = NA,
-  interaction = FALSE, random_effect = NA,
-  naaction = "stats::na.omit", param2_to_be_estimated = NA,
-  covariates2 = NA, interaction2 = FALSE, link = NA)
+  timevar_survival = NA, interaction = FALSE, fix_eff = NA,
+  fix_eff_interact_vars = NA, random_intercept_vars = NA,
+  nested_intercept_vars_pairs = NA, cross_intercept_vars = NA,
+  uncorrel_slope_intercept_pairs = NA,
+  random_slope_intercept_pairs = NA, naaction = "stats::na.omit",
+  param2_to_be_estimated = NA, covariates2 = NA,
+  interaction2 = FALSE, link = NA)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -26,15 +29,23 @@ get_parameter_estimated_regression(param_to_be_estimated, data, method,
 
 \item{covariates}{list of covariates - calculations to be done before passing}
 
-\item{strategycol}{column name containing arm details}
-
-\item{strategyname}{name of the  arm}
-
 \item{timevar_survival}{time variable for survival analysis}
 
 \item{interaction}{boolean value to indicate interaction in the case of linear regression}
 
-\item{random_effect}{random effect variable(s) for the mixed effect models}
+\item{fix_eff}{boolean value to indicate interaction in the case of linear regression}
+
+\item{fix_eff_interact_vars}{boolean value to indicate interaction in the case of linear regression}
+
+\item{random_intercept_vars}{boolean value to indicate interaction in the case of linear regression}
+
+\item{nested_intercept_vars_pairs}{boolean value to indicate interaction in the case of linear regression}
+
+\item{cross_intercept_vars}{boolean value to indicate interaction in the case of linear regression}
+
+\item{uncorrel_slope_intercept_pairs}{boolean value to indicate interaction in the case of linear regression}
+
+\item{random_slope_intercept_pairs}{boolean value to indicate interaction in the case of linear regression}
 
 \item{naaction}{what action to be taken for the missing values, default is a missing value.}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/2a_parameter_estimation_functions.R
 \name{use_seemingly_unrelated_regression}
 \alias{use_seemingly_unrelated_regression}
-\title{Bivaraite regression for correlated values}
+\title{Bivaraite regression for correlated observations}
 \usage{
 use_seemingly_unrelated_regression(param1_to_be_estimated,
   param2_to_be_estimated, dataset, indep_var, covariates1, covariates2,
@@ -30,7 +30,7 @@ false by default}
 the results of the regression analysis
 }
 \description{
-Bivaraite regression for correlated values
+Bivaraite regression for correlated observations
 }
 \examples{
 mydata <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")

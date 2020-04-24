@@ -15,6 +15,9 @@ License: GNU General Public License
 Depends:
     R (>= 3.5.0)
 Imports:
+    readxl,
+    tm,
+    words2number,
     gvlma,
     rsq,
     broom,
@@ -30,6 +33,7 @@ Imports:
     stats,
     stringr,
     data.table,
+    rlang,
     methods,
     effects,
     systemfit,
@@ -39,6 +43,7 @@ Imports:
     lmtest,
     lme4,
     flexsurv,
+    grDevices,
     IPDFileCheck,
     valueEQ5D
 Suggests: 

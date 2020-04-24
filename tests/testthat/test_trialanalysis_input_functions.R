@@ -1,13 +1,13 @@
 ###############################################################################
-context("testing loading trial data")
-test_that("testing loading trial data",  {
-  file = system.file("extdata", "trial_data.csv",package = "packDAMipd")
-  data <- read.csv(file)
-  expect_equal(load_trial_data(file),data)
-  this_data <- load_trial_data()
-  expect_equal(colnames(this_data),colnames(data))
-  expect_equal(names(load_trial_data()), names(data))
-})
+# context("testing loading trial data")
+# test_that("testing loading trial data",  {
+#   file = system.file("extdata", "trial_data.csv",package = "packDAMipd")
+#   data <- read.csv(file)
+#   expect_equal(load_trial_data(file),data)
+#   this_data <- load_trial_data()
+#   expect_equal(colnames(this_data),colnames(data))
+#   expect_equal(names(load_trial_data()), names(data))
+# })
 
 ###############################################################################
 context("testing getting the trial arm details")

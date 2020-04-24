@@ -1,10 +1,10 @@
 ###############################################################################
 context("test getting extension of a file")
 test_that("test getting extension of a file",  {
-  expect_equal(get_extension("black.txt"),"txt")
-  expect_equal(get_extension("black.dta"),"dta")
-  expect_equal(get_extension("black.csv"),"csv")
-  expect_warning(get_extension("blackcsv"))
+  expect_equal(get_extension_file("black.txt"),"txt")
+  expect_equal(get_extension_file("black.dta"),"dta")
+  expect_equal(get_extension_file("black.csv"),"csv")
+  expect_warning(get_extension_file("blackcsv"))
 })
 ###############################################################################
 context("testing add_probabilities")
