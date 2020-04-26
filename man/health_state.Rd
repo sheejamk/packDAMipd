@@ -23,6 +23,13 @@ value of the state
 \description{
 Definition of health state class or health state constructor
 }
+\details{
+name is the name of the health state
+cost/utitily can be defined as characters e.g. "cost_A"
+if they are characters, the value is assgined after parsing the text.
+state_time is integer and absorb is boolean
+}
 \examples{
 st <- health_state("IT", 100, 0.4, 0, FALSE)
+st <- health_state("IT", "cost_A", 0.4, 0, FALSE)
 }

@@ -2,8 +2,11 @@
 % Please edit documentation in R/additional_help_functions.R
 \name{check_estimate_substitute_proper_params}
 \alias{check_estimate_substitute_proper_params}
-\title{Function to get the expression, analyse it for what distribution it is, then check if it has all parameters requires,
-if not estimate the required parameters from given parameters, and substitute it for actual expression that can
+\title{#######################################################################
+Function to get the expression, analyse it for what distribution it is,
+then check if it has all parameters requires,
+if not estimate the required parameters from given parameters,
+and substitute it for actual expression that can
 be used with R stats package}
 \usage{
 check_estimate_substitute_proper_params(the_expr)
@@ -15,10 +18,20 @@ check_estimate_substitute_proper_params(the_expr)
 the keyword that should be used in R for generating random numbers
 }
 \description{
-Function to get the expression, analyse it for what distribution it is, then check if it has all parameters requires,
-if not estimate the required parameters from given parameters, and substitute it for actual expression that can
+#######################################################################
+Function to get the expression, analyse it for what distribution it is,
+then check if it has all parameters requires,
+if not estimate the required parameters from given parameters,
+and substitute it for actual expression that can
 be used with R stats package
+}
+\details{
+Get the expression of probability distribution with parameters,
+get the parameters that are foud, then dind the required params and if they are ok
+if not try if they can be estimated. Then it will substitue for proper
+parameters in the way R is expecting to perform
 }
 \examples{
 check_estimate_substitute_proper_params("gamma(mean = 10 ,sd=1)")
 }
+\keyword{internal}

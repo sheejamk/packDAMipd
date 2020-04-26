@@ -15,6 +15,10 @@ the parameters that determine the distribution
 \description{
 Function to find the parameters that determine the given probability distribution
 }
+\details{
+For each of the probability distribution we require certain parameters and this function provides
+that required list of parameters.
+}
 \examples{
 find_required_parameter_combs("gamma")
 }

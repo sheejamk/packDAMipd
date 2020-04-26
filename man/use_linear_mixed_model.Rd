@@ -20,9 +20,9 @@ use_linear_mixed_model(param_to_be_estimated, dataset, fix_eff,
 
 \item{random_intercept_vars, }{names of variables for random intercept}
 
-\item{nested_intercept_vars_pairs, }{those of the random intercept varaibles with nested effect}
+\item{nested_intercept_vars_pairs, }{those of the random intercept variables with nested effect}
 
-\item{cross_intercept_vars, }{those of the random intercept varaibles with crossed effect}
+\item{cross_intercept_vars, }{those of the random intercept variables with crossed effect}
 
 \item{uncorrel_slope_intercept_pairs, }{variables with no correlated intercepts}
 
@@ -36,12 +36,15 @@ Function for mixed effect regression
 }
 \examples{
 dataset <-
-read.table("http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/R_SC/Module9/lmm.data.txt",
-header = TRUE, sep = ",", na.strings = "NA", dec = ".", strip.white = TRUE)
-result <- use_linear_mixed_model("extro", dataset = dataset,
-fix_eff = c("open" , "agree", "social"),fix_eff_interact_vars = NULL,
-random_intercept_vars = c("school", "class"),
-nested_intercept_vars_pairs = list(c("school", "class")),
-cross_intercept_vars = NULL,uncorrel_slope_intercept_pairs = NULL,
-random_slope_intercept_pairs = NULL)
+  read.table("http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/R_SC/Module9/lmm.data.txt",
+    header = TRUE, sep = ",", na.strings = "NA", dec = ".", strip.white = TRUE
+  )
+result <- use_linear_mixed_model("extro",
+  dataset = dataset,
+  fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
+  random_intercept_vars = c("school", "class"),
+  nested_intercept_vars_pairs = list(c("school", "class")),
+  cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
+  random_slope_intercept_pairs = NULL
+)
 }

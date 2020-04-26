@@ -55,7 +55,7 @@ get_parameter_estimated_regression(param_to_be_estimated, data, method,
 
 \item{interaction2}{boolean value to indicate interaction for equation 2 in bivariate regression}
 
-\item{link}{link function to be provided if not using the default link for each of the info_distribtion}
+\item{link}{link function to be provided if not using the default link for each of the info_distribution}
 }
 \value{
 the results of the regression analysis
@@ -66,5 +66,7 @@ Get the parameter values using the provided statistical regression methods
 \examples{
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 results_logit <- get_parameter_estimated_regression("admit", mydata,
-"logistic regression", "gre", NA,"binomial", c("gpa", "rank"), interaction = FALSE)
+  "logistic regression", "gre", NA, "binomial", c("gpa", "rank"),
+  interaction = FALSE
+)
 }

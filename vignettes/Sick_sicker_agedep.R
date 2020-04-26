@@ -27,7 +27,7 @@ colnames(tmat_util) <- rownames(tmat_util) <- c("H", "S1", "S2", "D")
 
 
 ## ------------------------------------------------------------------------
-tm <- transition_matrix(4, tmat, c("p_HH","p_HS1","p_HDage","p_S1H",
+tm <- populate_transition_matrix(4, tmat, c("p_HH","p_HS1","p_HDage","p_S1H",
                                    "p_S1S1", "p_S1S2", "p_S1Dage",
                                    "p_S2S2","p_S2Dage","p_DD" ), colnames(tmat) )
 tm_cost <- transition_cost_util(4, tmat_cost, c("ic_HS1","ic_D","ic_D","ic_D" ), colnames(tmat_cost))

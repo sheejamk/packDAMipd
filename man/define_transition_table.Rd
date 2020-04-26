@@ -15,6 +15,12 @@ the transition table with the probabilities
 \description{
 Define the table for transition
 }
+\details{
+Generating a table for transition matrix for efficient understanding and checking
+The transition matrix in the format as pe 'mstate' package is  trnsofmred to a table.
+if tmat is not a square matrix, it gives error
+else it spells out the transition number, probability name and from state to to state
+}
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")

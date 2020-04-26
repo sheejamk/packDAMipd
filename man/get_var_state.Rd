@@ -17,6 +17,10 @@ modified health state
 \description{
 Get the attribute for the health state
 }
+\details{
+After checking the given state is a health state and given variable
+is defined in the health state, the value of the variable is returned
+}
 \examples{
 get_var_state(health_state("IT", 100, 0.4, 0, FALSE), "cost")
 }

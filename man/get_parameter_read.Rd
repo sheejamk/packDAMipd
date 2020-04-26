@@ -24,6 +24,7 @@ the file should have these column names (atleast)
 Parameter,	Description,	Strategy,	Value
 }
 \examples{
-a <- get_parameter_read("cost_IT", paramfile= system.file("extdata","table_param.csv",
-package = "packDAMipd"))
+a <- get_parameter_read("cost_IT", paramfile = system.file("extdata", "table_param.csv",
+  package = "packDAMipd"
+))
 }

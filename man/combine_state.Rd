@@ -15,8 +15,11 @@ joined health states
 \description{
 Join health states
 }
+\details{
+checking each state is a health state and join them
+}
 \examples{
-a <- health_state("IT", 100, 0.4, 0,FALSE)
-b <- health_state("PT", 100, 0.4, 0,FALSE)
+a <- health_state("IT", 100, 0.4, 0, FALSE)
+b <- health_state("PT", 100, 0.4, 0, FALSE)
 combine_state(a, b)
 }

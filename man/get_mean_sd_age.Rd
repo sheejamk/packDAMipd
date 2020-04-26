@@ -18,6 +18,6 @@ mean and sd, if success -1, if failure
 Function to return mean age from a data frame
 }
 \examples{
-this_data = as.data.frame (cbind(num=c(1,2,3,4), age = c(14,25,26,30)))
-get_mean_sd_age(this_data,NA)
+this_data <- as.data.frame(cbind(num = c(1, 2, 3, 4), age = c(14, 25, 26, 30)))
+get_mean_sd_age(this_data, NA)
 }

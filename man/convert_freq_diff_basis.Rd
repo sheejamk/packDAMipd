@@ -19,6 +19,6 @@ Convert frequency medication to given basis
 }
 \examples{
 convert_freq_diff_basis("once daily")
-convert_freq_diff_basis("bd","week")
+convert_freq_diff_basis("bd", "week")
 convert_freq_diff_basis("Every 4 days", "day")
 }

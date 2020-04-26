@@ -53,7 +53,7 @@ colnames(tmat_util) <- rownames(tmat_util) <- c("H", "S1", "S2", "D")
 Now we define the transition matrix , transition cost matrix and transition utility matrix (the latter two are optional,we use only if there are cost/utility during transitions) using the tmat defined earlier, and number of health states.
 
 ```{r}
-tm <- transition_matrix(4, tmat, c("p_HH","p_HS1","p_HD","p_S1H",
+tm <- populate_transition_matrix(4, tmat, c("p_HH","p_HS1","p_HD","p_S1H",
                                    "p_S1S1", "p_S1S2", "p_S1D",
                                    "p_S2S2","p_S2D","p_DD" ), colnames(tmat))
 tm_cost <- transition_cost_util(4, tmat_cost, c("ic_HS1","ic_D","ic_D","ic_D" ), colnames(tmat_cost))

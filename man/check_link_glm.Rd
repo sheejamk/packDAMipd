@@ -17,6 +17,9 @@ the link if they can be accepted else error
 \description{
 Function to find the keyword for family of distribution in glm
 }
+\details{
+Check and get the link function for the method glm
+}
 \examples{
-check_link_glm("gaussian","identity")
+check_link_glm("gaussian", "identity")
 }

@@ -15,6 +15,10 @@ the extension
 \description{
 Function to get extension of a filename
 }
+\details{
+if there is no "." character returns error
+else returns last characters those after string split using "."
+}
 \examples{
 get_extension_file("data.txt")
 }

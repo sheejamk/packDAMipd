@@ -20,7 +20,7 @@ sum of scores, if success -1, if failure
 Function to estimate the cost of tablets taken (from IPD)
 }
 \examples{
-datafile = system.file("extdata", "trial_data.csv", package = "packDAMipd")
-trial_data = load_trial_data(datafile)
-value_Shows_IPD(trial_data,"qsy",NA)
+datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
+trial_data <- load_trial_data(datafile)
+value_Shows_IPD(trial_data, "qsy", NA)
 }

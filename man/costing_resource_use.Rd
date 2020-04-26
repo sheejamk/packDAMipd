@@ -26,7 +26,7 @@ is to be included for the particular provider, say an nhs hospital use}
 
 \item{unit_cost_data}{unit costs data where the assumption is that the unit cost for resources
 such as hospital use, gp visit are listed in column resource/reource use with unit costs in another
-coulmn and the units calculated as in another column}
+column and the units calculated as in another column}
 
 \item{name_use_unit_cost}{name of resource use (the column name in the unit cost
 data is assumed to be name/resource/type etc) in unit cost data}
@@ -50,16 +50,18 @@ the calculated cost of resource uses along with original data
 Function to estimate the cost of resource use taken (from IPD)
 }
 \examples{
-costs_file = system.file("extdata", "costs_resource_use.csv", package = "packDAMipd")
-datafile = system.file("extdata", "resource_use_hc_2.csv", package = "packDAMipd")
-ind_part_data = load_trial_data(datafile)
-unit_cost_data = load_trial_data(costs_file)
-res = costing_resource_use(ind_part_data[1,],
-                          "hospital_admission_1",
-                          list("length_1","length_2") ,
-                          list("nhs_1","nhs_2"),
-                          "day",
-                          unit_cost_data, "Inpatient hospital admissions", "UnitCost",
-                          "UnitUsed",
-                          NULL,NULL)
+costs_file <- system.file("extdata", "costs_resource_use.csv", package = "packDAMipd")
+datafile <- system.file("extdata", "resource_use_hc_2.csv", package = "packDAMipd")
+ind_part_data <- load_trial_data(datafile)
+unit_cost_data <- load_trial_data(costs_file)
+res <- costing_resource_use(
+  ind_part_data[1, ],
+  "hospital_admission_1",
+  list("length_1", "length_2"),
+  list("nhs_1", "nhs_2"),
+  "day",
+  unit_cost_data, "Inpatient hospital admissions", "UnitCost",
+  "UnitUsed",
+  NULL, NULL
+)
 }

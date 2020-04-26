@@ -16,5 +16,6 @@ the name of the variable related to EQ5D and the unique contents if success, els
 Function to get the details of the EQ5D column
 }
 \examples{
-get_eq5d_details(data.frame("MO"= c(1,2), "SC"= c(1,2), "UA"= c(1,2), "PD"= c(1,2), "AD"= c(1,2)))
+get_eq5d_details(data.frame("MO" = c(1, 2), "SC" = c(1, 2), "UA" = c(1, 2),
+"PD" = c(1, 2), "AD" = c(1, 2)))
 }

@@ -15,6 +15,10 @@ sum of probabilities if success else -1
 \description{
 Function to add the probabilities in a vector
 }
+\details{
+if probabilites not numeric or fall out of range (0 and 1)
+return error else add the probabilites together
+}
 \examples{
-add_probabilities(c(0.6,0.2))
+add_probabilities(c(0.6, 0.2))
 }

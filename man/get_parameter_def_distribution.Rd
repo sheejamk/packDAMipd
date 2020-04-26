@@ -26,5 +26,6 @@ Param2_name,	Param2_value
 }
 \examples{
 a <- get_parameter_def_distribution("rr", paramfile = system.file("extdata", "table_param.csv",
-package = "packDAMipd"))
+  package = "packDAMipd"
+))
 }

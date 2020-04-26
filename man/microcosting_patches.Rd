@@ -22,14 +22,14 @@ microcosting_patches(ind_part_data, name_med, dose_med, dose_unit,
 
 \item{no_taken}{how many taken}
 
-\item{freq_taken}{frequency of medicaiton}
+\item{freq_taken}{frequency of medication}
 
 \item{basis_time}{basis for time}
 
 \item{unit_cost_data}{unit costs data
 assumes unit cost data contains the columns, name of medication, form/type, strength,
 unit of strength, preparation, unitcost, size and size unit
-(in which except name and form are to be passed in)}
+(in which except name and forms are to be passed in)}
 
 \item{unit_cost_column}{column name of unit cost in unit_cost_data}
 
@@ -45,7 +45,7 @@ unit of strength, preparation, unitcost, size and size unit
 
 \item{list_of_code_dose_unit}{if unit is coded, give the code:unit pairs}
 
-\item{equiv_dose}{if cost per equivalent doses are to be calcualted, provide equiv_dose}
+\item{equiv_dose}{if cost per equivalent doses are to be calculated, provide equiv_dose}
 }
 \value{
 the calculated cost of patches along with original data
@@ -54,11 +54,13 @@ the calculated cost of patches along with original data
 Function to estimate the cost of patches taken (from IPD)
 }
 \examples{
-med_costs_file = system.file("extdata", "average_unit_costs_med.csv", package = "packDAMipd")
-data_file = system.file("extdata", "resource_use_p.csv", package = "packDAMipd")
-ind_part_data = load_trial_data(data_file)
-med_costs = load_trial_data(med_costs_file)
-res=microcosting_patches(ind_part_data,"Drug", "patch_strength", "patch_dose_unit","patch_no_taken",
-           "patch_frequency",  "day", med_costs, "UnitCost", "StrengthUnit","Strength",
-           list(c("4 weeks", "1 week"), c(1,2)), NULL, NULL, NULL, "patch_equiv_dose")
+med_costs_file <- system.file("extdata", "average_unit_costs_med.csv", package = "packDAMipd")
+data_file <- system.file("extdata", "resource_use_p.csv", package = "packDAMipd")
+ind_part_data <- load_trial_data(data_file)
+med_costs <- load_trial_data(med_costs_file)
+res <- microcosting_patches(
+  ind_part_data, "Drug", "patch_strength", "patch_dose_unit", "patch_no_taken",
+  "patch_frequency", "day", med_costs, "UnitCost", "StrengthUnit", "Strength",
+  list(c("4 weeks", "1 week"), c(1, 2)), NULL, NULL, NULL, "patch_equiv_dose"
+)
 }

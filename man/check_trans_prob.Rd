@@ -15,9 +15,13 @@ rowsum if they add upto 1 else error
 \description{
 Check the transition probabilities row sum is 1
 }
+\details{
+checking for rowsum - checks for the class of transition matrix,
+then the rowsum equal to 1 and numeric probabilty
+}
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-tm <- transition_matrix(2, tmat, list_prob = c(0.5, 0.5, 0, 1))
+tm <- populate_transition_matrix(2, tmat, list_prob = c(0.5, 0.5, 0, 1))
 check_trans_prob(tm)
 }

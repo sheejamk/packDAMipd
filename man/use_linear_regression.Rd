@@ -29,6 +29,8 @@ Get the parameter values using the linear regression
 }
 \examples{
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-results_lm <- use_linear_regression("gre", dataset = mydata,
-indep_var = "gpa", covariates = NA, interaction = FALSE)
+results_lm <- use_linear_regression("gre",
+  dataset = mydata,
+  indep_var = "gpa", covariates = NA, interaction = FALSE
+)
 }

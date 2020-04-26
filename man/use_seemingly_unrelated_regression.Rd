@@ -2,7 +2,7 @@
 % Please edit documentation in R/2a_parameter_estimation_functions.R
 \name{use_seemingly_unrelated_regression}
 \alias{use_seemingly_unrelated_regression}
-\title{Bivaraite regression for correlated observations}
+\title{Bivariate regression for correlated observations}
 \usage{
 use_seemingly_unrelated_regression(param1_to_be_estimated,
   param2_to_be_estimated, dataset, indep_var, covariates1, covariates2,
@@ -17,24 +17,26 @@ use_seemingly_unrelated_regression(param1_to_be_estimated,
 
 \item{indep_var}{the independent variable (column name in data file)}
 
-\item{covariates1}{list of covariates - for equaiton 1}
+\item{covariates1}{list of covariates - for equation 1}
 
-\item{covariates2}{list of covariates - for equaiton 2}
+\item{covariates2}{list of covariates - for equation 2}
 
-\item{interaction1}{boolean value to indicate interaction - for equaiton 1}
+\item{interaction1}{boolean value to indicate interaction - for equation 1}
 
-\item{interaction2}{boolean value to indicate interaction - for equaiton 2
+\item{interaction2}{boolean value to indicate interaction - for equation 2
 false by default}
 }
 \value{
 the results of the regression analysis
 }
 \description{
-Bivaraite regression for correlated observations
+Bivariate regression for correlated observations
 }
 \examples{
 mydata <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
-results_sureg <- use_seemingly_unrelated_regression("read", "math", dataset = mydata,
-indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
-covariates2 = c("as.numeric(ses)", "science"),interaction1 = FALSE,  interaction2 = FALSE)
+results_sureg <- use_seemingly_unrelated_regression("read", "math",
+  dataset = mydata,
+  indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
+  covariates2 = c("as.numeric(ses)", "science"), interaction1 = FALSE, interaction2 = FALSE
+)
 }

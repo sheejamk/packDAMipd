@@ -21,17 +21,17 @@ form_expression_mixed_model(param_to_be_estimated, dataset, fix_eff,
 
 \item{random_intercept_vars, }{names of variables for random intercept}
 
-\item{nested_intercept_vars_pairs, }{those of the random intercept varaibles with nested effect}
+\item{nested_intercept_vars_pairs, }{those of the random intercept variables with nested effect}
 
-\item{cross_intercept_vars, }{those of the random intercept varaibles with crossed effect}
+\item{cross_intercept_vars, }{those of the random intercept variables with crossed effect}
 
 \item{uncorrel_slope_intercept_pairs, }{variables with correlated intercepts}
 
 \item{random_slope_intercept_pairs, }{random slopes intercept pairs - this is alist of paired variables}
 
-\item{family, }{family of distriution for non gaussian distribution of predicted varaible}
+\item{family, }{family of distribution for non gaussian distribution of predicted variable}
 
-\item{link, }{link funciton for the variance}
+\item{link, }{link function for the variance}
 }
 \value{
 result regression result with plot if success and -1, if failure
@@ -39,15 +39,21 @@ result regression result with plot if success and -1, if failure
 \description{
 Form expression to use with mixed models
 }
+\details{
+Form the expression for mixed model
+}
 \examples{
 dt <- read.table("http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/R_SC/Module9/lmm.data.txt",
-                 header=TRUE, sep=",", na.strings="NA", dec=".", strip.white=TRUE)
-formula = form_expression_mixed_model("extro", dataset = dataset,
-fix_eff = c("open" , "agree", "social"),
-fix_eff_interact_vars = NULL,
-random_intercept_vars = c("school", "class"),
-nested_intercept_vars_pairs = list(c("school", "class")),
-cross_intercept_vars = NULL,
-uncorrel_slope_intercept_pairs = NULL,
-random_slope_intercept_pairs = NULL, family ="binomial", link = NA)
+  header = TRUE, sep = ",", na.strings = "NA", dec = ".", strip.white = TRUE
+)
+formula <- form_expression_mixed_model("extro",
+  dataset = dataset,
+  fix_eff = c("open", "agree", "social"),
+  fix_eff_interact_vars = NULL,
+  random_intercept_vars = c("school", "class"),
+  nested_intercept_vars_pairs = list(c("school", "class")),
+  cross_intercept_vars = NULL,
+  uncorrel_slope_intercept_pairs = NULL,
+  random_slope_intercept_pairs = NULL, family = "binomial", link = NA
+)
 }

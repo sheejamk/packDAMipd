@@ -12,7 +12,7 @@
 
 <meta name="author" content="Sheeja Manchira Krishnan" />
 
-<meta name="date" content="2020-02-02" />
+<meta name="date" content="2020-04-26" />
 
 <title>User Guide deterministic sensitivity analysis</title>
 
@@ -95,7 +95,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">User Guide deterministic sensitivity analysis</h1>
 <h4 class="author">Sheeja Manchira Krishnan</h4>
-<h4 class="date">2020-02-02</h4>
+<h4 class="date">2020-04-26</h4>
 
 
 
@@ -113,9 +113,21 @@ D &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmat &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>), <span class="kw">c</span>(<span class="ot">NA</span>, <span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>),<span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="dv">8</span>,<span class="dv">9</span>), <span class="kw">c</span>(<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="dv">10</span>))
 <span class="kw">colnames</span>(tmat) &lt;-<span class="st"> </span><span class="kw">rownames</span>(tmat) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span> ,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>)</code></pre></div>
 <p>Define transition matrix now, but parameters are fine now</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tm &lt;-<span class="st"> </span><span class="kw">transition_matrix</span>(<span class="dv">4</span>, tmat, <span class="kw">c</span>(<span class="st">&quot;tpAtoA&quot;</span>,<span class="st">&quot;tpAtoB&quot;</span>,<span class="st">&quot;tpAtoC&quot;</span>,<span class="st">&quot;tpAtoD&quot;</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tm &lt;-<span class="st"> </span><span class="kw">populate_transition_matrix</span>(<span class="dv">4</span>, tmat, <span class="kw">c</span>(<span class="st">&quot;tpAtoA&quot;</span>,<span class="st">&quot;tpAtoB&quot;</span>,<span class="st">&quot;tpAtoC&quot;</span>,<span class="st">&quot;tpAtoD&quot;</span>,
                                    <span class="st">&quot;tpBtoB&quot;</span>, <span class="st">&quot;tpBtoC&quot;</span>, <span class="st">&quot;tpBtoD&quot;</span>,
-                                   <span class="st">&quot;tpCtoC&quot;</span>,<span class="st">&quot;tpCtoD&quot;</span>,<span class="st">&quot;tpDtoD&quot;</span> ), <span class="kw">colnames</span>(tmat) )</code></pre></div>
+                                   <span class="st">&quot;tpCtoC&quot;</span>,<span class="st">&quot;tpCtoD&quot;</span>,<span class="st">&quot;tpDtoD&quot;</span> ), <span class="kw">colnames</span>(tmat) )
+<span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="st">&quot;The tranisiton matrix as explained&quot;</span>
+<span class="op">&gt;</span><span class="st">     </span>transition number probabiliy name from from state to to state
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">1</span><span class="op">:</span><span class="st">                 </span><span class="dv">1</span>     prob_A_to_A    <span class="dv">1</span>          A  <span class="dv">1</span>        A
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">2</span><span class="op">:</span><span class="st">                 </span><span class="dv">2</span>     prob_A_to_B    <span class="dv">1</span>          A  <span class="dv">2</span>        B
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">3</span><span class="op">:</span><span class="st">                 </span><span class="dv">3</span>     prob_A_to_C    <span class="dv">1</span>          A  <span class="dv">3</span>        C
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">4</span><span class="op">:</span><span class="st">                 </span><span class="dv">4</span>     prob_A_to_D    <span class="dv">1</span>          A  <span class="dv">4</span>        D
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">5</span><span class="op">:</span><span class="st">                 </span><span class="dv">5</span>     prob_B_to_B    <span class="dv">2</span>          B  <span class="dv">2</span>        B
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">6</span><span class="op">:</span><span class="st">                 </span><span class="dv">6</span>     prob_B_to_C    <span class="dv">2</span>          B  <span class="dv">3</span>        C
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">7</span><span class="op">:</span><span class="st">                 </span><span class="dv">7</span>     prob_B_to_D    <span class="dv">2</span>          B  <span class="dv">4</span>        D
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">8</span><span class="op">:</span><span class="st">                 </span><span class="dv">8</span>     prob_C_to_C    <span class="dv">3</span>          C  <span class="dv">3</span>        C
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">9</span><span class="op">:</span><span class="st">                 </span><span class="dv">9</span>     prob_C_to_D    <span class="dv">3</span>          C  <span class="dv">4</span>        D
+<span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span><span class="op">:</span><span class="st">                </span><span class="dv">10</span>     prob_D_to_D    <span class="dv">4</span>          D  <span class="dv">4</span>        D</code></pre></div>
 <p>Combine the health states and define the strategy. The current strategy ie. control or intervention - here it is mono therapy</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">health_states &lt;-<span class="st"> </span><span class="kw">combine_state</span>(A,B,C,D)
 mono_strategy &lt;-<span class="st"> </span><span class="kw">strategy</span>(tm, health_states, <span class="st">&quot;mono&quot;</span>)</code></pre></div>
@@ -168,9 +180,21 @@ D &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmat &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>), <span class="kw">c</span>(<span class="ot">NA</span>, <span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>),<span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="dv">8</span>,<span class="dv">9</span>), <span class="kw">c</span>(<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="dv">10</span>))
 <span class="kw">colnames</span>(tmat) &lt;-<span class="st"> </span><span class="kw">rownames</span>(tmat) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span> ,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>)</code></pre></div>
 <p>Define transition matrix now, but parameters are fine now</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tm &lt;-<span class="st"> </span><span class="kw">transition_matrix</span>(<span class="dv">4</span>, tmat, <span class="kw">c</span>(<span class="st">&quot;tpAtoA_rr&quot;</span>,<span class="st">&quot;tpAtoB_rr&quot;</span>,<span class="st">&quot;tpAtoC_rr&quot;</span>,<span class="st">&quot;tpAtoD_rr&quot;</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tm &lt;-<span class="st"> </span><span class="kw">populate_transition_matrix</span>(<span class="dv">4</span>, tmat, <span class="kw">c</span>(<span class="st">&quot;tpAtoA_rr&quot;</span>,<span class="st">&quot;tpAtoB_rr&quot;</span>,<span class="st">&quot;tpAtoC_rr&quot;</span>,<span class="st">&quot;tpAtoD_rr&quot;</span>,
                                    <span class="st">&quot;tpBtoB_rr&quot;</span>, <span class="st">&quot;tpBtoC_rr&quot;</span>, <span class="st">&quot;tpBtoD_rr&quot;</span>,
-                                   <span class="st">&quot;tpCtoC_rr&quot;</span>,<span class="st">&quot;tpCtoD_rr&quot;</span>,<span class="st">&quot;tpDtoD_rr&quot;</span> ), <span class="kw">colnames</span>(tmat) )</code></pre></div>
+                                   <span class="st">&quot;tpCtoC_rr&quot;</span>,<span class="st">&quot;tpCtoD_rr&quot;</span>,<span class="st">&quot;tpDtoD_rr&quot;</span> ), <span class="kw">colnames</span>(tmat) )
+<span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="st">&quot;The tranisiton matrix as explained&quot;</span>
+<span class="op">&gt;</span><span class="st">     </span>transition number probabiliy name from from state to to state
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">1</span><span class="op">:</span><span class="st">                 </span><span class="dv">1</span>     prob_A_to_A    <span class="dv">1</span>          A  <span class="dv">1</span>        A
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">2</span><span class="op">:</span><span class="st">                 </span><span class="dv">2</span>     prob_A_to_B    <span class="dv">1</span>          A  <span class="dv">2</span>        B
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">3</span><span class="op">:</span><span class="st">                 </span><span class="dv">3</span>     prob_A_to_C    <span class="dv">1</span>          A  <span class="dv">3</span>        C
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">4</span><span class="op">:</span><span class="st">                 </span><span class="dv">4</span>     prob_A_to_D    <span class="dv">1</span>          A  <span class="dv">4</span>        D
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">5</span><span class="op">:</span><span class="st">                 </span><span class="dv">5</span>     prob_B_to_B    <span class="dv">2</span>          B  <span class="dv">2</span>        B
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">6</span><span class="op">:</span><span class="st">                 </span><span class="dv">6</span>     prob_B_to_C    <span class="dv">2</span>          B  <span class="dv">3</span>        C
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">7</span><span class="op">:</span><span class="st">                 </span><span class="dv">7</span>     prob_B_to_D    <span class="dv">2</span>          B  <span class="dv">4</span>        D
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">8</span><span class="op">:</span><span class="st">                 </span><span class="dv">8</span>     prob_C_to_C    <span class="dv">3</span>          C  <span class="dv">3</span>        C
+<span class="op">&gt;</span><span class="st">  </span><span class="dv">9</span><span class="op">:</span><span class="st">                 </span><span class="dv">9</span>     prob_C_to_D    <span class="dv">3</span>          C  <span class="dv">4</span>        D
+<span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span><span class="op">:</span><span class="st">                </span><span class="dv">10</span>     prob_D_to_D    <span class="dv">4</span>          D  <span class="dv">4</span>        D</code></pre></div>
 <p>Before we run the model, we need to give values to parameters, thus we define the parameter list.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">comb_params &lt;-<span class="st"> </span><span class="kw">define_parameters</span>(<span class="dt">cost_zido =</span> <span class="dv">2278</span>,
                      <span class="dt">cost_direct_med_A =</span> <span class="dv">1701</span>,

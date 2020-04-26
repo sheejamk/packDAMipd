@@ -23,12 +23,17 @@ object strategy
 \description{
 Definition of strategy -or arm
 }
+\details{
+Defining strategy keeping all transition matrix, states and names together to use
+in defining Markov model
+}
 \examples{
+
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-tm <- transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
-a <- health_state("Healthy", 1, 1, 0,FALSE)
-b <- health_state("Dead", 1, 0.5, 0,FALSE)
+tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
+a <- health_state("Healthy", 1, 1, 0, FALSE)
+b <- health_state("Dead", 1, 0.5, 0, FALSE)
 states <- combine_state(a, b)
 strategy(tm, states, "intervention")
 }

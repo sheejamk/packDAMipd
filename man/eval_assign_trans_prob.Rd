@@ -17,9 +17,25 @@ the transition table with the probabilities
 \description{
 Attribute parameters to probabilities of transition matrix
 }
+\details{
+Once the transition matrix is populated, the probabilities in transition matrix
+gets evaluated and assigned in this function call
+If the entry in transition matrix is NA, replace it with zero
+similarly to evaluate and assign health states, the paramter values is excepted to be a list from
+assign_parameter() and define_paramter().
+The exception is that if the parameters are defined directly and no nested calculation is
+required. For eg.assign_list = c(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5)
+prob <- eval_assign_trans_prob(tmat, assign_list) will work
+For those with nested calculations, this has to be defined as below
+assign_list<-assign_parameters(define_parameters(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5))
+prob <- eval_assign_trans_prob(tmat, assign_list)
+The below will give error
+assign_list <- c(p1=0.1, p2 = "p1 + 0.2", p3=0, p4=0.3)
+prob <- eval_assign_trans_prob(tmat, assign_list)
+}
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-tmat<-transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
-tmat_assigned<-eval_assign_trans_prob(tmat, c(p1= 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5))
+tmat <- populate_transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
+tmat_assigned <- eval_assign_trans_prob(tmat, c(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5))
 }

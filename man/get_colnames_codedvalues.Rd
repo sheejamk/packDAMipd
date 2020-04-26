@@ -22,5 +22,5 @@ data frame with all the above information
 Function to keep the column name, coded values and non response code into a dataframe
 }
 \examples{
-get_colnames_codedvalues("arm", "pat_trial_arm",c("Y", "N"))
+get_colnames_codedvalues("arm", "pat_trial_arm", c("Y", "N"))
 }

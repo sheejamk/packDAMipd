@@ -28,10 +28,17 @@ Markov trace
 \description{
 Definition of Markov model and trace
 }
+\details{
+Use the strategy, cycles, inital state values creating the markov model and trace
+As many probabilities /cost/utility value depend on age/time the
+evaluation and assignemnt happens during each cycle. At the heart it does a matrix mulitplication
+using the previous row of the trace matrix and the columns of the transition matrix.
+Also checks for population loss, calculates cumulative costs and qalys (accounts for discouting too)
+}
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-tm <- transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
+tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
 a <- health_state("Healthy", 1, 1, 0, FALSE)
 b <- health_state("Dead", 1, 0, 0, TRUE)
 health_states <- combine_state(a, b)

@@ -29,7 +29,12 @@ the formula for glm
 \description{
 Form expression to use with glm()
 }
+\details{
+Form expression for the method glm
+}
 \examples{
-formula = form_expression_glm("admit", indep_var = "gre", family = "binomial",
-covariates = c("gpa","rank"), interaction = FALSE, naaction = "na.omit", link = NA)
+formula <- form_expression_glm("admit",
+  indep_var = "gre", family = "binomial",
+  covariates = c("gpa", "rank"), interaction = FALSE, naaction = "na.omit", link = NA
+)
 }

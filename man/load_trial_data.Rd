@@ -17,5 +17,6 @@ Function to load the file containing trial data and return it
 }
 \examples{
 load_trial_data(system.file("extdata", "trial_data.csv",
-package = "packDAMipd"))
+  package = "packDAMipd"
+))
 }

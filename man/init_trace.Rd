@@ -17,6 +17,10 @@ trace matrix -all zero
 \description{
 Define an all zero trace matrix
 }
+\details{
+Initilise the trace matrix with all zeros
+trace matrix will be with no_cycles+1 by no_states matrix
+}
 \examples{
 a <- health_state("Healthy", 1, 1, 0, FALSE)
 b <- health_state("Dead", 1, 0.5, 0, FALSE)

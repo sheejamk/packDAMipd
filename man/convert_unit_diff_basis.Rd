@@ -20,5 +20,5 @@ Convert unit strength to given basis
 \examples{
 convert_unit_diff_basis("mg")
 convert_unit_diff_basis("mg", "mcg")
-convert_unit_diff_basis("l","ml")
+convert_unit_diff_basis("l", "ml")
 }

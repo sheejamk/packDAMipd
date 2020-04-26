@@ -35,7 +35,9 @@ Get the parameter values using logistic regression
 \examples{
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 mydata$rank <- factor(mydata$rank)
-results_logit <- use_generalised_linear_model("admit", dataset=mydata,
-indep_var = "gre", family ="binomial", covariates = NA,interaction = FALSE,
- naaction = "stats::na.omit", link = NA)
+results_logit <- use_generalised_linear_model("admit",
+  dataset = mydata,
+  indep_var = "gre", family = "binomial", covariates = NA, interaction = FALSE,
+  naaction = "stats::na.omit", link = NA
+)
 }

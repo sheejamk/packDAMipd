@@ -20,7 +20,7 @@ tmat <- rbind(c(1, 2,3,4), c(NA, 5,6,7),c(NA, NA, 8,9), c(NA,NA,NA,10))
 colnames(tmat) <- rownames(tmat) <- c("A","B" ,"C","D")
 
 ## ------------------------------------------------------------------------
-tm <- transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
+tm <- populate_transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
                                    "tpBtoB", "tpBtoC", "tpBtoD",
                                    "tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
 
@@ -86,7 +86,7 @@ colnames(tmat) <- rownames(tmat) <- c("A","B" ,"C","D")
 
 
 ## ------------------------------------------------------------------------
-tm <- transition_matrix(4, tmat, c("tpAtoA_rr","tpAtoB_rr","tpAtoC_rr","tpAtoD_rr",
+tm <- populate_transition_matrix(4, tmat, c("tpAtoA_rr","tpAtoB_rr","tpAtoC_rr","tpAtoD_rr",
                                    "tpBtoB_rr", "tpBtoC_rr", "tpBtoD_rr",
                                    "tpCtoC_rr","tpCtoD_rr","tpDtoD_rr" ), colnames(tmat) )
 

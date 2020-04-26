@@ -17,6 +17,14 @@ random number according to the specified distribution
 \description{
 Function to return random number given a distribution and parameters
 }
+\details{
+Returns a random number accroding to the given distribution
+and corresponding parameters
+For uniform distributin with no parametes, this will be std uniform
+other wise will check if param 1 is less than param 2
+If not for unifrom distribution, number of parameters should be minimum of two
+and also the parameters should be numeric
+}
 \examples{
-random_number_prob_distbn("beta",c(0.6,0.2))
+random_number_prob_distbn("beta", c(0.6, 0.2))
 }

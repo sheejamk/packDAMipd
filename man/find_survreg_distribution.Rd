@@ -15,6 +15,9 @@ the keyword - the name of distribution
 \description{
 Function to find the keyword for survreg distribution
 }
+\details{
+For surveg method, find the distribution
+}
 \examples{
 find_survreg_distribution("weibull")
 }

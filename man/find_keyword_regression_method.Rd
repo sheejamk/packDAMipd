@@ -17,6 +17,12 @@ the keyword that should be used in R for regression analysis
 \description{
 Function to find the keyword for regression methods
 }
+\details{
+This function returns the keyword to use in regression methods.
+For example linear regression requires lm in R
+some regression methods require additional info and it has to be
+provided
+}
 \examples{
 find_keyword_regression_method("linear")
 }

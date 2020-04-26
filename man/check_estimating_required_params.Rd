@@ -10,24 +10,29 @@ check_estimating_required_params(params_found, required_params, the_expr,
   distr_key)
 }
 \arguments{
-\item{params_found}{given parameters for generating ransom numbers}
+\item{params_found}{given parameters for generating random numbers}
 
 \item{required_params}{the required parameter by the R code (stats package)}
 
 \item{the_expr}{the expression that contain the definition}
 
-\item{distr_key}{the keyword used for generating random numbers in R stats package
-e.g. rgamma for gamma distribution}
+\item{distr_key}{the keyword used for generating random numbers in R stats package}
 }
 \value{
-the keyword that should be used in R for generating random numbers
+the parameters required
 }
 \description{
 Function to check if the parameters are sufficient to define a probability distribution
 and if not see if we can estimate the parameters from the given parameters, e.g. for
 gamma distribution, shape and rate can be estimated from mean and sd
 }
-\examples{
-check_estimating_required_params(c("mean","sd"),c("shape", "rate"),
-"gamma(mean =10 ,sd=1)", "gamma")
+\details{
+This function is not usually needed by the user
 }
+\examples{
+check_estimating_required_params(
+  c("mean", "sd"), c("shape", "rate"),
+  "gamma(mean =10 ,sd=1)", "gamma"
+)
+}
+\keyword{internal}

@@ -19,6 +19,7 @@ Function to add EQ5D5L scores to IPD data based on
 http://eprints.whiterose.ac.uk/121473/1/Devlin_et_al-2017-Health_Economics.pdf
 }
 \examples{
-datafile = system.file("extdata", "trial_data.csv", package = "packDAMipd")
-trial_data = load_trial_data(datafile)
+datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
+trial_data <- load_trial_data(datafile)
+#  map_eq5d5Lto3L_VanHout(trial_data, NA)
 }

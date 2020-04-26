@@ -19,6 +19,11 @@ modified health state
 \description{
 Set the attribute for the health state
 }
+\details{
+After checking the given state is a health state
+the value of the variable is set
+if the value is not numeric, it is being parsed to form an expression
+}
 \examples{
 set_var_state(health_state("IT", 100, 0.4, 0, FALSE), "cost", 1)
 }

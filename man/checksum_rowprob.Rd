@@ -15,6 +15,9 @@ sum of probabilities if success else error
 \description{
 Function to check the sum of probabilities in a vector
 }
+\details{
+returns the sum if the sum is 1 else error
+}
 \examples{
-checksum_rowprob(c(0.6,0.4))
+checksum_rowprob(c(0.6, 0.4))
 }

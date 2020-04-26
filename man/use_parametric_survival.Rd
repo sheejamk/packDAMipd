@@ -30,6 +30,7 @@ Get the parameter values using the survival analysis parametric survival
 }
 \examples{
 data_for_survival <- survival::aml
-surv_estimated_aml <- use_parametric_survival("status", data_for_survival,"x",
-info_distribution="weibull", covariates_list= NA,"time")
+surv_estimated_aml <- use_parametric_survival("status", data_for_survival, "x",
+  info_distribution = "weibull", covariates_list = NA, "time"
+)
 }

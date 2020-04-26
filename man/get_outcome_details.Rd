@@ -23,6 +23,8 @@ the unique contents if success, else error
 Function to get the details of the outcome column
 }
 \examples{
-get_outcome_details(data.frame("qol.MO"=c(1,2), "qol.PD"=c(1,2), "qol.AD"= c(1,2)),
-"eq5d", "qol",TRUE)
+get_outcome_details(
+  data.frame("qol.MO" = c(1, 2), "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)),
+  "eq5d", "qol", TRUE
+)
 }

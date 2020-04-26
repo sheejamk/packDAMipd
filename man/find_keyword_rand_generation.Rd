@@ -15,6 +15,10 @@ the keyword that should be used in R for generating random numbers
 \description{
 Function to find the keyword for generating random numbers for given probability distribution
 }
+\details{
+This function returns the keyword for generting random number using a keyword provided
+that is generally used for prob distirbution (but R might require a different keyword)
+}
 \examples{
 find_keyword_rand_generation("gamma")
 }

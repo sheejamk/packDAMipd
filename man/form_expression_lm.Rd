@@ -23,6 +23,10 @@ the formula for lm
 \description{
 Form expression to use with lm()
 }
+\details{
+This function helps to create the expression for liner regression model
+it takes care of covariates and interaction
+}
 \examples{
-formula = form_expression_lm("gre", indep_var = "gpa", covariates = NA, interaction = FALSE)
+formula <- form_expression_lm("gre", indep_var = "gpa", covariates = NA, interaction = FALSE)
 }

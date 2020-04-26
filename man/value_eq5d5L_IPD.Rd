@@ -21,7 +21,7 @@ qaly included modified data, if success -1, if failure
 Function to add EQ5D5L scores to IPD data
 }
 \examples{
-datafile = system.file("extdata", "trial_data.csv", package = "packDAMipd")
-trial_data = load_trial_data(datafile)
-value_eq5d5L_IPD(trial_data,NA)
+datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
+trial_data <- load_trial_data(datafile)
+value_eq5d5L_IPD(trial_data, NA)
 }

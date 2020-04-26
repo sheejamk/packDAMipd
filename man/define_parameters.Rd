@@ -15,6 +15,11 @@ a list of parameters
 \description{
 Function to return a list of parameters given
 }
+\details{
+To return a list of parameters
+For using with assign_parameters() just list or enumarate the
+parameters, do not use c() or list() to create a data type list
+}
 \examples{
-define_parameters(rr=1)
+define_parameters(rr = 1)
 }

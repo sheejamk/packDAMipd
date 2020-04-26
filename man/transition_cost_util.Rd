@@ -23,6 +23,9 @@ value of the transition matrix
 \description{
 Create the the values of cost and utility while transition
 }
+\details{
+Similar to transition matrix but for denoting one time change during transitions
+}
 \examples{
 tmat_cost <- rbind(c(NA, 1), c(NA, NA))
 colnames(tmat_cost) <- rownames(tmat_cost) <- c("Healthy", "Dead")

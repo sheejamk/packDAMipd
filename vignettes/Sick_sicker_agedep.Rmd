@@ -10,7 +10,7 @@ vignette: >
 bibliography: ref.bib
 ---
 
-This document demonstrates developing For a  Markov model explained in reference \ref[alarid2020cohort] using packDAMipd. Here we look at how the model is defined when the transition probabilities (or parameters) are dependent on the model cycle or time. (Another example for considering the time dependency is explained in vignettes/time_dependent.html)
+This document demonstrates developing For a  Markov model explained in reference \ref[alarid2020cohort] using packDAMipd. Here we look at how the model is defined when the transition probabilities (or parameters) are dependent on the model cycle or time. (Another example for considering the time dependency is explained in vignettes/cycle_dependent.html)
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -53,7 +53,7 @@ colnames(tmat_util) <- rownames(tmat_util) <- c("H", "S1", "S2", "D")
 Now we define the transition matrix , transition cost matrix and transition utility matrix (the latter two are optional,we use only if there are cost/utility during transitions) using the tmat defined earlier, and number of health states. Note that the probabilities are age dependent (when compared to simple sick sicker model and are named differently to indicate the age dependency)
 
 ```{r}
-tm <- transition_matrix(4, tmat, c("p_HH","p_HS1","p_HDage","p_S1H",
+tm <- populate_transition_matrix(4, tmat, c("p_HH","p_HS1","p_HDage","p_S1H",
                                    "p_S1S1", "p_S1S2", "p_S1Dage",
                                    "p_S2S2","p_S2Dage","p_DD" ), colnames(tmat) )
 tm_cost <- transition_cost_util(4, tmat_cost, c("ic_HS1","ic_D","ic_D","ic_D" ), colnames(tmat_cost))

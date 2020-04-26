@@ -15,6 +15,9 @@ the keyword - the name of distribution
 \description{
 Function to find the keyword for family of distribution in glm
 }
+\details{
+Find the family for glm method
+}
 \examples{
 find_glm_distribution("gamma")
 }

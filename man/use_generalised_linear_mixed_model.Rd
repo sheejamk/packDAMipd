@@ -21,15 +21,15 @@ use_generalised_linear_mixed_model(param_to_be_estimated, dataset, fix_eff,
 
 \item{random_intercept_vars, }{names of variables for random intercept}
 
-\item{nested_intercept_vars_pairs, }{those of the random intercept varaibles with nested effect}
+\item{nested_intercept_vars_pairs, }{those of the random intercept variables with nested effect}
 
-\item{cross_intercept_vars, }{those of the random intercept varaibles with crossed effect}
+\item{cross_intercept_vars, }{those of the random intercept variables with crossed effect}
 
 \item{uncorrel_slope_intercept_pairs, }{variables with no correlated intercepts}
 
 \item{random_slope_intercept_pairs, }{random slopes intercept pairs - this is alist of paired variables}
 
-\item{family, }{family of disributions for the response variable}
+\item{family, }{family of distributions for the response variable}
 
 \item{link, }{link function for the variances}
 }
@@ -47,10 +47,12 @@ hdp <- within(hdp, {
   HID <- factor(HID)
 })
 result <-
-use_generalised_linear_mixed_model("remission", dataset = hdp,
-fix_eff = c("IL6" , "CRP", "CancerStage","LengthofStay","Experience"),
-fix_eff_interact_vars = NULL, random_intercept_vars = c("DID"),
-nested_intercept_vars_pairs = NULL,cross_intercept_vars = c("DID"),
-uncorrel_slope_intercept_pairs = NULL, random_slope_intercept_pairs = NULL,
-family = "binomial", link = NA)
+  use_generalised_linear_mixed_model("remission",
+    dataset = hdp,
+    fix_eff = c("IL6", "CRP", "CancerStage", "LengthofStay", "Experience"),
+    fix_eff_interact_vars = NULL, random_intercept_vars = c("DID"),
+    nested_intercept_vars_pairs = NULL, cross_intercept_vars = c("DID"),
+    uncorrel_slope_intercept_pairs = NULL, random_slope_intercept_pairs = NULL,
+    family = "binomial", link = NA
+  )
 }

@@ -22,7 +22,7 @@ microcosting_tablets(ind_part_data, name_med, dose_med, dose_unit,
 
 \item{no_taken}{how many taken}
 
-\item{freq_taken}{frequency of medicaiton}
+\item{freq_taken}{frequency of medication}
 
 \item{basis_time}{basis for time}
 
@@ -45,7 +45,7 @@ unit of strength, preparation, unitcost, size and size unit
 
 \item{list_of_code_dose_unit}{if unit is coded, give the code:unit pairs}
 
-\item{equiv_dose}{if cost per equivalent doses are to be calcualtes, provide equiv_dose}
+\item{equiv_dose}{if cost per equivalent doses are to be calculates, provide equiv_dose}
 }
 \value{
 the calculated cost of tablets along with original data
@@ -54,21 +54,25 @@ the calculated cost of tablets along with original data
 Function to estimate the cost of tablets taken (from IPD)
 }
 \examples{
-freq_desc <- c("Once a day","Twice a day", "Three times a day",
-               "Four times a day","Five times a day","Six times a day",
-               "Seven times a day","Eight times a day","Nine times a day",
-               "Ten times a day","Once every 2 days","Once every 3 days",
-               "Once every 4 days","Once every 5 days","Once every 6 days",
-               "Once a week","Twice a week","Thrice a week","Four times a week")
+freq_desc <- c(
+  "Once a day", "Twice a day", "Three times a day",
+  "Four times a day", "Five times a day", "Six times a day",
+  "Seven times a day", "Eight times a day", "Nine times a day",
+  "Ten times a day", "Once every 2 days", "Once every 3 days",
+  "Once every 4 days", "Once every 5 days", "Once every 6 days",
+  "Once a week", "Twice a week", "Thrice a week", "Four times a week"
+)
 codes <- c(seq(1:19))
-this_list = list(freq_desc, codes)
-med_costs_file = system.file("extdata", "average_unit_costs_med.csv", package = "packDAMipd")
-data_file = system.file("extdata", "resource_use_t.csv", package = "packDAMipd")
-ind_part_data = load_trial_data(data_file)
-med_costs = load_trial_data(med_costs_file)
-res = microcosting_tablets(ind_part_data, "Name", "tab_dosage", "tab_dosage_unit","tab_no_taken",
-                           "tab_frequency", "day", med_costs, "UnitCost",
-                           "StrengthUnit",  "Strength",list(c("4 weeks", "1 week"), c(1,2)),
-                           list(c("Buprenorphine", "Morphine"), c(1,2)), this_list,
-                           list(c("mcg","mg", "gm"), c(1,2,3)), "tab_equiv_dose")
+this_list <- list(freq_desc, codes)
+med_costs_file <- system.file("extdata", "average_unit_costs_med.csv", package = "packDAMipd")
+data_file <- system.file("extdata", "resource_use_t.csv", package = "packDAMipd")
+ind_part_data <- load_trial_data(data_file)
+med_costs <- load_trial_data(med_costs_file)
+res <- microcosting_tablets(
+  ind_part_data, "Name", "tab_dosage", "tab_dosage_unit", "tab_no_taken",
+  "tab_frequency", "day", med_costs, "UnitCost",
+  "StrengthUnit", "Strength", list(c("4 weeks", "1 week"), c(1, 2)),
+  list(c("Buprenorphine", "Morphine"), c(1, 2)), this_list,
+  list(c("mcg", "mg", "gm"), c(1, 2, 3)), "tab_equiv_dose"
+)
 }

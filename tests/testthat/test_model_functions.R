@@ -1,16 +1,17 @@
 ###############################################################################
 context("testing defining a health state")
-test_that("testing defining a health state",  {
-  st <- health_state("IT", 100, 0.4, FALSE)
+test_that("testing defining a health state", {
+  st <- health_state("IT", 100, 0.4, 0, FALSE)
   expect_identical(class(st), "health_state")
   expect_identical(st$name, "IT")
   expect_identical(st$cost, 100)
   expect_identical(st$utility, 0.4)
   expect_identical(st$absorb, FALSE)
+  expect_error(health_state("IT", 100, 0.4, FALSE))
 })
 
-test_that("testing defining a health state",  {
-  st <- health_state("IT", "cost_IT", "util_IT", FALSE)
+test_that("testing defining a health state", {
+  st <- health_state("IT", "cost_IT", "util_IT", 1, FALSE)
   expect_identical(class(st), "health_state")
   expect_identical(st$name, "IT")
   expect_identical(toString(parse(text = st$cost)), "cost_IT")
@@ -19,74 +20,117 @@ test_that("testing defining a health state",  {
 })
 ##############################################################################
 context("testing to get the attribute for the health state")
-test_that("testing to get the attribute for the health state",  {
-  this_cost <- get_var_state(health_state("IT", 100, 0.4, FALSE), "cost")
-  this_util <- get_var_state(health_state("IT", 100, 0.4, FALSE), "utility")
+test_that("testing to get the attribute for the health state", {
+  this_cost <- get_var_state(health_state("IT", 100, 0.4, 0, FALSE), "cost")
+  this_util <- get_var_state(health_state("IT", 100, 0.4, 0, FALSE), "utility")
   expect_identical(this_cost, 100)
   expect_identical(this_util, 0.4)
 })
 ##############################################################################
 context("testing to set the attribute for the health state")
-test_that("testing to set the attribute for the health state",  {
-  st <- health_state("IT", "cost_IT", "util_IT", FALSE)
+test_that("testing to set the attribute for the health state", {
+  st <- health_state("IT", "cost_IT", "util_IT", 0, FALSE)
   st <- set_var_state(st, "cost", 200)
   expect_identical(st$cost, 200)
 })
 ##############################################################################
 context("testing combining health states")
-test_that("testing combining health states",  {
-  a <- health_state("IT", 100, 0.4, FALSE)
-  b <- health_state("PT", 100, 0.4, FALSE)
+test_that("testing combining health states", {
+  a <- health_state("IT", 100, 0.4, 0, FALSE)
+  b <- health_state("PT", 100, 0.4, 0, FALSE)
   all_states <- combine_state(a, b)
-  expect_identical(c(all_states[1][[1]]$name,all_states[2][[1]]$name), c("IT", "PT"))
+  expect_identical(c(all_states[1][[1]]$name, all_states[2][[1]]$name), c("IT", "PT"))
 })
 ##############################################################################
 context("testing names of states")
-test_that("testing names of the variables in states",  {
-  well <-  health_state("well", cost = 0,utility = 1)
-  disabled <- health_state("disabled", cost = 100,utility = 1)
-  dead <- health_state("dead", cost = 0,utility = 0)
-  tmat <- rbind(c(1, 2,3), c(NA, 4,5),c(NA,NA,6))
-  colnames(tmat) <- rownames(tmat) <- c("well","disabled" ,"dead")
-  tm <- transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4,1))
-  health_states <- combine_state(well,disabled,dead)
-  expect_equal(check_names_states(health_states),TRUE)
+test_that("testing names of the variables in states", {
+  well <- health_state("well", cost = 0, utility = 1)
+  disabled <- health_state("disabled", cost = 100, utility = 1)
+  dead <- health_state("dead", cost = 0, utility = 0)
+  tmat <- rbind(c(1, 2, 3), c(NA, 4, 5), c(NA, NA, 6))
+  colnames(tmat) <- rownames(tmat) <- c("well", "disabled", "dead")
+  tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1))
+  health_states <- combine_state(well, disabled, dead)
+  expect_equal(check_names_states(health_states), TRUE)
 })
 
 ##############################################################################
 context("testing values of states")
-test_that("testing values of the variables in states",  {
-  well <-  health_state("well", cost = 0,utility = 1)
-  disabled <- health_state("disabled", cost = 100,utility = 1)
-  dead <- health_state("dead", cost = 0,utility = 0)
-  tmat <- rbind(c(1, 2,3), c(NA, 4,5),c(NA,NA,6))
-  colnames(tmat) <- rownames(tmat) <- c("well","disabled" ,"dead")
-  health_states <- combine_state(well,disabled,dead)
-  expect_equal(check_values_states(health_states),TRUE)
-  well <-  health_state("well", cost = "cost_A",utility = 1)
-  health_states <- combine_state(well,disabled,dead)
-  expect_equal(check_values_states(health_states),FALSE)
+test_that("testing values of the variables in states", {
+  well <- health_state("well", cost = 0, utility = 1)
+  disabled <- health_state("disabled", cost = 100, utility = 1)
+  dead <- health_state("dead", cost = 0, utility = 0)
+  tmat <- rbind(c(1, 2, 3), c(NA, 4, 5), c(NA, NA, 6))
+  colnames(tmat) <- rownames(tmat) <- c("well", "disabled", "dead")
+  health_states <- combine_state(well, disabled, dead)
+  expect_equal(check_values_states(health_states), TRUE)
+  well <- health_state("well", cost = "cost_A", utility = 1)
+  health_states <- combine_state(well, disabled, dead)
+  expect_equal(check_values_states(health_states), FALSE)
 })
 ##############################################################################
 
 context("testing evaluating and assigning values to health states")
-test_that("testing evaluating and assigning values to health states",  {
-  well <-  health_state("well", cost = "cost_A",utility = 1)
-  disabled <- health_state("disabled", cost ="100",utility = 1)
-  dead <- health_state("dead", cost = 0,utility = 0)
-  tmat <- rbind(c(1, 2,3), c(NA, 4,5),c(NA,NA,6))
-  colnames(tmat) <- rownames(tmat) <- c("well","disabled" ,"dead")
-  tm <- transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4,1))
-  health_states <- combine_state(well,disabled,dead)
-  param_list = define_parameters(cost_A = 100)
+test_that("testing evaluating and assigning values to health states", {
+  well <- health_state("well", cost = "cost_A", utility = 1)
+  disabled <- health_state("disabled", cost = "100", utility = 1)
+  dead <- health_state("dead", cost = 0, utility = 0)
+  tmat <- rbind(c(1, 2, 3), c(NA, 4, 5), c(NA, NA, 6))
+  colnames(tmat) <- rownames(tmat) <- c("well", "disabled", "dead")
+  tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1))
+  health_states <- combine_state(well, disabled, dead)
+  param_list <- define_parameters(cost_A = 100)
   assign_list <- assign_parameters(param_list)
-  states_assigned <- eval_assign_values_states(health_states,assign_list)
-  expect_equal(states_assigned[1][[1]]$cost,100)
+  states_assigned <- eval_assign_values_states(health_states, assign_list)
+  expect_equal(states_assigned[1][[1]]$cost, 100)
+})
+context("testing evaluating and assigning values to health states")
+test_that("testing evaluating and assigning values to health states", {
+  well <- health_state("well", cost = "cost_A", utility = 1)
+  disabled <- health_state("disabled", "cost_B", utility = 1)
+  dead <- health_state("dead", cost = "0", utility = 0)
+  tmat <- rbind(c(1, 2, 3), c(NA, 4, 5), c(NA, NA, 6))
+  colnames(tmat) <- rownames(tmat) <- c("well", "disabled", "dead")
+  tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1))
+  health_states <- combine_state(well, disabled, dead)
+
+  #example1 - direct assginment with no nested calculation
+  assign_list1 = c(cost_A = 100, cost_B =10)
+  states_assigned <- eval_assign_values_states(health_states, assign_list1)
+  expect_equal(states_assigned[1][[1]]$cost, 100)
+
+  #example2 - direct assginment with  nested calculation - cant do
+  assign_list2 <- c(a=10, cost_A = "a+100", cost_B =10)
+  expect_error( eval_assign_values_states(health_states, assign_list2))
+
+  #example3 - use assign parameters and define_parameters with  nested calculation
+  param_list <- define_parameters(a=10, cost_A= "a+100", cost_B =10)
+  assign_list <- assign_parameters(param_list)
+  states_assigned <- eval_assign_values_states(health_states, assign_list)
+  expect_equal(states_assigned[1][[1]]$cost, 110)
+
+  #example34 - direct assginment with  nested calculation but missing  a parameter- error
+  assign_list2= c("a=10", "cost_A= a+100")
+  expect_error( eval_assign_values_states(health_states, assign_list2))
+
+  #example5 - direct assginment with  no nested calculation but missing  a parameter- error
+  assign_list3= c("cost_A=100", "a=10")
+  expect_error( eval_assign_values_states(health_states, assign_list3))
+
+  #example6 - direct assginment with  no nested calculation but missing  a parameter- error
+  assign_list4= "cost_A=100"
+  expect_error( eval_assign_values_states(health_states, assign_list4))
+
+  #example7 - use assign_parameters and define_parameters with  n0 nested calculation but
+  #missing  a parameter- error
+  assign_list6 = assign_parameters(define_parameters(cost_A = 100))
+  expect_error( eval_assign_values_states(health_states, assign_list6))
+
 })
 
 # ##############################################################################
 context("testing defining a transition table")
-test_that("testing defining a transition table",  {
+test_that("testing defining a transition table", {
   tmat <- rbind(c(1, 2), c(3, 4))
   colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
   tt <- define_transition_table(tmat)
@@ -100,86 +144,90 @@ test_that("testing defining a transition table",  {
 ##############################################################################
 # ##############################################################################
 context("testing creating transition matrix")
-test_that("testing creating transition matrix",  {
+test_that("testing creating transition matrix", {
   tmat <- rbind(c(1, 2), c(3, 4))
   colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-  transmat <- transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0, 0.3))
+  transmat <- populate_transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0, 0.3))
   m <- matrix(c(0.2, 0.5, 0, 0.3), nrow = 2, byrow = T)
   expect_equal(transmat$trans_matrix, m, check.attributes = FALSE)
   expect_equal(transmat$name_states, c(1, 2))
   expect_equal(transmat$no_states, 2)
-  transmat <- transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0, 0.3), name_states = rownames(tmat))
+  transmat <- populate_transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0, 0.3), name_states = rownames(tmat))
   expect_equal(transmat$name_states, c("Healthy", "Dead"))
   tmat <- rbind(c(1, 2), c(NA, 3))
-  expect_error(transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0.5, 0.3)))
-  mat <- transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0.3))
+  colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
+  expect_error(populate_transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0.5, 0.3)))
+  mat <- populate_transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0.3))
   expect_equal(mat$trans_matrix, m, check.attributes = FALSE)
 })
 ##############################################################################
 # ##############################################################################
 context("testing evaluating and assigning values to transition matrix")
-test_that("testing evaluating and assigning values to transition matrix",  {
+test_that("testing evaluating and assigning values to transition matrix", {
   tmat <- rbind(c(1, 2), c(3, 4))
   colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-  tmat <- transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
+  tmat <- populate_transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
   param_list <- define_parameters(p1 = 0.2, p2 = 0.8, p3 = 0.5, p4 = 0.5)
   assigned_list <- assign_parameters(param_list)
-  tmat_assigned <- eval_assign_trans_prob(tmat,assigned_list)
+  tmat_assigned <- eval_assign_trans_prob(tmat, assigned_list)
   m <- matrix(c(0.2, 0.8, 0.5, 0.5), nrow = 2, byrow = T)
   expect_equal(tmat_assigned$trans_matrix, m, check.attributes = FALSE)
   expect_equal(tmat_assigned$name_states, c(1, 2))
   expect_equal(tmat_assigned$no_states, 2)
   tmat <- rbind(c(1, 2), c(3, 4))
-  tmat <- transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
-  param_list <- define_parameters(p1 = 0.4, a = 0.2, p2 = "a+p1",p3 = 0,p4 = 1)
+  colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
+  tmat <- populate_transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
+  param_list <- define_parameters(p1 = 0.4, a = 0.2, p2 = "a+p1", p3 = 0, p4 = 1)
   assigned_list <- assign_parameters(param_list)
-  tmat_assigned <- eval_assign_trans_prob(tmat,assigned_list)
+  tmat_assigned <- eval_assign_trans_prob(tmat, assigned_list)
   m <- matrix(c(0.4, 0.6, 0, 1), nrow = 2, byrow = T)
   expect_equal(tmat_assigned$trans_matrix, m, check.attributes = FALSE)
 })
 # ##############################################################################
 context("testing sum of transition probabilites")
-test_that("testing sum of transition probabilites",  {
+test_that("testing sum of transition probabilites", {
   tmat <- rbind(c(1, 2), c(3, 4))
   colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-  tmat <- transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
+  tmat <- populate_transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
   param_list <- define_parameters(p1 = 0.2, p2 = 0.8, p3 = 0.5, p4 = 0.5)
   assigned_list <- assign_parameters(param_list)
-  tmat_assigned <- eval_assign_trans_prob(tmat,assigned_list)
+  tmat_assigned <- eval_assign_trans_prob(tmat, assigned_list)
   m <- matrix(c(0.2, 0.8, 0.5, 0.5), nrow = 2, byrow = T)
   expect_equal(tmat_assigned$trans_matrix, m, check.attributes = FALSE)
   expect_equal(tmat_assigned$name_states, c(1, 2))
   expect_equal(tmat_assigned$no_states, 2)
   tmat <- rbind(c(1, 2), c(3, 4))
-  tmat <- transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
-  param_list <- define_parameters(p1 = 0.4, a = 0.2, p2 = "a+p1",p3 = 0,p4 = 1)
+  colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
+  tmat <- populate_transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
+
+  param_list <- define_parameters(p1 = 0.4, a = 0.2, p2 = "a+p1", p3 = 0, p4 = 1)
   assigned_list <- assign_parameters(param_list)
-  tmat_assigned <- eval_assign_trans_prob(tmat,assigned_list)
+  tmat_assigned <- eval_assign_trans_prob(tmat, assigned_list)
   m <- matrix(c(0.4, 0.6, 0, 1), nrow = 2, byrow = T)
   expect_equal(tmat_assigned$trans_matrix, m, check.attributes = FALSE)
 })
 # ##############################################################################
 context("testing creating the valus of cost and utility during transition")
-test_that("testing creating the valus of cost and utility during transition",  {
+test_that("testing creating the valus of cost and utility during transition", {
   tmat_cost <- rbind(c(NA, 1), c(NA, NA))
   colnames(tmat_cost) <- rownames(tmat_cost) <- c("Healthy", "Dead")
   trans_cost <- transition_cost_util(2, tmat_cost, list_values = c(500))
-  m <- matrix(c(0,500, 0, 0), ncol = 2, byrow = T)
+  m <- matrix(c(0, 500, 0, 0), ncol = 2, byrow = T)
   expect_equal(trans_cost$trans_matrix, m, check.attributes = FALSE)
   expect_equal(class(trans_cost), "transition_cost_util")
-  expect_error(transition_cost_util(2, tmat_cost, list_values = c(500,200)))
+  expect_error(transition_cost_util(2, tmat_cost, list_values = c(500, 200)))
   tmat_cost <- rbind(c(NA, 1), c(2, NA))
   expect_error(transition_cost_util(2, tmat_cost, list_values = c(200)))
 })
 
 # ##############################################################################
 context("testing creating strategy")
-test_that("testing creating strategyl",  {
+test_that("testing creating strategyl", {
   tmat <- rbind(c(1, 2), c(3, 4))
   colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-  tm <- transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
-  a <- health_state("Healthy", 1, 1, FALSE)
-  b <- health_state("Dead", 1, 0, TRUE)
+  tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
+  a <- health_state("Healthy", 1, 1, 0, FALSE)
+  b <- health_state("Dead", 1, 0, 0, TRUE)
   health_states <- combine_state(a, b)
   this_strategy <- strategy(tm, health_states, "intervention")
   expect_equal(class(this_strategy), "strategy")
@@ -187,16 +235,16 @@ test_that("testing creating strategyl",  {
   expect_equal(this_strategy$transition_matrix$trans_matrix, mm, check.attributes = FALSE)
   expect_equal(this_strategy$transition_matrix$name_states, c(1, 2))
   expect_equal(this_strategy$transition_matrix$no_states, 2)
-  expect_equal(this_strategy$name_strategy,  "intervention")
+  expect_equal(this_strategy$name_strategy, "intervention")
 })
 # ##############################################################################
 context("testing creating markov model")
-test_that("testing creating markov model",  {
+test_that("testing creating markov model", {
   tmat <- rbind(c(1, 2), c(3, 4))
   colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-  tm <- transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
-  a <- health_state("Healthy", 1, 1, FALSE)
-  b <- health_state("Dead", 1, 0, TRUE)
+  tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
+  a <- health_state("Healthy", 1, 1, 0,FALSE)
+  b <- health_state("Dead", 1, 0, 0, TRUE)
   health_states <- combine_state(a, b)
   this_strategy <- strategy(tm, health_states, "intervention")
   mm <- markov_model(this_strategy, 10, c(1, 0), c(0, 0), c(0, 0))
@@ -207,15 +255,46 @@ test_that("testing creating markov model",  {
 })
 # ##############################################################################
 context("testing assigning parameters")
-test_that("testing creating markov model",  {
-  param_list = define_parameters(cost_direct_med_A = 1701, cost_comm_care_A = 1055,
-  cost_health_A = "cost_direct_med_A+ cost_comm_care_A")
+test_that("testing creating markov model", {
+  param_list <- define_parameters(
+    cost_direct_med_A = 1701, cost_comm_care_A = 1055,
+    cost_health_A = "cost_direct_med_A + cost_comm_care_A"
+  )
   assigned_list <- assign_parameters(param_list)
   expect_equal(assigned_list$cost_health_A, 2756)
   expect_equal(assigned_list$cost_direct_med_A, 1701)
-  param_list = define_parameters(cycle = 1, age = 50, cost = "1-exp(-(age - cycle))")
+  param_list <- define_parameters(cycle = 1, age = 50, cost = "1-exp(-(age - cycle))")
   assigned_list <- assign_parameters(param_list)
   expect_equal(assigned_list$cost, 1)
-  param_list = define_parameters(dd = 1, ee = 2, ff = "dd + ee", cost = "dd +ff")
+  param_list <- define_parameters(dd = 1, ee = 2, ff = "dd + ee", cost = "dd +ff")
   assigned_list <- assign_parameters(param_list)
+
+  assign_list = c(cost_A = 100, cost_B =10)
+  assigned_list = assign_parameters(assign_list)
+  expect_equal(assigned_list$cost_A, 100)
+
+  assign_list <- c(a=10, cost_A = "a+100", cost_B =10)
+  assigned_list = assign_parameters(assign_list)
+  expect_equal(assigned_list$cost_A, 110)
+
+  param_list <- define_parameters(a=10, cost_A= "a+100", cost_B =10)
+  assigned_list = assign_parameters(assign_list)
+  expect_equal(assigned_list$cost_A, 110)
+
+  assign_list= c("a=10", "cost_A= a+100")
+  expect_error(assign_parameters(assign_list))
+
+  assign_list= c("cost_A=100", "a=10")
+  expect_error(assign_parameters(assign_list))
+
+  assign_list =define_parameters(c("cost_A=100", "a=10"))
+  expect_error(assign_parameters(assign_list))
+
+  assign_list =define_parameters(c(cost_A="a+100", a=10))
+  expect_error(assign_parameters(assign_list))
+
+  assign_list = define_parameters(a=10,cost_A="a+100")
+  assigned_list = assign_parameters(assign_list)
+  expect_equal(assigned_list$cost_A, 110)
+
 })

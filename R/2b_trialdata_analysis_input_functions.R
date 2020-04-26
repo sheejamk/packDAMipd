@@ -1,31 +1,37 @@
 #######################################################################
 # 1. Get the packages required
 #######################################################################
-#2 Get the trial data ready
-#2.1 Load the data
+# 2 Get the trial data ready
+# 2.1 Load the data
 
 #' Function to load the file containing trial data and return it
 #' @param file, name of the file in full
 #' @return trial data if success, else -1
 #' @examples
 #' load_trial_data(system.file("extdata", "trial_data.csv",
-#' package = "packDAMipd"))
+#'   package = "packDAMipd"
+#' ))
 #' @export
-load_trial_data <- function(file = NULL){
+load_trial_data <- function(file = NULL) {
   # Load trial data from file input or stored in package
   if (!is.null(file)) {
     if (IPDFileCheck::test_file_exist_read(file) == 0) {
-      if (get_extension_file(file) == "txt")
-        df_trial_data <- read.table(file = file, header  =  TRUE,  sep  =  "\t",  quote = "\"",
-                                    dec  = ",",  fill  =  TRUE,  na.strings  =  c(""), as.is = 1:4, stringsAsFactors = FALSE)
-      if (get_extension_file(file) == "csv")
-        df_trial_data <- read.csv(file = file, header  =  TRUE, stringsAsFactors = FALSE, fileEncoding = "latin1")
-      if (get_extension_file(file) == "dta")
+      if (get_extension_file(file) == "txt") {
+        df_trial_data <- read.table(
+          file = file, header = TRUE, sep = "\t", quote = "\"",
+          dec = ",", fill = TRUE, na.strings = c(""), as.is = 1:4, stringsAsFactors = FALSE
+        )
+      }
+      if (get_extension_file(file) == "csv") {
+        df_trial_data <- read.csv(file = file, header = TRUE, stringsAsFactors = FALSE, fileEncoding = "latin1")
+      }
+      if (get_extension_file(file) == "dta") {
         df_trial_data <- foreign::read.dta(file = file)
-    }else{
+      }
+    } else {
       stop("Error in reading given file")
     }
-  }else{
+  } else {
     df_trial_data <- trial_data
   }
   return(df_trial_data)
@@ -40,31 +46,37 @@ load_trial_data <- function(file = NULL){
 #' @return the name of the variable related to trial arm and the unique contents
 #' if success, else error
 #' @examples
-#' get_trial_arm_details(data.frame("Age" = c(21, 15),
-#' "arm" = c("control", "intervention")))
+#' get_trial_arm_details(data.frame(
+#'   "Age" = c(21, 15),
+#'   "arm" = c("control", "intervention")
+#' ))
 #' @export
-get_trial_arm_details  <-  function(trialdata) {
+get_trial_arm_details <- function(trialdata) {
   trialdata <- data.table::data.table(trialdata, stringsAsFactors = FALSE)
-  names  <-  colnames(trialdata)
-  related_words  <-  c("arm", "trial", "trialarm")
-  exists  <-  unlist(lapply(related_words,
-                            IPDFileCheck::check_colno_pattern_colname, names))
-  ind  <-  which(exists  ==  TRUE)
-  colnumbers  <-  unlist(lapply(related_words[ind],
-                                IPDFileCheck::get_colno_pattern_colname, names))
-  if (sum(colnumbers > 0)  ==  1) {
-    index  <-  which(colnumbers > 0)
-    this_name  <-  names[colnumbers[index]]
+  names <- colnames(trialdata)
+  related_words <- c("arm", "trial", "trialarm")
+  exists <- unlist(lapply(
+    related_words,
+    IPDFileCheck::check_colno_pattern_colname, names
+  ))
+  ind <- which(exists == TRUE)
+  colnumbers <- unlist(lapply(
+    related_words[ind],
+    IPDFileCheck::get_colno_pattern_colname, names
+  ))
+  if (sum(colnumbers > 0) == 1) {
+    index <- which(colnumbers > 0)
+    this_name <- names[colnumbers[index]]
   }
   if (sum(colnumbers > 0) > 1) {
-    index  <-  which(colnumbers > 0)[1]
-    this_name  <-  names[colnumbers[index]]
+    index <- which(colnumbers > 0)[1]
+    this_name <- names[colnumbers[index]]
   }
   if (sum(colnumbers > 0) < 1) {
     stop("no matching columns found")
   }
-  codes  <-  unique(trialdata[[this_name]])
-  result  <-  list(name = this_name, codes = codes)
+  codes <- unique(trialdata[[this_name]])
+  result <- list(name = this_name, codes = codes)
   return(result)
 }
 #######################################################################
@@ -77,27 +89,31 @@ get_trial_arm_details  <-  function(trialdata) {
 #' @importFrom IPDFileCheck  check_colno_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
-get_gender_details  <-  function(trialdata) {
-  names  <-  colnames(trialdata)
-  related_words  <-  c("sex", "gender", "female", "male","females", "males")
-  exists  <-  unlist(lapply(related_words,
-                            IPDFileCheck::check_colno_pattern_colname, names))
-  ind  <-  which(exists  ==  TRUE)
-  colnumbers  <-  unlist(lapply(related_words[ind],
-                                IPDFileCheck::get_colno_pattern_colname, names))
-  if (sum(colnumbers > 0)  ==  1) {
-    index  <-  which(colnumbers > 0)
-    this_name  <-  names[colnumbers[index]]
+get_gender_details <- function(trialdata) {
+  names <- colnames(trialdata)
+  related_words <- c("sex", "gender", "female", "male", "females", "males")
+  exists <- unlist(lapply(
+    related_words,
+    IPDFileCheck::check_colno_pattern_colname, names
+  ))
+  ind <- which(exists == TRUE)
+  colnumbers <- unlist(lapply(
+    related_words[ind],
+    IPDFileCheck::get_colno_pattern_colname, names
+  ))
+  if (sum(colnumbers > 0) == 1) {
+    index <- which(colnumbers > 0)
+    this_name <- names[colnumbers[index]]
   }
   if (sum(colnumbers > 0) > 1) {
-    index  <-  which(colnumbers > 0)[1]
-    this_name  <-  names[colnumbers[index]]
+    index <- which(colnumbers > 0)[1]
+    this_name <- names[colnumbers[index]]
   }
   if (sum(colnumbers > 0) < 1) {
     stop("no matching columns found")
   }
-  codes  <-  unique(trialdata[[this_name]])
-  result  <-  list(name = this_name, codes = codes)
+  codes <- unique(trialdata[[this_name]])
+  result <- list(name = this_name, codes = codes)
   return(result)
 }
 #######################################################################
@@ -111,27 +127,31 @@ get_gender_details  <-  function(trialdata) {
 #' @importFrom IPDFileCheck  check_colno_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
-get_age_details  <-  function(trialdata) {
-  names  <-  colnames(trialdata)
-  related_words  <-  c("age", "dob", "yob", "date of birth", "year of birth", "birth year")
-  exists  <-  unlist(lapply(related_words, IPDFileCheck::check_colno_pattern_colname,
-                            names))
-  ind  <-  which(exists  ==  TRUE)
-  colnumbers  <-  unlist(lapply(related_words[ind], IPDFileCheck::get_colno_pattern_colname,
-                                names))
-  if (sum(colnumbers > 0)  ==  1) {
-    index  <-  which(colnumbers > 0)
-    this_name  <-  names[colnumbers[index]]
+get_age_details <- function(trialdata) {
+  names <- colnames(trialdata)
+  related_words <- c("age", "dob", "yob", "date of birth", "year of birth", "birth year")
+  exists <- unlist(lapply(
+    related_words, IPDFileCheck::check_colno_pattern_colname,
+    names
+  ))
+  ind <- which(exists == TRUE)
+  colnumbers <- unlist(lapply(
+    related_words[ind], IPDFileCheck::get_colno_pattern_colname,
+    names
+  ))
+  if (sum(colnumbers > 0) == 1) {
+    index <- which(colnumbers > 0)
+    this_name <- names[colnumbers[index]]
   }
   if (sum(colnumbers > 0) > 1) {
-    index  <-  which(colnumbers > 0)[1]
-    this_name  <-  names[colnumbers[index]]
+    index <- which(colnumbers > 0)[1]
+    this_name <- names[colnumbers[index]]
   }
   if (sum(colnumbers > 0) < 1) {
     stop("no matching columns found")
   }
-  codes  <-  unique(trialdata[[this_name]])
-  result  <-  list(name = this_name, codes = codes)
+  codes <- unique(trialdata[[this_name]])
+  result <- list(name = this_name, codes = codes)
   return(result)
 }
 #######################################################################
@@ -148,11 +168,15 @@ get_age_details  <-  function(trialdata) {
 get_timepoint_details <- function(trialdata) {
   names <- colnames(trialdata)
   related_words <- c("time point", "times", "time", "timepoint")
-  exists <- unlist(lapply(related_words, IPDFileCheck::check_colno_pattern_colname,
-                          names))
+  exists <- unlist(lapply(
+    related_words, IPDFileCheck::check_colno_pattern_colname,
+    names
+  ))
   ind <- which(exists == TRUE)
-  colnumbers <- unlist(lapply(related_words[ind], IPDFileCheck::get_colno_pattern_colname,
-                              names))
+  colnumbers <- unlist(lapply(
+    related_words[ind], IPDFileCheck::get_colno_pattern_colname,
+    names
+  ))
   if (sum(colnumbers > 0) == 1) {
     index <- which(colnumbers > 0)
     this_name <- names[colnumbers[index]]
@@ -181,15 +205,19 @@ get_timepoint_details <- function(trialdata) {
 #' @return the name of the variable related to health outcome (any) and
 #' the unique contents if success, else error
 #' @examples
-#' get_outcome_details(data.frame("qol.MO"=c(1,2), "qol.PD"=c(1,2), "qol.AD"= c(1,2)),
-#' "eq5d", "qol",TRUE)
+#' get_outcome_details(
+#'   data.frame("qol.MO" = c(1, 2), "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)),
+#'   "eq5d", "qol", TRUE
+#' )
 #' @export
-get_outcome_details <- function(trialdata, name, related_words, multiple=FALSE) {
+get_outcome_details <- function(trialdata, name, related_words, multiple = FALSE) {
   names <- colnames(trialdata)
   exists <- unlist(lapply(related_words, IPDFileCheck::check_colno_pattern_colname, names))
   ind <- which(exists == TRUE)
-  colnumbers <- unlist(lapply(related_words[ind], IPDFileCheck::get_colno_pattern_colname,
-                              names))
+  colnumbers <- unlist(lapply(
+    related_words[ind], IPDFileCheck::get_colno_pattern_colname,
+    names
+  ))
   if (sum(colnumbers > 0) == 1) {
     index <- which(colnumbers > 0)
     this_name <- names[colnumbers[index]]
@@ -210,7 +238,7 @@ get_outcome_details <- function(trialdata, name, related_words, multiple=FALSE) 
       }
       unlist_all <- unlist(all.codes)
       codes <- sort(unique(unlist_all))
-    }else{
+    } else {
       index <- which(colnumbers > 0)[1]
       this_name <- names[colnumbers[index]]
       codes <- sort(unique(trialdata[[this_name]]))
@@ -228,35 +256,44 @@ get_outcome_details <- function(trialdata, name, related_words, multiple=FALSE) 
 #' @param trialdata, data containing individual level trial data
 #' @return the name of the variable related to EQ5D and the unique contents if success, else error
 #' @examples
-#' get_eq5d_details(data.frame("MO"= c(1,2), "SC"= c(1,2), "UA"= c(1,2), "PD"= c(1,2), "AD"= c(1,2)))
+#' get_eq5d_details(data.frame("MO" = c(1, 2), "SC" = c(1, 2), "UA" = c(1, 2),
+#' "PD" = c(1, 2), "AD" = c(1, 2)))
 #' @importFrom IPDFileCheck  check_colno_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
 get_eq5d_details <- function(trialdata) {
   names <- colnames(trialdata)
-  words_set = structure(list(set1 = c("mobility", "self care", "usual activity",
-                                     "pain depression", "anxiety"),
-                             set2 = c("mobility", "self_care", "usual_activity",
-                                      "pain_depression", "anxiety"),
-                             set3 = c("mobility", "selfcare", "usualactivity",
-                                      "paindepression", "anxiety"),
-                             set4 = c("qol"), set5 = c("eq5d"),
-                             set6 = c("MO", "SC", "UA", "PD", "AD"),
-                             set7 = c("mobility", "selfcare", "usualact", "pain", "anxiety"),
-                             set8 = c("mobility", "selfcare", "usualact", "paindep", "anxiety"),
-                             set9 = c("mob", "selfcare", "usualact", "paindep", "anxiety"),
-                             set10 = c("mob", "selfcare", "usualact", "pain", "anxiety"),
-                             set11 = c("mob", "selfcare", "usualact", "paindep", "anx"),
-                             set12 = c("mob", "selfcare", "usualact", "pain", "anx")))
-  i = 1
+  words_set <- structure(list(
+    set1 = c(
+      "mobility", "self care", "usual activity",
+      "pain depression", "anxiety"
+    ),
+    set2 = c(
+      "mobility", "self_care", "usual_activity",
+      "pain_depression", "anxiety"
+    ),
+    set3 = c(
+      "mobility", "selfcare", "usualactivity",
+      "paindepression", "anxiety"
+    ),
+    set4 = c("qol"), set5 = c("eq5d"),
+    set6 = c("MO", "SC", "UA", "PD", "AD"),
+    set7 = c("mobility", "selfcare", "usualact", "pain", "anxiety"),
+    set8 = c("mobility", "selfcare", "usualact", "paindep", "anxiety"),
+    set9 = c("mob", "selfcare", "usualact", "paindep", "anxiety"),
+    set10 = c("mob", "selfcare", "usualact", "pain", "anxiety"),
+    set11 = c("mob", "selfcare", "usualact", "paindep", "anx"),
+    set12 = c("mob", "selfcare", "usualact", "pain", "anx")
+  ))
+  i <- 1
   while (i <= length(words_set)) {
     this <- unlist(words_set[i])
-    result <- unlist(lapply(this, IPDFileCheck::check_colno_pattern_colname,names))
+    result <- unlist(lapply(this, IPDFileCheck::check_colno_pattern_colname, names))
     if (any(result == FALSE)) {
-      i = i + 1
-    }else{
-      colnumbers = unlist(lapply(this, IPDFileCheck::get_colno_pattern_colname,names))
-      i = length(words_set) + 1
+      i <- i + 1
+    } else {
+      colnumbers <- unlist(lapply(this, IPDFileCheck::get_colno_pattern_colname, names))
+      i <- length(words_set) + 1
     }
   }
   if (sum(colnumbers > 0) != 5) {
@@ -266,9 +303,9 @@ get_eq5d_details <- function(trialdata) {
   this_name <- names[colnumbers[index]]
   codes <- 0
   for (j in seq_len(length(this_name))) {
-      this_ind <- this_name[j]
-      this_codes <- (unique(trialdata[[this_ind]]))
-      codes <- append(codes, this_codes)
+    this_ind <- this_name[j]
+    this_codes <- (unique(trialdata[[this_ind]]))
+    codes <- append(codes, this_codes)
   }
   codes <- (unique(codes[-1]))
   result <- list(name = this_name, codes = codes)
@@ -284,26 +321,27 @@ get_eq5d_details <- function(trialdata) {
 #' @param code, coded values
 #' @param nrcode, code for non response
 #' @return data frame with all the above information
-#' @examples get_colnames_codedvalues("arm", "pat_trial_arm",c("Y", "N"))
+#' @examples
+#' get_colnames_codedvalues("arm", "pat_trial_arm", c("Y", "N"))
 #' @export
-get_colnames_codedvalues <- function(variable, name, code, nrcode=NA) {
+get_colnames_codedvalues <- function(variable, name, code, nrcode = NA) {
   if (!is.null(name)) {
     colname <- name
     nrcode <- nrcode
     if (is.null(code)) {
       df <- data.frame(c(variable, colname, nrcode), stringsAsFactors = FALSE)
       the_names <- (c("variable", "colname", "nonrescode"))
-    }else{
+    } else {
       coded_values <- code
       lizt <- seq(1, length(coded_values))
-      coded_value_names  <-  sapply(lizt, paste0, "_coded_value")
+      coded_value_names <- sapply(lizt, paste0, "_coded_value")
       df <- data.frame(c(variable, colname, coded_values, nrcode), stringsAsFactors = FALSE)
       the_names <- (c("variable", "colname", unlist(coded_value_names), "nonrescode"))
     }
     rownames(df) <- the_names
-    colnames(df)  <-  variable
+    colnames(df) <- variable
     return((df))
-  }else{
+  } else {
     stop("column name or coded values may be missing")
   }
 }
@@ -311,12 +349,14 @@ get_colnames_codedvalues <- function(variable, name, code, nrcode=NA) {
 #' Function to return treatment arm
 #' @param arm the arm of the trial
 #' @return 0, if success -1, if failure
-#' @examples check_treatment_arm("control")
+#' @examples
+#' check_treatment_arm("control")
 #' @export
-check_treatment_arm = function(arm) {
-  allcaps = toupper(arm)
-  if (allcaps == "CONTROL" || allcaps == "INTERVENTION")
+check_treatment_arm <- function(arm) {
+  allcaps <- toupper(arm)
+  if (allcaps == "CONTROL" || allcaps == "INTERVENTION") {
     return(0)
-  else
+  } else {
     stop("Error specifying the treatment arm")
+  }
 }

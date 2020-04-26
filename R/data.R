@@ -48,4 +48,3 @@
 #' @format A 41 by 3 dataframe
 #' @source  created on Jan 15, 2020
 "adl_scoring"
-

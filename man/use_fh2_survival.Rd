@@ -29,5 +29,6 @@ Get the parameter values using the survival analysis using FH2 method
 }
 \examples{
 data_for_survival <- survival::aml
-surv_estimated_aml <-use_fh2_survival("status", data_for_survival, "x", covariates_list= NA, "time")
+surv_estimated_aml <- use_fh2_survival("status", data_for_survival, "x",
+covariates_list = NA, "time")
 }
