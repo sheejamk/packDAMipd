@@ -20,8 +20,13 @@ get_parameter_read(parameter, paramfile, strategycol = NA,
 the paramvalue
 }
 \description{
-the file should have these column names (atleast)
-Parameter,	Description,	Strategy,	Value
+Get the parameter values from reading a file
+}
+\details{
+This function read the parameter from a file given that
+the file has these column names (atleast) Parameter and Value
+Srategy col and name are optional. Check if the data file contains column names parameter a
+value and get the results.
 }
 \examples{
 a <- get_parameter_read("cost_IT", paramfile = system.file("extdata", "table_param.csv",

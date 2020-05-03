@@ -30,6 +30,11 @@ the results of the regression analysis
 ##########################################################################################################
 Get the parameter values using the survival analysis
 }
+\details{
+This function helps to get the parameter values after the survival analysis
+Takes into account many diffent methods like KM.FH, Cox proportinal etc.
+and then calls appropriate functions to do the survival analysis
+}
 \examples{
 data_for_survival <- survival::aml
 surv_estimated_aml <- use_survival_analysis("status", data_for_survival,

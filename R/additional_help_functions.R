@@ -652,7 +652,7 @@ form_expression_lm <- function(param_to_be_estimated, indep_var, covariates, int
       i <- i + 1
     }
     fmla <- paste("lm(", param_to_be_estimated, " ~ ", expre, " + ", indep_var, ", data = dataset )", sep = "")
-    short_fmla <- paste(" ~ ", expre, " + ", indep_var, ")", sep = "")
+    short_fmla <- paste(" ~ ", expre, " + ", indep_var, sep = "")
   }
   expressions <- list(formula = fmla, short_formula = short_fmla)
   return(expressions)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/2a_parameter_estimation_functions.R
 \name{use_linear_regression}
 \alias{use_linear_regression}
-\title{##########################################################################################################
+\title{#' ##########################################################################################################
 Get the parameter values using the linear regression}
 \usage{
 use_linear_regression(param_to_be_estimated, dataset, indep_var,
@@ -24,13 +24,32 @@ false by default}
 the results of the regression analysis
 }
 \description{
-##########################################################################################################
+#' ##########################################################################################################
 Get the parameter values using the linear regression
 }
+\details{
+This function returns the results and plots after doing linear regression
+Requires param to be estimated, dataset, independent varaibles and informaiton on
+covariates, and interaction variables if there are
+Uses form_expression_lm to create the expression as per R standard for e.g lm(y ~ x )
+Returns the fit result,s summary results as returned by summary(), confidence interval for
+fit coefficients (ci_coeff), variance covariance matrix, cholesky decompostion matrix,
+results from correlation test, plot of diagnostic tests and model fit  assumptions, plot of model prediction
+diagnostic include AIC, R2, and BIC. The results of the prediction ie predicted values
+when each of covariate is fixed will be returned in prediction matrix
+predicted values will provide the mean value of param_to_to_estimated as calualted by the
+linear regression formula.
+ref:https://www.statmethods.net/stats/regression.html
+}
 \examples{
-mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-results_lm <- use_linear_regression("gre",
-  dataset = mydata,
-  indep_var = "gpa", covariates = NA, interaction = FALSE
-)
+results_lm <- use_linear_regression("dist",
+                                     dataset = cars,
+                                     indep_var = "speed", covariates = NA, interaction = FALSE
+ )
+ library(car)
+ results_lm <- use_linear_regression("mpg",
+                                     dataset = mtcars,
+                                     indep_var = "disp", covariates = c("hp", "wt","drat"),
+                                     interaction = FALSE
+ )
 }

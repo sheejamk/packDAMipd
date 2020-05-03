@@ -4,13 +4,15 @@
 \alias{get_parameter_def_distribution}
 \title{Get the definition of given parameter distribution defined in a file}
 \usage{
-get_parameter_def_distribution(parameter, paramfile, strategycol = NA,
-  strategyname = NA)
+get_parameter_def_distribution(parameter, paramfile, colnames_paramdistr,
+  strategycol = NA, strategyname = NA)
 }
 \arguments{
 \item{parameter}{parameter of interest}
 
 \item{paramfile}{data file to be provided}
+
+\item{colnames_paramdistr}{list of column names for the parameters that define the distribution}
 
 \item{strategycol}{treatment strategy column name}
 
@@ -20,12 +22,18 @@ get_parameter_def_distribution(parameter, paramfile, strategycol = NA,
 the definition of parameter from the given distribution
 }
 \description{
-the file should have these column names (atleast)
-Parameter,	Description,	Strategy,	Value,	Distribution,	Param1_name, Param1_value,
-Param2_name,	Param2_value
+Get the definition of given parameter distribution defined in a file
+}
+\details{
+This function reads the parameter distribution from a file and return the parameter obtained
+This assumes that the file contains paramter, distribution
+colnames for paramater values for the distribution are passed on to the function
+assumes the name of each parameter and value are given in the consecutive columns
+Once the expression is created using the paramters given in the file, t gets checked for correctnemss of
+specifying the distribution in R context using the function check_estimate_substitute_proper_params
+and then evaluated.
 }
 \examples{
-a <- get_parameter_def_distribution("rr", paramfile = system.file("extdata", "table_param.csv",
-  package = "packDAMipd"
-))
+paramfile = system.file("extdata", "table_param.csv",package = "packDAMipd")
+a <- get_parameter_def_distribution("rr", paramfile, c("Param1_name", "Param1_value"))
 }

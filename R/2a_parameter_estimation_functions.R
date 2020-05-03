@@ -6,6 +6,8 @@
 #' @examples
 #' a <- get_parameter_direct("cost_IT", param_value = 100)
 #' @export
+#' @details
+#' Basic function to assign a parameter directly
 get_parameter_direct <- function(parameter, param_value) {
   if (!is.null(param_value)) {
     assigned_value <- assign(parameter, param_value)
@@ -25,50 +27,70 @@ get_parameter_direct <- function(parameter, param_value) {
 #' a <- get_parameter_read("cost_IT", paramfile = system.file("extdata", "table_param.csv",
 #'   package = "packDAMipd"
 #' ))
-#' @description  the file should have these column names (atleast)
-#' Parameter,	Description,	Strategy,	Value
 #' @export
+#' @details
+#' This function read the parameter from a file given that
+#' the file has these column names (atleast) Parameter and Value
+#' Srategy col and name are optional. Check if the data file contains column names parameter a
+#' value and get the results.
 get_parameter_read <- function(parameter, paramfile, strategycol = NA, strategyname = NA) {
   if (is.null(paramfile)) {
     stop("Need to provide a parameter file to lookup")
   }
   if (IPDFileCheck::test_file_exist_read(paramfile) != 0) {
-    stop("File doesnt exists or notable to access")
+    stop("File doesnt exist or not able to access")
   }
   dataset <- data.frame(read.csv(paramfile, header = TRUE, sep = ",", stringsAsFactors = FALSE))
   result <- IPDFileCheck::check_column_exists("value", dataset)
   if (result != 0) {
-    stop(paste("Parameter file should contain value in column name", sep = ""))
+    stop(paste("Parameter file should contain the term value in column name", sep = ""))
   }
+  value_colno = IPDFileCheck::get_columnno_fornames(dataset,"value")
+  result <- IPDFileCheck::check_column_exists("parameter", dataset)
+  if (result != 0) {
+    stop(paste("Parameter file should contain the term parameter in column name", sep = ""))
+  }
+  param_colno = IPDFileCheck::get_columnno_fornames(dataset,"parameter")
+
   if (!is.na(strategycol)) {
     if (IPDFileCheck::check_column_exists(strategycol, dataset) == 0) {
       dataset <- dataset[dataset[[strategycol]] == strategyname, ]
-      answer <- dataset[dataset$Parameter == parameter, ]$Value
+      answer <- dataset[dataset[[param_colno ]]== parameter, ][[value_colno]]
     } else {
       stop(paste("Parameter file should contain strategy in column name", sep = ""))
     }
   } else {
-    answer <- dataset[dataset$Parameter == parameter, ]$Value
+    answer <- dataset[dataset[[param_colno ]]== parameter, ][[value_colno]]
     if (is.na(answer)) {
       stop("Error- Parameter value is NA - Did you use the wrong function
               to get the parameter?")
     }
   }
+  answer <- unlist(answer)
   return(answer)
 }
 #######################################################################
-#' Get the parameter values from reading a file
+#' Get the mortality rate  values from reading a file
 #' @param paramfile  parameter file to get the mortality eg.national life table data
 #' @param age age to get the age specific data
+#' @param mortality_colname column name with the mortality rates if it is not gender specific
 #' @param gender gender details to get the gender specific mortality data
 #' @return the paramvalue
 #' @examples
 #' paramfile <- system.file("extdata", "LifeTable_USA_Mx_2015.csv",
 #'   package = "packDAMipd"
 #' )
-#' a <- get_mortality_from_file(paramfile, age = 10, gender = NULL)
+#' a <- get_mortality_from_file(paramfile, age = 10, mortality_colname = "total", gender = NULL)
 #' @export
-get_mortality_from_file <- function(paramfile, age, gender = NULL) {
+#' @details
+#' Provides the mortality rates as age and gender dependent
+#' Assumes the data contains for a single year and the age moratlaity rate once it extracted
+#' per gender will retrieve single value
+#' Age column can consists of range of values, a particular value
+#' also assumes that the mortality rate is listed under the gender column
+#' for gender specific values, unless the column name is passed on to the function
+#' (default is NULL)
+get_mortality_from_file <- function(paramfile, age, mortality_colname = NULL, gender = NULL) {
   if (is.null(paramfile)) {
     stop("Need to provide a parameter file to lookup")
   }
@@ -107,11 +129,19 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL) {
     stop("Error - Row corresponding to the specific age could not be found")
   }
   if (is.null(gender)) {
-    total_columnno <- IPDFileCheck::get_colno_pattern_colname("total", colnames(dataset))
-    mortality <- dataset[[total_columnno]][this_row]
+    result <- IPDFileCheck::check_column_exists(mortality_colname, dataset)
+    if (result != 0) {
+      stop("Expecting the life tables to contain given column name for mortality rate")
+    }
+    mortality_columnno <- IPDFileCheck::get_columnno_fornames(dataset, mortality_colname)
+    mortality <- dataset[[mortality_columnno]][this_row]
   } else {
-    sex_columnno <- IPDFileCheck::get_columnno_fornames(dataset, gender)
-    mortality <- dataset[[sex_columnno]][this_row]
+    result <- IPDFileCheck::check_column_exists(gender, dataset)
+    if (result != 0) {
+      stop("Expecting the life tables to contain given column with gender name for mortality rate")
+    }
+    mortality_columnno <- IPDFileCheck::get_columnno_fornames(dataset, gender)
+    mortality <- dataset[[mortality_columnno]][this_row]
   }
   return(mortality)
 }
@@ -120,18 +150,23 @@ get_mortality_from_file <- function(paramfile, age, gender = NULL) {
 #' Get the definition of given parameter distribution defined in a file
 #' @param parameter  parameter of interest
 #' @param paramfile data file to be provided
+#' @param colnames_paramdistr list of column names for the parameters that define the distribution
 #' @param strategycol treatment strategy column name
 #' @param strategyname treatment strategy name in the column strategycol
 #' @return the definition of parameter from the given distribution
-#' @description  the file should have these column names (atleast)
-#' Parameter,	Description,	Strategy,	Value,	Distribution,	Param1_name, Param1_value,
-#' Param2_name,	Param2_value
 #' @examples
-#' a <- get_parameter_def_distribution("rr", paramfile = system.file("extdata", "table_param.csv",
-#'   package = "packDAMipd"
-#' ))
+#' paramfile = system.file("extdata", "table_param.csv",package = "packDAMipd")
+#' a <- get_parameter_def_distribution("rr", paramfile, c("Param1_name", "Param1_value"))
 #' @export
-get_parameter_def_distribution <- function(parameter, paramfile, strategycol = NA,
+#' @details
+#' This function reads the parameter distribution from a file and return the parameter obtained
+#' This assumes that the file contains paramter, distribution
+#' colnames for paramater values for the distribution are passed on to the function
+#' assumes the name of each parameter and value are given in the consecutive columns
+#' Once the expression is created using the paramters given in the file, t gets checked for correctnemss of
+#' specifying the distribution in R context using the function check_estimate_substitute_proper_params
+#' and then evaluated.
+get_parameter_def_distribution <- function(parameter, paramfile, colnames_paramdistr, strategycol = NA,
                                            strategyname = NA) {
   if (is.null(paramfile)) {
     stop("Need to provide a parameter file to lookup")
@@ -142,33 +177,53 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
       dataset <- dataset[dataset[[strategycol]] == strategyname, ]
     }
   }
-  result <- IPDFileCheck::check_column_exists("Distribution", dataset)
+  result <- IPDFileCheck::check_column_exists("parameter", dataset)
+  if (result != 0) {
+    stop(paste("Parameter file should contain the term parameter in column name", sep = ""))
+  }
+  param_colno = IPDFileCheck::get_columnno_fornames(dataset,"parameter")
+
+  result <- IPDFileCheck::check_column_exists("distribution", dataset)
   if (result != 0) {
     stop(paste("Parameter file should contain distribution in column name", sep = ""))
   }
-  if (is.na(dataset[dataset$Parameter == parameter, ]$Distribution)) {
+  distr_colno = IPDFileCheck::get_columnno_fornames(dataset,"distribution")
+
+  if (is.na(dataset[dataset[[param_colno]] == parameter, ][[distr_colno]])) {
     stop("This parameter may not be estimated from a distribution- use get_parameter_read
          instead")
   }
-  param_distribution <- c("Param1_name", "Param1_value")
-  result <- unlist(lapply(param_distribution, IPDFileCheck::check_column_exists, dataset))
-  if (sum(result) != 0) {
-    stop(paste("Parameter file should contain parameters for the distribtution in
-               column name", sep = ""))
-  }
-  this_param <- dataset[dataset$Parameter == parameter, ]$Parameter
-  this_distr_name <- dataset[dataset$Parameter == parameter, ]$Distribution
-  param1 <- dataset[dataset$Parameter == parameter, ]$Param1_name
-  param1_value <- dataset[dataset$Parameter == parameter, ]$Param1_value
-  if (!is.na(dataset[dataset$Parameter == parameter, ]$Param2_name)) {
-    param2 <- dataset[dataset$Parameter == parameter, ]$Param2_name
-    param2_value <- dataset[dataset$Parameter == parameter, ]$Param2_value
-    expression_created <- paste(this_distr_name, "(", param1, " = ", param1_value, ",",
-      param2, " = ", param2_value, ")",
-      sep = ""
-    )
-  } else {
-    expression_created <- paste(this_distr_name, "(", param1, " = ", param1_value, ")", sep = "")
+  if(is.null(colnames_paramdistr) | sum(is.na(colnames_paramdistr)!=0)){
+    stop("Column names for the parameters that define the distributions need not be null or NA")
+  }else{
+    result <- unlist(lapply(colnames_paramdistr, IPDFileCheck::check_column_exists, dataset))
+    if (sum(result) != 0) {
+      stop("Parameter file should contain parameters for the distribtution in
+                 column name")
+    }
+    this_param <- dataset[dataset[param_colno] == parameter, ][[param_colno]]
+    this_distr_name <- dataset[dataset[param_colno]  == parameter, ][[distr_colno]]
+    parameter_names = list()
+    parameter_values = list()
+    expression_created = paste(this_distr_name, "(", sep="")
+    i = 1
+    while (i <= length(colnames_paramdistr)){
+      if(grep("name",colnames_paramdistr[i]) ==1){
+        param1 <- dataset[dataset[param_colno] == parameter, ][[colnames_paramdistr[i]]]
+        param1_value <- dataset[dataset[param_colno] == parameter, ][[colnames_paramdistr[i+1]]]
+        if(!is.numeric(param1_value)){
+          stop("Parameter values should be numeric for evaulation")
+        }
+        if(i >= length(colnames_paramdistr)/2){
+          expression_created <- paste(expression_created, param1, " = ", param1_value, ")", sep = "")
+        }else{
+          expression_created <- paste(expression_created, param1, " = ", param1_value, ", ", sep = "")
+        }
+      }else{
+        stop("Column name for parameter should contain the keyword \"name\" ")
+      }
+      i = i+2
+    }
   }
   expression_recreated <- check_estimate_substitute_proper_params(expression_created)
   param_with_expression <- paste(this_param, " = ", expression_recreated, sep = "")
@@ -203,17 +258,26 @@ get_parameter_def_distribution <- function(parameter, paramfile, strategycol = N
 #' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 #' results_logit <- get_parameter_estimated_regression("admit", mydata,
 #'   "logistic regression", "gre", NA, "binomial", c("gpa", "rank"),
-#'   interaction = FALSE
+#'   interaction = TRUE
 #' )
 #' @export
+#' @details
+#' This function is the top in the layer of functions used for regression analysis
+#' Thus it contains many parameters to be passed on
+#' The required ones are parameter to be estimated, data that contains the observation, the method
+#' of regression to be used, the independent variable and the information for the distribution and method.
+#' if the data is given as a file name. it will load the data in that file
+#' Then it calls the approprite functions depending on the regression method that specified
+#' The methods that are considered : Survival analysis, linear regression, logistic regression,
+#' generalised linear model, linear multilevel or mixed model, and seemingly unrelated regression
 get_parameter_estimated_regression <- function(param_to_be_estimated, data, method,
                                                indep_var, info_get_method, info_distribution,
-                                               covariates = NA, timevar_survival = NA, interaction = FALSE, fix_eff = NA,
-                                               fix_eff_interact_vars = NA, random_intercept_vars = NA, nested_intercept_vars_pairs = NA,
-                                               cross_intercept_vars = NA, uncorrel_slope_intercept_pairs = NA, random_slope_intercept_pairs = NA,
-                                               naaction = "stats::na.omit",
-                                               param2_to_be_estimated = NA, covariates2 = NA, interaction2 = FALSE,
-                                               link = NA) {
+                                               covariates = NA, timevar_survival = NA, interaction = FALSE,
+                                               fix_eff = NA,fix_eff_interact_vars = NA, random_intercept_vars = NA,
+                                               nested_intercept_vars_pairs = NA, cross_intercept_vars = NA,
+                                               uncorrel_slope_intercept_pairs = NA, random_slope_intercept_pairs = NA,
+                                               naaction = "stats::na.omit", param2_to_be_estimated = NA,
+                                               covariates2 = NA, interaction2 = FALSE, link = NA) {
   if (is.null(data)) {
     stop("Need to provide a data set or file to lookup the data")
   }
@@ -247,34 +311,19 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
     covariates_list <- NA
   }
   caps_method <- toupper(method)
-  if (caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS") {
-    results <- use_survival_analysis(
-      param_to_be_estimated, dataset, indep_var, info_get_method,
-      info_distribution, covariates_list, timevar_survival
-    )
-  }
-
   if (caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR") {
     results <- use_linear_regression(param_to_be_estimated, data, indep_var, covariates, interaction)
   }
-
-  if (caps_method == "GENERALISED LINEAR MODEL" | caps_method == "GENERALISED_LINEAR_MODEL" | caps_method == "GLM") {
-    results <- use_generalised_linear_model(param_to_be_estimated, dataset, indep_var,
-      family = info_distribution,
-      covariates, interaction, naaction, link
-    )
-  }
-
   if (caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC") {
     results <- use_generalised_linear_model(param_to_be_estimated, dataset, indep_var,
-      family = "binomial",
-      covariates, interaction, naaction, link = "logit"
+                                            family = "binomial",
+                                            covariates, interaction, naaction, link = "logit"
     )
   }
 
   if (caps_method == "LINEAR MULTILEVEL MODELLING" | caps_method == "LINEAR_MULTILEVEL_MODELLING" |
-    caps_method == "LINEAR MULTILEVEL" | caps_method == "LINEAR_MULTILEVEL" | caps_method == "LINEAR MIXED EFFECT"
-  | caps_method == "LINEAR_MIXED_EFFECT") {
+      caps_method == "LINEAR MULTILEVEL" | caps_method == "LINEAR_MULTILEVEL" | caps_method == "LINEAR MIXED EFFECT"
+      | caps_method == "LINEAR_MIXED_EFFECT") {
     results <- use_linear_mixed_model(
       param_to_be_estimated, dataset, fix_eff, fix_eff_interact_vars,
       random_intercept_vars, nested_intercept_vars_pairs, cross_intercept_vars,
@@ -282,16 +331,22 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
     )
   }
 
-  if (caps_method == "GENERALISED MULTILEVEL MODELLING" | caps_method == "GENERALISED_MULTILEVEL_MODELLING" |
-    caps_method == "GENERALISED_MULTILEVEL" | caps_method == "GENERALISED MULTILEVEL"
-  | caps_method == "GENERALISED MIXED EFFECT" | caps_method == "GENERALISED_MIXED_EFFECT") {
-    results <- use_generalised_linear_mixed_model(param_to_be_estimated, dataset, fix_eff, fix_eff_interact_vars,
-      random_intercept_vars, nested_intercept_vars_pairs, cross_intercept_vars,
-      uncorrel_slope_intercept_pairs, random_slope_intercept_pairs,
-      family = info_distribution, link
+  if (caps_method == "GENERALISED LINEAR MODEL" | caps_method == "GENERALISED_LINEAR_MODEL" | caps_method == "GLM") {
+    results <- use_generalised_linear_model(param_to_be_estimated, dataset, indep_var,
+                                            family = info_distribution,
+                                            covariates, interaction, naaction, link
     )
   }
 
+  if (caps_method == "GENERALISED MULTILEVEL MODELLING" | caps_method == "GENERALISED_MULTILEVEL_MODELLING" |
+      caps_method == "GENERALISED_MULTILEVEL" | caps_method == "GENERALISED MULTILEVEL"
+      | caps_method == "GENERALISED MIXED EFFECT" | caps_method == "GENERALISED_MIXED_EFFECT") {
+    results <- use_generalised_linear_mixed_model(param_to_be_estimated, dataset, fix_eff, fix_eff_interact_vars,
+                                                  random_intercept_vars, nested_intercept_vars_pairs, cross_intercept_vars,
+                                                  uncorrel_slope_intercept_pairs, random_slope_intercept_pairs,
+                                                  family = info_distribution, link
+    )
+  }
   if (caps_method == "SEEMINGLY UNRELATED REGRESSION" | caps_method == "SEEMINGLY_UNRELATED_REGRESSION"
   | caps_method == "SEEMINGLY_UNRELATED" | caps_method == "SEEMINGLY UNRELATED"
   | caps_method == "BIVARIATE_REGRESSION" | caps_method == "BIVARIATE REGRESSION"
@@ -299,6 +354,12 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
     results <- use_seemingly_unrelated_regression(
       param1_to_be_estimated = param_to_be_estimated, param2_to_be_estimated, dataset,
       indep_var, covariates1 = covariates, covariates2, interaction1 = interaction, interaction2
+    )
+  }
+  if (caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS") {
+    results <- use_survival_analysis(
+      param_to_be_estimated, dataset, indep_var, info_get_method,
+      info_distribution, covariates_list, timevar_survival
     )
   }
   return(results)
@@ -321,6 +382,10 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
 #'   covariates_list = NA, "time"
 #' )
 #' @export
+#' @details
+#' This function helps to get the parameter values after the survival analysis
+#' Takes into account many diffent methods like KM.FH, Cox proportinal etc.
+#' and then calls appropriate functions to do the survival analysis
 use_survival_analysis <- function(param_to_be_estimated, dataset,
                                   indep_var, info_get_method, info_distribution,
                                   covariates_list, timevar_survival) {
@@ -363,6 +428,170 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
   }
   return(results)
 }
+
+#' #' ##########################################################################################################
+#' Get the parameter values using the linear regression
+#' @param param_to_be_estimated  parameter of interest
+#' @param dataset data set to be provided
+#' @param indep_var the independent variable (column name in data file)
+#' @param covariates list of covariates - calculations to be done before passing
+#' @param interaction boolean value to indicate interaction in the case of linear regression,
+#' false by default
+#' @return the results of the regression analysis
+#' @examples
+#' results_lm <- use_linear_regression("dist",
+#'                                      dataset = cars,
+#'                                      indep_var = "speed", covariates = NA, interaction = FALSE
+#'  )
+#'  library(car)
+#'  results_lm <- use_linear_regression("mpg",
+#'                                      dataset = mtcars,
+#'                                      indep_var = "disp", covariates = c("hp", "wt","drat"),
+#'                                      interaction = FALSE
+#'  )
+#' @export
+#' @details
+#' This function returns the results and plots after doing linear regression
+#' Requires param to be estimated, dataset, independent varaibles and informaiton on
+#' covariates, and interaction variables if there are
+#' Uses form_expression_lm to create the expression as per R standard for e.g lm(y ~ x )
+#' Returns the fit result,s summary results as returned by summary(), confidence interval for
+#' fit coefficients (ci_coeff), variance covariance matrix, cholesky decompostion matrix,
+#' results from correlation test, plot of diagnostic tests and model fit  assumptions, plot of model prediction
+#' diagnostic include AIC, R2, and BIC. The results of the prediction ie predicted values
+#' when each of covariate is fixed will be returned in prediction matrix
+#' predicted values will provide the mean value of param_to_to_estimated as calualted by the
+#' linear regression formula.
+#' ref:https://www.statmethods.net/stats/regression.html
+use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, covariates, interaction) {
+  expression_recreated <- form_expression_lm(param_to_be_estimated, indep_var, covariates, interaction)
+  fit <- eval(parse(text = expression_recreated$formula))
+  summary <- summary(fit)
+  model_coeff <- stats::coefficients(fit)
+  ci_coeff <- stats::confint(fit)
+  predicted_param_estimated <- stats::fitted(fit)
+  residuals <- stats::residuals(fit)
+  variance_covariance_coeff <- stats::vcov(fit)
+  chol_decomp_matrix <- chol(variance_covariance_coeff)
+  table_this <- broom::tidy(fit)
+  OR <- exp(table_this$estimate)
+  LCI <- exp(table_this$estimate - stats::qnorm(0.975, 0, 1) * table_this$std.error)
+  UCI <- exp(table_this$estimate + stats::qnorm(0.975, 0, 1) * table_this$std.error)
+  or_from_lm <- data.frame(cbind(term = table_this$term, LCI, OR, UCI))
+
+  # stepwise regression?
+  if(sum(is.na(covariates)) == 0){
+    #fit_stepAIC = stats::lm(eval(parse(text = expression_recreated$formula)))
+    step <- MASS::stepAIC(fit, direction="both")
+    stepwise_regression_results<- step$anova # display results
+    if(length(covariates) <=2){
+      # Bootstrap Measures of Relative Importance (1000 samples)
+      boot <- relaimpo::boot.relimp(fit)
+      relative_imp_results <- relaimpo::booteval.relimp(boot) # print result
+      name_file_plot <- paste0("lm","_Relative_importance_plot_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+      grDevices::pdf(name_file_plot)
+      graphics::plot(relaimpo::booteval.relimp(boot,sort=TRUE)) # plot result
+      grDevices::dev.off()
+    }
+  }
+
+  diganostic_results = do_diagnostic_linear_regression("lm", fit, expression_recreated,
+                                                       param_to_be_estimated,
+                                                       dataset, indep_var,covariates, interaction)
+
+  prediction_regression_results = prediction_regression("lm", fit,expression_recreated,
+                                                        param_to_be_estimated, indep_var,
+                                                        covariates, interaction)
+  results <- list(
+      fit = fit,
+      summary = summary,
+      model_coeff = model_coeff,
+      ci_coeff = ci_coeff,
+      predicted_values = predicted_param_estimated,
+      residuals = residuals,
+      variance_covariance_coeff = variance_covariance_coeff,
+      cholesky_decomp_matrix = chol_decomp_matrix,
+      odds_ratio_ci = or_from_lm,
+      diganostic_results = diganostic_results,
+      prediction_regression_results = prediction_regression_results
+
+  )
+  return(results)
+}
+#' ##########################################################################################################
+#' Get the parameter values using logistic regression
+#' @param param_to_be_estimated  parameter of interest
+#' @param dataset data set to be provided
+#' @param indep_var the independent variable (column name in data file)
+#' @param family distribution name  eg. for logistic regression -binomial
+#' @param covariates list of covariates - calculations to be done before passing
+#' @param interaction boolean value to indicate interaction in the case of linear regression
+#' @param naaction action to be taken with the missing values
+#' @param link link function if not the default for each family
+#' @return the results of the regression analysis
+#' @examples
+#' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+#' results_logit <- use_generalised_linear_model("admit",
+#' dataset = mydata, indep_var = "gre", family = "binomial",
+#' covariates = NA, interaction = TRUE, naaction = "na.omit", link = NA
+#')
+#' @export
+#' @details
+#' This function returns the results and plots after doing linear regression
+#' Requires param to be estimated, dataset, independent varaibles and informaiton on
+#' covariates, and interaction variables if there are
+#' Uses form_expression_lm to create the expression as per R standard for e.g lm(y ~ x )
+#' Returns the fit result,s summary results as returned by summary(), confidence interval for
+#' fit coefficients (ci_coeff), variance covariance matrix, cholesky decompostion matrix,
+#' results from correlation test, plot of diagnostic tests and model fit  assumptions, plot of model prediction
+#' diagnostic include AIC, R2, and BIC. The results of the prediction ie predicted values for fixed other variables
+#' will be returned in prediction matrix
+use_generalised_linear_model <- function(param_to_be_estimated, dataset, indep_var,
+                                         family, covariates, interaction, naaction, link) {
+  #assign("dataset",dataset,envir = globalenv())
+  expression_recreated <- form_expression_glm(param_to_be_estimated, indep_var, family, covariates, interaction, naaction, link)
+  fit <- eval(parse(text = expression_recreated$formula))
+  summary <- summary(fit)
+  model_coeff <- stats::coefficients(fit)
+  ci_coeff <- stats::confint(fit)
+  predicted_param_estimated <- stats::fitted(fit)
+  residuals <- stats::residuals(fit)
+  variance_covariance_coeff <- stats::vcov(fit)
+  chol_decomp_matrix <- chol(variance_covariance_coeff)
+  table_this <- broom::tidy(fit)
+  OR <- exp(table_this$estimate)
+  LCI <- exp(table_this$estimate - stats::qnorm(0.975, 0, 1) * table_this$std.error)
+  UCI <- exp(table_this$estimate + stats::qnorm(0.975, 0, 1) * table_this$std.error)
+  or <- data.frame(cbind(term = table_this$term, LCI, OR, UCI))
+
+  # stepwise regression?
+  if(sum(is.na(covariates)) == 0){
+    #fit_stepAIC = stats::lm(eval(parse(text = expression_recreated$formula)))
+    step <- MASS::stepAIC(fit, direction="both")
+    stepwise_regression_results<- step$anova # display results
+  }
+  diganostic_results = do_diagnostic_glm("glm", fit, expression_recreated,
+                                                       param_to_be_estimated,
+                                                       dataset, indep_var,family,covariates, interaction)
+  prediction_regression_results = prediction_regression("glm", fit,expression_recreated,
+                                                        param_to_be_estimated, indep_var,
+                                                        covariates, interaction)
+  results <- list(
+    fit = fit,
+    summary = summary,
+    model_coeff = model_coeff,
+    ci_coeff = ci_coeff,
+    predicted_values = predicted_param_estimated,
+    residuals = residuals,
+    variance_covariance_coeff = variance_covariance_coeff,
+    cholesky_decomp_matrix = chol_decomp_matrix,
+    odds_ratio_ci = or,
+    diganostic_results = diganostic_results,
+    prediction_regression_results = prediction_regression_results
+  )
+  return(results)
+}
+
 #' ##########################################################################################################
 #' Get the parameter values using the survival analysis parametric survival
 #' @param param_to_be_estimated  parameter of interest
@@ -378,11 +607,20 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
 #'   info_distribution = "weibull", covariates_list = NA, "time"
 #' )
 #' @export
+#' @details
+#' This function is the last in the layer of function for parametric survival analysis
+#' This then returns the parameteres of interest, plots the results etc
+#' if the distribution is weibull it uses the package SurvRegCensCov for easy interpretation
+#' of results
+#' Returns the fit result, summary of regression, variance-covariance matrix of coeff,
+#' cholesky decomposition, the parameters that define the assumed distrbution
+#' and the plot of model prediction
+#' check the basic assumption,
 use_parametric_survival <- function(param_to_be_estimated, dataset,
                                     indep_var, info_distribution, covariates_list,
                                     timevar_survival) {
   if (is.na(timevar_survival)) {
-    stop("For survival analysis, please provide the varaible to use as time ")
+    stop("For survival analysis, please provide the variable to use as time ")
   } else {
     surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")", sep = "")
   }
@@ -464,10 +702,12 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
 #' surv_estimated_aml <- use_km_survival("status", data_for_survival, "x",
 #' covariates_list = NA, "time")
 #' @export
+#' @details
+#' This function is for regression using KM survival
 use_km_survival <- function(param_to_be_estimated, dataset,
                             indep_var, covariates_list, timevar_survival) {
   if (is.na(timevar_survival)) {
-    stop("For survival analysis, please provide the varaible to use as time ")
+    stop("For survival analysis, please provide the variable to use as time ")
   } else {
     surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")",
       sep = ""
@@ -515,7 +755,7 @@ use_km_survival <- function(param_to_be_estimated, dataset,
 use_fh_survival <- function(param_to_be_estimated, dataset,
                             indep_var, covariates_list, timevar_survival) {
   if (is.na(timevar_survival)) {
-    stop("For survival analysis, please provide the varaible to use as time ")
+    stop("For survival analysis, please provide the variable to use as time ")
   } else {
     surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")",
       sep = ""
@@ -564,7 +804,7 @@ use_fh_survival <- function(param_to_be_estimated, dataset,
 use_fh2_survival <- function(param_to_be_estimated, dataset,
                              indep_var, covariates_list, timevar_survival) {
   if (is.na(timevar_survival)) {
-    stop("For survival analysis, please provide the varaible to use as time ")
+    stop("For survival analysis, please provide the variable to use as time ")
   } else {
     surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")",
       sep = ""
@@ -614,7 +854,7 @@ use_fh2_survival <- function(param_to_be_estimated, dataset,
 use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
                                covariates_list, timevar_survival) {
   if (is.na(timevar_survival)) {
-    stop("For survival analysis, please provide the varaible to use as time ")
+    stop("For survival analysis, please provide the variable to use as time ")
   } else {
     surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")",
       sep = ""
@@ -647,133 +887,7 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
   ))
   return(results)
 }
-#' ##########################################################################################################
-#' Get the parameter values using logistic regression
-#' @param param_to_be_estimated  parameter of interest
-#' @param dataset data set to be provided
-#' @param indep_var the independent variable (column name in data file)
-#' @param family distribution name  eg. for logistic regression -binomial
-#' @param covariates list of covariates - calculations to be done before passing
-#' @param interaction boolean value to indicate interaction in the case of linear regression
-#' @param naaction action to be taken with the missing values
-#' @param link link function if not the default for each family
-#' @return the results of the regression analysis
-#' @examples
-#' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-#' mydata$rank <- factor(mydata$rank)
-#' results_logit <- use_generalised_linear_model("admit",
-#'   dataset = mydata,
-#'   indep_var = "gre", family = "binomial", covariates = NA, interaction = FALSE,
-#'   naaction = "stats::na.omit", link = NA
-#' )
-#' @export
-use_generalised_linear_model <- function(param_to_be_estimated, dataset, indep_var,
-                                         family, covariates, interaction, naaction, link) {
-  expression_recreated <- form_expression_glm(param_to_be_estimated, indep_var, family, covariates, interaction, naaction, link)
-  fit <- eval(parse(text = expression_recreated$formula))
-  summary <- summary(fit)
-  ci_coeff <- stats::confint(fit)
-  variance_covariance_coeff <- stats::vcov(fit)
-  chol_decomp_matrix <- chol(variance_covariance_coeff)
-  autocorr_error_test <- lmtest::dwtest(fit)
 
-  name_file_plot <- paste0("glm_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  grDevices::pdf(name_file_plot)
-  plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
-  grDevices::dev.off()
-
-
-  R2 <- rsq::rsq(fit)
-  AIC <- stats::AIC(fit)
-  BIC <- stats::BIC(fit)
-  fit_diagnostics <- data.frame(cbind(R2, AIC, BIC))
-
-  eval_predict_expre <- eval(parse(text = expression_recreated$short_formula))
-  predictor_effect <- effects::predictorEffects(fit, eval_predict_expre)
-  name_file_plot <- paste0("glm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  grDevices::pdf(name_file_plot)
-  plot_prediction <- graphics::plot(predictor_effect, lines = list(multiline = TRUE))
-  grDevices::dev.off()
-
-  table_this <- broom::tidy(fit)
-  OR <- exp(table_this$estimate)
-  LCI <- exp(table_this$estimate - stats::qnorm(0.975, 0, 1) * table_this$std.error)
-  UCI <- exp(table_this$estimate + stats::qnorm(0.975, 0, 1) * table_this$std.error)
-  or_from_glm <- data.frame(cbind(term = table_this$term, LCI, OR, UCI))
-
-  results <- (list(
-    fit = fit,
-    summary = summary,
-    ci_coeff = ci_coeff,
-    variance_covariance_coeff = variance_covariance_coeff,
-    cholesky_decomp_matrix = chol_decomp_matrix,
-    autocorr_error_test = autocorr_error_test,
-    plot_diagnostics = plot_diagnostics,
-    fit_diagnostics = fit_diagnostics,
-    plot_prediction = plot_prediction,
-    odds_ratio_ci = or_from_glm
-  ))
-  return(results)
-}
-#' ##########################################################################################################
-#' Get the parameter values using the linear regression
-#' @param param_to_be_estimated  parameter of interest
-#' @param dataset data set to be provided
-#' @param indep_var the independent variable (column name in data file)
-#' @param covariates list of covariates - calculations to be done before passing
-#' @param interaction boolean value to indicate interaction in the case of linear regression,
-#' false by default
-#' @return the results of the regression analysis
-#' @examples
-#' mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-#' results_lm <- use_linear_regression("gre",
-#'   dataset = mydata,
-#'   indep_var = "gpa", covariates = NA, interaction = FALSE
-#' )
-#' @export
-use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, covariates, interaction) {
-  expression_recreated <- form_expression_lm(param_to_be_estimated, indep_var, covariates, interaction)
-  fit <- eval(parse(text = expression_recreated$formula))
-  summary <- summary(fit)
-  ci_coeff <- stats::confint(fit)
-  variance_covariance_coeff <- stats::vcov(fit)
-  chol_decomp_matrix <- chol(variance_covariance_coeff)
-  autocorr_error_test <- lmtest::dwtest(fit)
-
-  name_file_plot <- paste0("lm_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  grDevices::pdf(name_file_plot)
-  plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE, file = name_file_plot)
-  grDevices::dev.off()
-
-  model_fit_assumptions <- summary(gvlma::gvlma(fit))
-
-  Adj_R2 <- summary(fit)$adj.r.squared
-  AIC <- stats::AIC(fit)
-  BIC <- stats::BIC(fit)
-  fit_diagnostics <- data.frame(cbind(Adj_R2, AIC, BIC))
-  colnames(fit_diagnostics) <- c("Adj_R2", "AIC", "BIC")
-
-  eval_predict_expre <- eval(parse(text = expression_recreated$short_formula))
-  predictor_effect <- effects::predictorEffects(fit, eval_predict_expre)
-  name_file_plot <- paste0("lm_prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
-  grDevices::pdf(name_file_plot)
-  plot_prediction <- graphics::plot(predictor_effect, lines = list(multiline = TRUE))
-  grDevices::dev.off()
-
-  results <- (list(
-    fit = fit,
-    summary = summary,
-    ci_coeff = ci_coeff,
-    variance_covariance_coeff = variance_covariance_coeff,
-    cholesky_decomp_matrix = chol_decomp_matrix,
-    autocorr_error_test = autocorr_error_test,
-    plot_diagnostics = plot_diagnostics,
-    model_fit_assumptions = model_fit_assumptions,
-    fit_diagnostics = fit_diagnostics,
-    plot_prediction = plot_prediction
-  ))
-  return(results)
-}
 ##########################################################################################################
 #' Function for mixed effect regression
 #' @param param_to_be_estimated column name of dependent variable

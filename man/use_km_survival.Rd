@@ -26,6 +26,9 @@ the results of the regression analysis
 ##########################################################################################################
 Get the parameter values using the Kaplan-Meier survival analysis
 }
+\details{
+This function is for regression using KM survival
+}
 \examples{
 data_for_survival <- survival::aml
 surv_estimated_aml <- use_km_survival("status", data_for_survival, "x",

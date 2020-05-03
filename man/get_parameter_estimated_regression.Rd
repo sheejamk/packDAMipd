@@ -63,10 +63,20 @@ the results of the regression analysis
 \description{
 Get the parameter values using the provided statistical regression methods
 }
+\details{
+This function is the top in the layer of functions used for regression analysis
+Thus it contains many parameters to be passed on
+The required ones are parameter to be estimated, data that contains the observation, the method
+of regression to be used, the independent variable and the information for the distribution and method.
+if the data is given as a file name. it will load the data in that file
+Then it calls the approprite functions depending on the regression method that specified
+The methods that are considered : Survival analysis, linear regression, logistic regression,
+generalised linear model, linear multilevel or mixed model, and seemingly unrelated regression
+}
 \examples{
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
 results_logit <- get_parameter_estimated_regression("admit", mydata,
   "logistic regression", "gre", NA, "binomial", c("gpa", "rank"),
-  interaction = FALSE
+  interaction = TRUE
 )
 }

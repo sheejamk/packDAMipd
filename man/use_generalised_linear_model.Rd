@@ -32,12 +32,21 @@ the results of the regression analysis
 ##########################################################################################################
 Get the parameter values using logistic regression
 }
+\details{
+This function returns the results and plots after doing linear regression
+Requires param to be estimated, dataset, independent varaibles and informaiton on
+covariates, and interaction variables if there are
+Uses form_expression_lm to create the expression as per R standard for e.g lm(y ~ x )
+Returns the fit result,s summary results as returned by summary(), confidence interval for
+fit coefficients (ci_coeff), variance covariance matrix, cholesky decompostion matrix,
+results from correlation test, plot of diagnostic tests and model fit  assumptions, plot of model prediction
+diagnostic include AIC, R2, and BIC. The results of the prediction ie predicted values for fixed other variables
+will be returned in prediction matrix
+}
 \examples{
 mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-mydata$rank <- factor(mydata$rank)
 results_logit <- use_generalised_linear_model("admit",
-  dataset = mydata,
-  indep_var = "gre", family = "binomial", covariates = NA, interaction = FALSE,
-  naaction = "stats::na.omit", link = NA
+dataset = mydata, indep_var = "gre", family = "binomial",
+covariates = NA, interaction = TRUE, naaction = "na.omit", link = NA
 )
 }

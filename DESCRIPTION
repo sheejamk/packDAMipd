@@ -15,9 +15,12 @@ License: GNU General Public License
 Depends:
     R (>= 3.5.0)
 Imports:
+    car,
+    MASS,
     readxl,
     tm,
     words2number,
+    relaimpo,
     gvlma,
     rsq,
     broom,

@@ -320,7 +320,6 @@ define_transition_table <- function(tmat) {
 #' First find those missing probabilities, and fill a list from the given list of
 #' probabilities and fill those are not NA in the matrix
 #' Note that the probabilities need not be numeric here and no checks are needed for sum
-#'
 populate_transition_matrix <- function(no_states, tmat, list_prob, name_states = NULL) {
   if (is.null(name_states)) {
     names <- seq(1:no_states)

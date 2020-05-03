@@ -37,7 +37,7 @@ library(packDAMipd)
  Define health states for mono therapy - now the costs are just defined, but not defined any value.
 
 ```{r}
-A <- health_state("A", cost = "cost_health_A+ cost_drug ",utility = 1)
+A <- health_state("A", cost = "cost_health_A + cost_drug ",utility = 1)
 B <- health_state("B", cost = "cost_health_B + cost_drug",utility = 1)
 C <- health_state("C", cost = "cost_health_C + cost_drug",utility = 1)
 D <- health_state("D", cost = 0, utility = 0)
@@ -55,14 +55,13 @@ colnames(tmat) <- rownames(tmat) <- c("A","B" ,"C","D")
 ```{r}
 tm <- populate_transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
                                    "tpBtoB", "tpBtoC", "tpBtoD",
-                                   "tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
+                                   "tpCtoC","tpCtoD","tpDtoD" ))
 ```
  Combine the health states and define the strategy. The current strategy ie. control or intervention - here it is mono therapy
 
 ```{r}
 health_states <- combine_state(A,B,C,D)
 mono_strategy <- strategy(tm, health_states, "mono")
-
 ```
 Before we run the model, we need to give values to parameters, thus we define the parameter list. We need to make sure that the parameters with numerical values are given first and derived parameters later in the list. The parameters are assigned sequentially as given in the parameter list. So if there is any calculations needed (or using functions), they are defined earlier.
 

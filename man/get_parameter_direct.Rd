@@ -17,6 +17,9 @@ the paramvalue
 \description{
 Get the parameter values from reading a file
 }
+\details{
+Basic function to assign a parameter directly
+}
 \examples{
 a <- get_parameter_direct("cost_IT", param_value = 100)
 }

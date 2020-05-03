@@ -23,7 +23,7 @@ value of the transition matrix
 Populate transition matrix
 }
 \details{
-if the state names are null, they are replaced with numbers starting from 1
+If the state names are null, they are replaced with numbers starting from 1
 First find those missing probabilities, and fill a list from the given list of
 probabilities and fill those are not NA in the matrix
 Note that the probabilities need not be numeric here and no checks are needed for sum

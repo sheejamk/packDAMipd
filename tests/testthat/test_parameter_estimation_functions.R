@@ -11,7 +11,6 @@ test_that("testing reading parameter from file", {
   expect_error(get_parameter_read("cost_IT", nofile))
   expect_error(get_parameter_read("a", file))
 })
-
 test_that("testing parameter using distribution read from file", {
   file <- system.file("extdata", "table_param.csv", package = "packDAMipd")
   nofile <- system.file("extdata", "blank.csv", package = "packDAMipd")
@@ -21,14 +20,6 @@ test_that("testing parameter using distribution read from file", {
 
 test_that("get parameter from estimated regression", {
   mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-  results_logit <- get_parameter_estimated_regression(
-    "admit", mydata,
-    "logistic regression", "gre", NA, "binomial", c("gpa", "rank")
-  )
-  results_logit2 <- get_parameter_estimated_regression(
-    "admit", mydata,
-    "logistic regression", "gre", NA, "binomial"
-  )
   expect_error(get_parameter_estimated_regression(
     NA, mydata,
     "logistic regression", "gre", NA, "binomial", c("gpa", "rank")
@@ -198,10 +189,9 @@ test_that("get parameter using parametric regression survival analysis", {
 test_that("get parameter using parametric regression survival analysis", {
   paramfile <- system.file("extdata", "LifeTable_USA_Mx_2015.csv", package = "packDAMipd")
   nofile <- system.file("extdata", "blank.csv", package = "packDAMipd")
-  mortality <- get_mortality_from_file(paramfile, age = 10, gender = NULL)
-  expect_equal(get_mortality_from_file(paramfile, age = 10, gender = NULL), 0.000107)
-  expect_error(get_mortality_from_file(nofile, age = 10, gender = NULL))
-  expect_error(get_mortality_from_file(paramfile, age = 120, gender = NULL))
+  expect_equal(get_mortality_from_file(paramfile, age = 10, mortality_colname= "total",gender = NULL), 0.000107)
+  expect_error(get_mortality_from_file(nofile, age = 10,mortality_colname= "total", gender = NULL))
+  expect_error(get_mortality_from_file(paramfile, age = 120,mortality_colname= "total", gender = NULL))
   expect_error(get_mortality_from_file(paramfile, age = NULL))
 })
 test_that("Bivaraite regression for correlated values", {

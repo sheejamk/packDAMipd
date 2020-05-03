@@ -28,6 +28,16 @@ the results of the regression analysis
 ##########################################################################################################
 Get the parameter values using the survival analysis parametric survival
 }
+\details{
+This function is the last in the layer of function for parametric survival analysis
+This then returns the parameteres of interest, plots the results etc
+if the distribution is weibull it uses the package SurvRegCensCov for easy interpretation
+of results
+Returns the fit result, summary of regression, variance-covariance matrix of coeff,
+cholesky decomposition, the parameters that define the assumed distrbution
+and the plot of model prediction
+check the basic assumption,
+}
 \examples{
 data_for_survival <- survival::aml
 surv_estimated_aml <- use_parametric_survival("status", data_for_survival, "x",

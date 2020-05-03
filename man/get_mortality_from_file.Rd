@@ -2,14 +2,17 @@
 % Please edit documentation in R/2a_parameter_estimation_functions.R
 \name{get_mortality_from_file}
 \alias{get_mortality_from_file}
-\title{Get the parameter values from reading a file}
+\title{Get the mortality rate  values from reading a file}
 \usage{
-get_mortality_from_file(paramfile, age, gender = NULL)
+get_mortality_from_file(paramfile, age, mortality_colname = NULL,
+  gender = NULL)
 }
 \arguments{
 \item{paramfile}{parameter file to get the mortality eg.national life table data}
 
 \item{age}{age to get the age specific data}
+
+\item{mortality_colname}{column name with the mortality rates if it is not gender specific}
 
 \item{gender}{gender details to get the gender specific mortality data}
 }
@@ -17,11 +20,20 @@ get_mortality_from_file(paramfile, age, gender = NULL)
 the paramvalue
 }
 \description{
-Get the parameter values from reading a file
+Get the mortality rate  values from reading a file
+}
+\details{
+Provides the mortality rates as age and gender dependent
+Assumes the data contains for a single year and the age moratlaity rate once it extracted
+per gender will retrieve single value
+Age column can consists of range of values, a particular value
+also assumes that the mortality rate is listed under the gender column
+for gender specific values, unless the column name is passed on to the function
+(default is NULL)
 }
 \examples{
 paramfile <- system.file("extdata", "LifeTable_USA_Mx_2015.csv",
   package = "packDAMipd"
 )
-a <- get_mortality_from_file(paramfile, age = 10, gender = NULL)
+a <- get_mortality_from_file(paramfile, age = 10, mortality_colname = "total", gender = NULL)
 }
