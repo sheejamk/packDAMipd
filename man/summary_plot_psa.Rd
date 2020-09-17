@@ -30,6 +30,7 @@ plot of  sensitivity analysis
 Function to summarise and plot probabilistic sensitivity analysis
 }
 \examples{
+ \dontrun{
 param_list <- define_parameters(
 cost_direct_med_A = 1701,
 cost_direct_med_B = 1774, tpAtoA = 0.2,
@@ -61,4 +62,5 @@ cost_direct_med_B = 1774, tpAtoA = 0.2,
  param_table_comb <- define_parameters_psa(param_list_comb, sample_list)
  result_comb <- do_psa(comb_markov, param_table_comb, 3)
  summary_plot_psa(result, result_comb, 2000, "mono")
+ }
 }

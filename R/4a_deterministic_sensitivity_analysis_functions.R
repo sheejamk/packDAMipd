@@ -274,6 +274,7 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
 #' @param currency currency
 #' @return plot of  sensitivity analysis
 #' @examples
+#' \dontrun{
 #' param_list <- define_parameters(
 #' cost_zido = 2278, cost_direct_med_A = 1701,
 #' cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
@@ -322,6 +323,7 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
 #' treat_low_values,treat_upp_values)
 #' result_treat <- do_sensitivity_analysis(treat_markov, param_table)
 #' plot_dsa(result,"NMB","range",result_treat, 20000, "treat")
+#' }
 #' @export
 plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_treat = NULL,
                      threshold = NULL, comparator = NULL, currency = "GBP") {

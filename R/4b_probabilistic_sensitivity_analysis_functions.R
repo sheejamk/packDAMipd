@@ -246,6 +246,7 @@ list_paramwise_psa_result <- function(result_psa_params_control, result_psa_para
 #' @param comparator the strategy to be compared with
 #' @return plot of  sensitivity analysis
 #' @examples
+#'  \dontrun{
 #' param_list <- define_parameters(
 #' cost_direct_med_A = 1701,
 #' cost_direct_med_B = 1774, tpAtoA = 0.2,
@@ -277,12 +278,13 @@ list_paramwise_psa_result <- function(result_psa_params_control, result_psa_para
 #'  param_table_comb <- define_parameters_psa(param_list_comb, sample_list)
 #'  result_comb <- do_psa(comb_markov, param_table_comb, 3)
 #'  summary_plot_psa(result, result_comb, 2000, "mono")
+#'  }
 #' @export
 summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat = NULL, threshold = NULL, comparator = NULL) {
   if (is.null(result_psa_params_control))
     stop("Error - result for psa for control strategy should not be null")
   if (!is.null(result_psa_params_treat)) {
-    if (is.null(threshold) | is.null(comparator) | !is.numeric(threshold) | threshold <=0)
+    if (is.null(threshold) | is.null(comparator) | !is.numeric(threshold) | threshold <= 0)
       stop("Error - threshold values/comparator is not valid")
   }
   if (!is.null(result_psa_params_treat)) {

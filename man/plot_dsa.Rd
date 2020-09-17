@@ -38,6 +38,7 @@ plot of  sensitivity analysis
 Function to plot results of sensitivity analysis do_sensitivity_analysis()
 }
 \examples{
+\dontrun{
 param_list <- define_parameters(
 cost_zido = 2278, cost_direct_med_A = 1701,
 cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
@@ -86,4 +87,5 @@ param_table_treat <- define_parameters_sens_anal(param_list_treat,
 treat_low_values,treat_upp_values)
 result_treat <- do_sensitivity_analysis(treat_markov, param_table)
 plot_dsa(result,"NMB","range",result_treat, 20000, "treat")
+}
 }
