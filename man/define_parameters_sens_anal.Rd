@@ -20,6 +20,11 @@ table for sensitivity analysis
 \description{
 Define parameter lists for deterministic sensitivity analysis
 }
+\details{
+Get the parameter list, min and maximum values of the parameters.
+The min and max values should have same entries, but they should be contained in param_list too
+Copy the exact values of parameters that are in param list but not in min and max values
+}
 \examples{
 param_list <- define_parameters(
   cost_zido = 2278, cost_direct_med_A = 1701,

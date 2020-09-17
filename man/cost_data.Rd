@@ -3,8 +3,10 @@
 \docType{data}
 \name{cost_data}
 \alias{cost_data}
-\title{cost matric}
-\format{A 11 by 2 dataframe}
+\title{cost matrix}
+\format{
+A 11 by 2 dataframe
+}
 \source{
 created on Nov 26, 2019 from
 tmat <- rbind(c(1, 2), c(3, 4))
@@ -19,6 +21,6 @@ this.strategy <- strategy(tm, health_states, "intervention")
 cost_data
 }
 \description{
-cost matric
+cost matrix
 }
 \keyword{datasets}

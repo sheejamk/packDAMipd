@@ -8,3 +8,8 @@
 ^results$
 ^Rplots\.pdf$
 ^.*\.pdf$
+^refs$
+^\.httr-oauth$
+^.*\.pdf$
+^[.].*$
+^.*/[.].*$

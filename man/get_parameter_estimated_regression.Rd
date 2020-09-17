@@ -4,15 +4,29 @@
 \alias{get_parameter_estimated_regression}
 \title{Get the parameter values using the provided statistical regression methods}
 \usage{
-get_parameter_estimated_regression(param_to_be_estimated, data, method,
-  indep_var, info_get_method, info_distribution, covariates = NA,
-  timevar_survival = NA, interaction = FALSE, fix_eff = NA,
-  fix_eff_interact_vars = NA, random_intercept_vars = NA,
-  nested_intercept_vars_pairs = NA, cross_intercept_vars = NA,
+get_parameter_estimated_regression(
+  param_to_be_estimated,
+  data,
+  method,
+  indep_var,
+  info_get_method,
+  info_distribution = NA,
+  covariates = NA,
+  timevar_survival = NA,
+  interaction = FALSE,
+  fix_eff = NA,
+  fix_eff_interact_vars = NA,
+  random_intercept_vars = NA,
+  nested_intercept_vars_pairs = NA,
+  cross_intercept_vars = NA,
   uncorrel_slope_intercept_pairs = NA,
-  random_slope_intercept_pairs = NA, naaction = "stats::na.omit",
-  param2_to_be_estimated = NA, covariates2 = NA,
-  interaction2 = FALSE, link = NA)
+  random_slope_intercept_pairs = NA,
+  naaction = "stats::na.omit",
+  param2_to_be_estimated = NA,
+  covariates2 = NA,
+  interaction2 = FALSE,
+  link = NA
+)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter of interest}
@@ -69,14 +83,16 @@ Thus it contains many parameters to be passed on
 The required ones are parameter to be estimated, data that contains the observation, the method
 of regression to be used, the independent variable and the information for the distribution and method.
 if the data is given as a file name. it will load the data in that file
-Then it calls the approprite functions depending on the regression method that specified
+Then it calls the appropriate functions depending on the regression method that specified
 The methods that are considered : Survival analysis, linear regression, logistic regression,
 generalised linear model, linear multilevel or mixed model, and seemingly unrelated regression
 }
 \examples{
-mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
-results_logit <- get_parameter_estimated_regression("admit", mydata,
-  "logistic regression", "gre", NA, "binomial", c("gpa", "rank"),
-  interaction = TRUE
-)
+\dontrun{
+result <- get_parameter_estimated_regression(
+  param_to_be_estimated = "Direction",
+  data = ISLR::Smarket, method = "logistic", indep_var = "Lag1", info_get_method = NA,
+  info_distribution = "binomial", covariates = c("Lag2", "Lag3"),
+  interaction = FALSE, naaction = "na.omit", link = NA)
+  }
 }

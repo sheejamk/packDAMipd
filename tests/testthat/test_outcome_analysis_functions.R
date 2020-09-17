@@ -6,7 +6,10 @@ test_that("testing mean and sd of age from data", {
   expect_equal(results$mean, 18.00)
   expect_equal(results$sd, 4.242641, tolerance = 1e-4)
   this_data <- data.table::data.table("Age" = c("k", 15), "sex" = c("m", "f"))
+  # Error - format wrong
   expect_error(get_mean_sd_age(this_data, NA))
+  # Error - data should not be NULL
+  expect_error(get_mean_sd_age(NULL))
 })
 ###############################################################################
 context("testing adding EQ5D5L values to the data")
@@ -19,11 +22,14 @@ test_that("testing adding EQ5D5L values to the data", {
   expect_equal(results$EQ5D5LIndex, c(1, 0.548))
   this_data <- data.table::data.table("Age" = c("k", 15), "sex" = c("m", "f"))
   expect_error(value_eq5d5L_IPD(this_data, NA))
+  # Error - invalid EQ5D responses
   trial_data <- data.frame(
     "qol.MO" = c(1, 2), "qol.SC" = c(1, 8), "qol.UA" = c(1, 2),
     "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)
   )
   expect_error(value_eq5d5L_IPD(trial_data, NA))
+  # Error - data should not be NULL
+  expect_error(value_eq5d5L_IPD(NULL))
 })
 ###############################################################################
 context("testing mapping EQ5D5L values to 3L ")
@@ -41,6 +47,8 @@ test_that("testing adding EQ5D5L values to the data", {
     "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)
   )
   expect_error(map_eq5d5Lto3L_VanHout(trial_data, NA))
+  #Error - data should not be NULL
+  expect_error(map_eq5d5Lto3L_VanHout(NULL))
 })
 ##############################################################################
 
@@ -62,6 +70,14 @@ test_that("testing adding EQ5D5L values to the data", {
     "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)
   )
   expect_error(value_ADL_scores_IPD(trial_data, NA))
+  #Error data should not be NULL
+  expect_error(value_ADL_scores_IPD(NULL))
+  #Error adl scoring table
+  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"), NULL, NA))
+
+  #Error no matching columns
+  expect_error(value_ADL_scores_IPD(trial_data,NULL, adl_scoring, NA))
+
 })
 ###############################################################################
 
@@ -81,5 +97,7 @@ test_that("testing adding EQ5D5L values to the data", {
     "qol.MO" = c(1, 2), "qol.SC" = c(1, 8), "qol.UA" = c(1, 2),
     "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)
   )
-  expect_error(value_ADL_scores_IPD(trial_data, NA))
+  expect_error(value_Shows_IPD(trial_data, NA))
+  #Error data should not be NULL
+  expect_error(value_Shows_IPD(NULL))
 })

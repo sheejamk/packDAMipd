@@ -4,7 +4,9 @@
 \name{utility_data}
 \alias{utility_data}
 \title{utility matrix}
-\format{A 11 by 2 dataframe}
+\format{
+A 11 by 2 dataframe
+}
 \source{
 created on Nov 26, 2019 from
 tmat <- rbind(c(1, 2), c(3, 4))

@@ -19,7 +19,7 @@ health states with assigned values
 Attribute values in health states
 }
 \details{
-Assigning the param is done for the cost and utlility
+Assigning the param is done for the cost and utility
 if the param is not numeric, check if it can be evaluated at the run time
 if yes, assign the evaluated numeric value
 if not get the parameters between operators, and assign the values to
@@ -28,13 +28,13 @@ For the example shown the cost is sum of cost_A and cost_B which will
 only get added in the call eval_assign_values_states
 While initialising the state "well" it will be only saved as
 expression(cost_A + cost_B)
-assigned_param (a list) can be expected to created using assign_parameters()
+assigned_param (a list) can be expected to be created using assign_parameters()
 the exception is if parameter is directly assigned with no nested calculation
 and no missing parameters.
 For example assigned_param = c(cost_a = 10, cost_b=10) will be ok
 but not assigned_param = c(a=10, cost_A = "a+100", cost_B =10) as it requires
 a nested calculation then use define_parameters() with assign_parameters() as in
-param_list <- define_parameters(a=10, cost_A= "a+100", cost_B =10)
+param_list <- define_parameters(a = 10, cost_A = "a + 100", cost_B = 10)
 assign_list <- assign_parameters(param_list)
 }
 \examples{

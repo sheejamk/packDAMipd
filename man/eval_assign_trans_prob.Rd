@@ -20,9 +20,9 @@ Attribute parameters to probabilities of transition matrix
 \details{
 Once the transition matrix is populated, the probabilities in transition matrix
 gets evaluated and assigned in this function call
-If the entry in transition matrix is NA, replace it with zero
-similarly to evaluate and assign health states, the paramter values is excepted to be a list from
-assign_parameter() and define_paramter().
+If the entry in transition matrix is NA, replaces it with zero
+similarly to evaluate and assign health states, the parameter values is excepted to be a
+list from assign_parameter() and define_parameter().
 The exception is that if the parameters are defined directly and no nested calculation is
 required. For eg.assign_list = c(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5)
 prob <- eval_assign_trans_prob(tmat, assign_list) will work

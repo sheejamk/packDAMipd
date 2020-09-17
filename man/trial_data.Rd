@@ -4,7 +4,9 @@
 \name{trial_data}
 \alias{trial_data}
 \title{Example trial data}
-\format{A 31 by 33 dataframe}
+\format{
+A 31 by 33 dataframe
+}
 \source{
 created on Jan 15, 2020
 }

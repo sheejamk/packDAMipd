@@ -16,8 +16,8 @@ true or false
 Check if the values of health states are provided
 }
 \details{
-This is to check if the values are numeric during runtime, else to
-throw an error
+This is to check if the values are numeric during  the run time,
+else to throw an error
 }
 \examples{
 well <- health_state("well", cost = 0, utility = 1)

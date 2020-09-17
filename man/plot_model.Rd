@@ -16,6 +16,7 @@ plots
 E1. Plot a Markov model
 }
 \examples{
+\dontrun{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
@@ -23,6 +24,7 @@ a <- health_state("Healthy", 1, 1, 0, FALSE)
 b <- health_state("Dead", 1, 0, 0, TRUE)
 health_states <- combine_state(a, b)
 this.strategy <- strategy(tm, health_states, "intervention")
-this_markov <- markov_model(this.strategy, 10, c(1, 0), c(0, 0), c(0, 0))
+this_markov <- markov_model(this.strategy, 10, c(1, 0), c(0, 0))
 p <- plot_model(this_markov)
+}
 }

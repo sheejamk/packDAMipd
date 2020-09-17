@@ -5,8 +5,12 @@
 \alias{list_paramwise_psa_result}
 \title{Function to list probabilistic sensitivity analysis results parameterwise}
 \usage{
-list_paramwise_psa_result(result_psa_params_control,
-  result_psa_params_treat, threshold, comparator)
+list_paramwise_psa_result(
+  result_psa_params_control,
+  result_psa_params_treat,
+  threshold,
+  comparator
+)
 }
 \arguments{
 \item{result_psa_params_control}{result from probabilistic sensitivity analysis
@@ -26,6 +30,7 @@ plot of  sensitivity analysis
 Function to list probabilistic sensitivity analysis results parameterwise
 }
 \examples{
+\dontrun{
 param_list <- define_parameters(
   cost_zido = 2278, cost_direct_med_A = 1701,
   cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
@@ -50,11 +55,11 @@ tm <- populate_transition_matrix(4, tmat, c(
 ), colnames(tmat))
 health_states <- combine_state(A, B, C, D)
 mono_strategy <- strategy(tm, health_states, "mono")
-mono_markov <- markov_model(mono_strategy, 20, c(1, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0),
-  discount = c(0.06, 0), param_list
-)
+mono_markov <- markov_model(mono_strategy, 20, initial_state = c(1,0,0,0),
+discount = c(0.06, 0),param_list)
 sample_list <- define_parameters(cost_zido = "gamma(mean = 2756, sd = sqrt(2756))")
 param_table <- define_parameters_psa(param_list, sample_list)
 result <- do_psa(mono_markov, param_table, 10)
 list_paramwise_psa_result(result, NULL, NULL, NULL)
+}
 }

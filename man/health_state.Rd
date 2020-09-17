@@ -13,7 +13,7 @@ health_state(name, cost, utility, state_time = 0, absorb = FALSE)
 
 \item{utility}{value or expression that represents utility of the health state}
 
-\item{state_time}{denoting how long in the state}
+\item{state_time}{time denoting how long in the state}
 
 \item{absorb}{boolean indicating health state absorbing or not}
 }
@@ -24,9 +24,10 @@ value of the state
 Definition of health state class or health state constructor
 }
 \details{
+Initialising the name, cost, utility and time spent for the health state
 name is the name of the health state
-cost/utitily can be defined as characters e.g. "cost_A"
-if they are characters, the value is assgined after parsing the text.
+cost/utility can be defined as characters e.g. "cost_A"
+if they are characters, the value is assigned after parsing the text.
 state_time is integer and absorb is boolean
 }
 \examples{

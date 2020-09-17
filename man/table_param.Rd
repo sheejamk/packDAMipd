@@ -4,7 +4,9 @@
 \name{table_param}
 \alias{table_param}
 \title{Parameter table created}
-\format{A 11 by 2 dataframe}
+\format{
+A 11 by 2 dataframe
+}
 \source{
 created on Jan 15, 2020
 }

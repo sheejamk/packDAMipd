@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_model_functions.R
 \name{check_trans_prob}
 \alias{check_trans_prob}
-\title{Check the transition probabilities row sum is 1}
+\title{Check the transition probabilities for numeric values and unity  row sum}
 \usage{
 check_trans_prob(trans_mat)
 }
@@ -10,14 +10,14 @@ check_trans_prob(trans_mat)
 \item{trans_mat}{transition matrix}
 }
 \value{
-rowsum if they add upto 1 else error
+0 if they add to 1 else error
 }
 \description{
-Check the transition probabilities row sum is 1
+Check the transition probabilities for numeric values and unity  row sum
 }
 \details{
 checking for rowsum - checks for the class of transition matrix,
-then the rowsum equal to 1 and numeric probabilty
+value of rowsum (to be 1) and numeric values
 }
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))

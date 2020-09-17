@@ -4,14 +4,18 @@
 \alias{transition_cost_util}
 \title{Create the the values of cost and utility while transition}
 \usage{
-transition_cost_util(no_states, tmat_cost_util, list_values,
-  name_states = NULL)
+transition_cost_util(
+  no_states,
+  tmat_cost_util,
+  list_values,
+  name_states = NULL
+)
 }
 \arguments{
 \item{no_states}{number of the health states}
 
-\item{tmat_cost_util}{A transition matrix for the cost/utility values in the format from thepackage 'mstate'
-use NA to indicate if the value is zero}
+\item{tmat_cost_util}{A transition matrix for the cost/utility values in the format
+from the package 'mstate' use NA to indicate if the value is zero}
 
 \item{list_values}{list of probabilities as in the order of transitions (row wise)}
 

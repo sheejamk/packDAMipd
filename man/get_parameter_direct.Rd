@@ -4,12 +4,12 @@
 \alias{get_parameter_direct}
 \title{Get the parameter values from reading a file}
 \usage{
-get_parameter_direct(parameter, param_value)
+get_parameter_direct(parameter, paramvalue)
 }
 \arguments{
 \item{parameter}{parameter of interest}
 
-\item{param_value}{parameter value to be assigned}
+\item{paramvalue}{parameter value to be assigned}
 }
 \value{
 the paramvalue
@@ -21,5 +21,5 @@ Get the parameter values from reading a file
 Basic function to assign a parameter directly
 }
 \examples{
-a <- get_parameter_direct("cost_IT", param_value = 100)
+a <- get_parameter_direct("cost_IT", paramvalue = 100)
 }

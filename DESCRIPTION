@@ -1,6 +1,6 @@
 Type: Package
 Package: packDAMipd
-Title: Decision analysis modelling package that inputs parameter from individual patient level data
+Title: Decision Analysis Modelling Package that Inputs Parameter from Individual Patient Level Data
 Version: 0.1.0
 Authors@R: 
     c(person(given = "Sheeja",
@@ -15,48 +15,43 @@ License: GNU General Public License
 Depends:
     R (>= 3.5.0)
 Imports:
-    car,
-    MASS,
-    readxl,
-    tm,
-    words2number,
-    relaimpo,
-    gvlma,
-    rsq,
-    broom,
-    foreign,
-    tools,
-    pryr,
-    dplyr,
-    ggplot2,
-    ggfortify,
-    ggiraphExtra,
-    reshape2,
-    utils,
-    stats,
-    stringr,
-    data.table,
-    rlang,
-    methods,
-    effects,
-    systemfit,
-    SurvRegCensCov,
-    survival,
-    survminer,
-    lmtest,
     lme4,
     flexsurv,
     grDevices,
     IPDFileCheck,
-    valueEQ5D
+    valueEQ5D,
+    car,
+    ggplot2,
+    stats,
+    stringr,
+    data.table,
+    survival,
+    MASS,
+    SurvRegCensCov,
+    broom,
+    effects,
+    gvlma,
+    ldatools,
+    lmtest,
+    methods,
+    relaimpo,
+    reshape2,
+    rlang,
+    survminer,
+    systemfit,
+    tm,
+    words2number,
+    ISLR
 Suggests: 
+    foreign,
+    dplyr,
     knitr,
     rmarkdown
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 URL: https://github.com/sheejamk/packDAMipd
 BugReports: https://github.com/sheejamk/packDAMipd/issues

@@ -4,8 +4,13 @@
 \alias{get_parameter_def_distribution}
 \title{Get the definition of given parameter distribution defined in a file}
 \usage{
-get_parameter_def_distribution(parameter, paramfile, colnames_paramdistr,
-  strategycol = NA, strategyname = NA)
+get_parameter_def_distribution(
+  parameter,
+  paramfile,
+  colnames_paramdistr,
+  strategycol = NA,
+  strategyname = NA
+)
 }
 \arguments{
 \item{parameter}{parameter of interest}
@@ -26,14 +31,15 @@ Get the definition of given parameter distribution defined in a file
 }
 \details{
 This function reads the parameter distribution from a file and return the parameter obtained
-This assumes that the file contains paramter, distribution
-colnames for paramater values for the distribution are passed on to the function
+This assumes that the file contains parameter, distribution
+colnames for parameter values for the distribution are passed on to the function
 assumes the name of each parameter and value are given in the consecutive columns
-Once the expression is created using the paramters given in the file, t gets checked for correctnemss of
+Once the expression is created using the parameters given in the file, t gets checked for correctness of
 specifying the distribution in R context using the function check_estimate_substitute_proper_params
 and then evaluated.
 }
 \examples{
-paramfile = system.file("extdata", "table_param.csv",package = "packDAMipd")
-a <- get_parameter_def_distribution("rr", paramfile, c("Param1_name", "Param1_value"))
+paramfile <- system.file("extdata", "table_param.csv", package = "packDAMipd")
+a <- get_parameter_def_distribution("rr", paramfile, c("Param1_name",
+"Param1_value"))
 }

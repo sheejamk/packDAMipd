@@ -4,7 +4,9 @@
 \name{adl_scoring}
 \alias{adl_scoring}
 \title{adl_scoring table}
-\format{A 41 by 3 dataframe}
+\format{
+A 41 by 3 dataframe
+}
 \source{
 created on Jan 15, 2020
 }

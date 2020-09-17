@@ -4,9 +4,16 @@
 \alias{use_seemingly_unrelated_regression}
 \title{Bivariate regression for correlated observations}
 \usage{
-use_seemingly_unrelated_regression(param1_to_be_estimated,
-  param2_to_be_estimated, dataset, indep_var, covariates1, covariates2,
-  interaction1, interaction2)
+use_seemingly_unrelated_regression(
+  param1_to_be_estimated,
+  param2_to_be_estimated,
+  dataset,
+  indep_var,
+  covariates1,
+  covariates2,
+  interaction1,
+  interaction2
+)
 }
 \arguments{
 \item{param1_to_be_estimated}{parameter of interest}
@@ -33,10 +40,12 @@ the results of the regression analysis
 Bivariate regression for correlated observations
 }
 \examples{
+\dontrun{
 mydata <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
 results_sureg <- use_seemingly_unrelated_regression("read", "math",
   dataset = mydata,
   indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
   covariates2 = c("as.numeric(ses)", "science"), interaction1 = FALSE, interaction2 = FALSE
 )
+}
 }

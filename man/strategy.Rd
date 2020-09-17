@@ -2,7 +2,7 @@
 % Please edit documentation in R/1_model_functions.R
 \name{strategy}
 \alias{strategy}
-\title{Definition of strategy -or arm}
+\title{Definition of strategy - or arm}
 \usage{
 strategy(trans_mat, states, name, trans_cost = NULL, trans_util = NULL)
 }
@@ -21,14 +21,13 @@ strategy(trans_mat, states, name, trans_cost = NULL, trans_util = NULL)
 object strategy
 }
 \description{
-Definition of strategy -or arm
+Definition of strategy - or arm
 }
 \details{
 Defining strategy keeping all transition matrix, states and names together to use
 in defining Markov model
 }
 \examples{
-
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))

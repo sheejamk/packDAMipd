@@ -21,7 +21,14 @@
 #' upp_values <- define_parameters(cost_direct_med_B = 17740, cost_comm_care_C = 20590)
 #' param_table <- define_parameters_sens_anal(param_list, low_values, upp_values)
 #' @export
+#' @details
+#' Get the parameter list, min and maximum values of the parameters.
+#' The min and max values should have same entries, but they should be contained in param_list too
+#' Copy the exact values of parameters that are in param list but not in min and max values
 define_parameters_sens_anal <- function(param_list, low_values, upp_values) {
+  if (is.null(param_list) | is.null(low_values) |is.null(upp_values)) {
+    stop("Error - one or more of the parameters are null")
+  }
   if (typeof(param_list) != "list" || typeof(low_values) != "list" || typeof(upp_values) != "list") {
     stop("Error - Parameter list should be of type list")
   }
@@ -39,6 +46,7 @@ define_parameters_sens_anal <- function(param_list, low_values, upp_values) {
   }
   for (i in 1:len1) {
     if (!is.na(index1[i])) {
+      # if the name matches copy the parameter values to min and max list
       this_name <- names(low_values_all[index1[i]])
       upp_values_all[index2[i]] <- upp_values[this_name]
       low_values_all[index1[i]] <- low_values[this_name]
@@ -55,38 +63,37 @@ define_parameters_sens_anal <- function(param_list, low_values, upp_values) {
 #' @return result after sensitivity analysis
 #' @examples
 #' param_list <- define_parameters(
-#'   cost_zido = 2278, cost_direct_med_A = 1701,
-#'   cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
-#'   cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
-#'   tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
-#'   tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
-#'   tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
-#'   cost_health_A = "cost_direct_med_A +  cost_comm_care_A",
-#'   cost_health_B = "cost_direct_med_B +  cost_comm_care_B",
-#'   cost_health_C = "cost_direct_med_C +  cost_comm_care_C",
-#'   cost_drug = "cost_zido"
-#' )
+#' cost_zido = 2278, cost_direct_med_A = 1701,
+#' cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
+#' cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
+#' tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
+#' tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
+#' tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
+#' cost_health_A = "cost_direct_med_A +  cost_comm_care_A",
+#' cost_health_B = "cost_direct_med_B +  cost_comm_care_B",
+#' cost_health_C = "cost_direct_med_C +  cost_comm_care_C",
+#' cost_drug = "cost_zido")
 #' low_values <- define_parameters(cost_direct_med_B = 177.4, cost_comm_care_C = 205.9)
 #' upp_values <- define_parameters(cost_direct_med_B = 17740, cost_comm_care_C = 20590)
 #' A <- health_state("A", cost = "cost_health_A +  cost_drug ", utility = 1)
-#' B <- health_state("B", cost = "cost_health_B  +  cost_drug", utility = 1)
-#' C <- health_state("C", cost = "cost_health_C  +  cost_drug", utility = 1)
+#' B <- health_state("B", cost = "cost_health_B + cost_drug", utility = 1)
+#' C <- health_state("C", cost = "cost_health_C + cost_drug", utility = 1)
 #' D <- health_state("D", cost = 0, utility = 0)
 #' tmat <- rbind(c(1, 2, 3, 4), c(NA, 5, 6, 7), c(NA, NA, 8, 9), c(NA, NA, NA, 10))
 #' colnames(tmat) <- rownames(tmat) <- c("A", "B", "C", "D")
-#' tm <- populate_transition_matrix(4, tmat, c(
-#'   "tpAtoA", "tpAtoB", "tpAtoC", "tpAtoD",
-#'   "tpBtoB", "tpBtoC", "tpBtoD", "tpCtoC", "tpCtoD", "tpDtoD"
-#' ), colnames(tmat))
+#' tm <- populate_transition_matrix(4, tmat, c("tpAtoA", "tpAtoB", "tpAtoC",
+#' "tpAtoD","tpBtoB", "tpBtoC", "tpBtoD", "tpCtoC", "tpCtoD", "tpDtoD"), colnames(tmat))
 #' health_states <- combine_state(A, B, C, D)
 #' mono_strategy <- strategy(tm, health_states, "mono")
-#' mono_markov <- markov_model(mono_strategy, 20, c(1, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0),
-#'   discount = c(0.06, 0), param_list
-#' )
+#' mono_markov <- markov_model(mono_strategy, 20, c(1, 0, 0, 0), discount = c(0.06, 0), param_list)
 #' param_table <- define_parameters_sens_anal(param_list, low_values, upp_values)
 #' result <- do_sensitivity_analysis(mono_markov, param_table)
 #' @export
 do_sensitivity_analysis <- function(this_markov, param_table) {
+  #checking for null error
+  if (is.null(this_markov) | is.null(param_table)) {
+    stop("Error - markov model or parameter table can not be null")
+  }
   if (class(this_markov) != "markov_model") {
     stop("Error - the model should be of class markov_model")
   }
@@ -97,22 +104,24 @@ do_sensitivity_analysis <- function(this_markov, param_table) {
   this_markov_param <- this_markov
   no_entries <- length(param_table$param_list)
   all_param <- list()
+  # run the model for all the list of parameters in param table, mean , min and max values
   for (i in 1:no_entries) {
     this_name <- names(param_table$param_list[i])
     if (param_table$param_list[i][[this_name]] != param_table$low_values[i][[this_name]]) {
       this_param_list <- param_table$param_list
       this_param_list[i][[this_name]] <- param_table$low_values[i][[this_name]]
-
       this_markov_low <- markov_model(
         this_markov$strategy, this_markov$cycles, this_markov$initial_state,
-        this_markov$initial_state_costs, this_markov$initial_state_utilities,
-        this_markov$discount, this_param_list
+        this_markov$discount, this_param_list, this_markov$method, this_markov$half_cycle_correction,
+        this_markov$startup_cost, this_markov$startup_util
       )
       this_param_list[i][[this_name]] <- param_table$upp_values[i][[this_name]]
       this_markov_upp <- markov_model(
         this_markov$strategy, this_markov$cycles, this_markov$initial_state,
-        this_markov$initial_state_costs, this_markov$initial_state_utilities,
-        this_markov$discount, this_param_list
+        this_markov$discount,
+        this_param_list,
+        this_markov$method, this_markov$half_cycle_correction,
+        this_markov$startup_cost, this_markov$startup_util
       )
       name_var2 <- paste("low_result", this_name, sep = "_")
       name_var3 <- paste("upp_result", this_name, sep = "_")
@@ -135,18 +144,18 @@ do_sensitivity_analysis <- function(this_markov, param_table) {
 #' @param comparator the strategy to be compared with
 #' @return report in the form of a table
 #' @examples
+#' \dontrun{
 #' param_list <- define_parameters(
-#'   cost_zido = 2278, cost_direct_med_A = 1701,
-#'   cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
-#'   cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
-#'   tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
-#'   tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
-#'   tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
-#'   cost_health_A = "cost_direct_med_A +  cost_comm_care_A",
-#'   cost_health_B = "cost_direct_med_B +  cost_comm_care_B",
-#'   cost_health_C = "cost_direct_med_C +  cost_comm_care_C",
-#'   cost_drug = "cost_zido"
-#' )
+#' cost_zido = 2278, cost_direct_med_A = 1701,
+#' cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
+#' cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
+#' tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
+#' tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
+#' tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
+#' cost_health_A = "cost_direct_med_A +  cost_comm_care_A",
+#' cost_health_B = "cost_direct_med_B +  cost_comm_care_B",
+#' cost_health_C = "cost_direct_med_C +  cost_comm_care_C",
+#' cost_drug = "cost_zido")
 #' low_values <- define_parameters(cost_direct_med_B = 177.4, cost_comm_care_C = 205.9)
 #' upp_values <- define_parameters(cost_direct_med_B = 17740, cost_comm_care_C = 20590)
 #' A <- health_state("A", cost = "cost_health_A +  cost_drug ", utility = 1)
@@ -155,20 +164,21 @@ do_sensitivity_analysis <- function(this_markov, param_table) {
 #' D <- health_state("D", cost = 0, utility = 0)
 #' tmat <- rbind(c(1, 2, 3, 4), c(NA, 5, 6, 7), c(NA, NA, 8, 9), c(NA, NA, NA, 10))
 #' colnames(tmat) <- rownames(tmat) <- c("A", "B", "C", "D")
-#' tm <- populate_transition_matrix(4, tmat, c(
-#'   "tpAtoA", "tpAtoB", "tpAtoC", "tpAtoD",
-#'   "tpBtoB", "tpBtoC", "tpBtoD", "tpCtoC", "tpCtoD", "tpDtoD"
-#' ), colnames(tmat))
+#' tm <- populate_transition_matrix(4, tmat, c("tpAtoA", "tpAtoB", "tpAtoC",
+#' "tpAtoD","tpBtoB", "tpBtoC", "tpBtoD", "tpCtoC", "tpCtoD", "tpDtoD"), colnames(tmat))
 #' health_states <- combine_state(A, B, C, D)
 #' mono_strategy <- strategy(tm, health_states, "mono")
-#' mono_markov <- markov_model(mono_strategy, 20, c(1, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0),
-#'   discount = c(0.06, 0), param_list
-#' )
+#' mono_markov <- markov_model(mono_strategy, 20, c(1, 0, 0, 0), discount = c(0.06, 0), param_list)
 #' param_table <- define_parameters_sens_anal(param_list, low_values, upp_values)
-#' result_dsa_control <- do_sensitivity_analysis(mono_markov, param_table)
-#' report_sensitivity_analysis(result_dsa_control)
+#' result <- do_sensitivity_analysis(mono_markov, param_table)
+#'  reporting <- report_sensitivity_analysis(result)
+#'  }
 #' @export
 report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = NULL, threshold = NULL, comparator = NULL) {
+  if (is.null(result_dsa_control) | typeof(result_dsa_control) != "list")
+    stop("Error - parameter null or not of type list")
+  if (!is.null(result_dsa_control) & typeof(result_dsa_control) != "list")
+    stop("Error - parameter not of type list")
   len <- length(result_dsa_control)
   results_all_param <- data.frame()
   results_cost_util <- data.frame()
@@ -203,6 +213,7 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
       results_icer_nmb <- rbind(results_icer_nmb, results_icer_nmb_upp)
       names <- append(names, this_var_name)
     } else {
+      # markov model results corresponding the default , min and max values
       this_var_result <- result_dsa_control[[this_var_result_name]]
       cost_matr <- this_var_result[["cost_matrix"]]
       util_matr <- this_var_result[["utility_matrix"]]
@@ -240,7 +251,8 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
     return(results_icer_nmb_all)
   } else {
     results_all_param_all <- data.frame(results_all_param)
-    results_all_param_all[["parameter varied"]] <- c(rep(unlist(names)[1], ending - 1), rep(unlist(names)[2], ending - 1))
+    results_all_param_all[["parameter varied"]] <- c(rep(unlist(names)[1], ending - 1),
+                                                     rep(unlist(names)[2], ending - 1))
     cols <- colnames(result_dsa_control$result_cost_direct_med_B$param_matrix)
     results_all_param_all[["estimated param"]] <- rep(cols[2:ending], len / 3)
     colnames(results_all_param_all) <- c("base", "lower", "upper ", "parameter varied", "estimated param")
@@ -263,17 +275,16 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
 #' @return plot of  sensitivity analysis
 #' @examples
 #' param_list <- define_parameters(
-#'   cost_zido = 2278, cost_direct_med_A = 1701,
-#'   cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
-#'   cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
-#'   tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
-#'   tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
-#'   tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
-#'   cost_health_A = "cost_direct_med_A +  cost_comm_care_A",
-#'   cost_health_B = "cost_direct_med_B +  cost_comm_care_B",
-#'   cost_health_C = "cost_direct_med_C +  cost_comm_care_C",
-#'   cost_drug = "cost_zido"
-#' )
+#' cost_zido = 2278, cost_direct_med_A = 1701,
+#' cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
+#' cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
+#' tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
+#' tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
+#' tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
+#' cost_health_A = "cost_direct_med_A +  cost_comm_care_A",
+#' cost_health_B = "cost_direct_med_B +  cost_comm_care_B",
+#' cost_health_C = "cost_direct_med_C +  cost_comm_care_C",
+#' cost_drug = "cost_zido")
 #' low_values <- define_parameters(cost_direct_med_B = 177.4, cost_comm_care_C = 205.9)
 #' upp_values <- define_parameters(cost_direct_med_B = 17740, cost_comm_care_C = 20590)
 #' A <- health_state("A", cost = "cost_health_A +  cost_drug ", utility = 1)
@@ -282,21 +293,42 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
 #' D <- health_state("D", cost = 0, utility = 0)
 #' tmat <- rbind(c(1, 2, 3, 4), c(NA, 5, 6, 7), c(NA, NA, 8, 9), c(NA, NA, NA, 10))
 #' colnames(tmat) <- rownames(tmat) <- c("A", "B", "C", "D")
-#' tm <- populate_transition_matrix(4, tmat, c(
-#'   "tpAtoA", "tpAtoB", "tpAtoC", "tpAtoD",
-#'   "tpBtoB", "tpBtoC", "tpBtoD", "tpCtoC", "tpCtoD", "tpDtoD"
-#' ), colnames(tmat))
+#' tm <- populate_transition_matrix(4, tmat, c("tpAtoA", "tpAtoB", "tpAtoC",
+#' "tpAtoD","tpBtoB", "tpBtoC", "tpBtoD", "tpCtoC", "tpCtoD", "tpDtoD"), colnames(tmat))
 #' health_states <- combine_state(A, B, C, D)
 #' mono_strategy <- strategy(tm, health_states, "mono")
-#' mono_markov <- markov_model(mono_strategy, 20, c(1, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0),
-#'   discount = c(0.06, 0), param_list
-#' )
+#' mono_markov <- markov_model(mono_strategy, 20, c(1, 0, 0, 0), discount = c(0.06, 0), param_list)
 #' param_table <- define_parameters_sens_anal(param_list, low_values, upp_values)
 #' result <- do_sensitivity_analysis(mono_markov, param_table)
-#' plot_dsa(result, "cost")
+#' param_list_treat <- define_parameters(
+#' cost_zido = 3000, cost_direct_med_A = 890,
+#' cost_comm_care_A = 8976, cost_direct_med_B = 2345, cost_comm_care_B = 1278,
+#' cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
+#' tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
+#' tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
+#' tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
+#' cost_health_A = "cost_direct_med_A +  cost_comm_care_A",
+#' cost_health_B = "cost_direct_med_B +  cost_comm_care_B",
+#' cost_health_C = "cost_direct_med_C +  cost_comm_care_C",
+#' cost_drug = "cost_zido")
+#' treat_strategy <- strategy(tm, health_states, "treat")
+#' treat_markov <- markov_model(treat_strategy, 20, c(1, 0, 0, 0),
+#' discount = c(0.06, 0), param_list_treat)
+#' treat_low_values <- define_parameters(cost_direct_med_B = 234.5,
+#' cost_comm_care_C = 694.8)
+#' treat_upp_values <- define_parameters(cost_direct_med_B = 23450,
+#'  cost_comm_care_C = 69480)
+#' param_table_treat <- define_parameters_sens_anal(param_list_treat,
+#' treat_low_values,treat_upp_values)
+#' result_treat <- do_sensitivity_analysis(treat_markov, param_table)
+#' plot_dsa(result,"NMB","range",result_treat, 20000, "treat")
 #' @export
 plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_treat = NULL,
                      threshold = NULL, comparator = NULL, currency = "GBP") {
+
+  if (is.null(type) | is.null(result_dsa_control) | is.null(plotfor)) {
+    stop("Error -Parameters can not be NULL")
+  }
   if (type != "range" && type != "difference") {
     stop("Error -type should be either range or difference")
   }

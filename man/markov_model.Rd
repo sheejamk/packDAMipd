@@ -4,8 +4,17 @@
 \alias{markov_model}
 \title{Definition of Markov model and trace}
 \usage{
-markov_model(current_strategy, cycles, initial_state, initial_state_costs,
-  initial_state_utilities, discount = c(0, 0), parameter_values = NULL)
+markov_model(
+  current_strategy,
+  cycles,
+  initial_state,
+  discount = c(0, 0),
+  parameter_values = NULL,
+  method = "half cycle correction",
+  half_cycle_correction = TRUE,
+  startup_cost = NULL,
+  startup_util = NULL
+)
 }
 \arguments{
 \item{current_strategy}{strategy object}
@@ -14,13 +23,17 @@ markov_model(current_strategy, cycles, initial_state, initial_state_costs,
 
 \item{initial_state}{value of states initially}
 
-\item{initial_state_costs}{any  costs for being in each state initially}
-
-\item{initial_state_utilities}{any  utilities for being in each state initially}
-
 \item{discount}{rate of discount for costs and qalys}
 
-\item{parameter_values}{parameter values for assigning health states and probabilities}
+\item{parameter_values}{parameters for assigning health states and probabilities}
+
+\item{method}{what type of half cycle correction needed}
+
+\item{half_cycle_correction}{boolean to indicate half cycle correction}
+
+\item{startup_cost}{cost of states initially}
+
+\item{startup_util}{utility of states initially if any}
 }
 \value{
 Markov trace
@@ -29,11 +42,12 @@ Markov trace
 Definition of Markov model and trace
 }
 \details{
-Use the strategy, cycles, inital state values creating the markov model and trace
-As many probabilities /cost/utility value depend on age/time the
-evaluation and assignemnt happens during each cycle. At the heart it does a matrix mulitplication
+Use the strategy, cycles, initial state values creating the markov model and trace
+As many probabilities /cost/utility value depend on age/time the evaluation
+and assignment happens during each cycle. At the heart it does a matrix multiplication
 using the previous row of the trace matrix and the columns of the transition matrix.
-Also checks for population loss, calculates cumulative costs and qalys (accounts for discouting too)
+Also checks for population loss, calculates cumulative costs and qalys
+(accounts for discounting and half cycle correction)
 }
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))
@@ -43,5 +57,5 @@ a <- health_state("Healthy", 1, 1, 0, FALSE)
 b <- health_state("Dead", 1, 0, 0, TRUE)
 health_states <- combine_state(a, b)
 this.strategy <- strategy(tm, health_states, "intervention")
-markov_model(this.strategy, 10, c(1, 0), c(0, 0), c(0, 0))
+markov_model(this.strategy, 10, c(1, 0))
 }

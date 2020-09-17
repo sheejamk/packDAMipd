@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Sheeja Manchira Krishnan" />
+
+<meta name="date" content="2020-09-15" />
+
+<title>Simple sick sicker model</title>
+
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Simple sick sicker model</h1>
+<h4 class="author">Sheeja Manchira Krishnan</h4>
+<h4 class="date">2020-09-15</h4>
+
+
+
+<p>This document demonstrates developing For a simple markov model explained in reference using packDAMipd. The code using the package “dampack” is shown <a href="https://github.com/DARTH-git/Cohort-modeling-tutorial/blob/master/R/STM_01.R" class="uri">https://github.com/DARTH-git/Cohort-modeling-tutorial/blob/master/R/STM_01.R</a></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(packDAMipd)</span></code></pre></div>
+<p>Define health states. Each health state must have a name, cost, and utility. The cost and utility are the state values. That means the individuals having the state membership will occur the particular cost and utility. If any cost/utility due to transitions occur, they need to specify similar to defining the transition probabilities.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>H &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class="st">&quot;H&quot;</span>, <span class="dt">cost =</span> <span class="st">&quot;c_H &quot;</span>, <span class="dt">utility =</span> <span class="st">&quot;u_H&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>S1 &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class="st">&quot;S1&quot;</span>, <span class="dt">cost =</span> <span class="st">&quot;c_S1&quot;</span>,<span class="dt">utility =</span> <span class="st">&quot;u_S1&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>S2 &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class="st">&quot;S2&quot;</span>, <span class="dt">cost =</span> <span class="st">&quot;c_S2&quot;</span>,<span class="dt">utility =</span> <span class="st">&quot;u_S2&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>D &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class="st">&quot;D&quot;</span>, <span class="dt">cost =</span> <span class="st">&quot;c_D &quot;</span>,<span class="dt">utility =</span> <span class="st">&quot;u_D&quot;</span>)</span></code></pre></div>
+<p>Define allowed transition probabilities and number them. The below matrix is numbered so that the maximum entry in the matrix gives the total number of allowed transitions. Column names and row names are just the names of the health states.“NA” indicates a non allowed transition.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>tmat &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="ot">NA</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>),<span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="dv">8</span>, <span class="dv">9</span>), <span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>, <span class="dv">10</span>))</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">colnames</span>(tmat) &lt;-<span class="st"> </span><span class="kw">rownames</span>(tmat) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;H&quot;</span>,<span class="st">&quot;S1&quot;</span> ,<span class="st">&quot;S2&quot;</span>,<span class="st">&quot;D&quot;</span>)</span></code></pre></div>
+<p>As there is cost and utility during some transitions, we define tmat_cost and tmat_utility similar to defining transition probability. Again only non zero transition cost and transition utility are non NA.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>tmat_cost &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="ot">NA</span>, <span class="dv">1</span>, <span class="ot">NA</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>, <span class="dv">3</span>),<span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>, <span class="dv">4</span>), <span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>))</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">colnames</span>(tmat_cost) &lt;-<span class="st"> </span><span class="kw">rownames</span>(tmat_cost) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;H&quot;</span>, <span class="st">&quot;S1&quot;</span>, <span class="st">&quot;S2&quot;</span>, <span class="st">&quot;D&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a>tmat_util &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="ot">NA</span>, <span class="dv">1</span>, <span class="ot">NA</span>, <span class="ot">NA</span>), <span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>),<span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>), <span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>))</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">colnames</span>(tmat_util) &lt;-<span class="st"> </span><span class="kw">rownames</span>(tmat_util) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;H&quot;</span>, <span class="st">&quot;S1&quot;</span>, <span class="st">&quot;S2&quot;</span>, <span class="st">&quot;D&quot;</span>)</span></code></pre></div>
+<p>Now we define the transition matrix , transition cost matrix and transition utility matrix (the latter two are optional,we use only if there are cost/utility during transitions) using the tmat defined earlier, and number of health states.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>tm &lt;-<span class="st"> </span><span class="kw">populate_transition_matrix</span>(<span class="dv">4</span>, tmat, <span class="kw">c</span>(<span class="st">&quot;p_HH&quot;</span>,<span class="st">&quot;p_HS1&quot;</span>,<span class="st">&quot;p_HD&quot;</span>,<span class="st">&quot;p_S1H&quot;</span>,</span>
+<span id="cb5-2"><a href="#cb5-2"></a>                                   <span class="st">&quot;p_S1S1&quot;</span>, <span class="st">&quot;p_S1S2&quot;</span>, <span class="st">&quot;p_S1D&quot;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>                                   <span class="st">&quot;p_S2S2&quot;</span>,<span class="st">&quot;p_S2D&quot;</span>,<span class="st">&quot;p_DD&quot;</span> ), <span class="kw">colnames</span>(tmat))</span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="st">&quot;The transition matrix as explained&quot;</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="op">&gt;</span><span class="st">     </span>transition number probabiliy name from from state to to state</span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">1</span><span class="op">:</span><span class="st">                 </span><span class="dv">1</span>     prob_H_to_H    <span class="dv">1</span>          H  <span class="dv">1</span>        H</span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">2</span><span class="op">:</span><span class="st">                 </span><span class="dv">2</span>    prob_H_to_S1    <span class="dv">1</span>          H  <span class="dv">2</span>       S1</span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">3</span><span class="op">:</span><span class="st">                 </span><span class="dv">3</span>     prob_H_to_D    <span class="dv">1</span>          H  <span class="dv">4</span>        D</span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">4</span><span class="op">:</span><span class="st">                 </span><span class="dv">4</span>    prob_S1_to_H    <span class="dv">2</span>         S1  <span class="dv">1</span>        H</span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">5</span><span class="op">:</span><span class="st">                 </span><span class="dv">5</span>   prob_S1_to_S1    <span class="dv">2</span>         S1  <span class="dv">2</span>       S1</span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">6</span><span class="op">:</span><span class="st">                 </span><span class="dv">6</span>   prob_S1_to_S2    <span class="dv">2</span>         S1  <span class="dv">3</span>       S2</span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">7</span><span class="op">:</span><span class="st">                 </span><span class="dv">7</span>    prob_S1_to_D    <span class="dv">2</span>         S1  <span class="dv">4</span>        D</span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">8</span><span class="op">:</span><span class="st">                 </span><span class="dv">8</span>   prob_S2_to_S2    <span class="dv">3</span>         S2  <span class="dv">3</span>       S2</span>
+<span id="cb5-14"><a href="#cb5-14"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">9</span><span class="op">:</span><span class="st">                 </span><span class="dv">9</span>    prob_S2_to_D    <span class="dv">3</span>         S2  <span class="dv">4</span>        D</span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span><span class="op">:</span><span class="st">                </span><span class="dv">10</span>     prob_D_to_D    <span class="dv">4</span>          D  <span class="dv">4</span>        D</span>
+<span id="cb5-16"><a href="#cb5-16"></a>tm_cost &lt;-<span class="st"> </span><span class="kw">transition_cost_util</span>(<span class="dv">4</span>, tmat_cost, <span class="kw">c</span>(<span class="st">&quot;ic_HS1&quot;</span>,<span class="st">&quot;ic_D&quot;</span>,<span class="st">&quot;ic_D&quot;</span>,<span class="st">&quot;ic_D&quot;</span> ), <span class="kw">colnames</span>(tmat_cost))</span>
+<span id="cb5-17"><a href="#cb5-17"></a>tm_util &lt;-<span class="st"> </span><span class="kw">transition_cost_util</span>(<span class="dv">4</span>, tmat_util, <span class="kw">c</span>(<span class="st">&quot;du_HS1&quot;</span> ), <span class="kw">colnames</span>(tmat_util) )</span></code></pre></div>
+<p>Now define the parameter list using define_parameters(). If there is any formula or expression to be evaluated during the cycle, it has be given as a string (see below). For example. p_S1D is calculated using a formula with parameters p_HD and hr_S1 and is thus given as a string expression.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>param_list &lt;-<span class="st"> </span><span class="kw">define_parameters</span>(<span class="dt">p_HD =</span> <span class="fl">0.002</span>, <span class="dt">p_HS1  =</span> <span class="fl">0.15</span>, <span class="dt">p_S1H =</span> <span class="fl">0.5</span>,</span>
+<span id="cb6-2"><a href="#cb6-2"></a>                     <span class="dt">p_S1S2  =</span> <span class="fl">0.105</span>,<span class="dt">hr_S1   =</span> <span class="dv">3</span>,<span class="dt">hr_S2   =</span> <span class="dv">10</span>,</span>
+<span id="cb6-3"><a href="#cb6-3"></a>                     <span class="dt">p_S1D  =</span> <span class="st">&quot;1 - exp(log(1 - p_HD) * hr_S1)&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4"></a>                     <span class="dt">p_S2D  =</span> <span class="st">&quot;1 - exp(log(1 - p_HD) * hr_S2)&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5"></a>                     <span class="dt">p_HH =</span> <span class="st">&quot;1 - (p_HS1 + p_HD)&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6"></a>                     <span class="dt">p_S1S1 =</span> <span class="st">&quot;1 - (p_S1H + p_S1S2+ p_S1D)&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7"></a>                     <span class="dt">p_S2S2 =</span> <span class="st">&quot;1 - ( p_S2D)&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8"></a>                     <span class="dt">p_DD =</span> <span class="dv">1</span>,</span>
+<span id="cb6-9"><a href="#cb6-9"></a>                     <span class="dt">c_H   =</span> <span class="dv">2000</span>,<span class="dt">c_S1  =</span> <span class="dv">4000</span>,<span class="dt">c_S2  =</span> <span class="dv">15000</span>,</span>
+<span id="cb6-10"><a href="#cb6-10"></a>                     <span class="dt">c_D   =</span> <span class="dv">0</span>, <span class="dt">c_Trt =</span> <span class="dv">12000</span>,<span class="dt">u_H   =</span> <span class="dv">1</span>,</span>
+<span id="cb6-11"><a href="#cb6-11"></a>                     <span class="dt">u_S1  =</span> <span class="fl">0.75</span>,<span class="dt">u_S2  =</span> <span class="fl">0.5</span>,<span class="dt">u_D   =</span> <span class="dv">0</span>,</span>
+<span id="cb6-12"><a href="#cb6-12"></a>                     <span class="dt">u_Trt =</span> <span class="fl">0.95</span>, <span class="dt">du_HS1 =</span> <span class="fl">-0.01</span>,<span class="dt">ic_HS1 =</span> <span class="dv">1000</span>,<span class="dt">ic_D   =</span> <span class="dv">2000</span> )</span></code></pre></div>
+<p>We define the strategy “Usual care” by using the function ‘strategy’ with the health states combined (using combine_state()), the transition matrix (tm), transition cost and utility matrices. Using the defined strategy ‘uc_strategy’, we run the markov model using markov_model() with cycles, initial states, initial cost, initial utility values, discount rates and parameter list. The results of the markov model (trace matrix) can be plotted using plot_model() function.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>health_states &lt;-<span class="st"> </span><span class="kw">combine_state</span>(H,S1,S2,D)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>uc_strategy &lt;-<span class="st"> </span><span class="kw">strategy</span>(tm, health_states, <span class="st">&quot;Usual care&quot;</span>,tm_cost,tm_util)</span>
+<span id="cb7-3"><a href="#cb7-3"></a>uc_markov &lt;-<span class="st"> </span><span class="kw">markov_model</span>( uc_strategy, <span class="dv">85</span>, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="kw">c</span>(<span class="fl">0.03</span>,<span class="fl">0.03</span>),param_list, <span class="dt">method =</span> <span class="st">&quot;half cycle correction&quot;</span>, <span class="ot">TRUE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">plot_model</span>(uc_markov)</span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="op">&gt;</span><span class="st"> </span>Warning<span class="op">:</span><span class="st"> </span>Use of <span class="st">`</span><span class="dt">this_trace_melted$Cycles</span><span class="st">`</span> is discouraged. Use <span class="st">`</span><span class="dt">Cycles</span><span class="st">`</span> instead.</span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="op">&gt;</span><span class="st"> </span>Warning<span class="op">:</span><span class="st"> </span>Use of <span class="st">`</span><span class="dt">this_trace_melted$value</span><span class="st">`</span> is discouraged. Use <span class="st">`</span><span class="dt">value</span><span class="st">`</span> instead.</span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="op">&gt;</span><span class="st"> </span>Warning<span class="op">:</span><span class="st"> </span>Use of <span class="st">`</span><span class="dt">this_trace_melted$variable</span><span class="st">`</span> is discouraged. Use <span class="st">`</span><span class="dt">variable</span><span class="st">`</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="op">&gt;</span><span class="st"> </span>instead.</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Similarly, we define the health states, strategy, and markov model for the “New treatment”. Parameter list is the same as that defined for the usual care. Costs for the health states in the new treatment strategy differs, thus we need to redefine the health states.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>H &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class="st">&quot;H&quot;</span>, <span class="dt">cost =</span> <span class="st">&quot;c_H &quot;</span>, <span class="dt">utility =</span> <span class="st">&quot;u_H&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2"></a>S1 &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class="st">&quot;S1&quot;</span>, <span class="dt">cost =</span> <span class="st">&quot;c_S1 + c_Trt &quot;</span>,<span class="dt">utility =</span> <span class="st">&quot;u_Trt&quot;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3"></a>S2 &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class="st">&quot;S2&quot;</span>, <span class="dt">cost =</span> <span class="st">&quot;c_S2 + c_Trt&quot;</span>,<span class="dt">utility =</span> <span class="st">&quot;u_S2&quot;</span>)</span>
+<span id="cb8-4"><a href="#cb8-4"></a>D &lt;-<span class="st"> </span><span class="kw">health_state</span>(<span class="st">&quot;D&quot;</span>, <span class="dt">cost =</span> <span class="st">&quot;c_D &quot;</span>,<span class="dt">utility =</span> <span class="st">&quot;u_D&quot;</span>)</span>
+<span id="cb8-5"><a href="#cb8-5"></a>health_states &lt;-<span class="st"> </span><span class="kw">combine_state</span>(H,S1,S2,D)</span>
+<span id="cb8-6"><a href="#cb8-6"></a>trt_strategy &lt;-<span class="st"> </span><span class="kw">strategy</span>(tm, health_states, <span class="st">&quot;New treatment&quot;</span>,tm_cost,tm_util)</span>
+<span id="cb8-7"><a href="#cb8-7"></a>trt_markov &lt;-<span class="st"> </span><span class="kw">markov_model</span>(<span class="dt">current_strategy =</span> trt_strategy, <span class="dt">cycles =</span> <span class="dv">85</span>, <span class="dt">initial_state =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="dt">discount =</span> <span class="kw">c</span>(<span class="fl">0.03</span>,<span class="fl">0.03</span>), <span class="dt">parameter_values =</span> param_list,<span class="dt">method =</span> <span class="st">&quot;half cycle correction&quot;</span>,<span class="ot">TRUE</span>)</span></code></pre></div>
+<p>Once we have the results form the markov models for both the strategies, we combine these two to define list_markov. Finally we obtain incremental cost effectiveness ratio (ICER) and net monetary benefit (NMB) for the cost effectiveness analysis using the function calculate_icer_nmb(). The results of the cost effectiveness acceptability curve(CEAC) can be plotted using plot_ceac function as shown below. For calculating NMB, threshold value and the name of the comparator should be provided, while for plotting CEAC, range of values of thresholds should be provided along with the name of the comparator.</p>
+<p>The reports the results as follows which is the same as obtained using packDAMipd.</p>
+<p>The cost of usual care obtained from <a href="https://github.com/DARTH-git/Cohort-modeling-tutorial/blob/master/R/STM_01.R" class="uri">https://github.com/DARTH-git/Cohort-modeling-tutorial/blob/master/R/STM_01.R</a> is 156,703 USD while that of the new treatment is 287,912 USD. The QALYs for the usual care and the new treatment are 21.556 and 22.289 respectively. The ICER obtained is 178,792.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>list_markov &lt;-<span class="st"> </span><span class="kw">combine_markov</span>(uc_markov, trt_markov)</span>
+<span id="cb9-2"><a href="#cb9-2"></a>icerandnamb =<span class="st"> </span><span class="kw">calculate_icer_nmb</span>(list_markov, <span class="dt">threshold =</span> <span class="dv">20000</span>, <span class="dt">comparator =</span> <span class="st">&quot;Usual care&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">plot_ceac</span>(list_markov,<span class="dt">threshold_values =</span> <span class="kw">c</span>(<span class="dv">1000</span>,<span class="dv">2000</span>,<span class="dv">5000</span>,<span class="dv">7000</span>,<span class="dv">10000</span>,<span class="dv">150000</span>,<span class="dv">20000</span>), <span class="dt">comparator =</span> <span class="st">&quot;Usual care&quot;</span> , <span class="dt">currency =</span> <span class="st">&quot;USD&quot;</span>)</span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="op">&gt;</span><span class="st"> </span>Warning<span class="op">:</span><span class="st"> </span>Use of <span class="st">`</span><span class="dt">nmb_all$Threshold</span><span class="st">`</span> is discouraged. Use <span class="st">`</span><span class="dt">Threshold</span><span class="st">`</span> instead.</span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="op">&gt;</span><span class="st"> </span>Warning<span class="op">:</span><span class="st"> </span>Use of <span class="st">`</span><span class="dt">nmb_all$NMB</span><span class="st">`</span> is discouraged. Use <span class="st">`</span><span class="dt">NMB</span><span class="st">`</span> instead.</span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="op">&gt;</span><span class="st"> </span>Warning<span class="op">:</span><span class="st"> </span>Use of <span class="st">`</span><span class="dt">nmb_all$Threshold</span><span class="st">`</span> is discouraged. Use <span class="st">`</span><span class="dt">Threshold</span><span class="st">`</span> instead.</span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="op">&gt;</span><span class="st"> </span>Warning<span class="op">:</span><span class="st"> </span>Use of <span class="st">`</span><span class="dt">nmb_all$NMB</span><span class="st">`</span> is discouraged. Use <span class="st">`</span><span class="dt">NMB</span><span class="st">`</span> instead.</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

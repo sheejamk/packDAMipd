@@ -4,13 +4,12 @@
 \alias{populate_transition_matrix}
 \title{Populate transition matrix}
 \usage{
-populate_transition_matrix(no_states, tmat, list_prob,
-  name_states = NULL)
+populate_transition_matrix(no_states, tmat, list_prob, name_states = NULL)
 }
 \arguments{
 \item{no_states}{number of the health states}
 
-\item{tmat}{A transition matrix in the format from thepackage 'mstate'}
+\item{tmat}{A transition matrix in the format from the package 'mstate'}
 
 \item{list_prob}{list of probabilities as in the order of transitions (row wise)}
 

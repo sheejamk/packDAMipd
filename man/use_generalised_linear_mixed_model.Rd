@@ -2,13 +2,21 @@
 % Please edit documentation in R/2a_parameter_estimation_functions.R
 \name{use_generalised_linear_mixed_model}
 \alias{use_generalised_linear_mixed_model}
-\title{Function for mixed effect regression}
+\title{Function for generalised linear mixed model}
 \usage{
-use_generalised_linear_mixed_model(param_to_be_estimated, dataset, fix_eff,
-  fix_eff_interact_vars, random_intercept_vars,
-  nested_intercept_vars_pairs, cross_intercept_vars,
-  uncorrel_slope_intercept_pairs, random_slope_intercept_pairs, family,
-  link)
+use_generalised_linear_mixed_model(
+  param_to_be_estimated,
+  dataset,
+  fix_eff,
+  fix_eff_interact_vars,
+  random_intercept_vars,
+  nested_intercept_vars_pairs,
+  cross_intercept_vars,
+  uncorrel_slope_intercept_pairs,
+  random_slope_intercept_pairs,
+  family,
+  link
+)
 }
 \arguments{
 \item{param_to_be_estimated}{column name of dependent variable}
@@ -27,7 +35,7 @@ use_generalised_linear_mixed_model(param_to_be_estimated, dataset, fix_eff,
 
 \item{uncorrel_slope_intercept_pairs, }{variables with no correlated intercepts}
 
-\item{random_slope_intercept_pairs, }{random slopes intercept pairs - this is alist of paired variables}
+\item{random_slope_intercept_pairs, }{random slopes intercept pairs - this is a list of paired variables}
 
 \item{family, }{family of distributions for the response variable}
 
@@ -37,22 +45,5 @@ use_generalised_linear_mixed_model(param_to_be_estimated, dataset, fix_eff,
 result regression result with plot if success and -1, if failure
 }
 \description{
-Function for mixed effect regression
-}
-\examples{
-hdp <- read.csv("https://stats.idre.ucla.edu/stat/data/hdp.csv")
-hdp <- within(hdp, {
-  Married <- factor(Married, levels = 0:1, labels = c("no", "yes"))
-  DID <- factor(DID)
-  HID <- factor(HID)
-})
-result <-
-  use_generalised_linear_mixed_model("remission",
-    dataset = hdp,
-    fix_eff = c("IL6", "CRP", "CancerStage", "LengthofStay", "Experience"),
-    fix_eff_interact_vars = NULL, random_intercept_vars = c("DID"),
-    nested_intercept_vars_pairs = NULL, cross_intercept_vars = c("DID"),
-    uncorrel_slope_intercept_pairs = NULL, random_slope_intercept_pairs = NULL,
-    family = "binomial", link = NA
-  )
+Function for generalised linear mixed model
 }

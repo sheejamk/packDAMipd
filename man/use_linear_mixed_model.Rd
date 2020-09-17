@@ -4,10 +4,17 @@
 \alias{use_linear_mixed_model}
 \title{Function for mixed effect regression}
 \usage{
-use_linear_mixed_model(param_to_be_estimated, dataset, fix_eff,
-  fix_eff_interact_vars, random_intercept_vars,
-  nested_intercept_vars_pairs, cross_intercept_vars,
-  uncorrel_slope_intercept_pairs, random_slope_intercept_pairs)
+use_linear_mixed_model(
+  param_to_be_estimated,
+  dataset,
+  fix_eff,
+  fix_eff_interact_vars,
+  random_intercept_vars,
+  nested_intercept_vars_pairs,
+  cross_intercept_vars,
+  uncorrel_slope_intercept_pairs,
+  random_slope_intercept_pairs
+)
 }
 \arguments{
 \item{param_to_be_estimated}{column name of dependent variable}
@@ -26,7 +33,7 @@ use_linear_mixed_model(param_to_be_estimated, dataset, fix_eff,
 
 \item{uncorrel_slope_intercept_pairs, }{variables with no correlated intercepts}
 
-\item{random_slope_intercept_pairs, }{random slopes intercept pairs - this is alist of paired variables}
+\item{random_slope_intercept_pairs, }{random slopes intercept pairs - this is a list of paired variables}
 }
 \value{
 result regression result with plot if success and -1, if failure
@@ -35,16 +42,17 @@ result regression result with plot if success and -1, if failure
 Function for mixed effect regression
 }
 \examples{
-dataset <-
-  read.table("http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/R_SC/Module9/lmm.data.txt",
-    header = TRUE, sep = ",", na.strings = "NA", dec = ".", strip.white = TRUE
-  )
+
+datafile <- system.file("extdata", "data_linear_mixed_model.csv", package = "packDAMipd")
+dataset = utils::read.table(datafile, header = TRUE, sep = ",", na.strings = "NA",
+dec = ".", strip.white = TRUE)
+\dontrun{
 result <- use_linear_mixed_model("extro",
   dataset = dataset,
   fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
   random_intercept_vars = c("school", "class"),
   nested_intercept_vars_pairs = list(c("school", "class")),
   cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-  random_slope_intercept_pairs = NULL
-)
+  random_slope_intercept_pairs = NULL)
+}
 }

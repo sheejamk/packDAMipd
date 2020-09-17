@@ -1,4 +1,4 @@
-#' cost matric
+#' cost matrix
 #' @format A 11 by 2 dataframe
 #' @source  created on Nov 26, 2019 from
 #' tmat <- rbind(c(1, 2), c(3, 4))
@@ -48,3 +48,8 @@
 #' @format A 41 by 3 dataframe
 #' @source  created on Jan 15, 2020
 "adl_scoring"
+
+#' Parameter table created
+#' @format A 2 coulmn 1 observation
+#' @source  created on September 5, 2020
+"blank"

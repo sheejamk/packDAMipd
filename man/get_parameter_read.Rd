@@ -4,8 +4,7 @@
 \alias{get_parameter_read}
 \title{Get the parameter values from reading a file}
 \usage{
-get_parameter_read(parameter, paramfile, strategycol = NA,
-  strategyname = NA)
+get_parameter_read(parameter, paramfile, strategycol = NA, strategyname = NA)
 }
 \arguments{
 \item{parameter}{parameter of interest}
@@ -24,12 +23,11 @@ Get the parameter values from reading a file
 }
 \details{
 This function read the parameter from a file given that
-the file has these column names (atleast) Parameter and Value
-Srategy col and name are optional. Check if the data file contains column names parameter a
-value and get the results.
+the file has these column names (at least) Parameter and Value
+Strategy col and name are optional. Check if the data file contains column names parameter
+and value and then get the results.
 }
 \examples{
-a <- get_parameter_read("cost_IT", paramfile = system.file("extdata", "table_param.csv",
-  package = "packDAMipd"
-))
+a <- get_parameter_read("cost_IT", paramfile = system.file("extdata",
+"table_param.csv", package = "packDAMipd"))
 }
