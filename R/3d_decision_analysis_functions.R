@@ -196,6 +196,7 @@ check_list_markov_models <- function(list_markov) {
 #' @param currency currency
 #' @return plots
 #' @examples
+#' \dontrun{
 #' well <- health_state("well", cost = 0, utility = 1)
 #' disabled <- health_state("disabled", cost = 100, utility = 1)
 #' dead <- health_state("dead", cost = 0, utility = 0)
@@ -216,6 +217,7 @@ check_list_markov_models <- function(list_markov) {
 #' sec_markov <- markov_model(this.strategy, 24, c(1000, 0, 0), c(0, 0))
 #' list_markov <- combine_markov(this_markov, sec_markov)
 #' plot_ceac(list_markov, c(1000, 2000, 3000), comparator = "control")
+#' }
 #' @export
 plot_ceac <- function(list_markov, threshold_values, comparator, currency = "GBP") {
   nmb_all <- matrix(0, ncol = 2)
