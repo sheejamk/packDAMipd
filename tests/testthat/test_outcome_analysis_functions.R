@@ -38,6 +38,7 @@ test_that("testing adding EQ5D5L values to the data", {
     "qol.MO" = c(1, 2), "qol.SC" = c(1, 2), "qol.UA" = c(1, 2),
     "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)
   )
+  library(valueEQ5D)
   results <- map_eq5d5Lto3L_VanHout(trial_data, NA)
   expect_equal(results$EQ5D3L_from5L, c(1, 0.5919117))
   this_data <- data.table::data.table("Age" = c("k", 15), "sex" = c("m", "f"))
