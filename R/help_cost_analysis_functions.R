@@ -671,7 +671,8 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
   } else {
     index <- stringr::str_locate(given_time, " ")
     first_part <- stringr::str_sub(given_time, 1, index[1] - 1)
-    if (!is.numeric(first_part)) {
+    result = sum(is.na(suppressWarnings(is.numeric(first_part))))
+    if (result > 0) {
       out <- tryCatch(
         {
           as.numeric(unlist(word2num(first_part))[2])
