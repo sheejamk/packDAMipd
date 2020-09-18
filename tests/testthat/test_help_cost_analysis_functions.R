@@ -17,8 +17,32 @@ test_that("testing converting frequency to different basis", {
 ###############################################################################
 context("testing converting unit to different basis")
 test_that("testing converting unit to different basis", {
-  expect_equal(convert_unit_diff_basis("mg"),1)
-  expect_equal(convert_unit_diff_basis("gm"),1000)
-  expect_equal(convert_unit_diff_basis("l", "ml"),1000)
-  expect_error(convert_unit_diff_basis("twiceday", "mg"))
+  expect_equal(convert_weight_diff_basis("mg"),1)
+  expect_equal(convert_weight_diff_basis("gm"),1000)
+  expect_error(convert_weight_diff_basis("l", "ml"))
+  expect_error(convert_weight_diff_basis("twiceday", "mg"))
+})
+###############################################################################
+context("testing converting volume to different basis")
+test_that("testing converting volume to different basis", {
+  expect_equal(convert_volume_basis("ml"),1)
+  expect_equal(convert_volume_basis("l"),1000)
+  expect_equal(convert_volume_basis("l", "ml"),1000)
+  expect_error(convert_volume_basis("mg"))
+})
+###############################################################################
+context("testing converting weight per time to different basis")
+test_that("testing converting weight per time to different basis", {
+  expect_equal(convert_wtpertimediff_basis("mg/day"),41.6667, tol = 1e-3)
+  expect_equal(convert_wtpertimediff_basis("mcg/hr"),1)
+  expect_equal(convert_wtpertimediff_basis("mg/day", "mcg/day"),1000)
+  expect_error(convert_wtpertimediff_basis("mg"))
+})
+###############################################################################
+context("testing converting to different time period")
+test_that("testing converting to given time period", {
+  expect_equal(convert_to_given_timeperiod("4 weeks"),28)
+  expect_equal(convert_to_given_timeperiod("2 months"),60)
+  expect_equal(convert_to_given_timeperiod("1 year", "day"),365)
+  expect_error(convert_to_given_timeperiod("mg"))
 })

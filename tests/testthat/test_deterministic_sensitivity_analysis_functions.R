@@ -50,7 +50,7 @@ test_that("testing doing deterministic sensitivity analysis", {
   health_states <- combine_state(A, B, C)
   mono_strategy <- strategy(tm, health_states, "mono")
   mono_markov <- markov_model(mono_strategy, 20, discount = c(0.06, 0),
-                              initial_state =c(1,0,0),param_list)
+                              initial_state = c(1,0,0),param_list)
   param_table <- define_parameters_sens_anal(param_list, low_values, upp_values)
   result <- do_sensitivity_analysis(mono_markov, param_table)
   this_names <- c("result_cost_direct_med_B", "low_result_cost_direct_med_B", "upp_result_cost_direct_med_B")
@@ -76,8 +76,8 @@ test_that("testing reporting deterministic sensitivity analysis", {
     cost_health_A = "cost_direct_med_A",
     cost_health_B = "cost_direct_med_B"
   )
-  low_values <- define_parameters(cost_direct_med_B = 177.4)
-  upp_values <- define_parameters(cost_direct_med_B = 17740)
+  low_values <- define_parameters(cost_direct_med_A = 170.1,cost_direct_med_B = 177.4)
+  upp_values <- define_parameters(cost_direct_med_A = 17010,cost_direct_med_B = 17740)
   A <- health_state("A", cost = "cost_health_A ", utility = 1)
   B <- health_state("B", cost = "cost_health_B", utility = 1)
   C <- health_state("C", cost = 0, utility = 0)
@@ -89,7 +89,7 @@ test_that("testing reporting deterministic sensitivity analysis", {
   ), colnames(tmat))
   health_states <- combine_state(A, B, C)
   mono_strategy <- strategy(tm, health_states, "mono")
-  mono_markov <- markov_model(mono_strategy, 20, initial_state =c(1,0,0),
+  mono_markov <- markov_model(mono_strategy, 20, initial_state = c(1,0,0),
                               discount = c(0.06, 0),param_list)
   param_table <- define_parameters_sens_anal(param_list, low_values, upp_values)
   result <- do_sensitivity_analysis(mono_markov, param_table)

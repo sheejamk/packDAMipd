@@ -212,7 +212,7 @@ microcosting_tablets_patches <- function(form,ind_part_data,
       }
       total_med_basis <- how_many_taken * freq_multiplier
       if (toupper(form) == "TABLET" | toupper(form) == "TABLETS")
-        unit_multiplier <- convert_unit_diff_basis(this_unit, unit_used_costing)
+        unit_multiplier <- convert_weight_diff_basis(this_unit, unit_used_costing)
       else
         unit_multiplier <- convert_wtpertimediff_basis(this_unit, unit_used_costing)
       if (unit_multiplier != 1) {
@@ -329,8 +329,6 @@ microcosting_liquids <- function(ind_part_data,
     stop(paste("Error - the variables can not be NULL or NA, check the variable(s)",
                names_check[indices]))
   }
-
-
   # check columns exist in individual data
   info_list <- c(name_med, dose_med, dose_unit, bottle_size, bottle_remain)
   checks <- sapply(info_list, IPDFileCheck::check_column_exists, ind_part_data)

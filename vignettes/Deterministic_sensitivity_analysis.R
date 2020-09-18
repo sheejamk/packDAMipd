@@ -2,7 +2,7 @@
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = ">",
- fig.width = 6, 
+ fig.width = 6,
  fig.height = 4
 )
 
@@ -142,8 +142,6 @@ comb_markov <- markov_model(comb_strategy, 20, c(1, 0,0,0),discount = c(0.06,0.0
 min_values <- define_parameters(cost_direct_med_B = 177.4,cost_comm_care_C = 205.9)
 max_values <- define_parameters(cost_direct_med_B = 17740,cost_comm_care_C = 20590)
 param_table <- define_parameters_sens_anal(mono_params, min_values, max_values)
-undebug(do_sensitivity_analysis)
-undebug(markov_model)
 
 result_dsa_control <- do_sensitivity_analysis(mono_markov,param_table)
 report_dsa_control <- report_sensitivity_analysis(result_dsa_control)

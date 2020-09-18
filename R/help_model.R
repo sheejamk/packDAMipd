@@ -54,7 +54,7 @@ assign_parameters <- function(param_list) {
   if (is.null(param_list)) {
     stop("Error - list can not be NULL")
   }else{
-    if (sum(is.na(param_list))!= 0) stop("Error - list can not be NA")
+    if (sum(is.na(param_list)) != 0) stop("Error - list can not be NA")
   }
   list_len <- length(param_list)
   assigned_list <- list()

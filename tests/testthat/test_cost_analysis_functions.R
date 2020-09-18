@@ -179,7 +179,6 @@ test_that("testing microcosting tablets", {
   expect_equal(res$totcost_timeperiod_equiv_dose_tablets, 0.441, tolerance = 1e-3)
 
   # Error -
-  undebug(microcosting_tablets_patches)
   # frequency code is in the IPD but not given while function call
   expect_error(microcosting_tablets_patches("tablets",
     example1, "Drug", "tab_dosage", "tab_dosage_unit", "tab_no_taken",
@@ -232,6 +231,15 @@ test_that("testing microcosting liquids", {
     "liquid_bottle_size", "liquid_bottle_remain_time", NULL,
     med_costs, "UnitCost", "SizeUnit","Strength",
     NULL,NULL,NULL,NULL, NULL, "liquid_equiv_dose", "day"))
+
+  # NULL name medicine
+  expect_error(microcosting_liquids(
+    example1, NULL, "liq_dosage", "liquid_dose_unit",
+    "liquid_bottle_size", "liquid_bottle_remain_time", NULL,
+    med_costs, "UnitCost", "SizeUnit","Strength",
+    NULL,NULL,NULL,NULL, NULL, "liquid_equiv_dose", "day"))
+
+
 })
 ###############################################################################
 context("testing costing resource use")
@@ -245,9 +253,8 @@ test_that("testing costing resource use", {
   # unit_cost_data shows inpatient hospital admission cost £20
   # another patient admitted to in patient hospital for 2 days first time,
   # then 2 days another time- so total 4 times -£80
-  debug(costing_resource_use)
 
-  ind_part_data =  ind_part_data[1, ]
+  part_data =  ind_part_data[1, ]
   name_use_col = "hospital_admission_1"
   each_length_num_use = list("length_1", "length_2")
   each_use_provider_indicator = list("nhs_1", "nhs_2")
@@ -259,7 +266,7 @@ test_that("testing costing resource use", {
   list_code_use_indicator = NULL
   list_code_provider_indicator = NULL
   res <- costing_resource_use(
-    ind_part_data[1, ],
+    part_data,
     "hospital_admission_1",
     list("length_1", "length_2"),
     list("nhs_1", "nhs_2"),

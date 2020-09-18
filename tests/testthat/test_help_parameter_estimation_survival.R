@@ -19,7 +19,7 @@ test_that("testing form expression for glm", {
                                    interaction = NA, naaction = "na.omit", link = NA))
   # Error - interaction should not be NULL or NA
   expect_error(form_expression_glm("admit", "gre", "binomial",covariates = NA,
-                                   interaction = FALSE, naaction = "na.omit", link = NA))
+                                   interaction = NULL, naaction = "na.omit", link = NA))
 })
 ###############################################################################
 context("testing  getting family of distribution for glm")
@@ -35,11 +35,10 @@ context("testing  getting link function for the family of distribution for glm")
 test_that("testing  getting link function for the family of distribution for glm", {
   expect_equal(check_link_glm("gaussian", "log"), "log")
   expect_equal(check_link_glm("poisson", "identity"), "identity")
-  expect_error(check_link_glm("logical"))
+  expect_error(check_link_glm("logical", NULL))
   expect_error(check_link_glm("poisson", "probit"))
   # Error the parameter can not be Na or NULL
-  expect_error(check_link_glm(NULL))
-  expect_error(check_link_glm())
+  expect_error(check_link_glm(NULL, NULL))
   # Error the parameter can not be Na or NULL
   expect_error(check_link_glm("saussian", NULL))
 })
@@ -141,17 +140,14 @@ test_that("testing creating a new dataset based on given one", {
   expect_error(create_new_dataset(NA, c("age"), dataset, c(FALSE)))
   # Error- dataset  null
   expect_error(create_new_dataset("status", c("age"),NULL, c(FALSE)))
-  # Error- dataset not null
-  expect_error(create_new_dataset("status", c("age"),dataset, NULL))
   # Error- column not in dataset
   expect_error(create_new_dataset("status", c("age1"),dataset, c(FALSE)))
   expect_error(create_new_dataset("status1", c("age"),dataset, c(FALSE)))
   df <- data.frame(status = c(1,2),
                   age = c(62.44737, 62.44737))
-  expect_equal(create_new_dataset("status", c("age"), dataset, c(FALSE)), df, tol=1e-3)
+  expect_equal(create_new_dataset("status", c("age"), dataset, c(FALSE)), df, tol = 1e-3)
 })
 ###############################################################################
-
 context("testing creating expression for linear regression ")
 test_that("testing creating expression for linear regression", {
   formula <- form_expression_lm("gre", indep_var = "gpa", covariates = NA,

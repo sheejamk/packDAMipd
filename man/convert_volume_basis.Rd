@@ -9,7 +9,7 @@ convert_volume_basis(given_unit, basis = "ml")
 \arguments{
 \item{given_unit}{given unit}
 
-\item{basis}{given basis, default is "mg"}
+\item{basis}{given basis, default is "ml"}
 }
 \value{
 converted unit

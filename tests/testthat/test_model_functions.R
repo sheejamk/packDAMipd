@@ -51,12 +51,12 @@ test_that("testing to set the attribute for the health state", {
   # set the cost to be 200 and check
   expect_identical(st$cost, 200)
   # set the cost to be 300 but this time as additive operation and check
-  st <- set_var_state(st, "cost", 200+100)
+  st <- set_var_state(st, "cost", 200 + 100)
   expect_identical(st$cost, 300)
   # "a" is not a health state
   expect_error( set_var_state(a, "cost", 200))
   # "b is not a name in the health state class
-  set_var_state(st, "b", 200)
+  expect_error(set_var_state(st, "b", 200))
 })
 ##############################################################################
 context("testing combining health states")
@@ -96,7 +96,7 @@ test_that("testing values of the variables in states", {
   # the values are not numeric, it returns false
   expect_equal(check_values_states(health_states), FALSE)
   # the values are numeric, but not health state
-  expect_error(check_values_states(1), FALSE)
+  expect_error(check_values_states(1))
 })
 ##############################################################################
 
@@ -136,7 +136,6 @@ test_that("testing evaluating and assigning values to health states", {
 
   # example2 - direct assignment with  nested calculation - cant do
   assign_list2 <- c(a = 10, cost_A = "a + 100", cost_B = 10)
-  eval_assign_values_states(health_states, assign_list2)
   expect_error(eval_assign_values_states(health_states, assign_list2))
 
   # example3 - use assign parameters and define_parameters with  nested calculation
@@ -313,7 +312,7 @@ test_that("testing creating markov model", {
   b <- health_state("Dead", 1, 0, 0, TRUE)
   health_states <- combine_state(a, b)
   this_strategy <- strategy(tm, health_states, "intervention")
-  mm <- markov_model(this_strategy, 10, c(1, 0), c(0, 0), c(0, 0))
+  mm <- markov_model(this_strategy, 10, c(1, 0), c(0, 0))
   # class of mm is markov_model
   expect_equal(class(mm), "markov_model")
   trace_matrix_1 <- mm$trace_matrix

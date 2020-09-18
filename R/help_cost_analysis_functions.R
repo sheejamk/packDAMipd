@@ -327,51 +327,102 @@ convert_freq_diff_basis <- function(freq_given, basis = "day") {
 #' @param basis given basis, default is "mg"
 #' @return converted unit
 #' @examples
-#' convert_unit_diff_basis("mg")
-#' convert_unit_diff_basis("l", "ml")
+#' convert_weight_diff_basis("mg")
+#' convert_weight_diff_basis("kilogram", "micro gram")
 #' @export
-convert_unit_diff_basis <- function(given_unit, basis = "mg") {
+convert_weight_diff_basis <- function(given_unit, basis = "mg") {
   unit_req_basis <- NULL
   if (!is.null(given_unit)) {
     given_unit <- trimws(tolower(given_unit))
   }
-  if (rlang::is_empty(given_unit) | any(is.na(given_unit)) |
-      length(given_unit) == 0 | identical(given_unit, "") | is.null(given_unit) |
-      any(given_unit == "null") | any(given_unit == "Null")) {
+  nospace_unit = tolower(gsub("[[:space:]]", "", given_unit))
+  basis = tolower(gsub("[[:space:]]", "", basis))
+  if (nospace_unit != "gram"  & nospace_unit != "milligram" &
+      nospace_unit != "gm"  & nospace_unit != "mg" &
+      nospace_unit != "microgram"  & nospace_unit != "microgm" &
+      nospace_unit != "mcg" &
+      nospace_unit != "kilogram"  & nospace_unit != "kilo"  &
+      nospace_unit != "kg") {
+    stop("given unit is not of weight")
+  }
+  if (rlang::is_empty(nospace_unit) | any(is.na(nospace_unit)) |
+      length(nospace_unit) == 0 | identical(nospace_unit, "") | is.null(nospace_unit) |
+      any(nospace_unit == "null") | any(nospace_unit == "Null")) {
     unit_req_basis <- NA
   } else {
-    if (basis == "mg") {
-      if (given_unit == "mg" | given_unit == "milli gram" |
-          given_unit == "milligram") {
-        unit_req_basis <- 1
+    if (basis == "mcg" | basis == "microgram"
+        | basis == "microgm") {
+      if (nospace_unit == "mg" | nospace_unit == "milligram") {
+        unit_req_basis <- 1e3
       }
-      if (given_unit == "g" | given_unit == "gm") {
-        unit_req_basis <- 1000
-      }
-      if (given_unit == "kg" | given_unit == "k.g" |
-          given_unit == "kilo gram") {
+      if (nospace_unit == "g" | nospace_unit == "gm"
+          | nospace_unit == "gram") {
         unit_req_basis <- 1e6
       }
-      if (given_unit == "mcg" | given_unit == "micro gram" |
-          given_unit == "microgram") {
+      if (nospace_unit == "kg" | nospace_unit == "kilo"
+          | nospace_unit == "kilogram") {
+        unit_req_basis <- 1e9
+      }
+      if (nospace_unit == "mcg" | nospace_unit == "microgram"
+          | nospace_unit == "microgm") {
+        unit_req_basis <- 1
+      }
+    }
+    if (basis == "mg" | basis == "milligram") {
+      if (nospace_unit == "mg" | nospace_unit == "milligram") {
+        unit_req_basis <- 1
+      }
+      if (nospace_unit == "g" | nospace_unit == "gm"
+          | nospace_unit == "gram") {
+        unit_req_basis <- 1000
+      }
+      if (nospace_unit == "kg" | nospace_unit == "kilo"
+          | nospace_unit == "kilogram") {
+        unit_req_basis <- 1e6
+      }
+      if (nospace_unit == "mcg" | nospace_unit == "microgram"
+          | nospace_unit == "microgm") {
         unit_req_basis <- 0.001
       }
-    } else {
-      if (basis == "ml") {
-        if (given_unit == "l" | given_unit == "litre" |
-            given_unit == "liter") {
-          unit_req_basis <- 1000
-        }
-        if (given_unit == "mcl" | given_unit == "micro litre" |
-            given_unit == "microlitre" |
-            given_unit == "micro liter" | given_unit == "microliter") {
-          unit_req_basis <- 0.001
-        }
+    }
+    if (basis == "gram" | basis == "gm") {
+      if (nospace_unit == "mg" | nospace_unit == "milligram") {
+        unit_req_basis <- 1e-3
+      }
+      if (nospace_unit == "g" | nospace_unit == "gm"
+          | nospace_unit == "gram") {
+        unit_req_basis <- 1
+      }
+      if (nospace_unit == "kg" | nospace_unit == "kilo"
+          | nospace_unit == "kilogram") {
+        unit_req_basis <- 1e3
+      }
+      if (nospace_unit == "mcg" | nospace_unit == "microgram"
+          | nospace_unit == "microgm") {
+        unit_req_basis <- 1e-6
+      }
+    }
+    if (basis == "kg" | basis == "kilo"
+        | basis == "kiloram") {
+      if (nospace_unit == "mg" | nospace_unit == "milligram") {
+        unit_req_basis <- 1e-6
+      }
+      if (nospace_unit == "g" | nospace_unit == "gm"
+          | nospace_unit == "gram") {
+        unit_req_basis <- 1e-3
+      }
+      if (nospace_unit == "kg" | nospace_unit == "kilo"
+          | nospace_unit == "kilogram") {
+        unit_req_basis <- 1
+      }
+      if (nospace_unit == "mcg" | nospace_unit == "microgram"
+          | nospace_unit == "microgm") {
+        unit_req_basis <- 1e-9
       }
     }
   }
   if (is.null(unit_req_basis)) {
-    stop("Something wrong - couldnt convert the unit to the correct basis")
+    stop("Something wrong - couldnt convert the weight to the correct basis")
   } else {
     return(unit_req_basis)
   }
@@ -380,7 +431,7 @@ convert_unit_diff_basis <- function(given_unit, basis = "mg") {
 #######################################################################
 #' Convert volume  to given basis
 #' @param given_unit given unit
-#' @param basis given basis, default is "mg"
+#' @param basis given basis, default is "ml"
 #' @return converted unit
 #' @examples
 #' convert_volume_basis("ml", "liter")
@@ -389,47 +440,43 @@ convert_volume_basis <- function(given_unit, basis = "ml") {
   if (!is.null(given_unit)) {
     given_unit <- trimws(tolower(given_unit))
   }
-  unit_req_basis <- NULL
+  unit_req_vol <- NULL
+  given_unit = tolower(gsub("[[:space:]]", "", given_unit))
+  basis = tolower(gsub("[[:space:]]", "", basis))
+  if (given_unit != "liter"  & given_unit != "l" &
+      given_unit != "milliliter" &  given_unit != "microliter"
+      &  given_unit != "mcl"  & given_unit != "ml"  ) {
+    stop("given unit is not of volume")
+  }
   if (rlang::is_empty(given_unit) | any(is.na(given_unit)) |
-      length(given_unit) == 0 | identical(given_unit, "")|
+      length(given_unit) == 0 | identical(given_unit, "") |
       any(given_unit == "null") | any(given_unit == "Null")) {
     unit_req_vol <- NA
   } else {
     unit_req_vol <- 1
-    if (basis == "ml" |
-        basis == "milli liter" | basis == "milliliter" |
-        basis == "milli litre" | basis == "millilitre") {
-      if (given_unit == "micro liter" | given_unit == "micro litre" |
-          given_unit == "microliter" | given_unit == "microlitre" |
-          given_unit == "mcl") {
+    if (basis == "ml" | basis == "milliliter" ) {
+      if ( given_unit == "microliter" | given_unit == "mcl") {
         unit_req_vol <- 1 / 1000
       }
-      if (given_unit == "l" | given_unit == "liter" | given_unit == "litre") {
+      if (given_unit == "l" | given_unit == "liter") {
         unit_req_vol <- 1000
       }
     }
-    if (basis == "micro liter" | basis == "micro litre" |
-        basis == "microliter" | basis == "microlitre" |
-        basis == "mcl") {
-      if (given_unit == "l" | given_unit == "liter" | given_unit == "litre") {
+    if (basis == "microliter" | basis == "mcl") {
+      if (given_unit == "l" | given_unit == "liter") {
         unit_req_vol <- 1e6
       }
-      if (given_unit == "ml" |
-          given_unit == "milli liter" | given_unit == "milliliter" |
-          given_unit == "milli litre" | given_unit == "millilitre") {
+      if (given_unit == "ml" | given_unit == "milliliter") {
         unit_req_vol <- 1000
       }
     }
-    if (basis == "l" | basis == "liter" | basis == "litre") {
+    if (basis == "l" | basis == "liter") {
       if (given_unit == "ml" |
-          given_unit == "milli liter" | given_unit == "milliliter" |
-          given_unit == "milli litre" | given_unit == "millilitre") {
+          given_unit == "milliliter" ) {
         unit_req_vol <- 1 / 1000
       }
 
-      if (given_unit == "micro liter" | given_unit == "micro litre" |
-          given_unit == "microliter" | given_unit == "microlitre" |
-          given_unit == "mcl") {
+      if (given_unit == "microliter" |  given_unit == "mcl") {
         unit_req_vol <- 1 / 1e6
       }
     }
@@ -466,18 +513,20 @@ convert_wtpertimediff_basis <- function(given_unit, basis = "mcg/hour") {
     basis_index <- stringr::str_locate(basis, "/")
     basis_wt <- stringr::str_sub(basis, 1, basis_index[1] - 1)
     basis_time <- stringr::str_sub(basis, basis_index[2] + 1, nchar(basis))
+    basis_wt = tolower(gsub("[[:space:]]", "", basis_wt))
+    basis_time = tolower(gsub("[[:space:]]", "", basis_time))
     unit_req_wt <- 1
     unit_req_time <- 1
-    if (basis_wt == "mg" | basis_wt == "milli gram" | basis_wt == "milligram") {
-      if (given_wt == "mcg" | given_wt == "micro gram" | given_wt == "microgram") {
+    if (basis_wt == "mg" | basis_wt == "milligram") {
+      if (given_wt == "mcg" | given_wt == "microgram") {
         unit_req_wt <- 1 / 1000
       }
       if (given_wt == "gram" | given_wt == "gm") {
         unit_req_wt <- 1000
       }
     }
-    if (basis_wt == "mcg" | basis_wt == "micro gram" | basis_wt == "microgram") {
-      if (given_wt == "mg" | given_wt == "milli gram" | given_wt == "milligram") {
+    if (basis_wt == "mcg" | basis_wt == "microgram") {
+      if (given_wt == "mg" | given_wt == "milligram") {
         unit_req_wt <- 1000
       }
       if (given_wt == "gram" | given_wt == "gm") {
@@ -485,10 +534,10 @@ convert_wtpertimediff_basis <- function(given_unit, basis = "mcg/hour") {
       }
     }
     if (basis_wt == "gram" | basis_wt == "gm") {
-      if (given_wt == "mg" | given_wt == "milli gram" | given_wt == "milligram") {
+      if (given_wt == "mg" |  given_wt == "milligram") {
         unit_req_wt <- 1 / 1000
       }
-      if (given_wt == "mcg" | given_wt == "micro gram" | given_wt == "microgram") {
+      if (given_wt == "mcg" |  given_wt == "microgram") {
         unit_req_wt <- 1 / 1e6
       }
     }
@@ -582,6 +631,10 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
       out <- as.numeric(first_part)
     }
     sec_part <- stringr::str_sub(given_time, index[2] + 1, nchar(given_time))
+    if (is.null(sec_part) | is.na(sec_part)) {
+      stop("Error - missing the unit of time")
+    }
+    unit_req_time = NULL
     if (basis_time == "day" | basis_time == "days") {
       if (sec_part == "day" | sec_part == "days") {
         unit_req_time <- 1
@@ -673,6 +726,9 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
       if (sec_part == "sec" | sec_part == "second" | sec_part == "seconds") {
         unit_req_time <- 1 / (60 * 60)
       }
+    }
+    if (is.null(unit_req_time)) {
+      stop("Error in converting the unit")
     }
     unit_req_basis <- out * unit_req_time
   }

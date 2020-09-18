@@ -185,7 +185,7 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
   results_icer_nmb <- data.frame()
   names <- list()
   first_name <- names(result_dsa_control)[1]
-  ending <- ncol(result_dsa_control[[first_name]]$param_matrix)
+  #ending <- ncol(result_dsa_control[[first_name]]$param_matrix)
   for (i in seq(1, len, 3)) {
     results_this_param <- data.frame()
     this_var_result_name <- names(result_dsa_control)[i]
@@ -242,6 +242,7 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
         this_upp <- param_matr_upp[nrow(param_matr_upp), j]
         results_this_param <- rbind(results_this_param, c(this_mean, this_low, this_upp))
       }
+      names(results_this_param) <- c("mean", "low", "upper")
       results_all_param <- rbind(results_all_param, results_this_param)
       names <- append(names, this_var_name)
     }
@@ -251,8 +252,13 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
     return(results_icer_nmb_all)
   } else {
     results_all_param_all <- data.frame(results_all_param)
-    results_all_param_all[["parameter varied"]] <- c(rep(unlist(names)[1], ending - 1),
-                                                     rep(unlist(names)[2], ending - 1))
+    num_par_varied = length(names)
+    all_param_col = list()
+    for (kk in 1:num_par_varied) {
+      this_list = rep(unlist(names)[kk], ending - 1)
+      all_param_col = append(all_param_col,this_list)
+    }
+    results_all_param_all[["parameter varied"]] <- all_param_col
     cols <- colnames(result_dsa_control$result_cost_direct_med_B$param_matrix)
     results_all_param_all[["estimated param"]] <- rep(cols[2:ending], len / 3)
     colnames(results_all_param_all) <- c("base", "lower", "upper ", "parameter varied", "estimated param")

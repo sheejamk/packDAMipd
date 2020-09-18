@@ -160,15 +160,15 @@ test_that("testing summary plots psa", {
   ), colnames(tmat))
   health_states <- combine_state(A, B, C)
   mono_strategy <- strategy(tm, health_states, "mono")
-  mono_markov <- markov_model(mono_strategy, 20, initial_state =c(1,0,0),discount = c(0.06, 0),param_list)
+  mono_markov <- markov_model(mono_strategy, 20, initial_state = c(1,0,0),discount = c(0.06, 0),param_list)
   param_table <- define_parameters_psa(param_list, sample_list)
   result <- do_psa(mono_markov, param_table, 3)
   result_paramwise <- list_paramwise_psa_result(result, NULL, NULL, NULL)
 
-  expect_equal(result_paramwise$utility, c(1.142857, 1.142857, 1.142857), tolerance = 1e-4)
+  expect_equal(result_paramwise$utility, c(1.642857, 1.642857, 1.642857), tolerance = 1e-4)
   expect_equal(result_paramwise$cost_health_B, c(1774, 1774, 1774), tolerance = 1e-4)
   #Error   null control result psa
-  expect_error(list_paramwise_psa_result(NULL))
+  expect_error(list_paramwise_psa_result(NULL, NULL, NULL, NULL))
 
   param_list_comb <- define_parameters(
     cost_direct_med_A = 1800,
