@@ -858,8 +858,8 @@ plot_model <- function(markov) {
   }
   this_trace <- data.frame(markov$trace_matrix)
   this_trace_melted <- reshape2::melt(this_trace, id.var = "Cycles")
-  p <- ggplot2::ggplot(this_trace_melted, ggplot2::aes(x = this_trace_melted$Cycles,
-                  y = this_trace_melted$value, col = this_trace_melted$variable)) +
+  p <- ggplot2::ggplot(this_trace_melted, ggplot2::aes(x = "Cycles",
+                  y = "value", col = "variable")) +
     ggplot2::geom_line() +
     ggplot2::labs(x = "Cycles") +
     ggplot2::labs(y = "States") +
