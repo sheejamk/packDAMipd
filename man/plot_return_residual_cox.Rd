@@ -2,9 +2,15 @@
 % Please edit documentation in R/help_parameter_estimation_survival.R
 \name{plot_return_residual_cox}
 \alias{plot_return_residual_cox}
-\title{Plotting and return the residuals after cox proportiaonal hazard model}
+\title{Plotting and return the residuals after cox proportional hazard model}
 \usage{
-plot_return_residual_cox(param_to_be_estimated, indep_var, covariates, fit)
+plot_return_residual_cox(
+  param_to_be_estimated,
+  indep_var,
+  covariates,
+  fit,
+  dataset
+)
 }
 \arguments{
 \item{param_to_be_estimated}{parameter to be estimated}
@@ -14,12 +20,14 @@ plot_return_residual_cox(param_to_be_estimated, indep_var, covariates, fit)
 \item{covariates}{covariates}
 
 \item{fit}{fit object from coxph method}
+
+\item{dataset}{data used for cox ph model}
 }
 \value{
 plot and the residuals
 }
 \description{
-Plotting and return the residuals after cox proportiaonal hazard model
+Plotting and return the residuals after cox proportional hazard model
 }
 \examples{
 \dontrun{
@@ -27,6 +35,6 @@ Plotting and return the residuals after cox proportiaonal hazard model
   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
   covariates = c("ph.ecog"), "time")
   plot_return_residual_cox("status", "sex", covariates = c("ph.ecog"),
-  surv_estimated$fit)
+  surv_estimated$fit,data_for_survival )
   }
 }

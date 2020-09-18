@@ -569,7 +569,7 @@ create_new_dataset <- function(var, covar, dataset, categorical) {
   }
   check = IPDFileCheck::check_column_exists(var, dataset)
   if (check != 0) {
-    stop("Coulmn of variable not in the dataset")
+    stop("Column of variable not in the dataset")
   }
   indep <- dataset[[var]]
   names <- var
@@ -589,7 +589,7 @@ create_new_dataset <- function(var, covar, dataset, categorical) {
       this_var = covar[i]
       check = IPDFileCheck::check_column_exists(this_var, dataset)
       if (check != 0) {
-        stop("Coulmn of covariate not in the dataset")
+        stop("Column of covariate not in the dataset")
       }
       fixed <- dataset[[covar[i]]]
       if (categorical[i]) {
@@ -1210,11 +1210,12 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset, indep_var
 }
 
 #######################################################################
-#' Plotting and return the residuals after cox proportiaonal hazard model
+#' Plotting and return the residuals after cox proportional hazard model
 #' @param param_to_be_estimated  parameter to be estimated
 #' @param indep_var independent variable
 #' @param covariates  covariates
 #' @param fit  fit object from coxph method
+#' @param dataset data used for cox ph model
 #' @return plot and the residuals
 #' @examples
 #' \dontrun{
@@ -1222,11 +1223,11 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset, indep_var
 #'   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
 #'   covariates = c("ph.ecog"), "time")
 #'   plot_return_residual_cox("status", "sex", covariates = c("ph.ecog"),
-#'   surv_estimated$fit)
+#'   surv_estimated$fit,data_for_survival )
 #'   }
 #' @export
-#' @importFrom ldatools gg_coxsnell
-plot_return_residual_cox <- function(param_to_be_estimated,indep_var,covariates,fit) {
+#' @importFrom stats residuals
+plot_return_residual_cox <- function(param_to_be_estimated,indep_var,covariates,fit, dataset) {
   if (!("coxph" %in% class(fit)))
     stop("Error- Fit object should be of type  coxph")
 
@@ -1246,16 +1247,9 @@ plot_return_residual_cox <- function(param_to_be_estimated,indep_var,covariates,
   }
   name_file_plot <- paste0("Cox_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
-  # Cox Snell residual is cumulative hazard function ~ exp(1)
-  # https://github.com/adibender/ldatools they should fall on line with gradinet 1
-  coxSnell <- ldatools::gg_coxsnell(fit, type = c("cumu_hazard"))
-
-  # for influence of observations the deviance residuals or the dfbeta values
-  # Martingale is not centered around zero
-  types_resdiuals = c("martingale", "deviance", "score", "schoenfeld",
-                    "dfbeta", "dfbetas", "scaledsch","partial")
 
   residuals_martingale <- stats::residuals(fit, type = "martingale")
+  coxSnell <- residuals_martingale - dataset[[param_to_be_estimated]]
   residuals_deviance <- stats::residuals(fit, type = "deviance")
   residuals_score <- stats::residuals(fit, type = "score")
   residuals_schoenfeld <- stats::residuals(fit, type = "schoenfeld")

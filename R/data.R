@@ -50,6 +50,6 @@
 "adl_scoring"
 
 #' Parameter table created
-#' @format A 2 coulmn 1 observation
+#' @format A 2 column 1 observation
 #' @source  created on September 5, 2020
 "blank"

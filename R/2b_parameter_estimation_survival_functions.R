@@ -1,5 +1,6 @@
 #' ##########################################################################################################
 #' Get the parameter values using the survival analysis
+#'
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
 #' @param indep_var the independent variable (column name in data file)
@@ -7,6 +8,7 @@
 #' @param info_distribution distribution name  eg. for logistic regression -binomial
 #' @param covariates list of covariates - calculations to be done before passing
 #' @param timevar_survival time variable for survival analysis, default is NA
+#'
 #' @return the results of the regression analysis
 #' @examples
 #' \dontrun{
@@ -621,7 +623,7 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
   # analysis of deviance
   analysis_deviance <- car::Anova(fit,test.statistic = "LR")
   # plot of residuals to check themodel fit
-  residuals_result <- plot_return_residual_cox(param_to_be_estimated, indep_var, covariates, fit)
+  residuals_result <- plot_return_residual_cox(param_to_be_estimated, indep_var, covariates, fit, dataset)
 
   model_fit_assessment <- structure(list(
     AIC = AIC,

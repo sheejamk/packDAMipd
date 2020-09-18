@@ -339,6 +339,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
   } else {
     dataset <- data
   }
+
   # check the required column exists in the dataset
   data_details <- c(param_to_be_estimated, indep_var, covariates, timevar_survival, param2_to_be_estimated, covariates2)
   data_details <- data_details[!is.na(data_details)]
@@ -346,6 +347,8 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
   if (sum(check_cols_exist) != 0) {
     stop("Given column(s) can not be found !!!")
   }
+  # omitting any missing information
+  dataset <- stats::na.omit(dataset)
   # now  depending on the method, call the corresponding regression methods
   caps_method <- toupper(method)
   # linear regression

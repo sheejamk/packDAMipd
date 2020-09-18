@@ -329,17 +329,23 @@ test_that("testing plotting residual for cox ph models", {
   data_for_survival <- survival::lung
   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
     covariates = c("ph.ecog"), "time")
-  plot_return_residual_cox("status", "sex", covariates = c("ph.ecog"),surv_estimated$fit)
+  plot_return_residual_cox("status", "sex", covariates = c("ph.ecog"),
+                           surv_estimated$fit,  data_for_survival)
   #Error - param to be estimated can not be null  or NA
-  expect_error(plot_return_residual_cox(NULL, "sex", covariates = c("ph.ecog"),surv_estimated$fit))
-  expect_error(plot_return_residual_cox(NA, "sex", covariates = c("ph.ecog"),surv_estimated$fit))
+  expect_error(plot_return_residual_cox(NULL, "sex", covariates = c("ph.ecog"),
+                                        surv_estimated$fit, data_for_survival))
+  expect_error(plot_return_residual_cox(NA, "sex", covariates = c("ph.ecog"),
+                                        surv_estimated$fit, data_for_survival))
 
   #Error - independent variable  can not be null or na
-  expect_error(plot_return_residual_cox("status", NULL, covariates = c("ph.ecog"),surv_estimated$fit))
-  expect_error(plot_return_residual_cox("status", NA, covariates = c("ph.ecog"),surv_estimated$fit))
+  expect_error(plot_return_residual_cox("status", NULL, covariates = c("ph.ecog"),
+                                        surv_estimated$fit, data_for_survival))
+  expect_error(plot_return_residual_cox("status", NA, covariates = c("ph.ecog"),
+                                        surv_estimated$fit, data_for_survival))
 
   # Error - fit object is not of type coxph
-  expect_error(plot_return_residual_cox("status", "sex", covariates = c("ph.ecog"),"fit"))
+  expect_error(plot_return_residual_cox("status", "sex", covariates = c("ph.ecog"),
+                                        "fit", data_for_survival))
 })
 ###############################################################################
 context("testing plotting residual for cox ph models")

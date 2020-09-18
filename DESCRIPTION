@@ -36,11 +36,9 @@ Imports:
     broom,
     effects,
     gvlma,
-    ldatools,
     methods,
     relaimpo,
-    tm,
-    words2number
+    tm
 Suggests: 
     ISLR,
     foreign,

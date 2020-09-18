@@ -5,7 +5,7 @@
 \alias{blank}
 \title{Parameter table created}
 \format{
-A 2 coulmn 1 observation
+A 2 column 1 observation
 }
 \source{
 created on September 5, 2020

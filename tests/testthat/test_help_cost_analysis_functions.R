@@ -7,6 +7,13 @@ test_that("testing checking null or NA", {
 
 })
 ###############################################################################
+context("testing ocnverting from word to number")
+test_that("testing ocnverting from word to number", {
+  expect_equal(as.numeric(unlist(word2num("ninety eight"))[2]), 98)
+  expect_equal(as.numeric(unlist( word2num("one hundred and eight"))[2]), 108)
+
+})
+###############################################################################
 context("testing converting frequency to different basis")
 test_that("testing converting frequency to different basis", {
   expect_equal(convert_freq_diff_basis("once daily"),1)
