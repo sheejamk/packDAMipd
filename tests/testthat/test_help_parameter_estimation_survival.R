@@ -296,6 +296,7 @@ test_that("testing forming expression for mixed model", {
 context("testing plotting survival function")
 test_that("testingplotting survival function", {
   data_for_survival <- survival::lung
+  data_for_survival <- na.omit(data_for_survival)
   plot_return_survival_curve(param_to_be_estimated = "status", dataset = data_for_survival,
                              indep_var = "sex",covariates = c("ph.ecog"), timevar_survival = "time")
   #Error - parameter to be estimated can not be NA or NULL
@@ -327,6 +328,7 @@ context("testing plotting residual for cox ph models")
 test_that("testing plotting residual for cox ph models", {
 
   data_for_survival <- survival::lung
+  data_for_survival <- na.omit(data_for_survival)
   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
     covariates = c("ph.ecog"), "time")
   plot_return_residual_cox("status", "sex", covariates = c("ph.ecog"),
@@ -352,6 +354,7 @@ context("testing plotting residual for cox ph models")
 test_that("testing plotting residual for cox ph models", {
 
   data_for_survival <- survival::lung
+  data_for_survival <- na.omit(data_for_survival)
   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
                                        covariates = c("ph.ecog"), "time")
   predict_coxph(surv_estimated$fit,data_for_survival, "status","sex",
@@ -387,6 +390,7 @@ context("testing plotting residual for cox ph models")
 test_that("testing plotting residual for cox ph models", {
 
   data_for_survival <- survival::lung
+  data_for_survival <- na.omit(data_for_survival)
   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
                                        covariates = c("ph.ecog"), "time")
   plot_survival_cox_covariates(surv_estimated$fit,data_for_survival, "status",
@@ -402,7 +406,7 @@ test_that("testing plotting residual for cox ph models", {
   expect_error(plot_survival_cox_covariates(surv_estimated$fit,data_for_survival, NULL,
                              covariates = c("ph.ecog"), "sex"))
   expect_error(predict_coxph(surv_estimated$fit,data_for_survival, NA,
-                             covariates = c("ph.ecog"), "sex"))
+                             covariates = c("ph.ecog"), "sex", NA))
 
   #Error - independent varaible should not be NULL or NA
   expect_error(plot_survival_cox_covariates(surv_estimated$fit,data_for_survival, "status",
