@@ -68,32 +68,32 @@ test_that("testing parameter using distribution read from file", {
   file <- system.file("extdata", "table_param.csv", package = "packDAMipd")
   nofile <- system.file("extdata", "nofile.csv", package = "packDAMipd")
   # error while reading a parameter where file is not given
-  expect_error(get_parameter_def_distribution("rr", NULL))
+  expect_error(get_parameter_def_distribution("rr", NULL, NULL))
 
   # error while reading a parameter where no file exists
-  expect_error(get_parameter_def_distribution("rr2", nofile))
+  expect_error(get_parameter_def_distribution("rr2", nofile,, NULL))
 
   diff_file <- system.file("extdata", "blank.csv", package = "packDAMipd")
 
   # error while reading a parameter where distribution do not exists
-  expect_error(get_parameter_def_distribution("rr2", diff_file))
+  expect_error(get_parameter_def_distribution("rr2", diff_file,, NULL))
 
   nocol_parameter <- system.file("extdata", "nocol_parameter.csv",
                                  package = "packDAMipd")
 
   # error while reading a parameter where no Parameter column exists
-  expect_error(get_parameter_def_distribution("rr", nocol_parameter))
+  expect_error(get_parameter_def_distribution("rr", nocol_parameter, NULL))
 
 
   table_param_distrb_no <- system.file("extdata", "table_param_distrb_no.csv",
                           package = "packDAMipd")
   # error while reading a parameter where no distribution column exists but no value
   #  for it
-  expect_error(get_parameter_def_distribution("rr", table_param_distrb_no))
+  expect_error(get_parameter_def_distribution("rr", table_param_distrb_no,NULL))
 
   # error column names for distribution parameters not given or can not be null
-  expect_error(get_parameter_def_distribution("rr", file))
-  expect_error(get_parameter_def_distribution("rr", file, NULL))
+  expect_error(get_parameter_def_distribution("rr", file,NULL))
+  expect_error(get_parameter_def_distribution("rr", file, NULL, NULL))
   # error column names for distribution parameters not same as in the file
   expect_error(get_parameter_def_distribution("rr", file, c("Param")))
   # Now the column of parameter for distribution is ok, but but column name for value is missing
