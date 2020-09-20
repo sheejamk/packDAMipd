@@ -254,7 +254,7 @@ microcosting_tablets_patches <- function(form,ind_part_data,
   ind_part_data[[this_name]] <- unlist(list_total_med_basis)
   this_name = paste("totcost_basis_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_basis)
-  this_name = paste("totcost_basis_equiv_dose", keywd, sep = "")
+  this_name = paste("totcost_basis_equiv_dose_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_basis_equiv_dose)
   this_name = paste("totcost_timeperiod_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_timeperiod)
@@ -472,9 +472,9 @@ microcosting_liquids <- function(ind_part_data,
       bottle_used_time_given_basis <- convert_to_given_timeperiod(remain_time, basis_time)
       med_required_timeperiod <- (total_med_for_remain_time / bottle_used_time_given_basis) * period_given_basis
       no_bottle_timeperiod <- ceiling(med_required_timeperiod / size_number)
-      index <- stringr::str_locate(this_unit, "/")
-      vol_unit <- stringr::str_sub(this_unit, index[2] + 1, nchar(this_unit))
-      vol_multiplier <- convert_volume_basis(vol_unit, size_unit)
+      #index <- stringr::str_locate(this_unit, "/")
+      #vol_unit <- stringr::str_sub(this_unit, index[2] + 1, nchar(this_unit))
+      #vol_multiplier <- convert_volume_basis(vol_unit, size_unit)
       # need to check if what it actually mean by equivalent dose 1mg/ml of liquid equivalent to mg of morphine ?
       no_bottle_timeperiod_equiv_dose <- no_bottle_timeperiod / equiv_dose_div[i]
       total_cost_timeperiod <- no_bottle_timeperiod * cost_bottle
@@ -490,14 +490,12 @@ microcosting_liquids <- function(ind_part_data,
     list_total_cost_timeperiod <- append(list_total_cost_timeperiod, total_cost_timeperiod)
     list_total_cost_timeperiod_equiv_dose <- append(list_total_cost_timeperiod_equiv_dose, total_cost_timeperiod_equiv_dose)
   }
-  ind_part_data[["tot_bottle_timeperiod"]] <- unlist(list_total_bottle_timeperiod)
-  ind_part_data[["tot_bottle_timeperiod_equiv"]] <- unlist(list_total_bottle_timeperiod_equiv_dose)
+  ind_part_data[["tot_timeperiod_bottle"]] <- unlist(list_total_bottle_timeperiod)
+  ind_part_data[["tot_timeperiod_equiv_dose_bottle"]] <- unlist(list_total_bottle_timeperiod_equiv_dose)
   ind_part_data[["totcost_timeperiod_liquids"]] <- unlist(list_total_cost_timeperiod)
-  ind_part_data[["totcost_liquids_timeperiod_equiv_dose"]] <- unlist(list_total_cost_timeperiod_equiv_dose)
+  ind_part_data[["totcost_timeperiod_equiv_dose_liquids"]] <- unlist(list_total_cost_timeperiod_equiv_dose)
   return(ind_part_data)
 }
-
-
 ##########################################################################################################
 #' Function to estimate the cost of resource use taken (from IPD)
 #' @param ind_part_data IPD
