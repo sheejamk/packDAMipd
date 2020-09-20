@@ -144,7 +144,7 @@ microcosting_tablets_patches <- function(form,ind_part_data,
     freq_given_basis <- unlist(lapply(ind_part_data[[freq_taken]], convert_freq_diff_basis, basis_time))
   }
 
-  if (sum(is.na(unlist(freq_given_basis))) != 0) {
+  if (sum(is.na(unlist(freq_given_basis))) == length(freq_given_basis)) {
     stop("Error - freq_given_basis can not be null - check the input for list of frequency")
   }
 
@@ -475,7 +475,7 @@ microcosting_liquids <- function(ind_part_data,
       index <- stringr::str_locate(this_unit, "/")
       vol_unit <- stringr::str_sub(this_unit, index[2] + 1, nchar(this_unit))
       vol_multiplier <- convert_volume_basis(vol_unit, size_unit)
-      # need to check if what it actualy mean by equivalent dose 1mg/ml of liquid equivalent to mg of morphine ?
+      # need to check if what it actually mean by equivalent dose 1mg/ml of liquid equivalent to mg of morphine ?
       no_bottle_timeperiod_equiv_dose <- no_bottle_timeperiod / equiv_dose_div[i]
       total_cost_timeperiod <- no_bottle_timeperiod * cost_bottle
       total_cost_timeperiod_equiv_dose <- total_cost_timeperiod / equiv_dose_div[i]
