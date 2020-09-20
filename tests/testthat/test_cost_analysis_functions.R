@@ -223,7 +223,7 @@ test_that("testing microcosting liquids", {
     med_costs, "UnitCost", "SizeUnit","Strength",
     NULL,NULL,NULL,NULL, NULL, "liquid_equiv_dose", "day")
 
-  expect_equal(res$tot_bottle_timeperiod, 2, tolerance = 1e-3)
+  expect_equal(res$tot_timeperiod_bottle, 2, tolerance = 1e-3)
   expect_equal(res$totcost_timeperiod_liquids, 4.16, tolerance = 1e-3)
   # NULL data
   expect_error(microcosting_liquids(
