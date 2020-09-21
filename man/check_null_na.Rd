@@ -7,7 +7,7 @@
 check_null_na(variable)
 }
 \arguments{
-\item{variable}{name of variable to check}
+\item{variable}{name of variable or list of variable to check}
 }
 \value{
 -1 or -2 as error, else return 0 as success

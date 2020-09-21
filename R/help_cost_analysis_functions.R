@@ -1,6 +1,6 @@
 ##########################################################################################################
 #' Function to check the variable null or NA
-#' @param variable name of variable to check
+#' @param variable name of variable or list of variable to check
 #' @return -1 or -2 as error, else return 0 as success
 #' @export
 check_null_na <- function(variable) {
@@ -8,7 +8,7 @@ check_null_na <- function(variable) {
   if (is.null(variable)) {
     return(-1)
   }else{
-    if (is.na(variable)) return(-2)
+    if (sum(is.na(variable)) != 0) return(-2)
     else return(0)
   }
 }
