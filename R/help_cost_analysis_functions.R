@@ -2,6 +2,7 @@
 #' Function to check the variable null or NA
 #' @param variable name of variable to check
 #' @return -1 or -2 as error, else return 0 as success
+#' @export
 check_null_na <- function(variable) {
   #Error - variable can not be NULL or NA
   if (is.null(variable)) {
@@ -17,6 +18,7 @@ check_null_na <- function(variable) {
 #' @return return the number
 #' @details
 #' https://stackoverflow.com/questions/18332463/convert-written-number-to-number-in-r
+#' @export
 word2num <- function(word){
   wsplit <- strsplit(tolower(word)," ")[[1]]
   one_digits <- list(zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5,
