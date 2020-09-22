@@ -57,7 +57,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
     "initial_state", "initial_cost", "discount",
     "trace_matrix", "cost_matrix", "utility_matrix"
   )
-  if (sum(colnames(list_markov) %in% expected_colnames) != ncol(list_markov)) {
+  if (sum(colnames(list_markov) %in% expected_colnames) < ncol(list_markov) - 2) {
     stop("column names of list of markov_model objects look different")
   }
   # checking all the markov model objects

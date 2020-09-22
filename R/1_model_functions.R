@@ -756,7 +756,7 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
   colnames(cost_matrix) <- names_cost_matrix
   colnames(utility_matrix) <- names_utility_matrix
   colnames(param_matrix) <- c("cycle", names(parameter_values))
-  if (is.null(startup_cost)) {
+  if (check_null_na(c(startup_cost,startup_cost)) < 0)  {
     value <- list(
       strategy = current_strategy,
       method = method,
@@ -773,22 +773,42 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
       utility_matrix = utility_matrix
     )
   } else {
-    value <- list(
-      strategy = current_strategy,
-      method = method,
-      half_cycle_correction = half_cycle_correction,
-      transition_matrix = trans_mat,
-      param_matrix = param_matrix,
-      list_param_values = parameter_values,
-      health_states = health_states,
-      cycles = cycles,
-      initial_state = initial_state,
-      startup_cost = startup_cost,
-      discount = discount,
-      trace_matrix = trace_matrix,
-      cost_matrix = cost_matrix,
-      utility_matrix = utility_matrix
-    )
+    if (check_null_na(startup_cost) < 0) {
+      value <- list(
+        strategy = current_strategy,
+        method = method,
+        half_cycle_correction = half_cycle_correction,
+        transition_matrix = trans_mat,
+        param_matrix = param_matrix,
+        list_param_values = parameter_values,
+        health_states = health_states,
+        cycles = cycles,
+        initial_state = initial_state,
+        startu_util = startup_util,
+        discount = discount,
+        trace_matrix = trace_matrix,
+        cost_matrix = cost_matrix,
+        utility_matrix = utility_matrix
+      )
+    }else{
+      value <- list(
+        strategy = current_strategy,
+        method = method,
+        half_cycle_correction = half_cycle_correction,
+        transition_matrix = trans_mat,
+        param_matrix = param_matrix,
+        list_param_values = parameter_values,
+        health_states = health_states,
+        cycles = cycles,
+        initial_state = initial_state,
+        startup_cost = startup_cost,
+        discount = discount,
+        trace_matrix = trace_matrix,
+        cost_matrix = cost_matrix,
+        utility_matrix = utility_matrix
+      )
+    }
+
   }
   attr(value, "class") <- "markov_model"
   value
