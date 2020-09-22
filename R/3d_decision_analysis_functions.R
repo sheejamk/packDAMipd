@@ -50,10 +50,11 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
   } else {
     comparator_index <- which(list_names_strategy == comparator)
   }
-  # check the exprected columns in list of markov
+  # check the expected columns in list of markov
   expected_colnames <- c(
-    "strategy", "method", "half_cycle_correction", "transition_matrix", "param_matrix",
-    "health_states", "cycles", "initial_state", "initial_cost", "discount",
+    "strategy", "method", "half_cycle_correction", "transition_matrix",
+    "param_matrix","list_param_values","health_states", "cycles",
+    "initial_state", "initial_cost", "discount",
     "trace_matrix", "cost_matrix", "utility_matrix"
   )
   if (sum(colnames(list_markov) %in% expected_colnames) != ncol(list_markov)) {
