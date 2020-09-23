@@ -25,21 +25,16 @@
 #' if they are characters, the value is assigned after parsing the text.
 #' state_time is integer and absorb is boolean
 health_state <- function(name, cost, utility, state_time = 0, absorb = FALSE) {
-  if (is.character(cost)) {
+  if (is.character(cost))
     cost <- parse(text = cost)
-  }
-  if (is.numeric(cost)) {
+  if (is.numeric(cost))
     cost <- cost
-  }
-  if (is.character(utility)) {
+  if (is.character(utility))
     utility <- parse(text = utility)
-  }
-  if (is.numeric(utility)) {
+  if (is.numeric(utility))
     utility <- utility
-  }
-  if (!is.numeric(state_time)) {
+  if (!is.numeric(state_time))
     stop("state_time has to be numeric")
-  }
   dt <- structure(list(
     name = name,
     cost = cost,
@@ -118,11 +113,21 @@ set_var_state <- function(state, var, new_value) {
 combine_state <- function(...) {
   .dots <- list(...)
   for (i in seq_len(length(.dots))) {
-    if (class(.dots[[i]]) != "health_state") {
-      stop("Each object should be of class health_state")
+    if (class(.dots[[i]]) != "health_state" ) {
+      if (typeof(.dots[[i]]) == "list") {
+        this = .dots[[i]]
+        for (m in 1:length(this)) {
+          if (class(this[[m]]) != "health_state")
+            stop("Each object should be of class health_state")
+        }
+      combined <- unlist(.dots, recursive = FALSE)
+      }else{
+        stop("Each object should be of class health_state or a list")
+      }
+    }else{
+      combined <- .dots
     }
   }
-  combined <- .dots
   return(combined)
 }
 #######################################################################
@@ -250,7 +255,6 @@ eval_assign_values_states <- function(health_states, assigned_param) {
          if (!is.numeric(entry)) {
            string_entry <- toString(entry)
            string_entry_evalu <- eval(substitute(string_entry))
-
            # Need to process the converted string expression further if it is not numeric
            if (is.na(suppressWarnings(as.numeric(string_entry_evalu)))) {
 
@@ -847,7 +851,16 @@ combine_markov <- function(markov1, ...) {
   if (class(markov1) == "markov_model") {
     all_markovs <- markov1
   } else {
-    stop("class is not a Markov model")
+    if (typeof(markov1) == "list") {
+      all_markovs = c()
+      for (i in 1:length(markov1)) {
+        if (class(markov1[[i]]) != "markov_model")
+            stop("class is not a Markov model")
+        all_markovs <- methods::cbind2(all_markovs, markov1[[i]])
+      }
+    }else{
+      stop("argument should be a list of markov models or a markov model")
+    }
   }
   .dots <- list(...)
   for (i in seq_len(length(.dots))) {
