@@ -158,7 +158,10 @@ param_table <- define_parameters_sens_anal(comb_params, min_values, max_values)
 result_dsa_treat <- do_sensitivity_analysis(comb_markov, param_table)
 table_sa <- report_sensitivity_analysis(result_dsa_control, result_dsa_treat, 1000, "mono")
 # 
-#plot_dsa(result_dsa_control,"cost", type = "difference",result_dsa_treat,threshold = 1000, comparator = "mono")
+
 plot_dsa(result_dsa_control,"cost", type = "range",result_dsa_treat,threshold = 1000, comparator = "mono")
 plot_dsa(result_dsa_control,"ICER", type = "range",result_dsa_treat,threshold = 1000, comparator = "mono")
+undebug(plot_dsa_difference)
+
+plot_dsa(result_dsa_control,"cost", type = "difference",result_dsa_treat,threshold = 1000, comparator = "mono")
 

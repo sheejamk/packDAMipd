@@ -125,19 +125,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator = NULL, curren
   colnames(results_cea) <- c("Strategy", "Cost", "Effect", "NMB", "Inc_Cost", "Inc_Effect", "ICER" )
   rownames(results_cea) <- NULL
   results_cea <- data.table::data.table(results_cea)
-  if (nrow(results_cea) > 1) {
-      name_file_plot <- paste0("Efficiency frontier_", threshold, ".pdf", sep = "")
-                  grDevices::pdf(name_file_plot)
 
-      p <- ggplot2::ggplot(data = results_cea, ggplot2::aes(
-        x = results_cea$Effect, y = results_cea$Cost,group = 1)) +
-      ggplot2::geom_line(color = "red") +
-      ggplot2::geom_point() +
-      ggplot2::geom_text(ggplot2::aes(label = results_cea$Strategy), hjust = -0.1, vjust = -0.5) +
-      ggplot2::labs(title = "Efficiency frontier", x = "Effect (QALYs)", y = "Cost")
-      print(p)
-      grDevices::dev.off()
-  }
   return(results_cea)
 }
 #######################################################################
@@ -252,4 +240,32 @@ plot_ceac <- function(list_markov, threshold_values, comparator, currency = "GBP
       x = paste("Threshold values (", currency, ")", sep = " "), y = "NMB"
     )
   return(p)
+}
+#######################################################################
+
+#' Plot efficiency frontier
+#' @param results_cea  results from cea (from calculate_icer_nmb nethod)
+#' @param threshold  threshold value
+#' @return plot
+#' @export
+plot_efficiency_frontier <- function(results_cea, threshold){
+  if (is.null(results_cea) | is.null(threshold))
+    stop("Error- reultss or threshold can not be null")
+  needed_colnames <- c("Cost", "Effect")
+  if (sum(colnames(results_cea) %in% needed_colnames) != length(needed_colnames))
+    stop("Error - columns do not contain the cost and effect ")
+
+  if (nrow(results_cea) > 1) {
+    name_file_plot <- paste0("Efficiency frontier_", threshold, ".pdf", sep = "")
+    grDevices::pdf(name_file_plot)
+
+    p <- ggplot2::ggplot(data = results_cea, ggplot2::aes(
+      x = results_cea$Effect, y = results_cea$Cost,group = 1)) +
+      ggplot2::geom_line(color = "red") +
+      ggplot2::geom_point() +
+      ggplot2::geom_text(ggplot2::aes(label = results_cea$Strategy), hjust = -0.1, vjust = -0.5) +
+      ggplot2::labs(title = "Efficiency frontier", x = "Effect (QALYs)", y = "Cost")
+    print(p)
+    grDevices::dev.off()
+  }
 }
