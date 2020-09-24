@@ -11,8 +11,7 @@ keep_results_plot_dsa(
   result_dsa_treat,
   plot_variable,
   threshold,
-  comparator,
-  currency
+  comparator
 )
 }
 \arguments{
@@ -28,8 +27,6 @@ for the comparative Markov model}
 \item{threshold}{threshold value of WTP}
 
 \item{comparator}{the strategy to be compared with}
-
-\item{currency}{the currency}
 }
 \value{
 results to plot dsa

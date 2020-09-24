@@ -275,7 +275,6 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
 #' for the comparative Markov model
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
-#' @param currency currency
 #' @return plot of  sensitivity analysis
 #' @examples
 #' \dontrun{
@@ -330,13 +329,13 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
 #' }
 #' @export
 plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_treat = NULL,
-                     threshold = NULL, comparator = NULL, currency = "GBP") {
+                     threshold = NULL, comparator = NULL) {
   info = checks_plot_dsa(result_dsa_control, plotfor, type, result_dsa_treat,
                   threshold, comparator)
   plot_variable = info$plot_variable
   plot_var = info$plot_var
   ob_results = keep_results_plot_dsa(result_dsa_control,plotfor,result_dsa_treat,
-                          plot_variable, threshold, comparator, currency)
+                          plot_variable, threshold, comparator)
   if (type == "range") {
     if (plotfor == "ICER") {
         p <- plot_dsa_icer_range(ob_results, plot_var)
@@ -425,11 +424,10 @@ checks_plot_dsa <- function(result_dsa_control, plotfor, type, result_dsa_treat,
 #' @param  plot_variable variable for plotting
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
-#' @param currency the currency
 #' @return results to plot dsa
 #' @export
 keep_results_plot_dsa <- function(result_dsa_control,plotfor,result_dsa_treat,plot_variable,
-                                  threshold, comparator, currency){
+                                  threshold, comparator){
   results <- data.frame()
   results_treat <- data.frame()
   results_icer_nmb <- data.frame()

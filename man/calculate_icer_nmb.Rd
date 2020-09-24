@@ -4,7 +4,7 @@
 \alias{calculate_icer_nmb}
 \title{Estimation of ICER and NMB}
 \usage{
-calculate_icer_nmb(list_markov, threshold, comparator = NULL, currency = "GBP")
+calculate_icer_nmb(list_markov, threshold, comparator = NULL)
 }
 \arguments{
 \item{list_markov}{list of Markov model objects with their Markov trace, cost matrix and utility matrix}
@@ -12,8 +12,6 @@ calculate_icer_nmb(list_markov, threshold, comparator = NULL, currency = "GBP")
 \item{threshold}{threshold value of WTP}
 
 \item{comparator}{the strategy to be compared with}
-
-\item{currency}{currency}
 }
 \value{
 ICER and NMB for all the strategies compared to comparator

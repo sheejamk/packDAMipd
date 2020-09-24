@@ -4,7 +4,6 @@
 #' @param list_markov  list of Markov model objects with their Markov trace, cost matrix and utility matrix
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
-#' @param currency currency
 #' @return ICER and NMB for all the strategies compared to comparator
 #' @examples
 #' \dontrun{
@@ -32,8 +31,8 @@
 #' calculate_icer_nmb(list_markov, 20000, comparator = "control")
 #' }
 #' @export
-calculate_icer_nmb <- function(list_markov, threshold, comparator = NULL, currency = "GBP") {
-  checks_var = list(list_markov, threshold, currency)
+calculate_icer_nmb <- function(list_markov, threshold, comparator = NULL) {
+  checks_var = list(list_markov, threshold)
   checks = sapply(checks_var, is.null)
   if (sum(checks) != 0)
     stop("One or more parameter passed is NULL")
@@ -47,7 +46,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator = NULL, curren
   # if comparator is not in any of the strategies, error
   if (!is.null(comparator)) {
     if (!any(list_names_strategy == comparator)) {
-           stop("Comparator has to be any of the strategies provided- please check")
+           stop("Comparator has to be any of the strategies provided - please check")
     } else{
        comparator_index <- which(list_names_strategy == comparator)
     }

@@ -11,8 +11,7 @@ plot_dsa(
   type = "range",
   result_dsa_treat = NULL,
   threshold = NULL,
-  comparator = NULL,
-  currency = "GBP"
+  comparator = NULL
 )
 }
 \arguments{
@@ -28,8 +27,6 @@ for the comparative Markov model}
 \item{threshold}{threshold value of WTP}
 
 \item{comparator}{the strategy to be compared with}
-
-\item{currency}{currency}
 }
 \value{
 plot of  sensitivity analysis
