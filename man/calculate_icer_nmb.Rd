@@ -4,7 +4,7 @@
 \alias{calculate_icer_nmb}
 \title{Estimation of ICER and NMB}
 \usage{
-calculate_icer_nmb(list_markov, threshold, comparator, currency = "GBP")
+calculate_icer_nmb(list_markov, threshold, comparator = NULL, currency = "GBP")
 }
 \arguments{
 \item{list_markov}{list of Markov model objects with their Markov trace, cost matrix and utility matrix}

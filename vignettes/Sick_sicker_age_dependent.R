@@ -71,6 +71,6 @@ trt_markov <- markov_model(current_strategy = trt_strategy, cycles = 85, initial
 
 ## -----------------------------------------------------------------------------
 list_markov <- combine_markov(uc_markov, trt_markov)
-cal<- calculate_icer_nmb(list_markov, threshold = 20000, comparator = "Usual care" )
+cal <- calculate_icer_nmb(list_markov, threshold = 20000, comparator = "Usual care" )
 plot_ceac(list_markov,threshold_values = c(1000,2000,5000,7000,10000,150000,20000), comparator = "Usual care" , currency = "USD")
 

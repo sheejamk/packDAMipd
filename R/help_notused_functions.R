@@ -429,9 +429,9 @@ convert_time_unit <- function(given_time, basis = "day") {
 #' @details
 #' It will return the parameters of the distribution separated by commas
 #' and given in usual notation as brackets
-#' It will identify those in betweeen first occurance of "( "and last occurance of ")"
-#' and from the charcters in between seach for comma to indicate different parameters
-#' then it will extract (from those extracted paramters separated by commas)
+#' It will identify those in between first occurrence of "( "and last occurrence of ")"
+#' and from the characters in between seaech for comma to indicate different parameters
+#' then it will extract (from those extracted parameters separated by commas)
 #' that on the left side of "equal" sign
 #' find_param_from_def_prob_distrbn("gamma(mean = sqrt(2), b =17)") will be ok
 #' but find_param_from_def_prob_distrbn("gamma(shape, scale")) and

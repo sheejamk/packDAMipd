@@ -26,7 +26,7 @@
 #' The min and max values should have same entries, but they should be contained in param_list too
 #' Copy the exact values of parameters that are in param list but not in min and max values
 define_parameters_sens_anal <- function(param_list, low_values, upp_values) {
-  if (is.null(param_list) | is.null(low_values) |is.null(upp_values)) {
+  if (is.null(param_list) | is.null(low_values) | is.null(upp_values)) {
     stop("Error - one or more of the parameters are null")
   }
   if (typeof(param_list) != "list" || typeof(low_values) != "list" || typeof(upp_values) != "list") {
@@ -184,8 +184,6 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
   results_cost_util <- data.frame()
   results_icer_nmb <- data.frame()
   names <- list()
-  first_name <- names(result_dsa_control)[1]
-  #ending <- ncol(result_dsa_control[[first_name]]$param_matrix)
   for (i in seq(1, len, 3)) {
     results_this_param <- data.frame()
     this_var_result_name <- names(result_dsa_control)[i]
@@ -333,7 +331,42 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
 #' @export
 plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_treat = NULL,
                      threshold = NULL, comparator = NULL, currency = "GBP") {
-
+  info = checks_plot_dsa(result_dsa_control, plotfor, type, result_dsa_treat,
+                  threshold, comparator)
+  plot_variable = info$plot_variable
+  plot_var = info$plot_var
+  ob_results = keep_results_plot_dsa(result_dsa_control,plotfor,result_dsa_treat,
+                          plot_variable, threshold, comparator, currency)
+  if (type == "range") {
+    if (plotfor == "ICER") {
+        p <- plot_dsa_icer_range(ob_results, plot_var)
+    }else{
+      if (plotfor == "NMB") {
+           p <- plot_dsa_nmb_range(ob_results, plot_var)
+      }
+      else{
+         p <- plot_dsa_others_range(ob_results, plot_var)
+      }
+    }
+  }else{
+    if (type == "difference") {
+          p <- plot_dsa_difference(ob_results, plotfor,plot_var)
+    }
+  }
+  print(p)
+}
+#######################################################################
+#' Function to do some checks before plotting sensitivity analysis results
+#' @param result_dsa_control  result from deterministic sensitivity analysis for first or control model
+#' @param plotfor the variable to plotfor e.g. cost, utility NMB etc
+#' @param type type of analysis, range or difference
+#' @param result_dsa_treat result from deterministic sensitivity analysis
+#' for the comparative Markov model
+#' @param threshold threshold value of WTP
+#' @param comparator the strategy to be compared with
+#' @return the plot variable
+checks_plot_dsa <- function(result_dsa_control, plotfor, type, result_dsa_treat,
+                            threshold, comparator){
   if (is.null(type) | is.null(result_dsa_control) | is.null(plotfor)) {
     stop("Error -Parameters can not be NULL")
   }
@@ -346,9 +379,6 @@ plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_tre
   if (plotfor == "ICER" && is.null(result_dsa_treat)) {
     stop("Error - if plotting for ICER, result_dsa_treat should not be of NULL")
   }
-  if (plotfor == "NMB" && is.null(result_dsa_treat)) {
-    stop("Error - if plotting for NMB, result_dsa_treat should not be of NULL")
-  }
   if (plotfor == "ICER" && is.null(threshold)) {
     stop("Error - if plotting for ICER, threshold should not be of NULL")
   }
@@ -358,14 +388,8 @@ plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_tre
   if (plotfor == "NMB" && is.null(threshold)) {
     stop("Error - if plotting for NMB, threshold should not be of NULL")
   }
-  if (plotfor == "NMB" && is.null(comparator)) {
-    stop("Error - if plotting for NMB, comparator should not be of NULL")
-  }
   if (plotfor == "ICER" && type == "difference") {
     stop("Error - if plotting for ICER, type should be  range")
-  }
-  if (plotfor == "NMB" && type == "difference") {
-    stop("Error - if plotting for NMB,  type should be  range")
   }
   if (toupper(plotfor) == "COST") {
     plot_variable <- "cost_matrix"
@@ -389,11 +413,28 @@ plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_tre
       }
     }
   }
-  len <- length(result_dsa_control)
+  plot_info = list(plot_variable = plot_variable, plot_var = plot_var)
+  return(plot_info)
+}
+#######################################################################
+#' Function to do some checks before plotting sensitivity analysis results
+#' @param result_dsa_control  result from deterministic sensitivity analysis for first or control model
+#' @param plotfor the variable to plotfor e.g. cost, utility NMB etc
+#' @param result_dsa_treat result from deterministic sensitivity analysis
+#' for the comparative Markov model
+#' @param  plot_variable variable for plotting
+#' @param threshold threshold value of WTP
+#' @param comparator the strategy to be compared with
+#' @param currency the currency
+#' @return results to plot dsa
+#' @export
+keep_results_plot_dsa <- function(result_dsa_control,plotfor,result_dsa_treat,plot_variable,
+                                  threshold, comparator, currency){
   results <- data.frame()
   results_treat <- data.frame()
   results_icer_nmb <- data.frame()
   names <- list()
+  len <- length(result_dsa_control)
   for (i in seq(1, len, 3)) {
     this_var_result_name <- names(result_dsa_control)[i]
     low_var_result_name <- names(result_dsa_control)[i + 1]
@@ -401,25 +442,34 @@ plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_tre
 
     index <- stringr::str_locate(this_var_result_name, "result_")
     this_var_name <- substr(this_var_result_name, index[2] + 1, nchar(this_var_result_name))
-    if (plotfor == "ICER" || plotfor == "NMB") {
-      list_markov <- combine_markov(result_dsa_control[[this_var_result_name]], result_dsa_treat[[this_var_result_name]])
+    if (plotfor == "ICER" | plotfor == "NMB" ) {
+      if (!is.null(result_dsa_treat)) {
+        list_markov <- combine_markov(result_dsa_control[[this_var_result_name]],
+                                      result_dsa_treat[[this_var_result_name]])
+        list_markov_low <- combine_markov(result_dsa_control[[low_var_result_name]],
+                                          result_dsa_treat[[low_var_result_name]])
+        list_markov_upp <- combine_markov(result_dsa_control[[upp_var_result_name]],
+                                          result_dsa_treat[[upp_var_result_name]])
+
+      }else{
+        list_markov <- combine_markov(result_dsa_control[[this_var_result_name]])
+        list_markov_low <- combine_markov(result_dsa_control[[low_var_result_name]])
+        list_markov_upp <- combine_markov(result_dsa_control[[upp_var_result_name]])
+      }
       results_icer_nmb_base <- as.data.frame(calculate_icer_nmb(list_markov, threshold, comparator))
       results_icer_nmb_base[["parameter"]] <- c(this_var_name, this_var_name)
       results_icer_nmb_base[["value_limit"]] <- c("base", "base")
       results_icer_nmb <- rbind(results_icer_nmb, results_icer_nmb_base)
-      list_markov <- combine_markov(result_dsa_control[[low_var_result_name]], result_dsa_treat[[low_var_result_name]])
-      results_icer_nmb_low <- as.data.frame(calculate_icer_nmb(list_markov, threshold, comparator))
+      results_icer_nmb_low <- as.data.frame(calculate_icer_nmb(list_markov_low, threshold, comparator))
       results_icer_nmb_low[["parameter"]] <- c(this_var_name, this_var_name)
       results_icer_nmb_low[["value_limit"]] <- c("lower", "lower")
-
       results_icer_nmb <- rbind(results_icer_nmb, results_icer_nmb_low)
-      list_markov <- combine_markov(result_dsa_control[[upp_var_result_name]], result_dsa_treat[[upp_var_result_name]])
-      results_icer_nmb_upp <- as.data.frame(calculate_icer_nmb(list_markov, threshold, comparator))
+      results_icer_nmb_upp <- as.data.frame(calculate_icer_nmb(list_markov_upp, threshold, comparator))
       results_icer_nmb_upp[["parameter"]] <- c(this_var_name, this_var_name)
       results_icer_nmb_upp[["value_limit"]] <- c("upper", "upper")
-
       results_icer_nmb <- rbind(results_icer_nmb, results_icer_nmb_upp)
       names <- append(names, this_var_name)
+
     } else {
       this_var_result <- result_dsa_control[[this_var_result_name]]
       matr <- this_var_result[[plot_variable]]
@@ -467,120 +517,223 @@ plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_tre
         results_treat <- rbind(results_treat, c(mean_var, low_var, upp_var))
       }
     }
-  }
-  if (type == "range") {
-    if (plotfor == "ICER" || plotfor == "NMB") {
-      results_icer_nmb_all <- data.frame(results_icer_nmb)
-      if (plotfor == "ICER") {
-        low <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "lower", ]$ICER))
-        base <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "base", ]$ICER))
-        upp <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "upper", ]$ICER))
-        low <- low[which(!is.na(low))]
-      } else {
-        low <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "lower", ]$NMB))
-        base <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "base", ]$NMB))
-        upp <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "upper", ]$NMB))
-      }
-      low <- low[which(!is.na(low))]
-      base <- base[which(!is.na(base))]
-      upp <- upp[which(!is.na(upp))]
 
-      p <- ggplot2::ggplot(results_icer_nmb_all[results_icer_nmb_all$value_limit == "lower" & !is.na(results_icer_nmb_all$ICER), ]) +
-        ggplot2::geom_segment(ggplot2::aes(
-          x = low, xend = upp,
-          y = unique(results_icer_nmb_all$parameter),
-          yend = unique(results_icer_nmb_all$parameter)
-        ),
-        size = 3, color = "orange"
-        ) +
-        ggplot2::geom_point(ggplot2::aes(
-          x = base,
-          y = unique(results_icer_nmb_all$parameter),
-          color = "base value"
-        ), size = 4) +
-        ggplot2::geom_point(ggplot2::aes(
-          x = low,
-          y = unique(results_icer_nmb_all$parameter),
-          color = "lower"
-        ), size = 4, shape = 15) +
-        ggplot2::geom_point(ggplot2::aes(
-          x = upp,
-          y = unique(results_icer_nmb_all$parameter),
-          color = "upper"
-        ), size = 4, shape = 15) +
-        ggplot2::labs(colour = "", y = "Parameters") +
-        ggplot2::labs(x = paste("Range in ", plot_var, sep = "")) +
-        ggplot2::theme(legend.position = "bottom")
-    } else {
-      results_parameters <- data.frame(results)
-      results_parameters[["parameter"]] <- unlist(names)
-      colnames(results_parameters) <- c("base", "lower", "upper", "parameter")
-      p <- ggplot2::ggplot(results_parameters) +
-        ggplot2::geom_segment(ggplot2::aes(
-          x = results_parameters$lower,
-          xend = results_parameters$upper,
-          y = results_parameters$parameter,
-          yend = results_parameters$parameter
-        ),
-        size = 3, color = "orange"
-        ) +
-        ggplot2::geom_point(ggplot2::aes(
-          x = results_parameters$base,
-          y = results_parameters$parameter, color = "base value"
-        ),
-        size = 4
-        ) +
-        ggplot2::geom_point(ggplot2::aes(
-          x = results_parameters$lower,
-          y = results_parameters$parameter,
-          color = "lower"
-        ), size = 4, shape = 15) +
-        ggplot2::geom_point(ggplot2::aes(
-          x = results_parameters$upper,
-          y = results_parameters$parameter,
-          color = "upper"
-        ), size = 4, shape = 15) +
-        ggplot2::labs(colour = "", y = "Parameters") +
-        ggplot2::labs(x = paste("Range in ", plot_var, sep = "")) +
-        ggplot2::theme(legend.position = "bottom")
+  }
+  if (plotfor == "ICER" | plotfor == "NMB" ) {
+    return(list(results_icer_nmb = results_icer_nmb))
+  }else{
+    results[["parameter"]] <- unlist(names)
+    colnames(results) <- c("base", "lower", "upper", "parameter")
+    if (!is.null(result_dsa_treat)) {
+      results_treat[["parameter"]] <- unlist(names)
+      colnames(results_treat) <- c("base", "lower", "upper", "parameter")
+      return(list(results = results,results_treat = results_treat))
+    } else{
+      return(list(results = results))
     }
   }
-  if (type == "difference") {
-    results_parameters <- data.frame(results)
-    results_parameters[["parameter"]] <- unlist(names)
-    colnames(results_parameters) <- c("base", "lower", "upper", "parameter")
-    results_parameters_treat <- data.frame(results_treat)
-    results_parameters_treat[["parameter"]] <- unlist(names)
-    colnames(results_parameters_treat) <- c("base", "lower", "upper", "parameter")
-    low_diff <- results_parameters_treat$lower - results_parameters$lower
-    base_diff <- results_parameters_treat$base - results_parameters$base
-    upp_diff <- results_parameters_treat$upper - results_parameters$upper
-    p <- ggplot2::ggplot(results_parameters_treat) +
-      ggplot2::geom_segment(ggplot2::aes(
-        x = low_diff, xend = upp_diff,
-        y = results_parameters_treat$parameter,
-        yend = results_parameters$parameter
-      ),
-      size = 3, color = "orange"
-      ) +
-      ggplot2::geom_point(ggplot2::aes(
-        x = base_diff,
-        y = results_parameters$parameter,
-        color = "base value"
-      ), size = 4) +
-      ggplot2::geom_point(ggplot2::aes(
-        x = low_diff,
-        y = results_parameters$parameter,
-        color = "lower"
-      ), size = 4, shape = 15) +
-      ggplot2::geom_point(ggplot2::aes(
-        x = upp_diff,
-        y = results_parameters$parameter,
-        color = "upper"
-      ), size = 4, shape = 15) +
-      ggplot2::labs(colour = "", y = "Parameters") +
-      ggplot2::labs(x = paste("Difference in ", plot_var, sep = "")) +
-      ggplot2::theme(legend.position = "bottom")
+}
+#######################################################################
+#' Function to do some checks before plotting sensitivity analysis results
+#' @param ob_results  results from deterministic sensitivity analysis
+#' @param plot_var the variable
+#' @return plot
+#' @export
+plot_dsa_icer_range <- function(ob_results, plot_var){
+  results_icer_nmb = ob_results$results_icer_nmb
+  results_icer_nmb_all <- data.frame(results_icer_nmb)
+  low <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "lower", ]$ICER))
+  base <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "base", ]$ICER))
+  upp <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "upper", ]$ICER))
+  low <- low[which(!is.na(low))]
+  low <- low[which(!is.na(low))]
+  base <- base[which(!is.na(base))]
+  upp <- upp[which(!is.na(upp))]
+  p <- ggplot2::ggplot(results_icer_nmb_all[results_icer_nmb_all$value_limit == "lower"
+                                            & !is.na(results_icer_nmb_all$ICER), ]) +
+    ggplot2::geom_segment(ggplot2::aes(
+      x = low, xend = upp,
+      y = unique(results_icer_nmb_all$parameter),
+      yend = unique(results_icer_nmb_all$parameter)
+    ),
+    size = 3, color = "orange"
+    ) +
+    ggplot2::geom_point(ggplot2::aes(
+      x = base,
+      y = unique(results_icer_nmb_all$parameter),
+      color = "base value"
+    ), size = 4) +
+    ggplot2::geom_point(ggplot2::aes(
+      x = low,
+      y = unique(results_icer_nmb_all$parameter),
+      color = "lower"
+    ), size = 4, shape = 15) +
+    ggplot2::geom_point(ggplot2::aes(
+      x = upp,
+      y = unique(results_icer_nmb_all$parameter),
+      color = "upper"
+    ), size = 4, shape = 15) +
+    ggplot2::labs(colour = "", y = "Parameters") +
+    ggplot2::labs(x = paste("Range in ", plot_var, sep = "")) +
+    ggplot2::theme(legend.position = "bottom")
+  return(p)
+}
+#######################################################################
+#' Function to do some checks before plotting sensitivity analysis results
+#' @param ob_results  results from deterministic sensitivity analysis
+#' @param plot_var the variable
+#' @return plot
+#' @export
+plot_dsa_nmb_range <- function(ob_results, plot_var) {
+  results_icer_nmb = ob_results$results_icer_nmb
+  strategy_names = unique(results_icer_nmb$Strategy)
+  parameters = unique(results_icer_nmb$parameter)
+  results <- results_icer_nmb[results_icer_nmb$Strategy
+                              == strategy_names[1],]
+  results_treat = results_icer_nmb[results_icer_nmb$Strategy
+                                   == strategy_names[2],]
+  results_parameters <- as.data.frame(parameters)
+  results_parameters[["lower"]] <- as.numeric(results[results$value_limit == "lower",]$NMB)
+  results_parameters[["base"]] <- as.numeric(results[results$value_limit == "base",]$NMB)
+  results_parameters[["upper"]] <- as.numeric(results[results$value_limit == "upper",]$NMB)
+
+  results_parameters_treat <- as.data.frame(parameters)
+  results_parameters_treat[["lower"]] <- as.numeric(results_treat[results_treat$value_limit
+                                                                  == "lower",]$NMB)
+  results_parameters_treat[["base"]] <- as.numeric(results_treat[results_treat$value_limit
+                                                                 == "base",]$NMB)
+  results_parameters_treat[["upper"]] <- as.numeric(results_treat[results_treat$value_limit
+                                                                  == "upper",]$NMB)
+  p <- ggplot2::ggplot(results_parameters) +
+    ggplot2::geom_segment(ggplot2::aes_(
+      x = ~lower,
+      xend = ~upper,
+      y = ~parameter,
+      yend = ~parameter
+    ),
+    size = 3, color = "orange"
+    ) +
+    ggplot2::geom_point(ggplot2::aes_(
+      x = ~base,
+      y = ~parameter, color = "base value"
+    ),
+    size = 4
+    ) +
+    ggplot2::geom_point(ggplot2::aes_(
+      x = ~lower,
+      y = ~parameter,
+      color = "lower"
+    ), size = 4, shape = 15) +
+    ggplot2::geom_point(ggplot2::aes_(
+      x = ~upper,
+      y = ~parameter,
+      color = "upper"
+    ), size = 4, shape = 15) +
+    ggplot2::labs(colour = "", y = "Parameters") +
+    ggplot2::labs(x = paste("Range in ", plot_var, sep = "")) +
+    ggplot2::theme(legend.position = "bottom")
+  return(p)
+}
+#######################################################################
+#' Function to do some checks before plotting sensitivity analysis results
+#' @param ob_results  results from deterministic sensitivity analysis
+#' @param plot_var the variable
+#' @return plot
+#' @export
+plot_dsa_others_range <- function(ob_results, plot_var){
+  results_parameters <- ob_results$results
+  p <- ggplot2::ggplot(results_parameters) +
+    ggplot2::geom_segment(ggplot2::aes_(
+      x = ~lower,
+      xend = ~upper,
+      y = ~parameter,
+      yend = ~parameter
+    ),
+    size = 3, color = "orange"
+    ) +
+    ggplot2::geom_point(ggplot2::aes_(
+      x = ~base,
+      y = ~parameter, color = "base value"
+    ),
+    size = 4
+    ) +
+    ggplot2::geom_point(ggplot2::aes_(
+      x = ~lower,
+      y = ~parameter,
+      color = "lower"
+    ), size = 4, shape = 15) +
+    ggplot2::geom_point(ggplot2::aes_(
+      x = ~upper,
+      y = ~parameter,
+      color = "upper"
+    ), size = 4, shape = 15) +
+    ggplot2::labs(colour = "", y = "Parameters") +
+    ggplot2::labs(x = paste("Range in ", plot_var, sep = "")) +
+    ggplot2::theme(legend.position = "bottom")
+  return(p)
+}
+#######################################################################
+#' Function to do some checks before plotting sensitivity analysis results
+#' @param ob_results  results from deterministic sensitivity analysis
+#' @param plot_var the variable
+#' @param plotfor the quantity plotting
+#' @return plot
+#' @export
+plot_dsa_difference <- function(ob_results, plotfor,plot_var){
+  if (plotfor == "NMB") {
+    results_icer_nmb = ob_results$results_icer_nmb
+    strategy_names = unique(results_icer_nmb$Strategy)
+    parameters = unique(results_icer_nmb$parameter)
+    results <- results_icer_nmb[results_icer_nmb$Strategy
+                                == strategy_names[1],]
+    results_treat = results_icer_nmb[results_icer_nmb$Strategy
+                                     == strategy_names[2],]
+    results_parameters <- as.data.frame(parameters)
+    results_parameters[["lower"]] <- as.numeric(results[results$value_limit == "lower",]$NMB)
+    results_parameters[["base"]] <- as.numeric(results[results$value_limit == "base",]$NMB)
+    results_parameters[["upper"]] <- as.numeric(results[results$value_limit == "upper",]$NMB)
+
+    results_parameters_treat <- as.data.frame(parameters)
+    results_parameters_treat[["lower"]] <- as.numeric(results_treat[results_treat$value_limit
+                                                                    == "lower",]$NMB)
+    results_parameters_treat[["base"]] <- as.numeric(results_treat[results_treat$value_limit
+                                                                   == "base",]$NMB)
+    results_parameters_treat[["upper"]] <- as.numeric(results_treat[results_treat$value_limit
+                                                                    == "upper",]$NMB)
+  } else {
+    results = ob_results$results
+    results_treat = ob_results$results_treat
+    results_parameters <- as.data.frame(results)
+    results_parameters_treat <- as.data.frame(results_treat)
   }
+  low_diff <- results_parameters_treat$lower - results_parameters$lower
+  base_diff <- results_parameters_treat$base - results_parameters$base
+  upp_diff <- results_parameters_treat$upper - results_parameters$upper
+  p <- ggplot2::ggplot(results_parameters_treat) +
+    ggplot2::geom_segment(ggplot2::aes_(
+      x = low_diff, xend = upp_diff,
+      y = ~parameter,
+      yend = ~parameter
+    ),
+    size = 3, color = "orange"
+    ) +
+    ggplot2::geom_point(ggplot2::aes_(
+      x = base_diff,
+      y = ~parameter,
+      color = "base value"
+    ), size = 4) +
+    ggplot2::geom_point(ggplot2::aes_(
+      x = low_diff,
+      y = ~parameter,
+      color = "lower"
+    ), size = 4, shape = 15) +
+    ggplot2::geom_point(ggplot2::aes_(
+      x = upp_diff,
+      y = ~parameter,
+      color = "upper"
+    ), size = 4, shape = 15) +
+    ggplot2::labs(colour = "", y = "Parameters") +
+    ggplot2::labs(x = paste("Difference in ", plot_var, sep = "")) +
+    ggplot2::theme(legend.position = "bottom")
   return(p)
 }

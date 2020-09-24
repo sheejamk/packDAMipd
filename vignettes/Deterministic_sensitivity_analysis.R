@@ -2,7 +2,7 @@
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = ">",
- fig.width = 6,
+ fig.width = 6, 
  fig.height = 4
 )
 
@@ -143,6 +143,7 @@ min_values <- define_parameters(cost_direct_med_B = 177.4,cost_comm_care_C = 205
 max_values <- define_parameters(cost_direct_med_B = 17740,cost_comm_care_C = 20590)
 param_table <- define_parameters_sens_anal(mono_params, min_values, max_values)
 
+
 result_dsa_control <- do_sensitivity_analysis(mono_markov,param_table)
 report_dsa_control <- report_sensitivity_analysis(result_dsa_control)
 plot_dsa(result_dsa_control,"cost")
@@ -156,7 +157,8 @@ max_values <- define_parameters(cost_direct_med_B = 17740,cost_comm_care_C = 205
 param_table <- define_parameters_sens_anal(comb_params, min_values, max_values)
 result_dsa_treat <- do_sensitivity_analysis(comb_markov, param_table)
 table_sa <- report_sensitivity_analysis(result_dsa_control, result_dsa_treat, 1000, "mono")
-
-plot_dsa(result_dsa_control,"cost", type = "difference",result_dsa_treat,threshold = 1000, comparator = "mono")
-plot_dsa(result_dsa_control,"NMB", type = "range",result_dsa_treat,threshold = 1000, comparator = "mono")
+# 
+#plot_dsa(result_dsa_control,"cost", type = "difference",result_dsa_treat,threshold = 1000, comparator = "mono")
+plot_dsa(result_dsa_control,"cost", type = "range",result_dsa_treat,threshold = 1000, comparator = "mono")
+plot_dsa(result_dsa_control,"ICER", type = "range",result_dsa_treat,threshold = 1000, comparator = "mono")
 

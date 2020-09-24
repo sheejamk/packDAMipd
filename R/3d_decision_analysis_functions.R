@@ -32,8 +32,8 @@
 #' calculate_icer_nmb(list_markov, 20000, comparator = "control")
 #' }
 #' @export
-calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "GBP") {
-  checks_var = list(list_markov, threshold, comparator, currency)
+calculate_icer_nmb <- function(list_markov, threshold, comparator = NULL, currency = "GBP") {
+  checks_var = list(list_markov, threshold, currency)
   checks = sapply(checks_var, is.null)
   if (sum(checks) != 0)
     stop("One or more parameter passed is NULL")
@@ -45,10 +45,14 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
     list_names_strategy <- append(list_names_strategy, list_markov[, "strategy"][[i]]$name_strategy)
   }
   # if comparator is not in any of the strategies, error
-  if (!any(list_names_strategy == comparator)) {
-    stop("Comparator has to be any of the strategies provided- please check")
-  } else {
-    comparator_index <- which(list_names_strategy == comparator)
+  if (!is.null(comparator)) {
+    if (!any(list_names_strategy == comparator)) {
+           stop("Comparator has to be any of the strategies provided- please check")
+    } else{
+       comparator_index <- which(list_names_strategy == comparator)
+    }
+  }else{
+    comparator_index = 0
   }
   # check the expected columns in list of markov
   expected_colnames <- c(
@@ -87,20 +91,25 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
   list_del_C <- list()
   # find icer and NMB
   for (i in seq_len(no_comparison)) {
-    if (i != comparator_index) {
-      del_E <- (av_cum_utility_pp[[i]] - av_cum_utility_pp[[comparator_index]])
-      del_c <- (av_cum_cost_pp[[i]] - av_cum_cost_pp[[comparator_index]])
-      icer <- del_c / del_E
-      if (threshold != 0 & !is.na(threshold) & is.numeric(threshold))
-        nmb <- del_E - del_c / threshold
-      else
-        stop("Threshold value is not valid")
-    } else {
+    if (comparator_index != 0) {
+      if (i != comparator_index) {
+          del_E <- (av_cum_utility_pp[[i]] - av_cum_utility_pp[[comparator_index]])
+          del_c <- (av_cum_cost_pp[[i]] - av_cum_cost_pp[[comparator_index]])
+          icer <- del_c / del_E
+      } else {
+          del_E <- NA
+          del_c <- NA
+          icer <- NA
+      }
+    }else{
       del_E <- NA
       del_c <- NA
       icer <- NA
-      nmb <- NA
     }
+    if (threshold != 0 & !is.na(threshold) & is.numeric(threshold))
+        nmb <- av_cum_utility_pp[[i]] * threshold - av_cum_cost_pp[[i]]
+    else
+        stop("Threshold value is not valid")
     list_icer <- append(list_icer, icer)
     list_nmb <- append(list_nmb, nmb)
     list_del_E <- append(list_del_E, del_E)
@@ -108,27 +117,27 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator, currency = "G
   }
   # results and plot
   results_cea <- matrix(c(
-    unlist(list_names_strategy), unlist(av_cum_cost_pp), unlist(av_cum_utility_pp), unlist(list_del_C), unlist(list_del_E),
-    unlist(list_icer), unlist(list_nmb)
+    unlist(list_names_strategy), unlist(av_cum_cost_pp), unlist(av_cum_utility_pp),
+    unlist(list_nmb), unlist(list_del_C), unlist(list_del_E),unlist(list_icer)
+
   ), ncol = 7, byrow = FALSE)
 
-  colnames(results_cea) <- c("Strategy", "Cost", "Effect", "Inc_Cost", "Inc_Effect", "ICER", "NMB")
+  colnames(results_cea) <- c("Strategy", "Cost", "Effect", "NMB", "Inc_Cost", "Inc_Effect", "ICER" )
   rownames(results_cea) <- NULL
   results_cea <- data.table::data.table(results_cea)
+  if (nrow(results_cea) > 1) {
+      name_file_plot <- paste0("Efficiency frontier_", threshold, ".pdf", sep = "")
+                  grDevices::pdf(name_file_plot)
 
-  name_file_plot <- paste0("Efficiency frontier_", threshold, ".pdf", sep = "")
-  grDevices::pdf(name_file_plot)
-
-  p <- ggplot2::ggplot(data = results_cea, ggplot2::aes(
-    x = results_cea$Effect, y = results_cea$Cost,
-    group = 1
-  )) +
-    ggplot2::geom_line(color = "red") +
-    ggplot2::geom_point() +
-    ggplot2::geom_text(ggplot2::aes(label = results_cea$Strategy), hjust = -0.1, vjust = -0.5) +
-    ggplot2::labs(title = "Efficiency frontier", x = "Effect (QALYs)", y = "Cost")
-  print(p)
-  grDevices::dev.off()
+      p <- ggplot2::ggplot(data = results_cea, ggplot2::aes(
+        x = results_cea$Effect, y = results_cea$Cost,group = 1)) +
+      ggplot2::geom_line(color = "red") +
+      ggplot2::geom_point() +
+      ggplot2::geom_text(ggplot2::aes(label = results_cea$Strategy), hjust = -0.1, vjust = -0.5) +
+      ggplot2::labs(title = "Efficiency frontier", x = "Effect (QALYs)", y = "Cost")
+      print(p)
+      grDevices::dev.off()
+  }
   return(results_cea)
 }
 #######################################################################
