@@ -300,6 +300,8 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
     mean_nmb <- mean(this_nmb)
     sd_icer <- stats::sd(this_icer)
     sd_nmb <- stats::sd(this_nmb)
+    name_file_plot <- paste0("Probabilistic sensitivity analysis_ICER_NMB.pdf", sep = "")
+    grDevices::pdf(name_file_plot)
     plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes(
       x = this_icer,
       y = this_nmb
@@ -308,6 +310,11 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
       ggplot2::labs(x = "ICER") +
       ggplot2::labs(y = "NMB") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+    graphics::plot(plot1) # plot result
+    grDevices::dev.off()
+
+    name_file_plot <- paste0("Histogram of ICER.pdf", sep = "")
+    grDevices::pdf(name_file_plot)
     plot2 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = this_icer)) +
       ggplot2::geom_histogram(bins = 20, color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of ICER", x = "ICER", y = "Count") +
@@ -315,6 +322,11 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
         color = "blue", linetype = "dashed", size = 1
       ) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+    graphics::plot(plot2) # plot result
+    grDevices::dev.off()
+
+    name_file_plot <- paste0("Histogram of NMB.pdf", sep = "")
+    grDevices::pdf(name_file_plot)
     plot3 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = this_nmb)) +
       ggplot2::geom_histogram(bins = 20, color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of NMB", x = "NMB", y = "Count") +
@@ -322,6 +334,9 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
         color = "red", linetype = "dashed", size = 1
       ) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+    graphics::plot(plot3) # plot result
+    grDevices::dev.off()
+
     result <- structure(list(
       mean_icer = mean_icer,
       mean_nmb = mean_nmb,
@@ -346,28 +361,44 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
     }
     names(mean_all) <- colnames(list_all[1:no_entries])
     names(sd_all) <- colnames(list_all[1:no_entries])
-    plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes(
-      x = list_all$utility,
-      y = list_all$cost
+
+    name_file_plot <- paste0("Utility or Effect.pdf", sep = "")
+    grDevices::pdf(name_file_plot)
+    plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes_(
+      x = ~utility,
+      y = ~cost
     )) +
       ggplot2::geom_point(color = "blue", size = 3) +
       ggplot2::labs(x = "Utility / Effect") +
       ggplot2::labs(y = "Cost") +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-    plot2 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$cost)) +
+    graphics::plot(plot1) # plot result
+    grDevices::dev.off()
+
+    name_file_plot <- paste0("Histogram of Cost.pdf", sep = "")
+    grDevices::pdf(name_file_plot)
+    plot2 <- ggplot2::ggplot(data = list_all, ggplot2::aes_(x = ~cost)) +
       ggplot2::geom_histogram(bins = 20, color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of cost", x = "Cost", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$cost)),
+      ggplot2::geom_vline(ggplot2::aes_(xintercept = mean(~cost)),
         color = "blue", linetype = "dashed", size = 1
       ) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-    plot3 <- ggplot2::ggplot(data = list_all, ggplot2::aes(x = list_all$utility)) +
+    graphics::plot(plot2) # plot result
+    grDevices::dev.off()
+
+    name_file_plot <- paste0("Histogram of Utility.pdf", sep = "")
+    grDevices::pdf(name_file_plot)
+    plot3 <- ggplot2::ggplot(data = list_all, ggplot2::aes_(x = ~utility)) +
       ggplot2::geom_histogram(bins = 20, color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of utility values", x = "Utility", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes(xintercept = mean(list_all$utility)),
+      ggplot2::geom_vline(ggplot2::aes_(xintercept = mean(~utility)),
         color = "red", linetype = "dashed", size = 1
       ) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+    graphics::plot(plot3) # plot result
+    grDevices::dev.off()
+
     result <- structure(list(
       mean_cost = mean_all$cost,
       mean_utility = mean_all$utility,

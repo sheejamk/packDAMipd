@@ -893,11 +893,16 @@ plot_model <- function(markov) {
   }
   this_trace <- data.frame(markov$trace_matrix)
   this_trace_melted <- reshape2::melt(this_trace, id.var = "Cycles")
+
+  name_file_plot <- paste0("Markov model states.pdf", sep = "")
+  grDevices::pdf(name_file_plot)
   p <- ggplot2::ggplot(this_trace_melted, ggplot2::aes_(x = ~Cycles,
                   y = ~value, col = ~variable)) +
     ggplot2::geom_line() +
     ggplot2::labs(x = "Cycles") +
     ggplot2::labs(y = "States") +
     ggplot2::theme(legend.title = ggplot2::element_blank())
+  graphics::plot(p)
+  grDevices::dev.off()
   return(p)
 }

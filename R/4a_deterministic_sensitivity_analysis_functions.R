@@ -547,6 +547,9 @@ plot_dsa_icer_range <- function(ob_results, plot_var){
   low <- low[which(!is.na(low))]
   base <- base[which(!is.na(base))]
   upp <- upp[which(!is.na(upp))]
+  name_file_plot <- paste0("Deterministic sensitivity analysis ICER.pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+
   p <- ggplot2::ggplot(results_icer_nmb_all[results_icer_nmb_all$value_limit == "lower"
                                             & !is.na(results_icer_nmb_all$ICER), ]) +
     ggplot2::geom_segment(ggplot2::aes(
@@ -574,6 +577,9 @@ plot_dsa_icer_range <- function(ob_results, plot_var){
     ggplot2::labs(colour = "", y = "Parameters") +
     ggplot2::labs(x = paste("Range in ", plot_var, sep = "")) +
     ggplot2::theme(legend.position = "bottom")
+
+  graphics::plot(p) # plot result
+  grDevices::dev.off()
   return(p)
 }
 #######################################################################
@@ -602,6 +608,8 @@ plot_dsa_nmb_range <- function(ob_results, plot_var) {
                                                                  == "base",]$NMB)
   results_parameters_treat[["upper"]] <- as.numeric(results_treat[results_treat$value_limit
                                                                   == "upper",]$NMB)
+  name_file_plot <- paste0("Deterministic sensitivity analysis NMB.pdf", sep = "")
+  grDevices::pdf(name_file_plot)
   p <- ggplot2::ggplot(results_parameters) +
     ggplot2::geom_segment(ggplot2::aes_(
       x = ~lower,
@@ -630,6 +638,9 @@ plot_dsa_nmb_range <- function(ob_results, plot_var) {
     ggplot2::labs(colour = "", y = "Parameters") +
     ggplot2::labs(x = paste("Range in ", plot_var, sep = "")) +
     ggplot2::theme(legend.position = "bottom")
+  graphics::plot(p) # plot result
+  grDevices::dev.off()
+
   return(p)
 }
 #######################################################################
@@ -640,6 +651,9 @@ plot_dsa_nmb_range <- function(ob_results, plot_var) {
 #' @export
 plot_dsa_others_range <- function(ob_results, plot_var){
   results_parameters <- ob_results$results
+  name_file_plot <- paste0("Deterministic sensitivity analysis.pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+
   p <- ggplot2::ggplot(results_parameters) +
     ggplot2::geom_segment(ggplot2::aes_(
       x = ~lower,
@@ -668,6 +682,8 @@ plot_dsa_others_range <- function(ob_results, plot_var){
     ggplot2::labs(colour = "", y = "Parameters") +
     ggplot2::labs(x = paste("Range in ", plot_var, sep = "")) +
     ggplot2::theme(legend.position = "bottom")
+  graphics::plot(p) # plot result
+  grDevices::dev.off()
   return(p)
 }
 #######################################################################
@@ -707,6 +723,9 @@ plot_dsa_difference <- function(ob_results, plotfor,plot_var){
   low_diff <- results_parameters_treat$lower - results_parameters$lower
   base_diff <- results_parameters_treat$base - results_parameters$base
   upp_diff <- results_parameters_treat$upper - results_parameters$upper
+  name_file_plot <- paste0("Deterministic sensitivity analysis (diff).pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+
   p <- ggplot2::ggplot(results_parameters_treat) +
     ggplot2::geom_segment(ggplot2::aes_(
       x = low_diff, xend = upp_diff,
@@ -733,5 +752,7 @@ plot_dsa_difference <- function(ob_results, plotfor,plot_var){
     ggplot2::labs(colour = "", y = "Parameters") +
     ggplot2::labs(x = paste("Difference in ", plot_var, sep = "")) +
     ggplot2::theme(legend.position = "bottom")
+  graphics::plot(p) # plot result
+  grDevices::dev.off()
   return(p)
 }

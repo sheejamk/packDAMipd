@@ -45,7 +45,7 @@ test_that("testing doing probabilistic sensitivity analysis", {
   health_states <- combine_state(A, B, C)
   mono_strategy <- strategy(tm, health_states, "mono")
   mono_markov <- markov_model(mono_strategy, 20, discount = c(0.06, 0),
-                              initial_state =c(1,0,0),param_list)
+                              initial_state = c(1,0,0),param_list)
   param_table <- define_parameters_psa(param_list, sample_list)
   result <- do_psa(mono_markov, param_table, 3)
   expect_equal(result$base_result$strategy$name_strategy, "mono")
@@ -90,7 +90,7 @@ test_that("testing listing probabilistic sensitivity analysis results parameterw
   ), colnames(tmat))
   health_states <- combine_state(A, B, C)
   mono_strategy <- strategy(tm, health_states, "mono")
-  mono_markov <- markov_model(mono_strategy, 20, initial_state =c(1,0,0),discount = c(0.06, 0),param_list)
+  mono_markov <- markov_model(mono_strategy, 20, initial_state = c(1,0,0),discount = c(0.06, 0),param_list)
   param_table <- define_parameters_psa(param_list, sample_list)
   result <- do_psa(mono_markov, param_table, 3)
   result_plot <- summary_plot_psa(result, NULL, NULL, NULL)

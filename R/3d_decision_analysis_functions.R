@@ -231,6 +231,9 @@ plot_ceac <- function(list_markov, threshold_values, comparator, currency = "GBP
   nmb_all <- as.data.frame(nmb_all)
   xvalues = nmb_all[,2]
   yvalues = nmb_all[,1]
+  name_file_plot <- paste0("Cost-effectiveness acceptability curve.pdf", sep = "")
+  grDevices::pdf(name_file_plot)
+
   p <- ggplot2::ggplot(data = nmb_all, ggplot2::aes(x = xvalues, y = yvalues, group = 1)) +
     ggplot2::geom_line(color = "red") +
     ggplot2::geom_point() +
@@ -238,6 +241,8 @@ plot_ceac <- function(list_markov, threshold_values, comparator, currency = "GBP
       title = "Cost-effectiveness acceptability curve",
       x = paste("Threshold values (", currency, ")", sep = " "), y = "NMB"
     )
+  graphics::plot(p) # plot result
+  grDevices::dev.off()
   return(p)
 }
 #######################################################################
