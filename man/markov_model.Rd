@@ -10,8 +10,10 @@ markov_model(
   initial_state,
   discount = c(0, 0),
   parameter_values = NULL,
-  method = "half cycle correction",
   half_cycle_correction = TRUE,
+  state_cost_only_prevalent = FALSE,
+  state_util_only_prevalent = FALSE,
+  method = "half cycle correction",
   startup_cost = NULL,
   startup_util = NULL
 )
@@ -27,9 +29,18 @@ markov_model(
 
 \item{parameter_values}{parameters for assigning health states and probabilities}
 
-\item{method}{what type of half cycle correction needed}
-
 \item{half_cycle_correction}{boolean to indicate half cycle correction}
+
+\item{state_cost_only_prevalent}{boolean parameter to indicate if the costs for
+state occupancy is only for those in the state excluding those that transitioned new.
+This is relevant when the transition cost is provided for eg. in a state with dialysis
+the cost of previous dialysis is different from the newly dialysis cases.
+Then the state_cost_only_prevalent should be TRUE}
+
+\item{state_util_only_prevalent}{boolean parameter to indicate if the utilites for
+state occupancy is only for those in the state excluding those that transitioned new.}
+
+\item{method}{what type of half cycle correction needed}
 
 \item{startup_cost}{cost of states initially}
 

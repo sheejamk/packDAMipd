@@ -159,6 +159,14 @@ find_parameters_btn_operators <- function(expr) {
 #' @param half_cycle_correction boolean to indicate half cycle correction
 #' @param startup_cost cost of states initially
 #' @param startup_util utility of states initially if any
+#' @param state_cost_only_prevalent boolean parameter to indicate if the costs for
+#' state occupancy is only for those in the state excluding those that transitioned new.
+#' This is relevant when the transition cost is provided for eg. in a state with dialysis
+#' the cost of previous dialysis is differnt from the newly dialysis cases.
+#' Then the state_cost_only_prevalent should be TRUE
+#' @param state_util_only_prevalent boolean parameter to indicate if the utilites for
+#' state occupancy is only for those in the state excluding those that transitioned new.
+
 #' @return changed method name
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))
@@ -172,7 +180,9 @@ find_parameters_btn_operators <- function(expr) {
 #' "half cycle correction", TRUE,NULL,NULL)
 #' @export
 checks_markov_pick_method <- function(current_strategy, initial_state, discount,
-                        method, half_cycle_correction, startup_cost, startup_util) {
+                        method, half_cycle_correction, startup_cost, startup_util,
+                        state_cost_only_prevalent, state_util_only_prevalent) {
+
 
   health_states <- current_strategy$states
   no_states <- length(health_states)
@@ -208,6 +218,14 @@ checks_markov_pick_method <- function(current_strategy, initial_state, discount,
   if (changed_method != "hc_correction" & half_cycle_correction == TRUE) {
     stop("Only say yes to half cycle correction if you want to use half
             cycle correction method other than life-table method")
+  }
+  if (!is.null(current_strategy$transition_cost)) {
+    if (state_cost_only_prevalent != FALSE & state_cost_only_prevalent != TRUE)
+      stop("Error - the parameter 'state_cost_only_prevalent' should be boolean")
+  }
+  if (!is.null(current_strategy$transition_util)) {
+    if (state_util_only_prevalent != FALSE & state_util_only_prevalent != TRUE)
+      stop("Error - the parameter 'state_cost_only_prevalent' should be boolean")
   }
   return(changed_method)
 }

@@ -114,8 +114,10 @@ do_psa <- function(this_markov, psa_table, num_rep) {
     }
     this_markov_rep <- markov_model(
       this_markov$strategy, this_markov$cycles, this_markov$initial_state,
-      this_markov$discount, this_param_list,
-      this_markov$method, this_markov$half_cycle_correction,
+      this_markov$discount, this_param_list,this_markov$half_cycle_correction,
+      this_markov$state_cost_only_prevalent,
+      this_markov$state_util_only_prevalent,
+      this_markov$method,
       this_markov$startup_cost, this_markov$startup_util
     )
     this_markov_rep_all <- append(this_markov_rep_all, list(this_markov_rep))
@@ -380,7 +382,7 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
     plot2 <- ggplot2::ggplot(data = list_all, ggplot2::aes_(x = ~cost)) +
       ggplot2::geom_histogram(bins = 20, color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of cost", x = "Cost", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes_(xintercept = mean(~cost)),
+      ggplot2::geom_vline(ggplot2::aes_(xintercept = mean(list_all$cost)),
         color = "blue", linetype = "dashed", size = 1
       ) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
@@ -392,7 +394,7 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
     plot3 <- ggplot2::ggplot(data = list_all, ggplot2::aes_(x = ~utility)) +
       ggplot2::geom_histogram(bins = 20, color = "black", fill = "white") +
       ggplot2::labs(title = "Histogram of utility values", x = "Utility", y = "Count") +
-      ggplot2::geom_vline(ggplot2::aes_(xintercept = mean(~utility)),
+      ggplot2::geom_vline(ggplot2::aes_(xintercept = mean(list_all$utility)),
         color = "red", linetype = "dashed", size = 1
       ) +
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))

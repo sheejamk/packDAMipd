@@ -608,9 +608,16 @@ init_trace <- function(health_states, cycles) {
 #' @param cycles no of cycles
 #' @param initial_state value of states initially
 #' @param discount rate of discount for costs and qalys
-#' @param method what type of half cycle correction needed
 #' @param half_cycle_correction boolean to indicate half cycle correction
 #' @param parameter_values parameters for assigning health states and probabilities
+#' @param state_cost_only_prevalent boolean parameter to indicate if the costs for
+#' state occupancy is only for those in the state excluding those that transitioned new.
+#' This is relevant when the transition cost is provided for eg. in a state with dialysis
+#' the cost of previous dialysis is different from the newly dialysis cases.
+#' Then the state_cost_only_prevalent should be TRUE
+#' @param state_util_only_prevalent boolean parameter to indicate if the utilites for
+#' state occupancy is only for those in the state excluding those that transitioned new.
+#' @param method what type of half cycle correction needed
 #' @param startup_cost cost of states initially
 #' @param startup_util utility of states initially if any
 #' @return Markov trace
@@ -632,13 +639,15 @@ init_trace <- function(health_states, cycles) {
 #' Also checks for population loss, calculates cumulative costs and qalys
 #' (accounts for discounting and half cycle correction)
 markov_model <- function(current_strategy, cycles, initial_state, discount = c(0, 0),
-                         parameter_values = NULL,
-                         method = "half cycle correction", half_cycle_correction = TRUE,
+                         parameter_values = NULL, half_cycle_correction = TRUE,
+                         state_cost_only_prevalent = FALSE, state_util_only_prevalent = FALSE,
+                         method = "half cycle correction",
                          startup_cost = NULL, startup_util = NULL) {
 
   # Do all checks and picks the method
   changed_method <- checks_markov_pick_method(current_strategy, initial_state, discount,
-    method, half_cycle_correction, startup_cost, startup_util)
+                    method, half_cycle_correction, startup_cost, startup_util,
+                    state_cost_only_prevalent,state_util_only_prevalent)
   # initialising matrices
   health_states <- current_strategy$states
   no_states <- length(health_states)
@@ -648,9 +657,9 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
   cost_matrix <- init_trace(health_states, cycles)
   param_matrix <- matrix(0, nrow = cycles + 1, ncol = length(parameter_values) + 1)
   ending <- cycles + 1
+  trace_matrix[1, ] <- initial_state
   # Run for each cycle
   for (i in 1:ending) {
-    trace_matrix[1, ] <- initial_state
     markov_cycle <- i - 1
     # Get parameter values
     extended_parameter_values <- c(markov_cycle = markov_cycle, parameter_values)
@@ -670,9 +679,17 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
       # at start of of cycle no start up cost (utility), transition cost (utility)
       # and half cycle correction is not to be accounted
       if (i > 1) {
+        # total transitions made to jth state including those from the same state
         transitions_made_state <- trace_matrix[i - 1, ] * trans_mat$trans_matrix[, j]
-        trace_matrix[i, j] <- trace_matrix[i, j] + trace_matrix[i - 1, ] %*%
+        # total transitions made to jth state excluding those from the same state
+        new_transitions_to_state <- transitions_made_state
+        new_transitions_to_state[j] <- 0
+
+        # tracematrix ith row and jth cycle
+        trace_matrix[i, j] <- trace_matrix[i - 1, ] %*%
                                                   trans_mat$trans_matrix[, j]
+
+        #cost calculation if the transition cost is different that state costs
         if (is.null(current_strategy$transition_cost)) {
           cost_occured_due_transitions <- 0
         } else {
@@ -681,6 +698,8 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
           cost_occured_due_transitions <- transitions_made_state %*%
                                           trans_cost$trans_matrix[, j]
         }
+
+        #utility calculation if the transition utility is different that state utilites
         if (is.null(current_strategy$transition_utility)) {
           utility_occured_due_transitions <- 0
         } else {
@@ -690,44 +709,69 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
                                             trans_util$trans_matrix[, j]
         }
         if (i == 2) {
-          if (changed_method != "hc_correction" & changed_method == "life_table") {
+          if (changed_method != "hc_correction" & changed_method == "life_table")
             trace_matrix[i, j] <- (trace_matrix[i, j] + trace_matrix[i - 1, j]) / 2
+        }
+
+        # cost entries in cost matrix
+         cost_matrix[i, j] <- trace_matrix[i, j] *
+            (as.numeric(unlist(health_states_assigned[[j]]$cost))) +
+            cost_occured_due_transitions
+
+        # if the transition cost are only for those newly transitioned, then we need to split it up
+        # Flagged by the presence of transition_cost and state_cost_only_prevalent values
+        if (!is.null(current_strategy$transition_cost)) {
+          trans_cost_which_state = which(trans_cost$trans_matrix[, j] != 0)
+          if (length(trans_cost_which_state) != 0) {
+            if (state_cost_only_prevalent) {
+              already_in_state = trace_matrix[i, j] - sum( new_transitions_to_state)
+              cost_matrix[i, j]  =  already_in_state *
+                (as.numeric(unlist(health_states_assigned[[j]]$cost))) +
+                new_transitions_to_state %*% trans_cost$trans_matrix[, j]
+            }
           }
         }
-        cost_matrix[i, j] <- trace_matrix[i, j] *
-                      (as.numeric(unlist(health_states_assigned[[j]]$cost))) +
-                      cost_occured_due_transitions
+        # cost entries in cost matrix
         utility_matrix[i, j] <- trace_matrix[i, j] *
                     (as.numeric(unlist(health_states_assigned[[j]]$utility))) +
                       utility_occured_due_transitions
+        # if the transition cost are only for those newly transitioned, then we need to split it up
+        # Flagged by the presence of transition_cost and state_cost_only_prevalent values
+        if (!is.null(current_strategy$transition_util)) {
+          trans_cost_which_state = which(trans_util$trans_matrix[, j] != 0)
+          if (length(trans_cost_which_state) != 0) {
+            if (state_util_only_prevalent) {
+              already_in_state = trace_matrix[i, j] - sum(new_transitions_to_state)
+              cost_matrix[i, j]  =  already_in_state *
+                (as.numeric(unlist(health_states_assigned[[j]]$utility))) +
+                new_transitions_to_state %*% trans_util$trans_matrix[, j]
+            }
+          }
+        }
       } else {
         if (!is.null(startup_cost)) {
-          if (length(startup_cost) != no_states) {
+          if (length(startup_cost) != no_states)
             stop("number of intital cost should be equal to number of health states")
-          }
-          cost_matrix[1, j] <- trace_matrix[1, j] * startup_cost
+          cost_matrix[1, j] <- trace_matrix[1, j] * (startup_cost +
+                    (as.numeric(unlist(health_states_assigned[[j]]$cost))))
+
         } else {
-          if (method == "half cycle correction" & half_cycle_correction) {
             cost_matrix[1, j] <- trace_matrix[1, j] *
-                        (as.numeric(unlist(health_states_assigned[[j]]$cost)))
-          }
+                    (as.numeric(unlist(health_states_assigned[[j]]$cost)))
         }
         if (!is.null(startup_util)) {
-          if (length(startup_util) != no_states) {
+          if (length(startup_util) != no_states)
             stop("number of intital utilites should be equal to number of health states")
-          }
-          utility_matrix[1, j] <- trace_matrix[1, j] * startup_util
+            utility_matrix[1, j] <- trace_matrix[1, j] * (startup_util +
+                        as.numeric(unlist(health_states_assigned[[j]]$utility)))
         } else {
-          if (changed_method == "hc_correction" & half_cycle_correction) {
             utility_matrix[1, j] <- trace_matrix[1, j] *
                       (as.numeric(unlist(health_states_assigned[[j]]$utility)))
-          }
-        }
+         }
       }
     }
-    if (sum(trace_matrix[i, ]) - sum(initial_state) > 1e-4) {
+    if (sum(trace_matrix[i, ]) - sum(initial_state) > 1e-4)
       stop(paste("Population loss - check at cycle", i, sep = ""))
-    }
   }
   nozeros <- rep(0, cycles + 1)
   cost_matrix <- cbind(cost_matrix, nozeros, nozeros)
@@ -750,9 +794,9 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
   names_trace_matrix <- colnames(trace_matrix)
   names_cost_matrix <- colnames(cost_matrix)
   names_utility_matrix <- colnames(utility_matrix)
-  names_cost_matrix[no_states + 1] <- "Total cost"
+  names_cost_matrix[no_states + 1] <- "Total discounted cost"
   names_cost_matrix[no_states + 2] <- "Cumulative cost"
-  names_utility_matrix[no_states + 1] <- "Total utility"
+  names_utility_matrix[no_states + 1] <- "Total discounted utility"
   names_utility_matrix[no_states + 2] <- "Cumulative utility"
   trace_matrix[, no_states + 1] <- c(0, seq_len(cycles))
   names_trace_matrix[no_states + 1] <- "Cycles"

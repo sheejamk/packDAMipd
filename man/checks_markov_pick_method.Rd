@@ -11,7 +11,9 @@ checks_markov_pick_method(
   method,
   half_cycle_correction,
   startup_cost,
-  startup_util
+  startup_util,
+  state_cost_only_prevalent,
+  state_util_only_prevalent
 )
 }
 \arguments{
@@ -28,6 +30,15 @@ checks_markov_pick_method(
 \item{startup_cost}{cost of states initially}
 
 \item{startup_util}{utility of states initially if any}
+
+\item{state_cost_only_prevalent}{boolean parameter to indicate if the costs for
+state occupancy is only for those in the state excluding those that transitioned new.
+This is relevant when the transition cost is provided for eg. in a state with dialysis
+the cost of previous dialysis is differnt from the newly dialysis cases.
+Then the state_cost_only_prevalent should be TRUE}
+
+\item{state_util_only_prevalent}{boolean parameter to indicate if the utilites for
+state occupancy is only for those in the state excluding those that transitioned new.}
 }
 \value{
 changed method name

@@ -86,7 +86,7 @@ We define the strategy "Usual care" by using the function 'strategy' with the he
 ```{r}
 health_states <- combine_state(H,S1,S2,D)
 uc_strategy <- strategy(tm, health_states, "Usual care",tm_cost,tm_util)
-uc_markov <- markov_model(current_strategy = uc_strategy, cycles = 85, initial_state = c(1, 0,0,0), discount = c(0.03,0.03),parameter_values = param_list, method = "half cycle correction", TRUE)
+uc_markov <- markov_model(current_strategy = uc_strategy, cycles = 85, initial_state = c(1, 0,0,0), discount = c(0.03,0.03),parameter_values = param_list, TRUE, method = "half cycle correction")
 plot_model(uc_markov)
 
 ```
@@ -101,7 +101,7 @@ S2 <- health_state("S2", cost = "c_S2 + c_Trt",utility = "u_S2")
 D <- health_state("D", cost = "c_D ",utility = "u_D")
 health_states <- combine_state(H,S1,S2,D)
 trt_strategy <- strategy(tm, health_states, "New treatment",tm_cost,tm_util)
-trt_markov <- markov_model(current_strategy = trt_strategy, cycles = 85, initial_state = c(1, 0,0,0), discount = c(0.03,0.03),parameter_values = param_list, method = "half cycle correction", TRUE)
+trt_markov <- markov_model(current_strategy = trt_strategy, cycles = 85, initial_state = c(1, 0,0,0), discount = c(0.03,0.03),parameter_values = param_list,TRUE, method = "half cycle correction")
 
 ```
 
@@ -118,5 +118,9 @@ The ICER obtained is 139,794
 ```{r}
 list_markov <- combine_markov(uc_markov, trt_markov)
 cal <- calculate_icer_nmb(list_markov, threshold = 20000, comparator = "Usual care" )
+cal
+```
+
+```{r}
 plot_ceac(list_markov,threshold_values = c(1000,2000,5000,7000,10000,150000,20000), comparator = "Usual care" , currency = "USD")
 ```

@@ -112,7 +112,9 @@ do_sensitivity_analysis <- function(this_markov, param_table) {
       this_param_list[i][[this_name]] <- param_table$low_values[i][[this_name]]
       this_markov_low <- markov_model(
         this_markov$strategy, this_markov$cycles, this_markov$initial_state,
-        this_markov$discount, this_param_list, this_markov$method, this_markov$half_cycle_correction,
+        this_markov$discount, this_param_list, this_markov$half_cycle_correction,
+        this_markov$state_cost_only_prevalent, this_markov$state_util_only_prevalent,
+        this_markov$method,
         this_markov$startup_cost, this_markov$startup_util
       )
       this_param_list[i][[this_name]] <- param_table$upp_values[i][[this_name]]
@@ -120,7 +122,10 @@ do_sensitivity_analysis <- function(this_markov, param_table) {
         this_markov$strategy, this_markov$cycles, this_markov$initial_state,
         this_markov$discount,
         this_param_list,
-        this_markov$method, this_markov$half_cycle_correction,
+        this_markov$half_cycle_correction,
+        this_markov$state_cost_only_prevalent,
+        this_markov$state_util_only_prevalent,
+        this_markov$method,
         this_markov$startup_cost, this_markov$startup_util
       )
       name_var2 <- paste("low_result", this_name, sep = "_")
