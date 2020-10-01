@@ -113,8 +113,8 @@ For calculating NMB, threshold value  and the name of the comparator should be p
 
 The \ref[alarid2020cohort]   reports the results as follows which is the same as obtained using packDAMipd.
 
-The cost of usual care obtained from https://github.com/DARTH-git/Cohort-modeling-tutorial/blob/master/R/STM_02.R is  115,415 USD while that of the new treatment is 212,867 USD.
-The  QALYs for the usual care and the new treatment are 19.460 and 20.157 respectively.
+The cost of usual care obtained from STM_02.R of Cohort-modeling-tutorial in DARTH-git package is  115,415 USD while that of the new treatment is 212,867 USD.
+The QALYs for the usual care and the new treatment are 19.460 and 20.157 respectively.
 The ICER obtained is 139,794   
  
 ```{r}
