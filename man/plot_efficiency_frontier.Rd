@@ -7,7 +7,7 @@
 plot_efficiency_frontier(results_cea, threshold)
 }
 \arguments{
-\item{results_cea}{results from cea (from calculate_icer_nmb nethod)}
+\item{results_cea}{results from cea (from calculate_icer_nmb method)}
 
 \item{threshold}{threshold value}
 }

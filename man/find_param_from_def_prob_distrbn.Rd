@@ -19,7 +19,7 @@ Function to return parameters from a given expression separated by comma,
 It will return the parameters of the distribution separated by commas
 and given in usual notation as brackets
 It will identify those in between first occurrence of "( "and last occurrence of ")"
-and from the characters in between seaech for comma to indicate different parameters
+and from the characters in between search for comma to indicate different parameters
 then it will extract (from those extracted parameters separated by commas)
 that on the left side of "equal" sign
 find_param_from_def_prob_distrbn("gamma(mean = sqrt(2), b =17)") will be ok

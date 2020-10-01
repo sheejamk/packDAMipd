@@ -248,7 +248,7 @@ plot_ceac <- function(list_markov, threshold_values, comparator, currency = "GBP
 #######################################################################
 
 #' Plot efficiency frontier
-#' @param results_cea  results from cea (from calculate_icer_nmb nethod)
+#' @param results_cea  results from cea (from calculate_icer_nmb method)
 #' @param threshold  threshold value
 #' @return plot
 #' @export

@@ -699,7 +699,7 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
                                           trans_cost$trans_matrix[, j]
         }
 
-        #utility calculation if the transition utility is different that state utilites
+        #utility calculation if the transition utility is different that state utilities
         if (is.null(current_strategy$transition_utility)) {
           utility_occured_due_transitions <- 0
         } else {
@@ -761,7 +761,7 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
         }
         if (!is.null(startup_util)) {
           if (length(startup_util) != no_states)
-            stop("number of intital utilites should be equal to number of health states")
+            stop("number of intital utilities should be equal to number of health states")
             utility_matrix[1, j] <- trace_matrix[1, j] * (startup_util +
                         as.numeric(unlist(health_states_assigned[[j]]$utility)))
         } else {

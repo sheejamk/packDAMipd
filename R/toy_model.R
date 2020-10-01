@@ -24,9 +24,9 @@ A.model$utility_matrix
 # plot the markov states
 plot_model(A.model)
 
-#Now follow the same for the startegy B
+#Now follow the same for the strategy B
 #if the transitions are same we can use the same tmat, and tm - no need to redefine
-# heatlh state costs and utilites are different, so redefining them
+# health state costs and utilities are different, so redefining them
 # state a named healthy with cost 10 and utility 1, not an absoring state
 a <- health_state("Healthy", 10, 1, 0, FALSE)
 # state a named dead with cost 1 and utility 0,  an absoring state
@@ -36,7 +36,7 @@ health_states <- combine_state(a, b)
 # strategy named B
 B.strategy <- strategy(tm, health_states, "B")
 # run markov model using A.strategy, for 10  cycles and initial state (1,0)
-# no discounting, with half cycle correction, no startup costs etc
+# no discounting, with half cycle correction, no start up costs etc
 B.model = markov_model(B.strategy, 10, c(1, 0))
 # Can check the model's trace, cost and utility form A.model
 B.model$trace_matrix

@@ -10,7 +10,9 @@ vignette: >
 bibliography: ref.bib
 ---
 
-This document demonstrates development of a  Markov model explained in reference \ref[alarid2020cohort] using this package "packDAMipd". The code using the package "dampack" is shown in https://github.com/DARTH-git/Cohort-modeling-tutorial/blob/master/R/STM_02.R. Here we look at how the model is defined when the transition probabilities (or parameters) are dependent on the model cycle or time. (Another example for considering the time dependency is explained in vignettes/cycle_dependent.html)
+This document demonstrates development of a  Markov model explained in reference \ref[alarid2020cohort] using this package "packDAMipd". This model is explained in STM_02.R file in Cohort-modeling-tutorial provided in DARTH-git github page.
+
+Here we look at how the model is defined when the transition probabilities (or parameters) are dependent on the model cycle or time. (Another example for considering the time dependency is explained in vignettes/cycle_dependent.html)
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(

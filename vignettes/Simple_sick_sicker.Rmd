@@ -10,7 +10,7 @@ vignette: >
 bibliography: ref.bib
 ---
 
-This document demonstrates developing For a simple markov model explained in reference \ref[alarid2020cohort] using packDAMipd. The code using the package "dampack" is shown https://github.com/DARTH-git/Cohort-modeling-tutorial/blob/master/R/STM_01.R 
+This document demonstrates developing For a simple markov model explained in reference \ref[alarid2020cohort] using packDAMipd. This model is explained in STM_01.R file in Cohort-modeling-tutorial provided in DARTH-git github page. 
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(

@@ -162,11 +162,10 @@ find_parameters_btn_operators <- function(expr) {
 #' @param state_cost_only_prevalent boolean parameter to indicate if the costs for
 #' state occupancy is only for those in the state excluding those that transitioned new.
 #' This is relevant when the transition cost is provided for eg. in a state with dialysis
-#' the cost of previous dialysis is differnt from the newly dialysis cases.
+#' the cost of previous dialysis is different from the newly dialysis cases.
 #' Then the state_cost_only_prevalent should be TRUE
-#' @param state_util_only_prevalent boolean parameter to indicate if the utilites for
+#' @param state_util_only_prevalent boolean parameter to indicate if the utilities for
 #' state occupancy is only for those in the state excluding those that transitioned new.
-
 #' @return changed method name
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))
