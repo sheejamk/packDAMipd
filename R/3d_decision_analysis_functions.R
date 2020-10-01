@@ -73,7 +73,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator = NULL) {
   cycles <- unlist(cycles_all[1])
   av_cum_cost_pp <- list()
   av_cum_utility_pp <- list()
-  # get the avearage cumulative cost and qaly
+  # get the average cumulative cost and qaly
   for (i in seq_len(no_comparison)) {
     no_states <- list_markov[, "strategy"][[i]]$transition_matrix$no_states
     start_cohort <- sum(list_markov[, "trace_matrix"][[i]][1, ])
