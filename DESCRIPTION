@@ -2,14 +2,8 @@ Type: Package
 Package: packDAMipd
 Title: Decision Analysis Modelling Package with Parameters Estimation Ability from Individual Patient Level Data
 Version: 0.1.0
-Authors@R: 
-    c(person(given = "Sheeja",
-             family = "Manchira Krishnan",
-             role = c("aut", "cre"),
-             email = "sheeja.manchirakrishnan@york.ac.uk",
-             comment = c(ORCID = "0000-0001-8574-695X"))
-      )
-Maintainer: Sheeja Manchira Krishnan<sheeja.manchirakrishnan@york.ac.uk>
+Authors@R: c(person("Sheeja", "Manchira Krishnan", , "sheejamk@gmail.com", c("aut", "cre")))
+Maintainer: Sheeja Manchira Krishnan <sheejamk@gmail.com>
 Description: A collection of functions to construct Markov model for model-based cost-effectiveness analysis.
     This includes creating Markov model (both time homogenous and time dependent models), decision analysis,
     sensitivity analysis (deterministic and probabilistic). The package allows estimation of parameters for
