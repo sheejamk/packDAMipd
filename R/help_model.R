@@ -168,6 +168,7 @@ find_parameters_btn_operators <- function(expr) {
 #' state occupancy is only for those in the state excluding those that transitioned new.
 #' @return changed method name
 #' @examples
+#' \dontrun{
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 #' tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
@@ -177,6 +178,7 @@ find_parameters_btn_operators <- function(expr) {
 #' this.strategy <- strategy(tm, health_states, "intervention")
 #' checks_markov_pick_method(this.strategy, c(1, 0), c(0, 0),
 #' "half cycle correction", TRUE,NULL,NULL)
+#' }
 #' @export
 checks_markov_pick_method <- function(current_strategy, initial_state, discount,
                         method, half_cycle_correction, startup_cost, startup_util,

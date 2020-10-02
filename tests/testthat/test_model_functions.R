@@ -29,6 +29,7 @@ test_that("testing defining a health state", {
 ##############################################################################
 context("testing to get the attribute for the health state")
 test_that("testing to get the attribute for the health state", {
+  a = 10
   this_cost <- get_var_state(health_state("IT", 100, 0.4, 0, FALSE), "cost")
   this_util <- get_var_state(health_state("IT", 100, 0.4, 0, FALSE), "utility")
   # get the variable cost as 100 and utility as 0.4
@@ -46,6 +47,7 @@ test_that("testing to get the attribute for the health state", {
 ##############################################################################
 context("testing to set the attribute for the health state")
 test_that("testing to set the attribute for the health state", {
+  a = 10
   st <- health_state("IT", "cost_IT", "util_IT", 0, FALSE)
   st <- set_var_state(st, "cost", 200)
   # set the cost to be 200 and check

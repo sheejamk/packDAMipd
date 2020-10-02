@@ -136,6 +136,7 @@ combine_state <- function(...) {
 #' @param health_states  list of health_state objects
 #' @return true or false
 #' @examples
+#' \dontrun{
 #' well <- health_state("well", cost = 0, utility = 1)
 #' disabled <- health_state("disabled", cost = 100, utility = 1)
 #' dead <- health_state("dead", cost = 0, utility = 0)
@@ -144,6 +145,7 @@ combine_state <- function(...) {
 #' tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1))
 #' health_states <- combine_state(well, disabled, dead)
 #' check_names_states(health_states)
+#' }
 #' @export
 #' @details
 #' The names of each states should be same as "name", "cost",
@@ -168,6 +170,7 @@ check_names_states <- function(health_states) {
 #' @param health_states  list of health_state objects
 #' @return true or false
 #' @examples
+#' \dontrun{
 #' well <- health_state("well", cost = 0, utility = 1)
 #' disabled <- health_state("disabled", cost = 100, utility = 1)
 #' dead <- health_state("dead", cost = 0, utility = 0)
@@ -176,6 +179,7 @@ check_names_states <- function(health_states) {
 #' tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1))
 #' health_states <- combine_state(well, disabled, dead)
 #' check_values_states(health_states)
+#' }
 #' @export
 #' @details
 #' This is to check if the values are numeric during  the run time,
@@ -211,6 +215,7 @@ check_values_states <- function(health_states) {
 #' expected created using function assign_parameters()
 #' @return health states with assigned values
 #' @examples
+#' \dontrun{
 #' well <- health_state("well", cost = "cost_A + cost_B", utility = 1)
 #' disabled <- health_state("disabled", cost = 100, utility = 1)
 #' dead <- health_state("dead", cost = 0, utility = 0)
@@ -219,6 +224,7 @@ check_values_states <- function(health_states) {
 #' tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1))
 #' health_states <- combine_state(well, disabled, dead)
 #' eval_assign_values_states(health_states, c(cost_A = 100, cost_B = 11))
+#' }
 #' @export
 #' @details
 #' Assigning the param is done for the cost and utility
@@ -339,9 +345,11 @@ define_transition_table <- function(tmat) {
 #' @param name_states names of the health states
 #' @return value of the transition matrix
 #' @examples
+#' \dontrun{
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 #' populate_transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0, 0.3))
+#' }
 #' @export
 #' @details
 #' If the state names are null, they are replaced with numbers starting from 1
@@ -386,10 +394,12 @@ populate_transition_matrix <- function(no_states, tmat, list_prob, name_states =
 #' @param parameter_values name value pairs of parameter values in the probability matrix
 #' @return the transition table with the probabilities
 #' @examples
+#' \dontrun{
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 #' tmat <- populate_transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
 #' tmat_assigned <- eval_assign_trans_prob(tmat, c(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5))
+#' }
 #' @export
 #' @details
 #' Once the transition matrix is populated, the probabilities in transition matrix
@@ -449,10 +459,12 @@ eval_assign_trans_prob <- function(tm, parameter_values) {
 #' @param trans_mat  transition matrix
 #' @return 0 if they add to 1 else error
 #' @examples
+#' \dontrun{
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 #' tm <- populate_transition_matrix(2, tmat, list_prob = c(0.5, 0.5, 0, 1))
 #' check_trans_prob(tm)
+#' }
 #' @export
 #' @details
 #' checking for rowsum - checks for the class of transition matrix,
@@ -535,6 +547,7 @@ transition_cost_util <- function(no_states, tmat_cost_util, list_values, name_st
 #' @param trans_util values of utility if these are attached to transitions
 #' @return object strategy
 #' @examples
+#' \dontrun{
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 #' tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
@@ -542,6 +555,7 @@ transition_cost_util <- function(no_states, tmat_cost_util, list_values, name_st
 #' b <- health_state("Dead", 1, 0.5, 0, FALSE)
 #' states <- combine_state(a, b)
 #' strategy(tm, states, "intervention")
+#' }
 #' @export
 #' @details
 #' Defining strategy keeping all transition matrix, states and names together to use
@@ -622,6 +636,7 @@ init_trace <- function(health_states, cycles) {
 #' @param startup_util utility of states initially if any
 #' @return Markov trace
 #' @examples
+#' \dontrun{
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 #' tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
@@ -630,6 +645,7 @@ init_trace <- function(health_states, cycles) {
 #' health_states <- combine_state(a, b)
 #' this.strategy <- strategy(tm, health_states, "intervention")
 #' markov_model(this.strategy, 10, c(1, 0))
+#' }
 #' @export
 #' @details
 #' Use the strategy, cycles, initial state values creating the markov model and trace
@@ -868,6 +884,7 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
 #' @param ...  any additional objects
 #' @return joined objects of type markov_model
 #' @examples
+#' \dontrun{
 #' well <- health_state("well", cost = 0, utility = 1)
 #' disabled <- health_state("disabled", cost = 100, utility = 1)
 #' dead <- health_state("dead", cost = 0, utility = 0)
@@ -887,6 +904,7 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
 #' this.strategy <- strategy(tm, health_states, "example")
 #' sec_markov <- markov_model(this.strategy, 24, c(1000, 0, 0))
 #' list_markov <- combine_markov(this_markov, sec_markov)
+#' }
 #' @export
 #' @importFrom methods cbind2
 #' @details

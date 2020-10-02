@@ -20,6 +20,7 @@ result after sensitivity analysis
 Function to do deterministic sensitivity analysis
 }
 \examples{
+\dontrun{
 param_list <- define_parameters(
 cost_zido = 2278, cost_direct_med_A = 1701,
 cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
@@ -46,4 +47,5 @@ mono_strategy <- strategy(tm, health_states, "mono")
 mono_markov <- markov_model(mono_strategy, 20, c(1, 0, 0, 0), discount = c(0.06, 0), param_list)
 param_table <- define_parameters_sens_anal(param_list, low_values, upp_values)
 result <- do_sensitivity_analysis(mono_markov, param_table)
+}
 }

@@ -20,6 +20,7 @@ The names of each states should be same as "name", "cost",
 "utility", "state_time", "absorb"
 }
 \examples{
+\dontrun{
 well <- health_state("well", cost = 0, utility = 1)
 disabled <- health_state("disabled", cost = 100, utility = 1)
 dead <- health_state("dead", cost = 0, utility = 0)
@@ -28,4 +29,5 @@ colnames(tmat) <- rownames(tmat) <- c("well", "disabled", "dead")
 tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1))
 health_states <- combine_state(well, disabled, dead)
 check_names_states(health_states)
+}
 }

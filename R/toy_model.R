@@ -21,8 +21,8 @@ A.model = markov_model(A.strategy, 10, c(1, 0))
 A.model$trace_matrix
 A.model$cost_matrix
 A.model$utility_matrix
-# plot the markov states
-plot_model(A.model)
+# plot the markov states - no commented please uncomment to run
+#plot_model(A.model)
 
 #Now follow the same for the strategy B
 #if the transitions are same we can use the same tmat, and tm - no need to redefine
@@ -42,8 +42,8 @@ B.model = markov_model(B.strategy, 10, c(1, 0))
 B.model$trace_matrix
 B.model$cost_matrix
 B.model$utility_matrix
-# plot the markov states
-plot_model(B.model)
+# plot the markov states - now commented please uncomment to run
+#plot_model(B.model)
 
 #Here the trace is same only cost and utility different
 # now can calculate ICER nad NMB if threshold given use 20000

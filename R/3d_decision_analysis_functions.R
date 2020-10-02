@@ -133,6 +133,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator = NULL) {
 #' @param list_markov  list of Markov model objects with their Markov trace, cost matrix and utility matrix
 #' @return 0 if success else error
 #' @examples
+#' \dontrun{
 #' well <- health_state("well", cost = 0, utility = 1)
 #' disabled <- health_state("disabled", cost = 100, utility = 1)
 #' dead <- health_state("dead", cost = 0, utility = 0)
@@ -153,6 +154,7 @@ calculate_icer_nmb <- function(list_markov, threshold, comparator = NULL) {
 #' sec_markov <- markov_model(this.strategy, 24, c(1000, 0, 0), c(0, 0))
 #' list_markov <- combine_markov(this_markov, sec_markov)
 #' check_list_markov_models(list_markov)
+#' }
 #' @export
 check_list_markov_models <- function(list_markov) {
   no_comparison <- nrow(list_markov)

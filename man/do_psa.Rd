@@ -21,6 +21,7 @@ result after sensitivity analysis
 Function to do probabilistic sensitivity analysis
 }
 \examples{
+\dontrun{
 param_list <- define_parameters(
   cost_zido = 2278, cost_direct_med_A = 1701,
   cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
@@ -50,4 +51,5 @@ initial_state =c(1,0,0,0),param_list)
 sample_list <- define_parameters(cost_zido = "gamma(mean = 2756, sd = sqrt(2756))")
 param_table <- define_parameters_psa(param_list, sample_list)
 result <- do_psa(mono_markov, param_table, 10)
+}
 }

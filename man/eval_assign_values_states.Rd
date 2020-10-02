@@ -38,6 +38,7 @@ param_list <- define_parameters(a = 10, cost_A = "a + 100", cost_B = 10)
 assign_list <- assign_parameters(param_list)
 }
 \examples{
+\dontrun{
 well <- health_state("well", cost = "cost_A + cost_B", utility = 1)
 disabled <- health_state("disabled", cost = 100, utility = 1)
 dead <- health_state("dead", cost = 0, utility = 0)
@@ -46,4 +47,5 @@ colnames(tmat) <- rownames(tmat) <- c("well", "disabled", "dead")
 tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1))
 health_states <- combine_state(well, disabled, dead)
 eval_assign_values_states(health_states, c(cost_A = 100, cost_B = 11))
+}
 }

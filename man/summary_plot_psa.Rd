@@ -30,7 +30,7 @@ plot of  sensitivity analysis
 Function to summarise and plot probabilistic sensitivity analysis
 }
 \examples{
- \dontrun{
+\dontrun{
 param_list <- define_parameters(
 cost_direct_med_A = 1701,
 cost_direct_med_B = 1774, tpAtoA = 0.2,

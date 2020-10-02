@@ -5,7 +5,7 @@
 ## Usage
 See the User Guide Vignette for examples on using the package. 
 
-For a simple toy model please see [`toy_model.R`](https://github.com/sheejamk/packDAMipd/R/toy_model.R)
+For a simple toy model please see [`toy_model.R`](https://github.com/sheejamk/packDAMipd/tree/master/R/toy_model.R)
 
 ## Installation
 You can install the released version from CRAN with the command:

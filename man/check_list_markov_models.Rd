@@ -16,6 +16,7 @@ check_list_markov_models(list_markov)
 check the list of Markov models
 }
 \examples{
+\dontrun{
 well <- health_state("well", cost = 0, utility = 1)
 disabled <- health_state("disabled", cost = 100, utility = 1)
 dead <- health_state("dead", cost = 0, utility = 0)
@@ -36,4 +37,5 @@ this.strategy <- strategy(tm, health_states, "example_two")
 sec_markov <- markov_model(this.strategy, 24, c(1000, 0, 0), c(0, 0))
 list_markov <- combine_markov(this_markov, sec_markov)
 check_list_markov_models(list_markov)
+}
 }

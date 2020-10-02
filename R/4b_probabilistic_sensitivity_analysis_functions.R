@@ -52,6 +52,7 @@ define_parameters_psa <- function(base_param_list, sample_list) {
 #' @param num_rep number of repetitions
 #' @return result after sensitivity analysis
 #' @examples
+#' \dontrun{
 #' param_list <- define_parameters(
 #'   cost_zido = 2278, cost_direct_med_A = 1701,
 #'   cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
@@ -81,6 +82,7 @@ define_parameters_psa <- function(base_param_list, sample_list) {
 #' sample_list <- define_parameters(cost_zido = "gamma(mean = 2756, sd = sqrt(2756))")
 #' param_table <- define_parameters_psa(param_list, sample_list)
 #' result <- do_psa(mono_markov, param_table, 10)
+#' }
 #' @export
 do_psa <- function(this_markov, psa_table, num_rep) {
   if (class(this_markov) != "markov_model") {
@@ -248,7 +250,7 @@ list_paramwise_psa_result <- function(result_psa_params_control, result_psa_para
 #' @param comparator the strategy to be compared with
 #' @return plot of  sensitivity analysis
 #' @examples
-#'  \dontrun{
+#' \dontrun{
 #' param_list <- define_parameters(
 #' cost_direct_med_A = 1701,
 #' cost_direct_med_B = 1774, tpAtoA = 0.2,

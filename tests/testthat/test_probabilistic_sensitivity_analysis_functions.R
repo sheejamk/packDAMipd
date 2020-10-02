@@ -93,7 +93,7 @@ test_that("testing listing probabilistic sensitivity analysis results parameterw
   mono_markov <- markov_model(mono_strategy, 20, initial_state = c(1,0,0),discount = c(0.06, 0),param_list)
   param_table <- define_parameters_psa(param_list, sample_list)
   result <- do_psa(mono_markov, param_table, 3)
-  debug(summary_plot_psa)
+
   result_plot <- summary_plot_psa(result, NULL, NULL, NULL)
 
   #Error   null control result psa

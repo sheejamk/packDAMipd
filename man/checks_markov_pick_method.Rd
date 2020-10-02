@@ -47,6 +47,7 @@ changed method name
 Checks the input to run the Markov cycles and picks correct method
 }
 \examples{
+\dontrun{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
@@ -56,4 +57,5 @@ health_states <- combine_state(a, b)
 this.strategy <- strategy(tm, health_states, "intervention")
 checks_markov_pick_method(this.strategy, c(1, 0), c(0, 0),
 "half cycle correction", TRUE,NULL,NULL)
+}
 }
