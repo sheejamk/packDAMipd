@@ -191,6 +191,7 @@ comb_strategy <- strategy(tm, health_states, "comb")
 ```
 
 We run the model with strategy mono_strategy for 20 cycles with initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and quays are discounted following the values given in discount. Parameter values will have any parameter defined as health state values or transition probabilities, but not their values were assigned
+
 ```{r}
 comb_markov <- markov_model(comb_strategy, 20, c(1, 0,0,0), discount = c(0.06,0.0),comb_param_list, method = "half cycle correction", TRUE)
 ```
