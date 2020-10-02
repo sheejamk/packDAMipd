@@ -10,7 +10,7 @@ vignette: >
 ---
 
 In this example we will model the cost effectiveness of lamivudine/zidovudine
-combination therapy in HIV infection ([Chancellor, 1997] (https://www.ncbi.nlm.nih.gov/pubmed/10169387)) and also described in Decision Modelling for Health Economic Evaluation, page 32. We have implemented the scenario in which the effect of combination therapy of lamivudine/zidovudine (as the probability of moving to worse health states and having to accrue more cost) is only seen in first 2 years. This means that the transition probability and costs are dependent on first two cycles (As the cycle length is years).
+combination therapy in HIV infection ([Chancellor, 1997] (https://pubmed.ncbi.nlm.nih.gov/10169387/)) and also described in Decision Modelling for Health Economic Evaluation, page 32. We have implemented the scenario in which the effect of combination therapy of lamivudine/zidovudine (as the probability of moving to worse health states and having to accrue more cost) is only seen in first 2 years. This means that the transition probability and costs are dependent on first two cycles (As the cycle length is years).
 
 This model aims to compare costs and utilities of two treatment
 strategies, mono therapy and combined therapy.
