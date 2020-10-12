@@ -1,0 +1,12 @@
+pat_TrialArm,SEX,age,Drug,Name,Timepoint,patch_strength,patch_dose_unit,patch_no_taken,patch_frequency,patch_equiv_dose
+N,M,65,Buprenorphine,1,2,20,1,5,3,100
+N,F,46,Buprenorphine,1,1,5,1,2,3,37.5
+N,F,65,Buprenorphine,1,1,10,1,1,1,31
+Y,M,75,Buprenorphine,1,2,15,1,2,1,75
+N,F,53,Buprenorphine,1,2,70,1,2,1,10
+Y,F,52,Buprenorphine,1,2,70,1,4,1,25
+N,M,65,Buprenorphine,1,2,10,1,5,1,100
+N,M,64,BUPRENORPHINE,1,1,20,1,4,1,35
+Y,F,20,BUPRENORPHINE,1,1,10,1,5,1,17.5
+N,F,37,BUPRENORPHINE,1,1,5,1,2,2,2.5
+N,F,29,Buprenorphine,1,1,10,1,7,2,6

@@ -1,0 +1,6 @@
+#' code to prepare `trial_data` dataset goes here
+file.init <- "data-raw/trial_data.csv"
+
+trial_data <- read.csv(file = file.init, stringsAsFactors = F)
+
+usethis::use_data(trial_data, overwrite = TRUE)
