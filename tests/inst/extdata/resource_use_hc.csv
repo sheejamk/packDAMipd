@@ -1,6 +1,0 @@
-pat_TrialArm,SEX,age,Drug,Timepoint,tru_ResAdmittedInpatient,rip_StayLength,rip_NHSHospital,tru_ResAdmittedDayCare,rdc_NHSHospital,tru_ResAdmittedSocialCare,rsc_Service,rsc_ServiceUsed,rsc_NumberOfContacts
-N,f,44,ORAMORPH 10MG/5ML,2,1,1,1,2,2,2,,2,
-N,f,30,matrifen patch,1,1,2,1,2,2,2,,2,
-N,M,21,Zomorph,2,2,3,2,1,1,2,,2,
-N,M,43,Tramadol MR,2,2,4,2,1,1,2,,2,
-Y,F,37,Zomorph,2,2,23,2,2,2,1,GP surgery visit,1,4
