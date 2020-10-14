@@ -42,11 +42,10 @@ result regression result with plot if success and -1, if failure
 Function for mixed effect regression
 }
 \examples{
-
+\donttest{
 datafile <- system.file("extdata", "data_linear_mixed_model.csv", package = "packDAMipd")
 dataset = utils::read.table(datafile, header = TRUE, sep = ",", na.strings = "NA",
 dec = ".", strip.white = TRUE)
-\dontrun{
 result <- use_linear_mixed_model("extro",
   dataset = dataset,
   fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,

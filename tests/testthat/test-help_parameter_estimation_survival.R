@@ -10,16 +10,16 @@ test_that("testing form expression for glm", {
                       interaction = FALSE, naaction = "na.omit", link = NA))
   # Error - independent variable should not be NULL or NA
   expect_error(form_expression_glm("admit", NA, "binomial", covariates = NA,
-                                   interaction = FALSE, naaction = "na.omit", link = NA))
+                      interaction = FALSE, naaction = "na.omit", link = NA))
   # Error - distribution should not be NULL or NA
   expect_error(form_expression_glm("admit", "gre", NA, covariates = NA,
-                                   interaction = FALSE, naaction = "na.omit", link = NA))
+                       interaction = FALSE, naaction = "na.omit", link = NA))
   # Error - interaction should not be NULL or NA
   expect_error(form_expression_glm("admit", "gre", "binomial", covariates = NA,
-                                   interaction = NA, naaction = "na.omit", link = NA))
+                      interaction = NA, naaction = "na.omit", link = NA))
   # Error - interaction should not be NULL or NA
   expect_error(form_expression_glm("admit", "gre", "binomial", covariates = NA,
-                                   interaction = NULL, naaction = "na.omit", link = NA))
+                      interaction = NULL, naaction = "na.omit", link = NA))
 })
 ###############################################################################
 context("testing  getting family of distribution for glm")
@@ -51,29 +51,31 @@ test_that("testing  diagnosis for glm fit", {
                               indep_var = "gre", family = "binomial", covariates = NA,
                               interaction = FALSE, naaction = "na.omit", link = NA)
   #Error method should be glm
-  expect_error(do_diagnostic_glm(NULL, results_logit$fit, expression_recreated, param_to_be_estimated,
-                                 mydata, "gre", covariates, interaction))
+  expect_error(do_diagnostic_glm(NULL, results_logit$fit, results_logit$expression_recreated,
+                                 results_logit$param_to_be_estimated,
+                                 mydata, "gre", covariates = NA, interaction = FALSE))
   #Error "fit" is not glm fit object
-  expect_error(do_diagnostic_glm("glm", "fit", expression_recreated, param_to_be_estimated,
-                                 mydata, "gre", covariates, interaction))
+  expect_error(do_diagnostic_glm("glm", "fit", results_logit$expression_recreated,
+                                 results_logit$param_to_be_estimated,
+                                 mydata, "gre", covariates = NA, interaction = FALSE))
   # expression created can not be null
-  expect_error(do_diagnostic_glm("glm", results_logit$fit, NULL, param_to_be_estimated,
-                                 mydata, "gre", covariates, interaction))
+  expect_error(do_diagnostic_glm("glm", results_logit$fit, NULL, results_logit$param_to_be_estimated,
+                                 mydata, "gre", covariates = NA, interaction = FALSE))
 
   # param_to_be_estimated can not be null
   expect_error(do_diagnostic_glm("glm", results_logit$fit, results_logit$fit$call, NULL,
-                                 mydata, "gre", covariates, interaction))
+                                 mydata, "gre", covariates = NA, interaction = FALSE))
 
   # dataset can not be null
   expect_error(do_diagnostic_glm("glm", results_logit$fit, results_logit$fit$call, "gre",
-                                 NULL, "gre", covariates, interaction))
+                                 NULL, "gre", covariates = NA, interaction = FALSE))
   # indep_var can not be null
   expect_error(do_diagnostic_glm("glm", results_logit$fit, results_logit$fit$call, "gre",
-                                 mydata, NULL, covariates, interaction))
+                                 mydata, NULL, covariates = NA, interaction = FALSE))
 
   # interaction can not be null
   expect_error(do_diagnostic_glm("glm", results_logit$fit, results_logit$fit$call, "gre",
-                                 mydata, "gre", covariates, NULL))
+                                 mydata, "gre", covariates = NA, NULL))
 })
 ###############################################################################
 context("testing find distribution for survreg")
@@ -388,7 +390,6 @@ test_that("testing plotting residual for cox ph models", {
 ###############################################################################
 context("testing plotting residual for cox ph models")
 test_that("testing plotting residual for cox ph models", {
-
   data_for_survival <- survival::lung
   data_for_survival <- na.omit(data_for_survival)
   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",

@@ -35,7 +35,7 @@ plot of  sensitivity analysis
 Function to plot results of sensitivity analysis do_sensitivity_analysis()
 }
 \examples{
-\dontrun{
+\donttest{
 param_list <- define_parameters(
 cost_zido = 2278, cost_direct_med_A = 1701,
 cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,

@@ -11,7 +11,7 @@
 #'
 #' @return the results of the regression analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::aml
 #' surv_estimated_aml <- use_survival_analysis("status", data_for_survival,
 #'   "x",
@@ -104,7 +104,7 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
 #' @param timevar_survival time variable for survival analysis, default is NA
 #' @return the results of the regression analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::lung
 #' surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
 #'          info_distribution = "weibull",covariates = c("ph.ecog"), "time")
@@ -186,7 +186,7 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
   fit <- eval(parse(text = expression_recreated))
   summary <- summary(fit)
 
-  model_coeff <- as.data.frame(summary$table[,1])
+  model_coeff <- as.data.frame(summary$table[, 1])
   se_coeff <- summary$table[, 2]
   model_coeff <- cbind(model_coeff, se_coeff)
   LB <- model_coeff - stats::qnorm(1 - 0.95 / 2) * se_coeff
@@ -200,8 +200,8 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
     LB <- model_coeff[, 1] - stats::qnorm(1 - 0.95 / 2) * model_coeff[, 2]
     UB <- model_coeff[, 1] + stats::qnorm(1 - 0.95 / 2) * model_coeff[, 2]
     ci_coeff <- list(LB = LB, UB = UB)
-    hazard_ratios <- distribution_parameters$HR[,1]
-    ci_HR <- distribution_parameters$HR[,-1]
+    hazard_ratios <- distribution_parameters$HR[, 1]
+    ci_HR <- distribution_parameters$HR[, -1]
     event_time_ratio <- distribution_parameters$ETR
   }
   colnames(model_coeff) <- c("model coefficient", "SE")
@@ -209,15 +209,14 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
   chol_decomp_matrix <- chol(variance_covariance_coeff)
 
 
-  AIC = stats::extractAIC(fit)[2]
+  AIC <- stats::extractAIC(fit)[2]
   LLf <- fit$loglik[2]
   LL0 <- fit$loglik[1]
   N <- nrow(dataset)
-  McFadden_r2 = as.vector(1 - (LLf / LL0))
-  CoxSnaell_r2 = as.vector(1 - exp((2/N) * (LL0 - LLf)))
-  Nagelkerke_r2 = as.vector((1 - exp((2/N) * (LL0 - LLf))) / (1 - exp(LL0)^(2/N)))
+  McFadden_r2 <- as.vector(1 - (LLf / LL0))
+  CoxSnaell_r2 <- as.vector(1 - exp((2 / N) * (LL0 - LLf)))
+  Nagelkerke_r2 <- as.vector((1 - exp((2 / N) * (LL0 - LLf))) / (1 - exp(LL0) ^ (2 / N)))
 
-  # analysis_deviance <- survival::anov.survreg(fit,test.statistic="LR")
 
   residuals_result <- plot_return_residual_survival(param_to_be_estimated, indep_var, covariates, fit)
 
@@ -228,9 +227,9 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
     Nagelkerke_R2 = Nagelkerke_r2,
     residuals_result = residuals_result
   ))
-  prediction_using_param_estimated = stats::predict(fit)
+  prediction_using_param_estimated <- stats::predict(fit)
 
-  plot_prediction = plot_prediction_parametric_survival(param_to_be_estimated,
+  plot_prediction <- plot_prediction_parametric_survival(param_to_be_estimated,
                 indep_var, covariates, dataset, fit, timevar_survival)
 
   results <- structure(list(
@@ -260,12 +259,12 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
 #' @param timevar_survival time variable for survival analysis, default is NA
 #' @return the results of the regression analysis, fit results, summary and plot
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::aml
 #' surv_estimated <- use_km_survival("status", data_for_survival, "x",
 #'   covariates = NA, "time")
 #'   }
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::lung
 #' surv_estimated <- use_km_survival("status", data_for_survival, "sex",
 #'   covariates = c("ph.ecog"), "time")
@@ -348,7 +347,7 @@ use_km_survival <- function(param_to_be_estimated, dataset,
 #' @param timevar_survival time variable for survival analysis, default is NA
 #' @return the results of the regression analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::aml
 #' surv_estimated <- use_fh_survival("status", data_for_survival, "x",
 #'   covariates = NA, "time"
@@ -432,7 +431,7 @@ use_fh_survival <- function(param_to_be_estimated, dataset,
 #' false by default
 #' @return the results of the regression analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::aml
 #' surv_estimated <- use_fh2_survival("status", data_for_survival, "x",
 #'   covariates = NA, "time")
@@ -515,12 +514,12 @@ use_fh2_survival <- function(param_to_be_estimated, dataset,
 #' false by default
 #' @return the results of the regression analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::aml
 #' surv_estimated <- use_coxph_survival("status", data_for_survival, "x",
 #'   covariates = NA, "time")
 #' }
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::lung
 #' surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
 #'   covariates = c("ph.ecog"), "time")
@@ -602,7 +601,7 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
   ci_coeff <- as.data.frame(list(LB = LB, UB = UB))
   colnames(ci_coeff) <- c("LB", "UB")
   # Hazard ratio and their confidence intervals
-  hazard_ratios = as.data.frame(summary$conf.int[, 1])
+  hazard_ratios <- as.data.frame(summary$conf.int[, 1])
   colnames(hazard_ratios) <- "hazard ratios"
 
   LB <- summary$conf.int[, 3]
@@ -610,18 +609,18 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
   ci_HR <- as.data.frame(list(LB = LB, UB = UB))
   colnames(ci_HR) <- c("LB", "UB")
   # akiake informaiton criteria, log likelihood and differenr R2 values
-  AIC = stats::extractAIC(fit)[2]
+  AIC <- stats::extractAIC(fit)[2]
   LLf <- fit$loglik[2]
   LL0 <- fit$loglik[1]
   N <- nrow(dataset)
-  McFadden_r2 = as.vector(1 - (LLf / LL0))
-  CoxSnaell_r2 = as.vector(1 - exp((2/N) * (LL0 - LLf)))
-  Nagelkerke_r2 = as.vector((1 - exp((2/N) * (LL0 - LLf))) / (1 - exp(LL0)^(2/N)))
-  # wald test for model diagnsotics
-  wald.test <- as.data.frame(cbind(summary$coefficients[,4],summary$coefficients[,5]))
-  colnames(wald.test) <- c("wald.test","p.value")
+  McFadden_r2 <- as.vector(1 - (LLf / LL0))
+  CoxSnaell_r2 <- as.vector(1 - exp((2 / N) * (LL0 - LLf)))
+  Nagelkerke_r2 <- as.vector((1 - exp((2 / N) * (LL0 - LLf))) / (1 - exp(LL0) ^ (2 / N)))
+  # wald test for model diagnostics
+  wald_test <- as.data.frame(cbind(summary$coefficients[, 4], summary$coefficients[, 5]))
+  colnames(wald_test) <- c("wald.test", "p.value")
   # analysis of deviance
-  analysis_deviance <- car::Anova(fit,test.statistic = "LR")
+  analysis_deviance <- car::Anova(fit, test.statistic = "LR")
   # plot of residuals to check themodel fit
   residuals_result <- plot_return_residual_cox(param_to_be_estimated, indep_var, covariates, fit, dataset)
 
@@ -630,7 +629,7 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
     McFadden_R2 = McFadden_r2,
     CoxSnaell_R2 = CoxSnaell_r2,
     Nagelkerke_R2 = Nagelkerke_r2,
-    wald.test = wald.test,
+    wald_test = wald_test,
     analysis_deviance = analysis_deviance,
     residuals_result = residuals_result
     ))

@@ -28,7 +28,6 @@ Defining strategy keeping all transition matrix, states and names together to us
 in defining Markov model
 }
 \examples{
-\dontrun{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
@@ -36,5 +35,4 @@ a <- health_state("Healthy", 1, 1, 0, FALSE)
 b <- health_state("Dead", 1, 0.5, 0, FALSE)
 states <- combine_state(a, b)
 strategy(tm, states, "intervention")
-}
 }

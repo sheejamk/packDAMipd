@@ -52,7 +52,7 @@ diagnostic include AIC, R2, and BIC. The results of the prediction ie predicted 
 will be returned in prediction matrix
 }
 \examples{
-\dontrun{
+\donttest{
 gm_result <- use_generalised_linear_model(
   param_to_be_estimated = "Direction",
   dataset = ISLR::Smarket, indep_var = "Lag1", family = "binomial", covariates = c("Lag2", "Lag3"),

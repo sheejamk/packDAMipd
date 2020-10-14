@@ -20,7 +20,7 @@ ICER and NMB for all the strategies compared to comparator
 Estimation of ICER and NMB
 }
 \examples{
-\dontrun{
+\donttest{
 well <- health_state("well", cost = 0, utility = 1)
 disabled <- health_state("disabled", cost = 100, utility = 1)
 dead <- health_state("dead", cost = 0, utility = 0)

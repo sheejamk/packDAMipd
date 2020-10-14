@@ -62,7 +62,7 @@ define_parameters_sens_anal <- function(param_list, low_values, upp_values) {
 #' with parameters (base case value, lower and upper)
 #' @return result after sensitivity analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' param_list <- define_parameters(
 #' cost_zido = 2278, cost_direct_med_A = 1701,
 #' cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
@@ -151,7 +151,7 @@ do_sensitivity_analysis <- function(this_markov, param_table) {
 #' @param comparator the strategy to be compared with
 #' @return report in the form of a table
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' param_list <- define_parameters(
 #' cost_zido = 2278, cost_direct_med_A = 1701,
 #' cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
@@ -257,11 +257,11 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
     return(results_icer_nmb_all)
   } else {
     results_all_param_all <- data.frame(results_all_param)
-    num_par_varied = length(names)
-    all_param_col = list()
+    num_par_varied <- length(names)
+    all_param_col <- list()
     for (kk in 1:num_par_varied) {
-      this_list = rep(unlist(names)[kk], ending - 1)
-      all_param_col = append(all_param_col,this_list)
+      this_list <- rep(unlist(names)[kk], ending - 1)
+      all_param_col <- append(all_param_col, this_list)
     }
     results_all_param_all[["parameter varied"]] <- all_param_col
     cols <- colnames(result_dsa_control$result_cost_direct_med_B$param_matrix)
@@ -284,7 +284,7 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
 #' @param comparator the strategy to be compared with
 #' @return plot of  sensitivity analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' param_list <- define_parameters(
 #' cost_zido = 2278, cost_direct_med_A = 1701,
 #' cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
@@ -337,11 +337,11 @@ report_sensitivity_analysis <- function(result_dsa_control, result_dsa_treat = N
 #' @export
 plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_treat = NULL,
                      threshold = NULL, comparator = NULL) {
-  info = checks_plot_dsa(result_dsa_control, plotfor, type, result_dsa_treat,
+  info <- checks_plot_dsa(result_dsa_control, plotfor, type, result_dsa_treat,
                   threshold, comparator)
-  plot_variable = info$plot_variable
-  plot_var = info$plot_var
-  ob_results = keep_results_plot_dsa(result_dsa_control,plotfor,result_dsa_treat,
+  plot_variable <- info$plot_variable
+  plot_var <- info$plot_var
+  ob_results <- keep_results_plot_dsa(result_dsa_control, plotfor, result_dsa_treat,
                           plot_variable, threshold, comparator)
   if (type == "range") {
     if (plotfor == "ICER") {
@@ -356,7 +356,7 @@ plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_tre
     }
   }else{
     if (type == "difference") {
-          p <- plot_dsa_difference(ob_results, plotfor,plot_var)
+          p <- plot_dsa_difference(ob_results, plotfor, plot_var)
     }
   }
   print(p)
@@ -372,7 +372,7 @@ plot_dsa <- function(result_dsa_control, plotfor, type = "range", result_dsa_tre
 #' @param comparator the strategy to be compared with
 #' @return the plot variable
 checks_plot_dsa <- function(result_dsa_control, plotfor, type, result_dsa_treat,
-                            threshold, comparator){
+                            threshold, comparator) {
   if (is.null(type) | is.null(result_dsa_control) | is.null(plotfor)) {
     stop("Error -Parameters can not be NULL")
   }
@@ -419,7 +419,7 @@ checks_plot_dsa <- function(result_dsa_control, plotfor, type, result_dsa_treat,
       }
     }
   }
-  plot_info = list(plot_variable = plot_variable, plot_var = plot_var)
+  plot_info <- list(plot_variable = plot_variable, plot_var = plot_var)
   return(plot_info)
 }
 #######################################################################
@@ -433,8 +433,8 @@ checks_plot_dsa <- function(result_dsa_control, plotfor, type, result_dsa_treat,
 #' @param comparator the strategy to be compared with
 #' @return results to plot dsa
 #' @export
-keep_results_plot_dsa <- function(result_dsa_control,plotfor,result_dsa_treat,plot_variable,
-                                  threshold, comparator){
+keep_results_plot_dsa <- function(result_dsa_control, plotfor, result_dsa_treat, plot_variable,
+                                  threshold, comparator) {
   results <- data.frame()
   results_treat <- data.frame()
   results_icer_nmb <- data.frame()
@@ -447,7 +447,7 @@ keep_results_plot_dsa <- function(result_dsa_control,plotfor,result_dsa_treat,pl
 
     index <- stringr::str_locate(this_var_result_name, "result_")
     this_var_name <- substr(this_var_result_name, index[2] + 1, nchar(this_var_result_name))
-    if (plotfor == "ICER" | plotfor == "NMB" ) {
+    if (plotfor == "ICER" | plotfor == "NMB") {
       if (!is.null(result_dsa_treat)) {
         list_markov <- combine_markov(result_dsa_control[[this_var_result_name]],
                                       result_dsa_treat[[this_var_result_name]])
@@ -483,18 +483,18 @@ keep_results_plot_dsa <- function(result_dsa_control,plotfor,result_dsa_treat,pl
         if (is.na(ind)) {
           stop("error - Parameter doesnt exist")
         } else {
-          this.col <- ind
+          this_col <- ind
         }
       } else {
-        this.col <- ncol(matr)
+        this_col <- ncol(matr)
       }
-      mean_var <- matr[nrow(matr), this.col]
+      mean_var <- matr[nrow(matr), this_col]
       low_var_result <- result_dsa_control[[low_var_result_name]]
       matr_low <- low_var_result[[plot_variable]]
-      low_var <- matr_low[nrow(matr_low), this.col]
+      low_var <- matr_low[nrow(matr_low), this_col]
       upp_var_result <- result_dsa_control[[upp_var_result_name]]
       matr_upp <- upp_var_result[[plot_variable]]
-      upp_var <- matr_upp[nrow(matr_upp), this.col]
+      upp_var <- matr_upp[nrow(matr_upp), this_col]
       results <- rbind(results, c(mean_var, low_var, upp_var))
       names <- append(names, this_var_name)
       if (!is.null(result_dsa_treat)) {
@@ -505,26 +505,26 @@ keep_results_plot_dsa <- function(result_dsa_control,plotfor,result_dsa_treat,pl
           if (is.na(ind)) {
             stop("error - Parameter doesnt exist")
           } else {
-            this.col <- ind
+            this_col <- ind
           }
         } else {
-          this.col <- ncol(matr)
+          this_col <- ncol(matr)
         }
-        mean_var <- matr[nrow(matr), this.col]
+        mean_var <- matr[nrow(matr), this_col]
         low_var_result_name <- names(result_dsa_treat)[i + 1]
         low_var_result <- result_dsa_treat[[low_var_result_name]]
         matr_low <- low_var_result[[plot_variable]]
-        low_var <- matr_low[nrow(matr_low), this.col]
+        low_var <- matr_low[nrow(matr_low), this_col]
         upp_var_result_name <- names(result_dsa_treat)[i + 2]
         upp_var_result <- result_dsa_treat[[upp_var_result_name]]
         matr_upp <- upp_var_result[[plot_variable]]
-        upp_var <- matr_upp[nrow(matr_upp), this.col]
+        upp_var <- matr_upp[nrow(matr_upp), this_col]
         results_treat <- rbind(results_treat, c(mean_var, low_var, upp_var))
       }
     }
 
   }
-  if (plotfor == "ICER" | plotfor == "NMB" ) {
+  if (plotfor == "ICER" | plotfor == "NMB") {
     return(list(results_icer_nmb = results_icer_nmb))
   }else{
     results[["parameter"]] <- unlist(names)
@@ -532,7 +532,7 @@ keep_results_plot_dsa <- function(result_dsa_control,plotfor,result_dsa_treat,pl
     if (!is.null(result_dsa_treat)) {
       results_treat[["parameter"]] <- unlist(names)
       colnames(results_treat) <- c("base", "lower", "upper", "parameter")
-      return(list(results = results,results_treat = results_treat))
+      return(list(results = results, results_treat = results_treat))
     } else{
       return(list(results = results))
     }
@@ -544,8 +544,8 @@ keep_results_plot_dsa <- function(result_dsa_control,plotfor,result_dsa_treat,pl
 #' @param plot_var the variable
 #' @return plot
 #' @export
-plot_dsa_icer_range <- function(ob_results, plot_var){
-  results_icer_nmb = ob_results$results_icer_nmb
+plot_dsa_icer_range <- function(ob_results, plot_var) {
+  results_icer_nmb <- ob_results$results_icer_nmb
   results_icer_nmb_all <- data.frame(results_icer_nmb)
   low <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "lower", ]$ICER))
   base <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit == "base", ]$ICER))
@@ -596,50 +596,50 @@ plot_dsa_icer_range <- function(ob_results, plot_var){
 #' @return plot
 #' @export
 plot_dsa_nmb_range <- function(ob_results, plot_var) {
-  results_icer_nmb = ob_results$results_icer_nmb
-  strategy_names = unique(results_icer_nmb$Strategy)
-  parameters = unique(results_icer_nmb$parameter)
+  results_icer_nmb <- ob_results$results_icer_nmb
+  strategy_names <- unique(results_icer_nmb$Strategy)
+  parameters <- unique(results_icer_nmb$parameter)
   results <- results_icer_nmb[results_icer_nmb$Strategy
-                              == strategy_names[1],]
-  results_treat = results_icer_nmb[results_icer_nmb$Strategy
-                                   == strategy_names[2],]
+                              == strategy_names[1], ]
+  results_treat <- results_icer_nmb[results_icer_nmb$Strategy
+                                   == strategy_names[2], ]
   results_parameters <- as.data.frame(parameters)
-  results_parameters[["lower"]] <- as.numeric(results[results$value_limit == "lower",]$NMB)
-  results_parameters[["base"]] <- as.numeric(results[results$value_limit == "base",]$NMB)
-  results_parameters[["upper"]] <- as.numeric(results[results$value_limit == "upper",]$NMB)
+  results_parameters[["lower"]] <- as.numeric(results[results$value_limit == "lower", ]$NMB)
+  results_parameters[["base"]] <- as.numeric(results[results$value_limit == "base", ]$NMB)
+  results_parameters[["upper"]] <- as.numeric(results[results$value_limit == "upper", ]$NMB)
 
   results_parameters_treat <- as.data.frame(parameters)
   results_parameters_treat[["lower"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                  == "lower",]$NMB)
+                                                                  == "lower", ]$NMB)
   results_parameters_treat[["base"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                 == "base",]$NMB)
+                                                                 == "base", ]$NMB)
   results_parameters_treat[["upper"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                  == "upper",]$NMB)
+                                                                  == "upper", ]$NMB)
   name_file_plot <- paste0("Deterministic sensitivity analysis NMB.pdf", sep = "")
   grDevices::pdf(name_file_plot)
   p <- ggplot2::ggplot(results_parameters) +
     ggplot2::geom_segment(ggplot2::aes_(
       x = ~lower,
       xend = ~upper,
-      y = ~parameter,
-      yend = ~parameter
+      y = ~parameters,
+      yend = ~parameters
     ),
     size = 3, color = "orange"
     ) +
     ggplot2::geom_point(ggplot2::aes_(
       x = ~base,
-      y = ~parameter, color = "base value"
+      y = ~parameters, color = "base value"
     ),
     size = 4
     ) +
     ggplot2::geom_point(ggplot2::aes_(
       x = ~lower,
-      y = ~parameter,
+      y = ~parameters,
       color = "lower"
     ), size = 4, shape = 15) +
     ggplot2::geom_point(ggplot2::aes_(
       x = ~upper,
-      y = ~parameter,
+      y = ~parameters,
       color = "upper"
     ), size = 4, shape = 15) +
     ggplot2::labs(colour = "", y = "Parameters") +
@@ -656,7 +656,7 @@ plot_dsa_nmb_range <- function(ob_results, plot_var) {
 #' @param plot_var the variable
 #' @return plot
 #' @export
-plot_dsa_others_range <- function(ob_results, plot_var){
+plot_dsa_others_range <- function(ob_results, plot_var) {
   results_parameters <- ob_results$results
   name_file_plot <- paste0("Deterministic sensitivity analysis.pdf", sep = "")
   grDevices::pdf(name_file_plot)
@@ -700,30 +700,30 @@ plot_dsa_others_range <- function(ob_results, plot_var){
 #' @param plotfor the quantity plotting
 #' @return plot
 #' @export
-plot_dsa_difference <- function(ob_results, plotfor,plot_var){
+plot_dsa_difference <- function(ob_results, plotfor, plot_var) {
   if (plotfor == "NMB") {
-    results_icer_nmb = ob_results$results_icer_nmb
-    strategy_names = unique(results_icer_nmb$Strategy)
-    parameters = unique(results_icer_nmb$parameter)
+    results_icer_nmb <- ob_results$results_icer_nmb
+    strategy_names <- unique(results_icer_nmb$Strategy)
+    parameters <- unique(results_icer_nmb$parameter)
     results <- results_icer_nmb[results_icer_nmb$Strategy
-                                == strategy_names[1],]
-    results_treat = results_icer_nmb[results_icer_nmb$Strategy
-                                     == strategy_names[2],]
+                                == strategy_names[1], ]
+    results_treat <- results_icer_nmb[results_icer_nmb$Strategy
+                                     == strategy_names[2], ]
     results_parameters <- as.data.frame(parameters)
-    results_parameters[["lower"]] <- as.numeric(results[results$value_limit == "lower",]$NMB)
-    results_parameters[["base"]] <- as.numeric(results[results$value_limit == "base",]$NMB)
-    results_parameters[["upper"]] <- as.numeric(results[results$value_limit == "upper",]$NMB)
+    results_parameters[["lower"]] <- as.numeric(results[results$value_limit == "lower", ]$NMB)
+    results_parameters[["base"]] <- as.numeric(results[results$value_limit == "base", ]$NMB)
+    results_parameters[["upper"]] <- as.numeric(results[results$value_limit == "upper", ]$NMB)
 
     results_parameters_treat <- as.data.frame(parameters)
     results_parameters_treat[["lower"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                    == "lower",]$NMB)
+                                                                    == "lower", ]$NMB)
     results_parameters_treat[["base"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                   == "base",]$NMB)
+                                                                   == "base", ]$NMB)
     results_parameters_treat[["upper"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                    == "upper",]$NMB)
+                                                                    == "upper", ]$NMB)
   } else {
-    results = ob_results$results
-    results_treat = ob_results$results_treat
+    results <- ob_results$results
+    results_treat <- ob_results$results_treat
     results_parameters <- as.data.frame(results)
     results_parameters_treat <- as.data.frame(results_treat)
   }

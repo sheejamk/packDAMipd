@@ -60,7 +60,7 @@ predict() for survreg object with type =quantile will provide
 the failure times as survival function is 1-CDF of failure time.
 }
 \examples{
-\dontrun{
+\donttest{
 data_for_survival <- survival::lung
 surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
          info_distribution = "weibull",covariates = c("ph.ecog"), "time")

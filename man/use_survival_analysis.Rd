@@ -43,7 +43,7 @@ Takes into account many different methods like KM.FH, Cox proportional etc.
 and then calls appropriate functions to do the survival analysis
 }
 \examples{
-\dontrun{
+\donttest{
 data_for_survival <- survival::aml
 surv_estimated_aml <- use_survival_analysis("status", data_for_survival,
   "x",

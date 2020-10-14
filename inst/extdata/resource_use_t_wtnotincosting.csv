@@ -1,0 +1,5 @@
+pat_TrialArm,SEX,age,Drug,Name,Timepoint,tab_dosage,tab_dosage_unit,tab_no_taken,tab_frequency,tab_equiv_dose
+N,M,21,Buprenorphine,1,2,16,kg,1,1,40
+N,M,43,Buprenorphine,1,2,2,kg,3,2,45
+Y,F,37,Buprenorphine,1,2,8,kg,4,3,65
+Y,F,73,Buprenorphine,1,1,2,kg,6,4,63

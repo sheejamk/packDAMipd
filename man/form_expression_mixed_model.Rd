@@ -55,7 +55,7 @@ Form expression to use with mixed models
 Form the expression for mixed model
 }
 \examples{
-\dontrun{
+\donttest{
 datafile <- system.file("extdata", "data_linear_mixed_model.csv",
 package = "packDAMipd")
 dt = utils::read.csv(datafile, header = TRUE)

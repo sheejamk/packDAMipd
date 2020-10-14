@@ -32,7 +32,7 @@ Plotting survival function for all covariates  calculated from
 cox regression results and returned coefficients
 }
 \examples{
-\dontrun{
+\donttest{
  data_for_survival <- survival::lung
  surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
  covariates = c("ph.ecog"), "time")

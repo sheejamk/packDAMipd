@@ -20,10 +20,8 @@ checking for rowsum - checks for the class of transition matrix,
 value of rowsum (to be 1) and numeric values
 }
 \examples{
-\dontrun{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 tm <- populate_transition_matrix(2, tmat, list_prob = c(0.5, 0.5, 0, 1))
 check_trans_prob(tm)
-}
 }

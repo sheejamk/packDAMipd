@@ -34,10 +34,8 @@ assign_list <- c(p1=0.1, p2 = "p1 + 0.2", p3=0, p4=0.3)
 prob <- eval_assign_trans_prob(tmat, assign_list)
 }
 \examples{
-\dontrun{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 tmat <- populate_transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
 tmat_assigned <- eval_assign_trans_prob(tmat, c(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5))
-}
 }

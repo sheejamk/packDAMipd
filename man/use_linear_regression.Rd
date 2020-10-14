@@ -47,12 +47,12 @@ linear regression formula.
 ref:https://www.statmethods.net/stats/regression.html
 }
 \examples{
-\dontrun{
+\donttest{
 results_lm <- use_linear_regression("dist",
   dataset = cars,
   indep_var = "speed", covariates = NA, interaction = FALSE)
 }
-\dontrun{
+\donttest{
 library(car)
 results_lm <- use_linear_regression("mpg",
   dataset = mtcars,

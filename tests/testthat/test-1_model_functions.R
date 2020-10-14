@@ -322,12 +322,12 @@ test_that("testing creating strategyl", {
   tmat_util <- rbind(c(NA, 1), c(NA, NA))
   colnames(tmat_util) <- rownames(tmat_cost) <- c("Healthy", "Dead")
   tm_util <- transition_cost_util(2, tmat_cost, c(0.8))
-  this_strategy <- strategy(tm, health_states, "intervention",tm_cost, tm_util )
+  this_strategy <- strategy(tm, health_states, "intervention",tm_cost, tm_util)
   expect_equal(this_strategy$name_strategy, "intervention")
-  m = matrix(c(0,10,0,0), nrow = 2, byrow = T)
+  m <- matrix(c(0, 10, 0, 0), nrow = 2, byrow = T)
   expect_equal(this_strategy$transition_cost$trans_matrix, m,  check.attributes = FALSE)
-  expect_error(strategy(tm, health_states, "intervention",tm, tm_util))
-  expect_error(strategy(tm, health_states, "intervention",tm_cost, tm))
+  expect_error(strategy(tm, health_states, "intervention", tm, tm_util))
+  expect_error(strategy(tm, health_states, "intervention", tm_cost, tm))
 })
 # ##############################################################################
 context("testing creating markov model")
@@ -368,25 +368,25 @@ test_that("testing creating markov model", {
   tmat_util <- rbind(c(NA, 1), c(NA, NA))
   colnames(tmat_util) <- rownames(tmat_cost) <- c("Healthy", "Dead")
   tm_util <- transition_cost_util(2, tmat_cost, c(0.8))
-  this_strategy <- strategy(tm, health_states, "intervention",tm_cost, tm_util )
+  this_strategy <- strategy(tm, health_states, "intervention", tm_cost, tm_util)
   mm <- markov_model(this_strategy, 10, c(1, 0), c(0, 0))
   trace_matrix_1 <- mm$trace_matrix
   df <- matrix(unlist(trace_data), nrow = 11)
   expect_equal(trace_matrix_1, df, check.attributes = FALSE, tolerance = 1e-4)
 
-  mm <- markov_model(this_strategy, 5, c(1, 0), c(0, 0),NULL,FALSE,FALSE,FALSE, "life_table")
+  mm <- markov_model(this_strategy, 5, c(1, 0), c(0, 0), NULL, FALSE, FALSE, FALSE, "life_table")
   trace_matrix_1 <- mm$trace_matrix
-  healthy_trace <- c(1.000000, 0.750000,0.375000,0.187500,0.093750,0.046875)
-  expect_equal(trace_matrix_1[,1], healthy_trace, check.attributes = FALSE, tolerance = 1e-4)
+  healthy_trace <- c(1.000000, 0.750000, 0.375000, 0.187500, 0.093750, 0.046875)
+  expect_equal(trace_matrix_1[, 1], healthy_trace, check.attributes = FALSE, tolerance = 1e-4)
 
-  mm <- markov_model(this_strategy, 10, c(1, 0), c(0, 0),NULL,TRUE,TRUE,TRUE)
+  mm <- markov_model(this_strategy, 10, c(1, 0), c(0, 0), NULL, TRUE, TRUE, TRUE)
   trace_matrix_1 <- mm$trace_matrix
   expect_equal(trace_matrix_1, df, check.attributes = FALSE, tolerance = 1e-4)
 
-  mm <- markov_model(this_strategy, 2, c(1, 0), c(0, 0),NULL,TRUE,TRUE,TRUE, "half_cycle", c(10,0), c(0,0))
+  mm <- markov_model(this_strategy, 2, c(1, 0), c(0, 0), NULL, TRUE, TRUE, TRUE, "half_cycle", c(10,0), c(0,0))
   cost_matrix_1 <- mm$cost_matrix
   cost_df <- c(5.5, 0.9, 0.225)
-  expect_equal(cost_matrix_1[,3], cost_df, check.attributes = FALSE, tolerance = 1e-4)
+  expect_equal(cost_matrix_1[, 3], cost_df, check.attributes = FALSE, tolerance = 1e-4)
 
 
 })
@@ -405,11 +405,11 @@ test_that("testing combining markov states", {
   b <- health_state("Dead", 1, 0, 0, TRUE)
   this_strategy <- strategy(tm, health_states, "control")
   mm2 <- markov_model(this_strategy, 10, c(1, 0), c(0, 0))
-  list1 <- combine_markov(mm1,mm2)
-  list2 <- combine_markov(list(mm1,mm2))
-  expect_equal(list1[1,]$method,list2[1,]$method)
-  expect_error(combine_markov(list(a,mm2)))
-  expect_error(combine_markov(a,mm2))
+  list1 <- combine_markov(mm1, mm2)
+  list2 <- combine_markov(list(mm1, mm2))
+  expect_equal(list1[1, ]$method,list2[1,]$method)
+  expect_error(combine_markov(list(a, mm2)))
+  expect_error(combine_markov(a, mm2))
 })
 ##############################################################################
 context("testing plotting markov states")

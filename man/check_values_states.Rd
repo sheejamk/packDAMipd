@@ -20,7 +20,7 @@ This is to check if the values are numeric during  the run time,
 else to throw an error
 }
 \examples{
-\dontrun{
+\donttest{
 well <- health_state("well", cost = 0, utility = 1)
 disabled <- health_state("disabled", cost = 100, utility = 1)
 dead <- health_state("dead", cost = 0, utility = 0)

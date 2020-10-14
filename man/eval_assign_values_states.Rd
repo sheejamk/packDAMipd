@@ -9,7 +9,8 @@ eval_assign_values_states(health_states, assigned_param)
 \arguments{
 \item{health_states}{list of health_state objects}
 
-\item{assigned_param}{name value pairs of parameter values in the probability matrix
+\item{assigned_param}{name value pairs of parameter values in the
+probability matrix
 expected created using function assign_parameters()}
 }
 \value{
@@ -28,17 +29,18 @@ For the example shown the cost is sum of cost_A and cost_B which will
 only get added in the call eval_assign_values_states
 While initialising the state "well" it will be only saved as
 expression(cost_A + cost_B)
-assigned_param (a list) can be expected to be created using assign_parameters()
-the exception is if parameter is directly assigned with no nested calculation
-and no missing parameters.
+assigned_param (a list) can be expected to be created using
+assign_parameters() the exception is if parameter is directly assigned
+with no nested calculation and no missing parameters.
 For example assigned_param = c(cost_a = 10, cost_b=10) will be ok
 but not assigned_param = c(a=10, cost_A = "a+100", cost_B =10) as it requires
-a nested calculation then use define_parameters() with assign_parameters() as in
-param_list <- define_parameters(a = 10, cost_A = "a + 100", cost_B = 10)
+a nested calculation then use define_parameters() with assign_parameters()
+as in param_list <- define_parameters(a = 10, cost_A = "a + 100",
+cost_B = 10)
 assign_list <- assign_parameters(param_list)
 }
 \examples{
-\dontrun{
+\donttest{
 well <- health_state("well", cost = "cost_A + cost_B", utility = 1)
 disabled <- health_state("disabled", cost = 100, utility = 1)
 dead <- health_state("dead", cost = 0, utility = 0)

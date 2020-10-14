@@ -203,7 +203,7 @@ check_link_glm <- function(family, link) {
 #' false by default
 #' @return the results of the regression analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' datafile = system.file("extdata", "binary.csv", package = "packDAMipd")
 #' mydata <- read.csv(datafile)
 #' results_logit <- use_generalised_linear_model("admit",dataset = mydata,
@@ -277,10 +277,11 @@ do_diagnostic_glm <- function(method = "glm", fit, expression_recreated,
   # non-constant error variance test
   # No need to check this in glm Ref:https://online.stat.psu.edu/stat504/node/216/)
 
-  graphics::par(mfrow = c(2, 2))
-
-  name_file_plot <- paste0(method, "_Regression_diagnostics_plot_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
+  name_file_plot <- paste0(method, "_Regression_diagnostics_plot_",
+                           param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
+  oldpar <- graphics::par(no.readonly = TRUE)
+  graphics::par(mfrow = c(2, 2))
 
   # plot studentized residuals vs. fitted values
   suppressWarnings(car::spreadLevelPlot(fit))
@@ -295,15 +296,10 @@ do_diagnostic_glm <- function(method = "glm", fit, expression_recreated,
   if (!interaction) {
     car::crPlots(fit)
   }
-  # Ceres plots
-  # if (sum(is.na(covariates)) == 0 & interaction == FALSE & method == "glm") {
-  #   expr1 = paste(param_to_be_estimated,expression_recreated$short_formula)
-  #   fit_ceresPlots = stats::glm(expr1, data = dataset)
-  #   car::ceresPlots(fit_ceresPlots)
-  #   #car::ceresPlots(fit)
-  # }
   car::influencePlot(fit, main = "Influence Plot", sub = "Circle size is proportial to Cook's Distance")
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
+
 
   name_file_plot <- paste0(method, "_Residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
@@ -374,7 +370,7 @@ find_survreg_distribution <- function(text) {
 #' @param fit  fit object from survreg method
 #' @return plot and the residuals
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::lung
 #' surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
 #' info_distribution = "weibull",covariates = c("ph.ecog"), "time")
@@ -382,7 +378,7 @@ find_survreg_distribution <- function(text) {
 #' covariates = c("ph.ecog"),surv_estimated$fit)
 #' }
 #' @export
-plot_return_residual_survival <- function(param_to_be_estimated,indep_var,covariates,fit) {
+plot_return_residual_survival <- function(param_to_be_estimated, indep_var, covariates, fit) {
   if (!("survreg" %in% class(fit)))
     stop("Error- Fit object should be of type survreg")
   # checking if parameter to be estimated is NULL or NA
@@ -399,9 +395,10 @@ plot_return_residual_survival <- function(param_to_be_estimated,indep_var,covari
     if (is.na(indep_var))
       stop("Error -  independent variable can not be NA")
   }
+
   name_file_plot <- paste0("Survival_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
-
+  oldpar <- graphics::par(no.readonly = TRUE)
   graphics::par(mar = c(4, 4, 2, 2))
   residuals_response <- stats::residuals(fit, type = "response")
   residuals_deviance <- stats::residuals(fit, type = "deviance")
@@ -410,25 +407,25 @@ plot_return_residual_survival <- function(param_to_be_estimated,indep_var,covari
   residuals_ldresp <- stats::residuals(fit, type = "ldresp")
   residuals_ldcase <- stats::residuals(fit, type = "ldcase")
 
-  plot(residuals_response, type = "p", main = "Response",ylab = "Residuals", lwd = 2)
-  plot(residuals_deviance, type = "p", main = "Deviance",ylab = "Residuals", lwd = 2)
-  nos = ceiling(length(covariates) / 2)
-  graphics::par(mfrow = c(2,nos))
+  plot(residuals_response, type = "p", main = "Response", ylab = "Residuals", lwd = 2)
+  plot(residuals_deviance, type = "p", main = "Deviance", ylab = "Residuals", lwd = 2)
+  nos <- ceiling(length(covariates) / 2)
+  graphics::par(mfrow = c(2, nos))
 
   residuals_matrix <- stats::residuals(fit, type = "matrix")
   residuals_dfbeta <- stats::residuals(fit, type = "dfbeta")
   residuals_dfbetas <- stats::residuals(fit, type = "dfbetas")
 
   for (i in 1:length(covariates))
-    plot(residuals_matrix[, i], type = "p", main = "Matrix",ylab = "Residuals", lwd = 2)
+    plot(residuals_matrix[, i], type = "p", main = "Matrix", ylab = "Residuals", lwd = 2)
   for (i in 1:length(covariates))
-    plot(residuals_dfbeta[, i], type = "p", main = "Dfbeta",ylab = "Residuals", lwd = 2)
+    plot(residuals_dfbeta[, i], type = "p", main = "Dfbeta", ylab = "Residuals", lwd = 2)
   for (i in 1:length(covariates))
-    plot(residuals_dfbetas[, i], type = "p", main = "Dfbetas",ylab = "Residuals", lwd = 2)
-
+    plot(residuals_dfbetas[, i], type = "p", main = "Dfbetas", ylab = "Residuals", lwd = 2)
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
 
-  results_residuals = structure(list(
+  results_residuals <- structure(list(
     Response_residual = residuals_response,
     Deviance_residual = residuals_deviance,
     Working_residual = residuals_working,
@@ -450,7 +447,7 @@ plot_return_residual_survival <- function(param_to_be_estimated,indep_var,covari
 #' @param timevar_survival  time variable from the dataset
 #' @return plot
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::lung
 #' surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
 #' info_distribution = "weibull",covariates = c("ph.ecog"),"time")
@@ -458,7 +455,7 @@ plot_return_residual_survival <- function(param_to_be_estimated,indep_var,covari
 #' covariates = c("ph.ecog"),data_for_survival, surv_estimated$fit, "time")
 #' }
 #' @export
-plot_prediction_parametric_survival <- function(param_to_be_estimated,indep_var, covariates, dataset,
+plot_prediction_parametric_survival <- function(param_to_be_estimated, indep_var, covariates, dataset,
                                                 fit, timevar_survival) {
   if (!("survreg" %in% class(fit)))
     stop("Error- Fit object should be of type survreg")
@@ -481,9 +478,9 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated,indep_var,
     stop("Error - dataset can not be null")
 
   if (is.na(covariates)) {
-    no_var = 1
+    no_var <- 1
   }else{
-    no_var = 1 + length(covariates)
+    no_var <- 1 + length(covariates)
   }
 
   # checking if time variable is NULL or NA
@@ -493,29 +490,30 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated,indep_var,
     if (is.na(timevar_survival))
       stop("Error - time variable can not be NA")
   }
+
   name_file_plot <- paste0("Survival_covariates_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   for (i in 1:no_var) {
     if (i == 1) {
-      var = indep_var
-      other_fixed = covariates
+      var <- indep_var
+      other_fixed <- covariates
     }else{
-      var = covariates[i - 1]
-      other_fixed = c(indep_var,covariates[-(i - 1)])
+      var <- covariates[i - 1]
+      other_fixed <- c(indep_var, covariates[- (i - 1)])
     }
-    categorical = list()
+    categorical <- list()
     if (!is.na(other_fixed)) {
       for (j in 1:length(other_fixed)) {
-        variable = dataset[[other_fixed[j]]]
+        variable <- dataset[[other_fixed[j]]]
         result <- suppressWarnings(as.numeric(levels(factor(variable))))
         if (sum(is.na(result)) == 0) catego <- TRUE else catego <- FALSE
-        categorical = c(categorical,catego)
+        categorical <- c(categorical, catego)
       }
     }
-    categorical = unlist(categorical)
-    newdata = as.data.frame(create_new_dataset(var, other_fixed, dataset, categorical))
-    pct <- 1:98/100   # The 100th percentile of predicted survival is at +infinity
-    prediction_value <- stats::predict(fit, newdata = newdata,type = 'quantile',
+    categorical <- unlist(categorical)
+    newdata <- as.data.frame(create_new_dataset(var, other_fixed, dataset, categorical))
+    pct <- 1:98 / 100   # The 100th percentile of predicted survival is at +infinity
+    prediction_value <- stats::predict(fit, newdata = newdata, type = "quantile",
                                        p = pct, se = TRUE)
     indep <- dataset[[var]]
     names <- var
@@ -526,13 +524,13 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated,indep_var,
       indep_lvl <- unique(as.numeric(as.factor(indep)))
     }
     for (m in 1:length(indep_lvl)) {
-      graphics::matplot(cbind(prediction_value$fit[m,], prediction_value$fit[m,] +
-                    2*prediction_value$se.fit[m,],
-                    prediction_value$fit[m,] - 2*prediction_value$se.fit[m,])/30.5,
-                    1 - pct, xlab = timevar_survival, ylab = "Survival", type = 'l',
-                    lty = c(1,2,2), col = 3)
+      graphics::matplot(cbind(prediction_value$fit[m, ], prediction_value$fit[m, ] +
+                    2 * prediction_value$se.fit[m, ],
+                    prediction_value$fit[m, ] - 2 * prediction_value$se.fit[m, ]) / 30.5,
+                    1 - pct, xlab = timevar_survival, ylab = "Survival", type = "l",
+                    lty = c(1, 2, 2), col = 3)
       graphics::legend("topright", legend = c(paste(names, "=", indep_lvl[m],
-              sep = ""), "upper ci", "lower ci"),lty = c(1,2,2), lwd = 2,col = 3)
+              sep = ""), "upper ci", "lower ci"), lty = c(1, 2, 2), lwd = 2, col = 3)
     }
 
   }
@@ -565,9 +563,9 @@ create_new_dataset <- function(var, covar, dataset, categorical) {
   }
   #Error if categorical variable is null
   if (is.null(categorical)) {
-    categorical = c(FALSE)
+    categorical <- c(FALSE)
   }
-  check = IPDFileCheck::check_column_exists(var, dataset)
+  check <- IPDFileCheck::check_column_exists(var, dataset)
   if (check != 0) {
     stop("Column of variable not in the dataset")
   }
@@ -586,8 +584,8 @@ create_new_dataset <- function(var, covar, dataset, categorical) {
   df <- as.data.frame(indep_lvl)
   if (sum(is.na(covar)) == 0) {
     for (i in 1:length(covar)) {
-      this_var = covar[i]
-      check = IPDFileCheck::check_column_exists(this_var, dataset)
+      this_var <- covar[i]
+      check <- IPDFileCheck::check_column_exists(this_var, dataset)
       if (check != 0) {
         stop("Column of covariate not in the dataset")
       }
@@ -636,8 +634,6 @@ form_expression_lm <- function(param_to_be_estimated, indep_var, covariates,
     if (is.na(indep_var))
       stop("Error -  independent variable can not be NA")
   }
-
-
   if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
     # no need to check for interaction
     fmla <- paste("lm(", param_to_be_estimated, " ~ ", indep_var, ",
@@ -676,7 +672,7 @@ form_expression_lm <- function(param_to_be_estimated, indep_var, covariates,
 #' @return the results of the regression analysis
 #' @keywords internal
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' datafile = system.file("extdata", "binary.csv", package = "packDAMipd")
 #' mydata <- read.csv(datafile)
 #' results_logit <- use_linear_regression("admit",dataset = mydata,
@@ -748,10 +744,11 @@ do_diagnostic_linear_regression <- function(method, fit, expression_recreated, p
   # Model fit assumption test
   model_fit_assumptions_test <- summary(gvlma::gvlma(fit))
 
-  graphics::par(mfrow = c(2, 2))
 
   name_file_plot <- paste0(method, "_Regression_diagnostics_plot_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
+  oldpar <- graphics::par(no.readonly = TRUE)
+  graphics::par(mfrow = c(2, 2))
 
   # plot studentized residuals vs. fitted values
   suppressWarnings(car::spreadLevelPlot(fit))
@@ -767,14 +764,10 @@ do_diagnostic_linear_regression <- function(method, fit, expression_recreated, p
   if (interaction == FALSE) {
     car::crPlots(fit)
   }
-  # Ceres plots --
-  # if (sum(is.na(covariates)) == 0 & interaction == FALSE & method == "lm") {
-  #   expr1 = paste(param_to_be_estimated,expression_recreated$short_formula)
-  #   fit_ceresPlots = stats::lm(expr1, data = dataset)
-  #   car::ceresPlots(fit_ceresPlots)
-  # }
   car::influencePlot(fit, main = "Influence Plot", sub = "Circle size is proportial to Cook's Distance")
-  grDevices::dev.off()
+  oldpar <- graphics::par(no.readonly = TRUE)
+   grDevices::dev.off()
+
 
   name_file_plot <- paste0(method, "_Residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
@@ -804,7 +797,7 @@ do_diagnostic_linear_regression <- function(method, fit, expression_recreated, p
 #' @return the results of the regression analysis
 #' @keywords internal
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' datafile = system.file("extdata", "binary.csv", package = "packDAMipd")
 #' mydata <- read.csv(datafile)
 #'  results_logit <- use_linear_regression("admit",dataset = mydata,
@@ -865,6 +858,7 @@ prediction_regression <- function(method, fit, expression_recreated,
   prediction_all <- append(prediction_all, list(predictor_effect[[1]]$fit))
   names(prediction_all) <- c(this_names, param_to_be_estimated)
 
+
   name_file_plot <- paste0(method, "_Prediction_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   plot_prediction <- graphics::plot(predictor_effect, lines = list(multiline = TRUE))
@@ -893,7 +887,7 @@ prediction_regression <- function(method, fit, expression_recreated,
 #' @param link, link function for the variance
 #' @return result regression result with plot if success and -1, if failure
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' datafile <- system.file("extdata", "data_linear_mixed_model.csv",
 #' package = "packDAMipd")
 #' dt = utils::read.csv(datafile, header = TRUE)
@@ -913,7 +907,7 @@ prediction_regression <- function(method, fit, expression_recreated,
 #' Form the expression for mixed model
 #'
 form_expression_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
-                                        fix_eff_interact_vars,random_intercept_vars,
+                                        fix_eff_interact_vars, random_intercept_vars,
                                         nested_intercept_vars_pairs, cross_intercept_vars,
                                         uncorrel_slope_intercept_pairs, random_slope_intercept_pairs,
                                         family, link) {
@@ -1090,7 +1084,7 @@ form_expression_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
 #' @param timevar_survival  time variable for survival analysis
 #' @return plot and the survival function values
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'  data_for_survival <- survival::lung
 #'  plot_return_survival_curve(param_to_be_estimated = "status",
 #'  dataset = data_for_survival,indep_var = "sex",covariates = c("ph.ecog"),
@@ -1148,6 +1142,7 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset, indep_var
   # estimate survival function using survival::survfit
   fit_survfit <- eval(parse(text = expression_recreated_forsurfit))
 
+
   name_file_plot <- paste0("Survival_function_default_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   graphics::plot(fit_survfit)
@@ -1158,6 +1153,8 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset, indep_var
   total_no <- length(fac)
   survival_fn <- list()
   names_surv <- list()
+
+
   name_file_plot <- paste0("Survival_function_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   if (sum(is.na(covariates)) != 0) {
@@ -1174,8 +1171,8 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset, indep_var
       k <- i * j
       times <- summary$time[which(summary$strata == fac[k])]
       survs <- summary$surv[which(summary$strata == fac[k])]
-      survs.lb <- summary$lower[which(summary$strata == fac[k])]
-      survs.ub <- summary$upper[which(summary$strata == fac[k])]
+      survs_lb <- summary$lower[which(summary$strata == fac[k])]
+      survs_ub <- summary$upper[which(summary$strata == fac[k])]
       if (j == 1) {
         graphics::plot(times, survs,
                        type = "l", xlab = "Time", ylab = "Survival function", col = k,
@@ -1187,9 +1184,9 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset, indep_var
                         lwd = 3, ylim = c(0, 1)
         )
       }
-      graphics::lines(times, survs.lb, type = "l", col = k, lwd = 1, lty = 2)
-      graphics::lines(times, survs.ub, type = "l", col = k, lwd = 1, lty = 2)
-      this <- data.frame(time = times, survfun = survs, upper_ci = survs.lb, lower_ci = survs.ub)
+      graphics::lines(times, survs_lb, type = "l", col = k, lwd = 1, lty = 2)
+      graphics::lines(times, survs_ub, type = "l", col = k, lwd = 1, lty = 2)
+      this <- data.frame(time = times, survfun = survs, upper_ci = survs_lb, lower_ci = survs_ub)
       colnames(this) <- c(
         paste("times for", fac[k]), paste("survival for", fac[k]),
         paste("upper ci for", fac[k]), paste("lower ci for", fac[k])
@@ -1218,7 +1215,7 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset, indep_var
 #' @param dataset data used for cox ph model
 #' @return plot and the residuals
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   data_for_survival <- survival::lung
 #'   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
 #'   covariates = c("ph.ecog"), "time")
@@ -1227,7 +1224,7 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset, indep_var
 #'   }
 #' @export
 #' @importFrom stats residuals
-plot_return_residual_cox <- function(param_to_be_estimated,indep_var,covariates,fit, dataset) {
+plot_return_residual_cox <- function(param_to_be_estimated, indep_var, covariates, fit, dataset) {
   if (!("coxph" %in% class(fit)))
     stop("Error- Fit object should be of type  coxph")
 
@@ -1245,11 +1242,13 @@ plot_return_residual_cox <- function(param_to_be_estimated,indep_var,covariates,
     if (is.na(indep_var))
       stop("Error -  independent variable can not be NA")
   }
+
+
   name_file_plot <- paste0("Cox_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
 
   residuals_martingale <- stats::residuals(fit, type = "martingale")
-  coxSnell <- residuals_martingale - dataset[[param_to_be_estimated]]
+  cox_snell <- residuals_martingale - dataset[[param_to_be_estimated]]
   residuals_deviance <- stats::residuals(fit, type = "deviance")
   residuals_score <- stats::residuals(fit, type = "score")
   residuals_schoenfeld <- stats::residuals(fit, type = "schoenfeld")
@@ -1257,66 +1256,71 @@ plot_return_residual_cox <- function(param_to_be_estimated,indep_var,covariates,
   residuals_dfbetas <- stats::residuals(fit, type = "dfbetas")
   residuals_scaledsch <- stats::residuals(fit, type = "scaledsch")
   residuals_partial <- stats::residuals(fit, type = "partial")
-  graphics::par(mar = c(4, 4, 2, 2))
   if (is.na(covariates)) {
-    plot(residuals_martingale, type = "p", main = "Martingale",ylab = "Residuals", lwd = 2)
-    plot(residuals_deviance, type = "p", main = "Deviance",ylab = "Residuals", lwd = 2)
+    oldpar <- graphics::par(no.readonly = TRUE)
+    graphics::par(mar = c(4, 4, 2, 2))
+
+    plot(residuals_martingale, type = "p", main = "Martingale", ylab = "Residuals", lwd = 2)
+    plot(residuals_deviance, type = "p", main = "Deviance", ylab = "Residuals", lwd = 2)
     plot(residuals_score, type = "p", main = paste("Score_", indep_var,
-                                               sep = ""),ylab = "Residuals", lwd = 2)
+                                               sep = ""), ylab = "Residuals", lwd = 2)
     plot(residuals_schoenfeld, type = "p", main = paste("Schoenfeld_", indep_var,
-                                                    sep = ""),ylab = "Residuals", lwd = 2)
+                                                    sep = ""), ylab = "Residuals", lwd = 2)
     plot(residuals_dfbeta, type = "p", main = paste("Dfbeta_", indep_var,
-                                                     sep = ""),ylab = "Residuals", lwd = 2)
+                                                     sep = ""), ylab = "Residuals", lwd = 2)
     plot(residuals_dfbetas, type = "p", main = paste("Dfbetas_", indep_var,
-                                                 sep = ""),ylab = "Residuals", lwd = 2)
+                                                 sep = ""), ylab = "Residuals", lwd = 2)
     plot(residuals_scaledsch, type = "p", main = paste("Scaledsch_", indep_var,
-                                                   sep = ""),ylab = "Residuals", lwd = 2)
+                                                   sep = ""), ylab = "Residuals", lwd = 2)
     plot(residuals_partial, type = "p", main = paste("Partial_", indep_var,
-                                                      sep = ""),ylab = "Residuals", lwd = 2)
+                                                      sep = ""), ylab = "Residuals", lwd = 2)
+    on.exit(graphics::par(oldpar))
     grDevices::dev.off()
   }else{
-    total = 1 + length(covariates)
+    total <- 1 + length(covariates)
+    oldpar <- graphics::par(no.readonly = TRUE)
     graphics::par(mar = c(4, 4, 2, 2))
-    nos = ceiling(total/2)
-    graphics::par(mfrow = c(2,nos))
-    plot(residuals_martingale, type = "p", main = "Martingale",ylab = "Residuals", lwd = 2)
-    plot(residuals_deviance, type = "p", main = "Deviance",ylab = "Residuals", lwd = 2)
+    nos <- ceiling(total / 2)
+    graphics::par(mfrow = c(2, nos))
+    plot(residuals_martingale, type = "p", main = "Martingale", ylab = "Residuals", lwd = 2)
+    plot(residuals_deviance, type = "p", main = "Deviance", ylab = "Residuals", lwd = 2)
     for (i in 1:total) {
-      if (i == 1) name = indep_var else  name =  covariates[i - 1]
+      if (i == 1) name <- indep_var else  name  <-  covariates[i - 1]
       plot(residuals_score[, i], type = "p", main = paste("Score_", name,
-                                                      sep = ""),ylab = "Residuals", lwd = 2)
+                                                      sep = ""), ylab = "Residuals", lwd = 2)
     }
     for (i in 1:total) {
-      if (i == 1) name = indep_var else  name =  covariates[i - 1]
+      if (i == 1) name <- indep_var else  name <-  covariates[i - 1]
       plot(residuals_schoenfeld[, i], type = "p", main = paste("Schoenfeld_",
-                              name, sep = ""),ylab = "Residuals", lwd = 2)
+                              name, sep = ""), ylab = "Residuals", lwd = 2)
     }
     for (i in 1:total) {
-      if (i == 1) name = indep_var else  name =  covariates[i - 1]
+      if (i == 1) name <- indep_var else  name <- covariates[i - 1]
       plot(residuals_dfbeta[, i], type = "p", main = paste("Dfbeta_", name,
-                            sep = ""),ylab = "Residuals", lwd = 2)
+                            sep = ""), ylab = "Residuals", lwd = 2)
     }
 
     for (i in 1:total) {
-      if (i == 1) name = indep_var else  name =  covariates[i - 1]
+      if (i == 1) name <- indep_var else  name <-  covariates[i - 1]
       plot(residuals_dfbetas[, i], type = "p", main = paste("Dfbetas_", name,
-                           sep = ""),ylab = "Residuals", lwd = 2)
+                           sep = ""), ylab = "Residuals", lwd = 2)
     }
     for (i in 1:total) {
-      if (i == 1) name = indep_var else  name =  covariates[i - 1]
-      plot(residuals_scaledsch[, i], type = "p", main = paste("Scaledsch_",name,
-                            sep = ""),ylab = "Residuals", lwd = 2)
+      if (i == 1) name <- indep_var else  name <- covariates[i - 1]
+      plot(residuals_scaledsch[, i], type = "p", main = paste("Scaledsch_", name,
+                            sep = ""), ylab = "Residuals", lwd = 2)
     }
 
     for (i in 1:total) {
-      if (i == 1) name = indep_var else  name =  covariates[i - 1]
+      if (i == 1) name <- indep_var else  name <-  covariates[i - 1]
       plot(residuals_partial[, i], type = "p", main = paste("Partial_", name,
-                               sep = ""),ylab = "Residuals", lwd = 2)
+                               sep = ""), ylab = "Residuals", lwd = 2)
     }
+    on.exit(graphics::par(oldpar))
     grDevices::dev.off()
  }
-  results_residuals = structure(list(
-    CoxSnell_residual = coxSnell,
+  results_residuals <- structure(list(
+    Coxsnell_residual = cox_snell,
     Martingale_residual = residuals_martingale,
     Deviance_residual = residuals_deviance,
     Score_residual = residuals_score,
@@ -1337,7 +1341,7 @@ plot_return_residual_cox <- function(param_to_be_estimated,indep_var,covariates,
 #' @param timevar_survival time variable
 #' @return plot and the survival function values
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data_for_survival <- survival::lung
 #' surv_estimated <- use_coxph_survival("status", data_for_survival,
 #' "sex",covariates = c("ph.ecog"), "time")
@@ -1386,6 +1390,8 @@ predict_coxph <- function(coxfit, dataset, param_to_be_estimated, covariates, in
       stop("Error -  time variable can not be NA")
   }
   baseline_hazard <- survival::basehaz(coxfit)
+
+
   name_file_plot <- paste0("Cox_Cumhazard_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   graphics::plot(baseline_hazard[, 2], baseline_hazard[, 1], main = "Cumulative hazard", xlab = "Time", ylab = "H0(t)")
@@ -1413,7 +1419,7 @@ predict_coxph <- function(coxfit, dataset, param_to_be_estimated, covariates, in
 #' @param indep_var independent variable
 #' @return plot and the survival function values
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'  data_for_survival <- survival::lung
 #'  surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
 #'  covariates = c("ph.ecog"), "time")
@@ -1446,6 +1452,8 @@ plot_survival_cox_covariates <- function(coxfit, dataset, param_to_be_estimated,
   }
 
   baseline_haz <- survival::basehaz(coxfit)
+
+
   name_file_plot <- paste0("Cox_Survivial function_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   if (sum(is.na(covariates)) == 0) {
@@ -1492,7 +1500,7 @@ plot_survival_cox_covariates <- function(coxfit, dataset, param_to_be_estimated,
         ubterms <- ubterms + UB * value
       }
     }
-    for (i in 1:length(lvls)) {
+    for (i in seq_len(length(lvls))) {
       this_coeff <- coxfit$coef[[var]]
       this_coeff_all <- terms + this_coeff * lvls[i]
       exp_coef <- exp(this_coeff_all)
@@ -1506,14 +1514,14 @@ plot_survival_cox_covariates <- function(coxfit, dataset, param_to_be_estimated,
       exp_coef_ci1 <- exp(this_lb)
       exp_coef_ci2 <- exp(this_ub)
       if (i == 1) {
-        graphics::plot(baseline_haz[, 2], exp(-baseline_haz[, 1])^(exp_coef),
+        graphics::plot(baseline_haz[, 2], exp(-baseline_haz[, 1]) ^ (exp_coef),
                        col = i, main = paste("Survival curves", "-", var2), xlab = "Time", ylab = "S(t|X)"
         )
       } else {
-        graphics::plot(baseline_haz[, 2], exp(-baseline_haz[, 1])^(exp_coef), col = i, xaxt = "n", yaxt = "n", ann = FALSE)
+        graphics::plot(baseline_haz[, 2], exp(-baseline_haz[, 1]) ^ (exp_coef), col = i, xaxt = "n", yaxt = "n", ann = FALSE)
       }
-      graphics::lines(baseline_haz[, 2], exp(-baseline_haz[, 1])^(exp_coef_ci1), col = i, lty = 2)
-      graphics::lines(baseline_haz[, 2], exp(-baseline_haz[, 1])^(exp_coef_ci2), col = i, lty = 2)
+      graphics::lines(baseline_haz[, 2], exp(-baseline_haz[, 1]) ^ (exp_coef_ci1), col = i, lty = 2)
+      graphics::lines(baseline_haz[, 2], exp(-baseline_haz[, 1]) ^ (exp_coef_ci2), col = i, lty = 2)
       graphics::par(new = TRUE)
     }
     graphics::legend("topright", legend = paste(var2, "-", lvls), lty = rep(length(lvls), 1), col = seq(1:length(lvls)))

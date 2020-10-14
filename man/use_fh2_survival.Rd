@@ -40,7 +40,7 @@ The plot uses the returned list of survfit and extracts the time and the strata 
 summary of the fit (implemented in plot_return_survival_curve function)
 }
 \examples{
-\dontrun{
+\donttest{
 data_for_survival <- survival::aml
 surv_estimated <- use_fh2_survival("status", data_for_survival, "x",
   covariates = NA, "time")

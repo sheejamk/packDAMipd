@@ -28,9 +28,7 @@ probabilities and fill those are not NA in the matrix
 Note that the probabilities need not be numeric here and no checks are needed for sum
 }
 \examples{
-\dontrun{
 tmat <- rbind(c(1, 2), c(3, 4))
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 populate_transition_matrix(2, tmat, list_prob = c(0.2, 0.5, 0, 0.3))
-}
 }

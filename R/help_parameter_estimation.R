@@ -139,7 +139,6 @@ get_name_value_probdistrb_def <- function(expr) {
   # Find the position of comma
   posi <- sort(unlist(stringr::str_locate_all(res, ",")))
   expr_found <- list()
-  #stop("Expecting the expression within brackets with parameters separated by comma")
   final <- length(posi) + 1
   i <- 1
   # Now get the expressions between those commas
@@ -277,15 +276,15 @@ check_estimate_required_params <- function(the_expr, distr_key) {
   }else{
     if (is.na(the_expr)) stop("expression should not be NA")
   }
-  names_values = get_name_value_probdistrb_def(the_expr)
-  params_found = names_values$params
+  names_values <- get_name_value_probdistrb_def(the_expr)
+  params_found <- names_values$params
   values_found <- names_values$values
-  reqd_params = find_required_parameter_combs(distr_key)
+  reqd_params <- find_required_parameter_combs(distr_key)
   if (distr_key == "GAMMA") {
     if (sum(params_found == c("mean", "sd")) == 2) {
       this_shape <- (values_found[1] / values_found[2])^2
       this_rate <- values_found[1] / (values_found[2]^2)
-      result = structure(list(shape = this_shape, rate = this_rate))
+      result <- structure(list(shape = this_shape, rate = this_rate))
       return(result)
     }else{
       stop("Error - distribution is gamma while parameters are not mean and sd")
@@ -342,7 +341,7 @@ check_estimate_substitute_proper_params <- function(the_expr) {
       stop("Check parameters that define the probability distribution")
     }
     create_expr <- ""
-    for (i in 1:length(required_params)) {
+    for (i in seq_len(length(required_params))) {
       create_expr <- paste(create_expr, " ", required_params[i], " = ",
                            estim_params[i], sep = "")
       if (i != length(required_params)) {
@@ -419,7 +418,7 @@ load_trial_data <- function(file = NULL) {
 make_string_covariates <- function(covariates) {
   covariates_list <- list()
   if (sum(is.na(covariates)) == 0) {
-    for (i in 1:length(covariates)) {
+    for (i in seq_len(length(covariates))) {
       if (i == length(covariates)) {
         covariates_list <- paste(covariates_list, paste(covariates[i], sep = ""))
       } else {

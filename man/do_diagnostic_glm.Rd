@@ -38,7 +38,7 @@ the results of the regression analysis
 Do the diagnostic test for glm model assumption
 }
 \examples{
-\dontrun{
+\donttest{
 datafile = system.file("extdata", "binary.csv", package = "packDAMipd")
 mydata <- read.csv(datafile)
 results_logit <- use_generalised_linear_model("admit",dataset = mydata,

@@ -56,9 +56,9 @@ test_that("testing reading parameter from mortality file", {
   # age column doesn't exist error
   expect_error(get_mortality_from_file(diff_file, 16, "female"))
   # missing colname
-  expect_error(get_mortality_from_file(paramfile_missingage, 12,NULL))
+  expect_error(get_mortality_from_file(paramfile_missingage, 12, NULL))
   # missing mortality column name
-  expect_error(get_mortality_from_file(paramfile, 12,NULL))
+  expect_error(get_mortality_from_file(paramfile, 12, NULL))
   #  if you dont care about gender, the column for mortality should be given
   expect_equal(get_mortality_from_file(paramfile, 16, "Total"), 0.000351)
   #  if you want mortality for the particular gender, the column for mortality
@@ -70,9 +70,9 @@ test_that("testing reading parameter from mortality file", {
 
   paramfile <- system.file("extdata", "LifeTable_USA_Mx_2015_agerange.csv",
                            package = "packDAMipd")
-  expect_equal(get_mortality_from_file(paramfile, 12,"female"), 0.000142, tol = 1e-4)
-  expect_equal(get_mortality_from_file(paramfile, 105,"male"), 0.000481, tol = 1e-4)
-  expect_error(get_mortality_from_file(paramfile, 105,"tot"))
+  expect_equal(get_mortality_from_file(paramfile, 12, "female"), 0.000142, tol = 1e-4)
+  expect_equal(get_mortality_from_file(paramfile, 105, "male"), 0.000481, tol = 1e-4)
+  expect_error(get_mortality_from_file(paramfile, 105, "tot"))
 
  })
 ###############################################################################
@@ -81,7 +81,7 @@ test_that("testing parameter using distribution read from file", {
   nofile <- system.file("extdata", "nofile.csv", package = "packDAMipd")
   #
   get_parameter_def_distribution("b", file,
-          c("Param1_name", "Param1_value","Param2_name", "Param2_value"), "Strategy", "Intervention")
+          c("Param1_name", "Param1_value", "Param2_name", "Param2_value"), "Strategy", "Intervention")
   #strategy name NA
 
   # the parameter is not obtained from a distribution
@@ -144,7 +144,6 @@ test_that("testing parameter using distribution read from file", {
   # strategy col not in the data file
   expect_error(get_parameter_def_distribution("b", file,
                                               c("Param1_name", "Param1_value"), "Strategy", NULL))
-
 
 })
 

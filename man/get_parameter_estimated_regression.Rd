@@ -88,7 +88,7 @@ The methods that are considered : Survival analysis, linear regression, logistic
 generalised linear model, linear multilevel or mixed model, and seemingly unrelated regression
 }
 \examples{
-\dontrun{
+\donttest{
 result <- get_parameter_estimated_regression(
   param_to_be_estimated = "Direction",
   data = ISLR::Smarket, method = "logistic", indep_var = "Lag1", info_get_method = NA,

@@ -40,7 +40,7 @@ the results of the regression analysis
 Bivariate regression for correlated observations
 }
 \examples{
-\dontrun{
+\donttest{
 mydata <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
 results_sureg <- use_seemingly_unrelated_regression("read", "math",
   dataset = mydata,

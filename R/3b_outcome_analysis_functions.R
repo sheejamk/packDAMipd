@@ -80,7 +80,7 @@ value_eq5d5L_IPD <- function(ind_part_data, eq5d_nrcode) {
     } else {
       index5L <- rep(0, nrow(eq5d_responses))
       for (i in seq(nrow(eq5d_responses))) {
-        index5L[i] <- valueEQ5D::value5LInd(
+        index5L[i] <- valueEQ5D::value_5L_Ind(
           "England", eq5d_responses[i, 1],
           eq5d_responses[i, 2], eq5d_responses[i, 3],
           eq5d_responses[i, 4], eq5d_responses[i, 5]
@@ -98,10 +98,13 @@ value_eq5d5L_IPD <- function(ind_part_data, eq5d_nrcode) {
 #' @param eq5d_nrcode non response code for EQ5D5L, default is NA
 #' @return qaly included modified data, if success -1, if failure
 #' @examples
+#' \donttest{
+#' library(valueEQ5D)
 #' datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
 #' trial_data <- load_trial_data(datafile)
-#' #  map_eq5d5Lto3L_VanHout(trial_data, NA)
-#' @description Function to add EQ5D5L scores to IPD data based on
+#' map_eq5d5Lto3L_VanHout(trial_data, NA)
+#' }
+#' @source
 #' http://eprints.whiterose.ac.uk/121473/1/Devlin_et_al-2017-Health_Economics.pdf
 #' @export
 map_eq5d5Lto3L_VanHout <- function(ind_part_data, eq5d_nrcode) {
@@ -160,10 +163,7 @@ map_eq5d5Lto3L_VanHout <- function(ind_part_data, eq5d_nrcode) {
 #' @examples
 #' datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
 #' trial_data <- load_trial_data(datafile)
-#' #  value_ADL_scores_IPD(trial_data,c("tpi"),adl_scoring,,TRUE,NA,NA)
-#' @description
-#' Function to convert ADL scores to a T score based on
-#' file:///C:/Users/smk543/Downloads/PROMIS%20Pain%20Interference%20Scoring%20Manual.pdf
+#' value_ADL_scores_IPD(trial_data,c("tpi"),adl_scoring,NA)
 #' @export
 value_ADL_scores_IPD <- function(ind_part_data, adl_related_words, adl_scoring, adl_nrcode) {
   #Error - data should not be NULL
@@ -212,9 +212,9 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words, adl_scoring, 
         # Find the sum of scores
         sumADL <- rowSums(adl_responses)
         TscoreADL <- rep(0, length(sumADL))
-        for (i in 1:length(sumADL)) {
+        for (i in seq_len(length(sumADL))) {
           ithrow <- which(adl_scoring$Raw.score == sumADL[i])
-          # Get the T score correspong to raw sum
+          # Get the T score corresponding to raw sum
           TscoreADL[i] <- adl_scoring$T.Score[ithrow]
         }
         # Add the T score to data , save and return

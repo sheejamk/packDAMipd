@@ -42,12 +42,12 @@ along with the fit results coefficients, SE of coefficients, summary, and analys
 of deviance
 }
 \examples{
-\dontrun{
+\donttest{
 data_for_survival <- survival::aml
 surv_estimated <- use_coxph_survival("status", data_for_survival, "x",
   covariates = NA, "time")
 }
-\dontrun{
+\donttest{
 data_for_survival <- survival::lung
 surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
   covariates = c("ph.ecog"), "time")

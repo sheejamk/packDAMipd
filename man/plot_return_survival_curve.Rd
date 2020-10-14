@@ -30,7 +30,7 @@ plot and the survival function values
 Plotting survival function for all covariates using survfit
 }
 \examples{
-\dontrun{
+\donttest{
  data_for_survival <- survival::lung
  plot_return_survival_curve(param_to_be_estimated = "status",
  dataset = data_for_survival,indep_var = "sex",covariates = c("ph.ecog"),

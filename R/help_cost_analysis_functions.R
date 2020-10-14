@@ -6,20 +6,20 @@
 #' @details
 #' https://stackoverflow.com/questions/18332463/convert-written-number-to-number-in-r
 #' @export
-word2num <- function(word){
-  wsplit <- strsplit(tolower(word)," ")[[1]]
+word2num <- function(word) {
+  wsplit <- strsplit(tolower(word), " ")[[1]]
   one_digits <- list(zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5,
                      six = 6, seven = 7, eight = 8, nine = 9)
   teens <- list(eleven = 11, twelve = 12, thirteen = 13, fourteen = 14, fifteen = 15,
                 sixteen = 16, seventeen = 17, eighteen = 18, nineteen = 19)
   ten_digits <- list(ten = 10, twenty = 20, thirty = 30, forty = 40, fifty = 50,
                      sixty = 60, seventy = 70, eighty = 80, ninety = 90)
-  doubles <- c(teens,ten_digits)
+  doubles <- c(teens, ten_digits)
   out <- 0
   i <- 1
   while (i <= length(wsplit)) {
     if (i != 1 && wsplit[i] == "and")
-      i = i + 1
+      i <- i + 1
     j <- 1
     if (i == 1 && wsplit[i] == "hundred")
       temp <- 100
@@ -32,21 +32,21 @@ word2num <- function(word){
     else if (wsplit[i] %in% names(ten_digits))
       temp <- (as.numeric(ten_digits[wsplit[i]]))
     if (i < length(wsplit) && wsplit[i + 1] == "hundred") {
-      if (i > 1 && wsplit[i - 1] %in% c("hundred","thousand"))
-        out <- out + 100*temp
+      if (i > 1 && wsplit[i - 1] %in% c("hundred", "thousand"))
+        out <- out + 100 * temp
       else
-        out <- 100*(out + temp)
+        out <- 100 * (out + temp)
       j <- 2
     }
     else if (i < length(wsplit) && wsplit[i + 1] == "thousand") {
-      if (i > 1 && wsplit[i - 1] %in% c("hundred","thousand"))
-        out <- out + 1000*temp
+      if (i > 1 && wsplit[i - 1] %in% c("hundred", "thousand"))
+        out <- out + 1000 * temp
       else
-        out <- 1000*(out + temp)
+        out <- 1000 * (out + temp)
       j <- 2
     }
     else if (i < length(wsplit) && wsplit[i + 1] %in% names(doubles)) {
-      temp <- temp*100
+      temp <- temp * 100
       out <- out + temp
     }
     else{
@@ -54,7 +54,7 @@ word2num <- function(word){
     }
     i <- i + j
   }
-  return(list(word,out))
+  return(list(word, out))
 }
 #######################################################################
 #' Convert frequency medication to given basis
@@ -380,8 +380,8 @@ convert_weight_diff_basis <- function(given_unit, basis = "mg") {
   if (!is.null(given_unit)) {
     given_unit <- trimws(tolower(given_unit))
   }
-  nospace_unit = tolower(gsub("[[:space:]]", "", given_unit))
-  basis = tolower(gsub("[[:space:]]", "", basis))
+  nospace_unit <- tolower(gsub("[[:space:]]", "", given_unit))
+  basis <- tolower(gsub("[[:space:]]", "", basis))
   if (nospace_unit != "gram"  & nospace_unit != "milligram" &
       nospace_unit != "gm"  & nospace_unit != "mg" &
       nospace_unit != "microgram"  & nospace_unit != "microgm" &
@@ -486,11 +486,11 @@ convert_volume_basis <- function(given_unit, basis = "ml") {
     given_unit <- trimws(tolower(given_unit))
   }
   unit_req_vol <- NULL
-  given_unit = tolower(gsub("[[:space:]]", "", given_unit))
-  basis = tolower(gsub("[[:space:]]", "", basis))
+  given_unit <- tolower(gsub("[[:space:]]", "", given_unit))
+  basis <- tolower(gsub("[[:space:]]", "", basis))
   if (given_unit != "liter"  & given_unit != "l" &
       given_unit != "milliliter" &  given_unit != "microliter"
-      &  given_unit != "mcl"  & given_unit != "ml"  ) {
+      &  given_unit != "mcl"  & given_unit != "ml") {
     stop("given unit is not of volume")
   }
   if (rlang::is_empty(given_unit) | any(is.na(given_unit)) |
@@ -499,8 +499,8 @@ convert_volume_basis <- function(given_unit, basis = "ml") {
     unit_req_vol <- NA
   } else {
     unit_req_vol <- 1
-    if (basis == "ml" | basis == "milliliter" ) {
-      if ( given_unit == "microliter" | given_unit == "mcl") {
+    if (basis == "ml" | basis == "milliliter") {
+      if (given_unit == "microliter" | given_unit == "mcl") {
         unit_req_vol <- 1 / 1000
       }
       if (given_unit == "l" | given_unit == "liter") {
@@ -517,7 +517,7 @@ convert_volume_basis <- function(given_unit, basis = "ml") {
     }
     if (basis == "l" | basis == "liter") {
       if (given_unit == "ml" |
-          given_unit == "milliliter" ) {
+          given_unit == "milliliter") {
         unit_req_vol <- 1 / 1000
       }
 
@@ -550,7 +550,7 @@ convert_wtpertimediff_basis <- function(given_unit, basis = "mcg/hour") {
   if (rlang::is_empty(given_unit) | any(is.na(given_unit)) | length(given_unit) == 0
       | identical(given_unit, "") | is.null(given_unit)
       | any(given_unit == "null") | any(given_unit == "Null")) {
-    unit_req_basis <- NA
+    unit_req_basis <- NULL
   } else {
     index <- stringr::str_locate(given_unit, "/")
     given_wt <- stringr::str_sub(given_unit, 1, index[1] - 1)
@@ -558,69 +558,87 @@ convert_wtpertimediff_basis <- function(given_unit, basis = "mcg/hour") {
     basis_index <- stringr::str_locate(basis, "/")
     basis_wt <- stringr::str_sub(basis, 1, basis_index[1] - 1)
     basis_time <- stringr::str_sub(basis, basis_index[2] + 1, nchar(basis))
-    basis_wt = tolower(gsub("[[:space:]]", "", basis_wt))
-    basis_time = tolower(gsub("[[:space:]]", "", basis_time))
-    unit_req_wt <- 1
-    unit_req_time <- 1
-    if (basis_wt == "mg" | basis_wt == "milligram") {
-      if (given_wt == "mcg" | given_wt == "microgram") {
+    basis_wt <- tolower(gsub("[[:space:]]", "", basis_wt))
+    basis_time <- tolower(gsub("[[:space:]]", "", basis_time))
+    unit_req_wt <- NULL
+    unit_req_time <- NULL
+    if (basis_wt == "mg" | basis_wt == "milligram" | basis_wt == "milli gram") {
+      if (given_wt == "mcg" | given_wt == "microgram"  |  given_wt == "micro gram") {
         unit_req_wt <- 1 / 1000
       }
       if (given_wt == "gram" | given_wt == "gm") {
         unit_req_wt <- 1000
       }
+      if (given_wt == "mg" | given_wt == "milligram" | given_wt == "milli gram") {
+        unit_req_wt <- 1
+      }
     }
-    if (basis_wt == "mcg" | basis_wt == "microgram") {
-      if (given_wt == "mg" | given_wt == "milligram") {
+    if (basis_wt == "mcg" | basis_wt == "microgram" | basis_wt == "micro gram") {
+      if (given_wt == "mg" | given_wt == "milligram" | given_wt == "milli gram") {
         unit_req_wt <- 1000
       }
       if (given_wt == "gram" | given_wt == "gm") {
         unit_req_wt <- 1e6
       }
+      if (given_wt == "mcg" | given_wt == "microgram"  |  given_wt == "micro gram") {
+        unit_req_wt <- 1
+      }
     }
     if (basis_wt == "gram" | basis_wt == "gm") {
-      if (given_wt == "mg" |  given_wt == "milligram") {
+      if (given_wt == "mg" |  given_wt == "milligram" | given_wt == "milli gram") {
         unit_req_wt <- 1 / 1000
       }
-      if (given_wt == "mcg" |  given_wt == "microgram") {
+      if (given_wt == "mcg" |  given_wt == "microgram" |  given_wt == "micro gram") {
         unit_req_wt <- 1 / 1e6
       }
+      if (given_wt == "gram" |  given_wt == "gm") {
+        unit_req_wt <- 1
+      }
     }
-    if (basis_time == "day") {
+    if (basis_time == "day" | basis_time == "d") {
       if (given_time == "hour" | basis_time == "hr") {
         unit_req_time <- 1 / 24
       }
-      if (given_time == "sec") {
+      if (given_time == "sec" | basis_time == "second") {
         unit_req_time <- 1 / (24 * 3600)
       }
       if (given_time == "minute" | given_time == "min") {
         unit_req_time <- 1 / (24 * 60)
       }
+      if (given_time == "day" | given_time == "d") {
+        unit_req_time <- 1
+      }
     }
     if (basis_time == "hour" | basis_time == "hr") {
-      if (given_time == "day") {
+      if (given_time == "day" | basis_time == "d") {
         unit_req_time <- 24
       }
-      if (given_time == "sec") {
+      if (given_time == "sec" | basis_time == "second") {
         unit_req_time <- 1 / 3600
       }
       if (given_time == "minute" | given_time == "min") {
         unit_req_time <- 1 / 60
       }
+      if (given_time == "hour" | given_time == "hr") {
+        unit_req_time <- 1
+      }
     }
     if (basis_time == "minute" | basis_time == "min") {
-      if (given_time == "day") {
+      if (given_time == "day" | basis_time == "d") {
         unit_req_time <- 24 * 60
       }
-      if (given_time == "sec") {
+      if (given_time == "sec" | basis_time == "second") {
         unit_req_time <- 1 / 60
       }
       if (given_time == "hour" | given_time == "hr") {
         unit_req_time <- 60
       }
+      if (given_time == "minute" | given_time == "min") {
+        unit_req_time <- 1
+      }
     }
-    if (basis_time == "sec") {
-      if (given_time == "day") {
+    if (basis_time == "sec" | basis_time == "second") {
+      if (given_time == "day" | basis_time == "d") {
         unit_req_time <- 24 * 3600
       }
       if (given_time == "minute" | basis_time == "min") {
@@ -629,11 +647,16 @@ convert_wtpertimediff_basis <- function(given_unit, basis = "mcg/hour") {
       if (given_time == "hour" | given_time == "hr") {
         unit_req_time <- 3600
       }
+      if (given_time == "sec" | given_time == "second") {
+        unit_req_time <- 1
+      }
     }
-    unit_req_basis <- unit_req_wt / unit_req_time
+    if (!is.null(unit_req_wt) & !is.null(unit_req_time)) {
+      unit_req_basis <- unit_req_wt / unit_req_time
+    }
   }
   if (is.null(unit_req_basis)) {
-    warning("Something went wrong- couldnt convert the frquency to the correct basis")
+    stop("Something went wrong- couldnt convert the frquency to the correct basis")
   } else {
     return(unit_req_basis)
   }
@@ -660,10 +683,9 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
   } else {
     index <- stringr::str_locate(given_time, " ")
     first_part <- stringr::str_sub(given_time, 1, index[1] - 1)
-    result = sum(is.na(suppressWarnings(is.numeric(first_part))))
+    result <- sum(is.na(suppressWarnings(as.numeric(first_part))))
     if (result > 0) {
-      out <- tryCatch(
-        {
+      out <- tryCatch({
           as.numeric(unlist(word2num(first_part))[2])
         },
         error = function(cond) {
@@ -679,7 +701,7 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
     if (is.null(sec_part) | is.na(sec_part)) {
       stop("Error - missing the unit of time")
     }
-    unit_req_time = NULL
+    unit_req_time <- NULL
     if (basis_time == "day" | basis_time == "days") {
       if (sec_part == "day" | sec_part == "days") {
         unit_req_time <- 1

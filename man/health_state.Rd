@@ -11,7 +11,8 @@ health_state(name, cost, utility, state_time = 0, absorb = FALSE)
 
 \item{cost}{value or expression that represents cost of the health state}
 
-\item{utility}{value or expression that represents utility of the health state}
+\item{utility}{value or expression that represents utility
+of the health state}
 
 \item{state_time}{time denoting how long in the state}
 

@@ -246,7 +246,7 @@ convert_time_unit <- function(given_time, basis = "day") {
   }
   unit_req_time <- NULL
   if (rlang::is_empty(given_time) | any(is.na(given_time)) |
-      length(given_time) == 0| identical(given_time, "") |
+      length(given_time) == 0 | identical(given_time, "") |
       any(given_time == "null") | any(given_time == "Null")) {
     unit_req_time <- NA
   } else {
@@ -478,8 +478,3 @@ find_param_from_def_prob_distrbn <- function(expr) {
   param_found <- unlist(param_found)
   return(param_found)
 }
-
-
-
-
-

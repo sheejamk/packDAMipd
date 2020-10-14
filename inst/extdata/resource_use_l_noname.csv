@@ -1,0 +1,4 @@
+pat_TrialArm,SEX,age,Drug,Name,Timepoint,liq_dosage,liquid_dose_unit,liquid_bottle_size,liquid_bottle_remain_time,liquid_equiv_dose
+N,f,44,Morphine,NULL,4 weeks,2,mg/ml,100ml,2 weeks,30
+N,F,53,Morphine,NULL,2 months,20,mg/ml,300ml,1 month,20
+N,F,64,Morphine,NULL,one year,20,mg/ml,120ml,5 days,20

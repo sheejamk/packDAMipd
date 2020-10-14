@@ -8,4 +8,3 @@ utils::globalVariables(
   ),
   package = "packDAMipd", add = TRUE
 )
-

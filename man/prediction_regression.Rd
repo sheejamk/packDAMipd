@@ -37,7 +37,7 @@ the results of the regression analysis
 Do the prediction for regression
 }
 \examples{
-\dontrun{
+\donttest{
 datafile = system.file("extdata", "binary.csv", package = "packDAMipd")
 mydata <- read.csv(datafile)
  results_logit <- use_linear_regression("admit",dataset = mydata,

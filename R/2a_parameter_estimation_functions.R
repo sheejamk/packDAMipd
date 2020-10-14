@@ -118,20 +118,20 @@ get_mortality_from_file <- function(paramfile, age, mortality_colname, gender = 
     i <- 1
     while (i <= nrow(dataset)) {
       the_string <- dataset[[age_columnno]][i]
-      # find the position of "-" assuning the age range given as 10-20
+      # find the position of "-" assuming the age range given as 10-20
       pos <- stringr::str_locate(the_string, "-")
       if (sum(is.na(pos)) < 2) {
         minage <- as.numeric(substr(the_string, 1, pos[1] - 1))
         maxage <- as.numeric(substr(the_string, pos[1] + 1, nchar(the_string)))
       } else {
-        # for some it coulf be 0 and over - then find that
+        # for some it could be 0 and over - then find that
         pos <- stringr::str_locate(the_string, "and over")
         if (sum(is.na(pos)) < 2) {
           minage <- as.numeric(substr(the_string, 1, pos[1] - 1))
           maxage <- 120
         }else{
-          minage = 0
-          maxage = 120
+          minage <- 0
+          maxage <- 120
         }
       }
       if (minage <= age & maxage >= age) {
@@ -152,7 +152,6 @@ get_mortality_from_file <- function(paramfile, age, mortality_colname, gender = 
     if (result != 0) {
       stop("Expecting the life tables to contain given column name for mortality rate")
     }
-
     mortality_columnno <- IPDFileCheck::get_columnno_fornames(dataset, mortality_colname)
     # find
     mortality <- dataset[[mortality_columnno]][this_row]
@@ -201,6 +200,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, colnames_paramd
   dataset <- data.frame(read.csv(paramfile, header = TRUE, sep = ",", stringsAsFactors = FALSE))
   # if the strategy col is provided, it has to exist in the dataset
   if (!is.na(strategycol)) {
+    if (is.null(strategyname)) stop("Error - Need to provide the strategy name")
     if (IPDFileCheck::check_column_exists(strategycol, dataset) == 0) {
       dataset <- dataset[dataset[[strategycol]] == strategyname, ]
     }
@@ -218,15 +218,14 @@ get_parameter_def_distribution <- function(parameter, paramfile, colnames_paramd
     stop(paste("Parameter file should contain distribution in column name", sep = ""))
   }
   distr_colno <- IPDFileCheck::get_columnno_fornames(dataset, "distribution")
-  this_val = dataset[dataset[[param_colno]] == parameter, ][[distr_colno]]
+  this_val <- dataset[dataset[[param_colno]] == parameter, ][[distr_colno]]
   # if the value from the distribution col is not existing throw an error
-  if (length(this_val) == 0) {
+  if (sum(is.na(this_val)) > 0) stop("This specific distribution can not be NA")
+  if (length(this_val) == 0 | this_val == "") {
     stop("This parameter may not be estimated from a distribution- use get_parameter_read
          instead")
-  }else{
-    if (sum(is.na(this_val)) > 0)
-      stop("This specific distribution can not be NA")
   }
+
   # the parameter name and value that define the distribution should exist
   if (is.null(colnames_paramdistr) | sum(is.na(colnames_paramdistr) != 0)) {
     stop("Column names for the parameters that define the distributions need not be null or NA")
@@ -238,13 +237,11 @@ get_parameter_def_distribution <- function(parameter, paramfile, colnames_paramd
     }
     this_param <- dataset[dataset[param_colno] == parameter, ][[param_colno]]
     this_distr_name <- dataset[dataset[param_colno] == parameter, ][[distr_colno]]
-    parameter_names <- list()
-    parameter_values <- list()
     expression_created <- paste(this_distr_name, "(", sep = "")
     i <- 1
     while (i <= length(colnames_paramdistr)) {
       # expect the column name for parameter name should have "name" in it
-      result = grep("name", colnames_paramdistr[i])
+      result <- grep("name", colnames_paramdistr[i])
       if (length(result) != 0) {
         param1 <- dataset[dataset[param_colno] == parameter, ][[colnames_paramdistr[i]]]
         param1_value <- dataset[dataset[param_colno] == parameter, ][[colnames_paramdistr[i + 1]]]
@@ -295,7 +292,7 @@ get_parameter_def_distribution <- function(parameter, paramfile, colnames_paramd
 #' @param link link function to be provided if not using the default link for each of the info_distribution
 #' @return the results of the regression analysis
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' result <- get_parameter_estimated_regression(
 #'   param_to_be_estimated = "Direction",
 #'   data = ISLR::Smarket, method = "logistic", indep_var = "Lag1", info_get_method = NA,
@@ -341,9 +338,11 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
   }
 
   # check the required column exists in the dataset
-  data_details <- c(param_to_be_estimated, indep_var, covariates, timevar_survival, param2_to_be_estimated, covariates2)
+  data_details <- c(param_to_be_estimated, indep_var, covariates,
+                    timevar_survival, param2_to_be_estimated, covariates2)
   data_details <- data_details[!is.na(data_details)]
-  check_cols_exist <- unlist(lapply(data_details, IPDFileCheck::check_column_exists, dataset))
+  check_cols_exist <- unlist(lapply(data_details,
+                                    IPDFileCheck::check_column_exists, dataset))
   if (sum(check_cols_exist) != 0) {
     stop("Given column(s) can not be found !!!")
   }
@@ -418,12 +417,12 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
 #' false by default
 #' @return the results of the regression analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' results_lm <- use_linear_regression("dist",
 #'   dataset = cars,
 #'   indep_var = "speed", covariates = NA, interaction = FALSE)
 #' }
-#' \dontrun{
+#' \donttest{
 #' library(car)
 #' results_lm <- use_linear_regression("mpg",
 #'   dataset = mtcars,
@@ -494,7 +493,6 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
 
   # stepwise regression?
   if (sum(is.na(covariates)) == 0) {
-    # fit_stepAIC = stats::lm(eval(parse(text = expression_recreated$formula)))
     step <- MASS::stepAIC(fit, direction = "both")
     stepwise_regression_results <- step$anova # display results
     if (length(covariates) <= 2) {
@@ -547,7 +545,7 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
 #' @param link link function if not the default for each family
 #' @return the results of the regression analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' gm_result <- use_generalised_linear_model(
 #'   param_to_be_estimated = "Direction",
 #'   dataset = ISLR::Smarket, indep_var = "Lag1", family = "binomial", covariates = c("Lag2", "Lag3"),
@@ -555,7 +553,6 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
 #' }
 #' @export
 #' @details
-#'
 #' This function returns the results and plots after doing linear regression
 #' Requires param to be estimated, dataset, independent variables and information on
 #' covariates, and interaction variables if there are
@@ -614,7 +611,6 @@ use_generalised_linear_model <- function(param_to_be_estimated, dataset, indep_v
 
   # stepwise regression?
   if (sum(is.na(covariates)) == 0) {
-    # fit_stepAIC = stats::lm(eval(parse(text = expression_recreated$formula)))
     step <- MASS::stepAIC(fit, direction = "both")
     stepwise_regression_results <- step$anova # display results
   }
@@ -658,11 +654,10 @@ use_generalised_linear_model <- function(param_to_be_estimated, dataset, indep_v
 #' @param random_slope_intercept_pairs, random slopes intercept pairs - this is a list of paired variables
 #' @return result regression result with plot if success and -1, if failure
 #' @examples
-#'
+#' \donttest{
 #' datafile <- system.file("extdata", "data_linear_mixed_model.csv", package = "packDAMipd")
 #' dataset = utils::read.table(datafile, header = TRUE, sep = ",", na.strings = "NA",
 #' dec = ".", strip.white = TRUE)
-#' \dontrun{
 #' result <- use_linear_mixed_model("extro",
 #'   dataset = dataset,
 #'   fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
@@ -725,7 +720,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff, fix_
     }
     cholesky_decomp_matrix_random_eff <- chol(vcov_random_eff)
   }
-  # cholsky decompisiton matrix for fixed effect
+  # cholsky decomposition matrix for fixed effect
   cholesky_decomp_matrix_fixed_eff <- chol(vcov_fixed_eff)
   # fixed-effect parameter estimates
   fixed_coef <- summary$coef[, 1, drop = FALSE]
@@ -740,6 +735,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff, fix_
   # residuals plot
   name_file_plot <- paste0("lmer_residuals_", param_to_be_estimated, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
+  oldpar <- graphics::par(no.readonly = TRUE)
   graphics::par(mfrow = c(3, 1), mar = c(4, 4, 1, 1))
   plot_diagnostics <- graphics::plot(stats::fitted(fit), stats::resid(fit),
     type = "p", xlab =
@@ -753,6 +749,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff, fix_
   # Normal Q-Q plot
   stats::qqnorm(stats::resid(fit), main = "Normal Q-Q plot")
   stats::qqline(stats::resid(fit))
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
 
   # Predicted and simulated values after regression
@@ -762,8 +759,9 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff, fix_
   no_fixed_eff <- length(fix_eff)
   name_file_plot <- paste0("lmer_fixed_eff_predicted and simulated", param_to_be_estimated, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
+  oldpar <- graphics::par(no.readonly = TRUE)
   graphics::par(mfrow = c(no_fixed_eff, 3), mar = c(4, 4, 1, 1))
-  for (i in 1:length(fix_eff)) {
+  for (i in seq_len(length(fix_eff))) {
     xvar <- fix_eff[i]
     with(dataset, graphics::plot(dataset[[param_to_be_estimated]], dataset[[xvar]],
       main = "Original data", ylab = param_to_be_estimated, xlab = xvar
@@ -776,12 +774,15 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff, fix_
     ))
     graphics::grid()
   }
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
+
   no_random_eff <- length(random_intercept_vars)
   name_file_plot <- paste0("lmer_random_eff_predicted and simulated", param_to_be_estimated, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
+  oldpar <- graphics::par(no.readonly = TRUE)
   graphics::par(mfrow = c(no_random_eff, 3), mar = c(4, 4, 1, 1))
-  for (i in 1:length(random_intercept_vars)) {
+  for (i in seq_len(length(random_intercept_vars))) {
     xvar <- random_intercept_vars[i]
     with(dataset, graphics::plot(tapply(dataset[[param_to_be_estimated]], dataset[[xvar]], mean),
       main = "Original data - mean", ylab = param_to_be_estimated, xlab = xvar
@@ -794,6 +795,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff, fix_
     ))
     graphics::grid()
   }
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
 
   name_file_plot <- paste0("lmer_prediction_", param_to_be_estimated, ".pdf", sep = "")
@@ -891,7 +893,7 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, f
   # variance covariance of random effect
   varcorr_random_eff <- as.data.frame(lme4::VarCorr(fit))
 
-  #cholesky for random effect
+  #Cholesky for random effect
   to_extract <- 2 * length(random_slope_intercept_pairs)
   if (is.null(nested_intercept_vars_pairs) & is.null(uncorrel_slope_intercept_pairs) & !is.null(random_slope_intercept_pairs)) {
     to_extract_corr <- length(random_slope_intercept_pairs)
@@ -923,6 +925,7 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, f
   # residuals of the fit
   name_file_plot <- paste0("glmer_residuals_", param_to_be_estimated, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
+  oldpar <- graphics::par(no.readonly = TRUE)
   graphics::par(mfrow = c(3, 1), mar = c(4, 4, 1, 1))
   plot_diagnostics <- graphics::plot(stats::fitted(fit), stats::resid(fit),
     type = "p", xlab =
@@ -934,6 +937,7 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, f
   )
   stats::qqnorm(stats::resid(fit), main = "Normal Q-Q plot")
   stats::qqline(stats::resid(fit))
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
 
  # predicted and simulated regression results
@@ -941,10 +945,12 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, f
   simulated <- stats::simulate(fit, newdata = dataset)[, 1] # stochastic and takes both fixed effect and random effect
   # source  https://gist.github.com/tmalsburg/df66e6c2ab494fad83ee
   no_fixed_eff <- length(fix_eff)
+
   name_file_plot <- paste0("glmer_fixed_eff_predicted and simulated", param_to_be_estimated, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
+  oldpar <- graphics::par(no.readonly = TRUE)
   graphics::par(mfrow = c(no_fixed_eff, 3), mar = c(4, 4, 1, 1))
-  for (i in 1:length(fix_eff)) {
+  for (i in seq_len(length(fix_eff))) {
     xvar <- fix_eff[i]
     with(dataset, graphics::plot(dataset[[param_to_be_estimated]], dataset[[xvar]],
       main = "Original data", ylab = param_to_be_estimated, xlab = xvar
@@ -957,12 +963,15 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, f
     ))
     graphics::grid()
   }
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
+
   no_random_eff <- length(random_intercept_vars)
   name_file_plot <- paste0("glmer_random_eff_predicted and simulated", param_to_be_estimated, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
+  oldpar <- graphics::par(no.readonly = TRUE)
   graphics::par(mfrow = c(no_random_eff, 3), mar = c(4, 4, 1, 1))
-  for (i in 1:length(random_intercept_vars)) {
+  for (i in seq_len(length(random_intercept_vars))) {
     xvar <- random_intercept_vars[i]
     with(dataset, graphics::plot(tapply(dataset[[param_to_be_estimated]], dataset[[xvar]], mean),
       main = "Original data - mean", ylab = param_to_be_estimated, xlab = xvar
@@ -975,7 +984,9 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, f
     ))
     graphics::grid()
   }
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
+
   name_file_plot <- paste0("glmer_prediction_", param_to_be_estimated, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   for (i in 1:no_fixed_eff) {
@@ -1032,7 +1043,7 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, f
 #' false by default
 #' @return the results of the regression analysis
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' mydata <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
 #' results_sureg <- use_seemingly_unrelated_regression("read", "math",
 #'   dataset = mydata,
@@ -1102,6 +1113,9 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   grDevices::pdf(name_file_plot)
 
   # plot fitted values
+  oldpar <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(oldpar))
+
   graphics::par(mfrow = c(2, 4))
   plot_diagnostics <- graphics::plot(fitted_values$eq1, residuals$eq1, type = "p", xlab = paste("Fitted values", param1_to_be_estimated), ylab = "residuals")
   graphics::plot(fitted_values$eq2, residuals$eq2, type = "p", xlab = paste("Fitted values", param2_to_be_estimated), ylab = "Residuals")
@@ -1111,23 +1125,25 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   stats::qqline(residuals$eq1)
   stats::qqnorm(residuals$eq2, main = "Normal Q-Q plot - Eq 2")
   stats::qqline(residuals$eq2)
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
 
   name_file_plot <- paste0(param1_to_be_estimated, "_", param2_to_be_estimated, "_sureg_", indep_var, ".pdf", sep = "")
-  sur.predict <- stats::predict(fit, newdata = dataset, type = "response", se.fit = TRUE)
+  sur_predict <- stats::predict(fit, newdata = dataset, type = "response", se.fit = TRUE)
+  grDevices::pdf(name_file_plot)
+  oldpar <- graphics::par(no.readonly = TRUE)
   graphics::par(mfrow = c(1, 2))
-  predict1 <- sur.predict$eq1.pred
-  predict1_lci <- (sur.predict$eq1.pred - 2 * sur.predict$eq1.se.fit)
-  predict1_uci <- (sur.predict$eq1.pred + 2 * sur.predict$eq1.se.fit)
-  predict2 <- sur.predict$eq2.pred
-  predict2_lci <- (sur.predict$eq2.pred - 2 * sur.predict$eq2.se.fit)
-  predict2_uci <- (sur.predict$eq2.pred + 2 * sur.predict$eq2.se.fit)
+  predict1 <- sur_predict$eq1.pred
+  predict1_lci <- (sur_predict$eq1.pred - 2 * sur_predict$eq1.se.fit)
+  predict1_uci <- (sur_predict$eq1.pred + 2 * sur_predict$eq1.se.fit)
+  predict2 <- sur_predict$eq2.pred
+  predict2_lci <- (sur_predict$eq2.pred - 2 * sur_predict$eq2.se.fit)
+  predict2_uci <- (sur_predict$eq2.pred + 2 * sur_predict$eq2.se.fit)
 
   new_df <- data.frame(
     x = dataset[[indep_var]], prediction1 = predict1, lci1 = predict1_lci, uci1 = predict1_uci,
     prediction2 = predict2, lci2 = predict2_lci, uci2 = predict2_uci
   )
-  grDevices::pdf(name_file_plot)
   if (is.factor(new_df$x)) {
     plot_prediction <- graphics::plot(new_df$x, new_df$prediction1, type = "p", ylab = param1_to_be_estimated)
     graphics::plot(new_df$x, new_df$prediction2, type = "p", ylab = param2_to_be_estimated)
@@ -1141,7 +1157,9 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
     graphics::lines(new_df$x, new_df$uci2)
     print(plot_prediction)
   }
+  on.exit(graphics::par(oldpar))
   grDevices::dev.off()
+
   # fit diagnostics
   correlation_matrix <- summary$residCor
   OLS_R2 <- summary$ols.r.squared

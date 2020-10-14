@@ -119,8 +119,7 @@ find_parameters_btn_operators <- function(expr) {
   # Find all indices of characters in the expression
   posi <- sort(unlist(stringr::str_locate_all(parsed, characters)))
   if (length(posi) == 0) {
-    #print("No operators found in the string")
-    params_noempty_string = expr
+    params_noempty_string <- expr
   }else{
     params <- list()
     final <- length(posi) + 1
@@ -168,7 +167,7 @@ find_parameters_btn_operators <- function(expr) {
 #' state occupancy is only for those in the state excluding those that transitioned new.
 #' @return changed method name
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
 #' tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
@@ -192,10 +191,10 @@ checks_markov_pick_method <- function(current_strategy, initial_state, discount,
       | changed_method == "HALFCYCLECORR" | changed_method == "HALFCYCLE" |
       changed_method == "HALF" | changed_method == "CORRECTION" |
       changed_method == "CYCLECORR" | changed_method == "CYCLECORRECTION") {
-    changed_method = "hc_correction"
+    changed_method <- "hc_correction"
   } else {
     if (changed_method == "LIFETABLE") {
-      changed_method = "life_table"
+      changed_method <- "life_table"
     } else {
       stop("Method should be half cycle correction or life table")
     }
@@ -208,13 +207,22 @@ checks_markov_pick_method <- function(current_strategy, initial_state, discount,
   if (class(current_strategy) != "strategy") {
     stop("class is not a strategy")
   }
+  # check the length of start up cost should be equal to number of states
+  if (!is.null(startup_cost)) {
+    if (length(startup_cost) != no_states) {
+      stop("number of values of start up cost should be equal to number of health states")
+    }
+  }
+  # check the length of start up utility should be equal to number of states
+  if (!is.null(startup_util)) {
+    if (length(startup_util) != no_states) {
+      stop("number of values of start up utility should be equal to number of health states")
+    }
+
+  }
   # check the length of initial state should be equal to number of states
   if (length(initial_state) != no_states) {
     stop("number of intital values should be equal to number of health states")
-  }
-  # check the name of states
-  if (!check_names_states(health_states)) {
-    stop("Error in specifying state attributes")
   }
   if (changed_method != "hc_correction" & half_cycle_correction == TRUE) {
     stop("Only say yes to half cycle correction if you want to use half

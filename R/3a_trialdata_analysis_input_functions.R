@@ -117,7 +117,6 @@ get_gender_details <- function(trialdata) {
 #' preferably  column names "age", "dob" or "yob" or "date of birth".
 #' "year of birth", "birth year"
 #' If multiple column names match these, then first match will be chosen.
-
 get_age_details <- function(trialdata) {
   #Error - no null trial data
   if (is.null(trialdata)) {
@@ -244,7 +243,6 @@ get_outcome_details <- function(trialdata, name, related_words, multiple = FALSE
   }
   # multiple columns matched
   # get the codes - the entries
-
   if (sum(colnumbers > 0) > 1) {
     if (multiple == TRUE) {
       index <- which(colnumbers > 0)
@@ -317,7 +315,7 @@ get_eq5d_details <- function(trialdata) {
   ))
   i <- 1
   # try if the column names match with any of the set given above
-  colnumbers = 0
+  colnumbers <- 0
   while (i <= length(words_set)) {
     this <- unlist(words_set[i])
     result <- unlist(lapply(this, IPDFileCheck::check_colno_pattern_colname, names))
@@ -329,7 +327,7 @@ get_eq5d_details <- function(trialdata) {
     }
   }
   # no matching columns
-  if ( sum(colnumbers == 0) == 1)
+  if (sum(colnumbers == 0) == 1)
     stop("No matching columns")
   # should match all 5 columns for EQ5D
   if (sum(colnumbers > 0) != 5) {
@@ -362,7 +360,7 @@ get_eq5d_details <- function(trialdata) {
 #' get_colnames_codedvalues("arm", "pat_trial_arm", c("Y", "N"))
 #' @export
 get_colnames_codedvalues <- function(variable, name, code, nrcode = NA) {
-  if (is.null(name) | is.null(code)  | is.null(variable)) {
+  if (is.null(name)   | is.null(variable)) {
     stop("column name or coded values can not be NULL")
   }else{
       if (is.na(name) | sum(is.na(code) != 0) | is.na(variable)) {
@@ -380,7 +378,7 @@ get_colnames_codedvalues <- function(variable, name, code, nrcode = NA) {
               df <- data.frame(c(variable, colname, coded_values, nrcode), stringsAsFactors = FALSE)
               the_names <- (c("variable", "colname", unlist(coded_value_names), "nonrescode"))
             }
-            df <- data <- as.data.frame(t(df))
+            df  <- as.data.frame(t(df))
             colnames(df) <- the_names
             rownames(df) <- NULL
             return((df))

@@ -27,7 +27,7 @@ plot and the residuals
 Plotting and return the residuals after survival model
 }
 \examples{
-\dontrun{
+\donttest{
 data_for_survival <- survival::lung
 surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
 info_distribution = "weibull",covariates = c("ph.ecog"), "time")

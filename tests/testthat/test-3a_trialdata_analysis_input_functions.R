@@ -12,7 +12,7 @@ test_that("testing getting the trial arm details", {
                                         "trial" = c("control", "intervention")))
   expect_equal(details$name, "trial")
   details <- get_trial_arm_details(data.table::data.table("Age" = c(21, 15),
-                            "trial" = c("control", "intervention"), "arm" = c(1,2)))
+                            "trial" = c("control", "intervention"), "arm" = c(1, 2)))
   expect_equal(details$name, "arm")
   #Error - trial data should not be NULL
   expect_error(get_trial_arm_details(NULL))
@@ -33,7 +33,7 @@ test_that("testing getting the gender details", {
                               "control" = c("control", "intervention"))))
   # Two matches gets the first match
   details <- get_gender_details(data.table::data.table("Age" = c(21, 15),
-                             "sex" = c("m", "f"), "gender" = c("m","f")))
+                             "sex" = c("m", "f"), "gender" = c("m", "f")))
   expect_equal(details$name, "sex")
   #Error - trial data should not be NULL
   expect_error(get_gender_details(NULL))
@@ -53,6 +53,10 @@ test_that("testing getting the age details", {
 
   #Error - trial data should not be NULL
   expect_error(get_age_details(NULL))
+
+  details <- get_age_details(data.table::data.table("Age" = c(20, 30), yob = c(2000, 1990), "sex" = c("m", "f")))
+  expect_equal(details$name, "Age")
+
 })
 ##############################################################################
 context("testing getting the timepoint details")
@@ -82,7 +86,8 @@ test_that("testing getting the outcome details", {
   # Error no atching columns
   expect_error(get_outcome_details(data.table::data.table("point" = c(21, 15)),
                                   "eq5d", "qol", TRUE))
-  details <- get_outcome_details(data.table::data.table("qol1" = c(1, 2), "qol2" = c(4, 3)), "eq5d", "qol", TRUE)
+  details <- get_outcome_details(data.table::data.table("qol1" = c(1, 2),
+                                    "qol2" = c(4, 3)), "eq5d", "qol", TRUE)
   expect_equal(details$name, c("qol1", "qol2"))
   expect_equal(details$codes, c(1, 2, 3, 4))
   #Error - name should not be NULL
@@ -90,6 +95,16 @@ test_that("testing getting the outcome details", {
         "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)), NULL, "qol", TRUE))
   #Error - trial data should not be NULL
   expect_error(get_outcome_details(NULL, "eq5d", "qol", TRUE))
+
+  details <- get_outcome_details(data.table::data.table("qol" = c(1, 2)),
+                                 "eq5d", "qol", FALSE)
+  expect_equal(details$name, c("qol"))
+
+
+  details <- get_outcome_details(data.table::data.table("qol.MO" = c(1, 2),
+                                                        "qol.UA" = c(1, 2)),
+                                 "eq5d", "qol", FALSE)
+  expect_equal(details$name, c("qol.MO"))
 })
 ###############################################################################
 context("testing getting the outcome details")
@@ -109,12 +124,15 @@ test_that("testing getting the outcome details", {
 ###############################################################################
 context("testing get the coding values of a column in data")
 test_that("testing get the coding values of a column in data", {
-  ans = get_colnames_codedvalues("arm", "pat_trial_arm", c("Y", "N"), 999)
+  ans <- get_colnames_codedvalues("arm", "pat_trial_arm", c("Y", "N"), 999)
   expect_equal(ans$variable, "arm")
-  expect_equal(ans$nonrescode,"999")
+  expect_equal(ans$nonrescode, "999")
   # Error - the name or variable can not be NULL or NA
   expect_error(get_colnames_codedvalues("arm", NULL, c("Y", "N"), 999))
   expect_error(get_colnames_codedvalues(NA, "pat_trial_arm", c("Y", "N"), 999))
+
+  ans <- get_colnames_codedvalues("arm", "pat_trial_arm", NULL)
+  expect_equal(ans$variable, "arm")
 })
 ###############################################################################
 context("testing check treatment arm")

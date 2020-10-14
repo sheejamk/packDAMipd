@@ -13,16 +13,15 @@ b <- health_state("Dead", 1, 0, 0, TRUE)
 # combine the health states
 health_states <- combine_state(a, b)
 # strategy named A
-A.strategy <- strategy(tm, health_states, "A")
-# run markov model using A.strategy, for 10  cyles and initial state (1,0)
+A_strategy <- strategy(tm, health_states, "A")
+# run markov model using A_strategy, for 10  cyles and initial state (1,0)
 # no discounting, with half cycle correction, no startup costs etc
-A.model = markov_model(A.strategy, 10, c(1, 0))
-# Can check the model's trace, cost and utility form A.model
-A.model$trace_matrix
-A.model$cost_matrix
-A.model$utility_matrix
-# plot the markov states - no commented please uncomment to run
-#plot_model(A.model)
+A_model <- markov_model(A_strategy, 10, c(1, 0))
+# Can check the model's trace, cost and utility form A_model
+A_model$trace_matrix
+A_model$cost_matrix
+A_model$utility_matrix
+# plot the markov states - no commented please uncomment to run plot_model(A_model)
 
 #Now follow the same for the strategy B
 #if the transitions are same we can use the same tmat, and tm - no need to redefine
@@ -34,20 +33,19 @@ b <- health_state("Dead", 1, 0, 0, TRUE)
 # combine the health states
 health_states <- combine_state(a, b)
 # strategy named B
-B.strategy <- strategy(tm, health_states, "B")
-# run markov model using A.strategy, for 10  cycles and initial state (1,0)
+B_strategy <- strategy(tm, health_states, "B")
+# run markov model using A_strategy, for 10  cycles and initial state (1,0)
 # no discounting, with half cycle correction, no start up costs etc
-B.model = markov_model(B.strategy, 10, c(1, 0))
-# Can check the model's trace, cost and utility form A.model
-B.model$trace_matrix
-B.model$cost_matrix
-B.model$utility_matrix
-# plot the markov states - now commented please uncomment to run
-#plot_model(B.model)
+B_model <- markov_model(B_strategy, 10, c(1, 0))
+# Can check the model's trace, cost and utility form A_model
+B_model$trace_matrix
+B_model$cost_matrix
+B_model$utility_matrix
+# plot the markov states - now commented please uncomment to run plot_model(B_model)
 
 #Here the trace is same only cost and utility different
 # now can calculate ICER nad NMB if threshold given use 20000
 #combine the markov models A and B
 
-list_markov = combine_markov(A.model, B.model)
+list_markov <- combine_markov(A_model, B_model)
 calculate_icer_nmb(list_markov, 20000, "A")

@@ -3,6 +3,9 @@
 \name{map_eq5d5Lto3L_VanHout}
 \alias{map_eq5d5Lto3L_VanHout}
 \title{Function to map EQ5D5L scores to EQ5D3L scores and then add to IPD data}
+\source{
+http://eprints.whiterose.ac.uk/121473/1/Devlin_et_al-2017-Health_Economics.pdf
+}
 \usage{
 map_eq5d5Lto3L_VanHout(ind_part_data, eq5d_nrcode)
 }
@@ -15,11 +18,13 @@ map_eq5d5Lto3L_VanHout(ind_part_data, eq5d_nrcode)
 qaly included modified data, if success -1, if failure
 }
 \description{
-Function to add EQ5D5L scores to IPD data based on
-http://eprints.whiterose.ac.uk/121473/1/Devlin_et_al-2017-Health_Economics.pdf
+Function to map EQ5D5L scores to EQ5D3L scores and then add to IPD data
 }
 \examples{
+\donttest{
+library(valueEQ5D)
 datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
 trial_data <- load_trial_data(datafile)
-#  map_eq5d5Lto3L_VanHout(trial_data, NA)
+map_eq5d5Lto3L_VanHout(trial_data, NA)
+}
 }

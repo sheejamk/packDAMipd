@@ -48,7 +48,7 @@
 #' unit of strength (or the unit in which the cost calculated), preparation,
 #'  unit cost, size and size unit
 #' (in which name, forms, size, size unit, and preparation  are not passed on)
-microcosting_tablets_patches <- function(form,ind_part_data,
+microcosting_tablets_patches <- function(form, ind_part_data,
                                          name_med, dose_med, dose_unit,
                                          no_taken, freq_taken, basis_time,
                                          unit_cost_data, unit_cost_column,
@@ -64,15 +64,15 @@ microcosting_tablets_patches <- function(form,ind_part_data,
     stop("data should not be NULL")
 
   #Checking if the required parameters are NULL or NA
-  variables_check = list(form,name_med, dose_med, dose_unit,
+  variables_check <- list(form, name_med, dose_med, dose_unit,
                          no_taken, freq_taken, basis_time, unit_cost_column,
                          cost_calculated_in, strength_expressed_in)
-  results = sapply(variables_check, check_null_na)
-  names_check = c("form","name_med","dose_med", "dose_unit",
+  results <- sapply(variables_check, check_null_na)
+  names_check <- c("form", "name_med", "dose_med", "dose_unit",
                   "no_taken", "freq_taken", "basis_time", "unit_cost_column",
                   "cost_calculated_in", "strength_expressed_in")
   if (any(results != 0)) {
-    indices = which(results < 0)
+    indices <- which(results < 0)
     stop(paste("Error - the variables can not be NULL or NA, check the variable(s)",
                names_check[indices]))
   }
@@ -94,8 +94,6 @@ microcosting_tablets_patches <- function(form,ind_part_data,
   if (sum(checks) != 0) {
     stop("Atleast one of the required columns in unit cost data not found")
   }
-
-
   # get colnames for name, form, dosage and unit
   name_pattern <- c("name", "drug", "medication", "med")
   bool_res <- unlist(lapply(name_pattern, IPDFileCheck::check_colno_pattern_colname, colnames(unit_cost_data)))
@@ -129,7 +127,7 @@ microcosting_tablets_patches <- function(form,ind_part_data,
   } else {
     name_from_code <- ind_part_data[[name_med]]
   }
-  if (is.null(unlist(name_from_code))) {
+  if (is.null(unlist(name_from_code)) | sum(is.na(name_from_code)) != 0) {
     stop("Error - name_from_code can not be null - check the input for list of names and codes")
   }
   # get the frequency from code, as same as name
@@ -147,8 +145,6 @@ microcosting_tablets_patches <- function(form,ind_part_data,
   if (sum(is.na(unlist(freq_given_basis))) == length(freq_given_basis)) {
     stop("Error - freq_given_basis can not be null - check the input for list of frequency")
   }
-
-
   if (!is.null(list_of_code_dose_unit) & sum(is.na(list_of_code_dose_unit)) == 0) {
     unit_and_code <- stats::setNames(as.list(list_of_code_dose_unit[[1]]), list_of_code_dose_unit[[2]])
     ipd_codes <- ind_part_data[[dose_unit]]
@@ -156,7 +152,6 @@ microcosting_tablets_patches <- function(form,ind_part_data,
   } else {
     unit_from_code <- ind_part_data[[dose_unit]]
   }
-
   if (is.null(unlist(unit_from_code))) {
     stop("Error - unit_from_code can not be null - check the input for list of codes and names")
   }
@@ -172,10 +167,9 @@ microcosting_tablets_patches <- function(form,ind_part_data,
     timepoint_codes <- ind_part_data[[timepoint_details$name]]
     period_desc_from_code <- period_code[timepoint_codes]
   }
-  if (is.null(unlist(period_desc_from_code))) {
+  if (is.null(unlist(period_desc_from_code))  | sum(is.na(period_desc_from_code)) != 0) {
     stop("Error - period_desc_from_code can not be null - check the input for list of period")
   }
-
   if (is.null(equiv_dose)) {
     equiv_dose_div <- 1
   } else {
@@ -192,19 +186,14 @@ microcosting_tablets_patches <- function(form,ind_part_data,
     if (!is.null(dose_medication) & !is.na(dose_medication)) {
       how_many_taken <- ind_part_data[[no_taken]][i]
       freq_multiplier <- freq_given_basis[i]
-      if (is.na(freq_multiplier)) {
-        stop("Error - frequency multiplier can not be NA")
-      }
-
       this_unit <- unit_from_code[i]
-
       subset1 <- unit_cost_data[toupper(unit_cost_data[[name_col_no]]) == toupper(name_medication), ]
       if (toupper(form) == "TABLET" | toupper(form) == "TABLETS")
         subset2 <- subset1[subset1[form_col_no] == "Tablet" | subset1[form_col_no] == "Tablets" |
-                             subset1[form_col_no] == "tablet" | subset1[form_col_no] == "tablets",]
+                             subset1[form_col_no] == "tablet" | subset1[form_col_no] == "tablets", ]
       else
         subset2 <- subset1[subset1[form_col_no] == "Patch" | subset1[form_col_no] == "Patches" |
-                             subset1[form_col_no] == "patch" | subset1[form_col_no] == "patches",]
+                             subset1[form_col_no] == "patch" | subset1[form_col_no] == "patches", ]
 
       unit_used_costing <- unique(subset2[[unit_col_no]])
       if (length(unit_used_costing) != 1) {
@@ -215,9 +204,7 @@ microcosting_tablets_patches <- function(form,ind_part_data,
         unit_multiplier <- convert_weight_diff_basis(this_unit, unit_used_costing)
       else
         unit_multiplier <- convert_wtpertimediff_basis(this_unit, unit_used_costing)
-      if (unit_multiplier != 1) {
-        stop("The unit used is not same as that used in calculating costs")
-      }
+
       if (any(subset2[[dosage_col_no]] == dose_medication)) {
         unit_cost_med_prep <- subset2[subset2[[dosage_col_no]] == dose_medication &
                                         subset2[[unit_col_no]] == unit_used_costing, ][[unit_cost_column]]
@@ -240,9 +227,9 @@ microcosting_tablets_patches <- function(form,ind_part_data,
       total_cost_timeperiod_equiv_dose <- NA
     }
     if (toupper(form) == "TABLET" | toupper(form) == "TABLETS")
-      keywd = "tablets"
+      keywd <- "tablets"
     else
-      keywd = "patches"
+      keywd <- "patches"
 
     list_total_med_basis <- append(list_total_med_basis, total_med_basis)
     list_total_cost_basis <- append(list_total_cost_basis, total_cost_basis)
@@ -250,15 +237,15 @@ microcosting_tablets_patches <- function(form,ind_part_data,
     list_total_cost_timeperiod <- append(list_total_cost_timeperiod, total_cost_timeperiod)
     list_total_cost_timeperiod_equiv_dose <- append(list_total_cost_timeperiod_equiv_dose, total_cost_timeperiod_equiv_dose)
   }
-  this_name = paste("totmed_basis_", keywd, sep = "")
+  this_name <- paste("totmed_basis_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_basis)
-  this_name = paste("totcost_basis_", keywd, sep = "")
+  this_name <- paste("totcost_basis_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_basis)
-  this_name = paste("totcost_basis_equiv_dose_", keywd, sep = "")
+  this_name <- paste("totcost_basis_equiv_dose_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_basis_equiv_dose)
-  this_name = paste("totcost_timeperiod_", keywd, sep = "")
+  this_name <- paste("totcost_timeperiod_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_timeperiod)
-  this_name = paste("totcost_timeperiod_equiv_dose_", keywd, sep = "")
+  this_name <- paste("totcost_timeperiod_equiv_dose_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_timeperiod_equiv_dose)
   return(ind_part_data)
 }
@@ -311,38 +298,22 @@ microcosting_liquids <- function(ind_part_data,
                                  list_of_code_dose_unit = NULL,
                                  list_of_code_bottle_size = NULL,
                                  equiv_dose = NULL, basis_time = "day") {
-
   #Error - data should not be NULL
   if (is.null(ind_part_data) | is.null(unit_cost_data))
     stop("data should not be NULL")
-
   #Checking if the required parameters are NULL or NA
-  variables_check = list(name_med, dose_med, dose_unit,
+  variables_check <- list(name_med, dose_med, dose_unit,
                          bottle_size, bottle_remain, basis_time, unit_cost_column,
                          cost_calculated_in, strength_column)
-  results = sapply(variables_check, check_null_na)
-  names_check = c("name_med","dose_med", "dose_unit",
-                  "no_taken", "freq_taken", "basis_time", "unit_cost_column",
+  results <- sapply(variables_check, check_null_na)
+  names_check <- c("name_med", "dose_med", "dose_unit",
+                  "bottle_size", "bottle_remain", "basis_time", "unit_cost_column",
                   "cost_calculated_in", "strength_column")
   if (any(results != 0)) {
-    indices = which(results < 0)
+    indices <- which(results < 0)
     stop(paste("Error - the variables can not be NULL or NA, check the variable(s)",
                names_check[indices]))
   }
-  # check columns exist in individual data
-  info_list <- c(name_med, dose_med, dose_unit, bottle_size, bottle_remain)
-  checks <- sapply(info_list, IPDFileCheck::check_column_exists, ind_part_data)
-  if (sum(checks) != 0) {
-    stop("Atleast one of the required columns not found")
-  }
-
-  # check columns exist in unit cost  data
-  info_list <- c(unit_cost_column, cost_calculated_in, strength_column)
-  checks <- sapply(info_list, IPDFileCheck::check_column_exists, unit_cost_data)
-  if (sum(checks) != 0) {
-    stop("Atleast one of the required columns in unit cost data not found")
-  }
-
   if (is.null(equiv_dose)) {
     equiv_dose_div <- 1
   } else {
@@ -372,14 +343,16 @@ microcosting_liquids <- function(ind_part_data,
   dosage_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data, strength_column)
   size_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data, "size")
 
+  prepar_pattern <- c("preparation")
+  bool_res <- unlist(lapply(prepar_pattern, IPDFileCheck::check_colno_pattern_colname, colnames(unit_cost_data)))
   if (!is.null(preparation)) {
-    prepar_pattern <- c("preparation")
-    bool_res <- unlist(lapply(prepar_pattern, IPDFileCheck::check_colno_pattern_colname, colnames(unit_cost_data)))
     if (any(bool_res)) {
       prepar_ind <- which(bool_res == TRUE)
     }
-    prepar_col_no <- IPDFileCheck::get_columnno_fornames(prepar_pattern[prepar_ind], colnames(unit_cost_data))
+    prepar_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
+                                                       prepar_pattern[prepar_ind])
   }
+
   # if the codes are being used for name, dosage, frequency an time period
   if (!is.null(list_of_code_names)) {
     name_and_code <- stats::setNames(as.list(list_of_code_names[[1]]), list_of_code_names[[2]])
@@ -388,7 +361,6 @@ microcosting_liquids <- function(ind_part_data,
   } else {
     name_from_code <- ind_part_data[[name_med]]
   }
-
   if (is.null(unlist(name_from_code))) {
     stop("Error - name_from_code can not be null - check the input for list of names and codes")
   }
@@ -433,7 +405,6 @@ microcosting_liquids <- function(ind_part_data,
     name_medication <- name_from_code[i]
     dose_medication <- ind_part_data[[dose_med]][i]
     if (!is.null(dose_medication) & !is.na(dose_medication)) {
-      this_unit <- unit_from_code[i]
       this_size <- size_from_code[i]
       remain_time <- ind_part_data[[bottle_remain]][i]
       subset1 <- unit_cost_data[toupper(unit_cost_data[[name_col_no]]) == toupper(name_medication), ]
@@ -442,8 +413,11 @@ microcosting_liquids <- function(ind_part_data,
       if (length(unit_used_costing) != 1) {
         stop("unit used for costing tablets is not unique !!!")
       }
+      if (!is.null(preparation)) {
+        this_preparation <- ind_part_data[[preparation]][i]
+      }
       if (is.null(bottle_size_unit)) {
-        size_unit <- trimws(tm::removeNumbers(this_size))
+        size_unit <- trimws(tm::removeNumbers(unlist(this_size)))
         matches <- regmatches(this_size, gregexpr("[[:digit:]]+", this_size))
         size_number <- as.numeric(unlist(matches))
       } else {
@@ -456,7 +430,7 @@ microcosting_liquids <- function(ind_part_data,
       if (any(subset2[[dosage_col_no]] == dose_medication)) {
         if (!is.null(preparation)) {
           unit_cost_med_prep <- subset2[subset2[[dosage_col_no]] == dose_medication &
-                                          subset2[[prepar_col_no]] == preparation &
+                                          subset2[[prepar_col_no]] == this_preparation &
                                           subset2[[size_col_no]] == size_number &
                                           subset2[[unit_col_no]] == unit_used_costing, ][[unit_cost_column]]
         } else {
@@ -467,14 +441,13 @@ microcosting_liquids <- function(ind_part_data,
       } else {
         stop("The used dosage is not in costing table")
       }
+      if (unit_cost_med_prep <= 0 | is.null(unit_cost_med_prep) | is.na(unit_cost_med_prep))
+        stop("Error - unit cost for the medicine is not valid")
       cost_bottle <- unit_cost_med_prep
       period_given_basis <- convert_to_given_timeperiod(period_desc_from_code[i], basis_time)
       bottle_used_time_given_basis <- convert_to_given_timeperiod(remain_time, basis_time)
       med_required_timeperiod <- (total_med_for_remain_time / bottle_used_time_given_basis) * period_given_basis
       no_bottle_timeperiod <- ceiling(med_required_timeperiod / size_number)
-      #index <- stringr::str_locate(this_unit, "/")
-      #vol_unit <- stringr::str_sub(this_unit, index[2] + 1, nchar(this_unit))
-      #vol_multiplier <- convert_volume_basis(vol_unit, size_unit)
       # need to check if what it actually mean by equivalent dose 1mg/ml of liquid equivalent to mg of morphine ?
       no_bottle_timeperiod_equiv_dose <- no_bottle_timeperiod / equiv_dose_div[i]
       total_cost_timeperiod <- no_bottle_timeperiod * cost_bottle
@@ -662,7 +635,7 @@ costing_resource_use <- function(ind_part_data,
           }
         }
       }
-      # find the cost calcualted subset
+      # find the cost calculated subset
       cost_calculatedin <- subset1[[cost_calculated_in]]
       if (cost_calculatedin == uni_expr | cost_calculatedin == paste("per", uni_expr)) {
         total_cost <- total_length_num * unit_cost

@@ -16,7 +16,7 @@ check_list_markov_models(list_markov)
 check the list of Markov models
 }
 \examples{
-\dontrun{
+\donttest{
 well <- health_state("well", cost = 0, utility = 1)
 disabled <- health_state("disabled", cost = 100, utility = 1)
 dead <- health_state("dead", cost = 0, utility = 0)
