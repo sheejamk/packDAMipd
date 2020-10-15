@@ -19,24 +19,10 @@
 #' Form expression for the method glm
 form_expression_glm <- function(param_to_be_estimated, indep_var, family,
                                 covariates, interaction, naaction, link) {
-  if (is.null(param_to_be_estimated)) {
-    stop("Need to provide parameter to be estimated")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Need to provide parameter to be estimated")
-  }
-  if (is.null(indep_var)) {
-    stop("Error - independent variable can not be NULL")
-  }else{
-    if (is.na(indep_var))
-      stop("Error - independent variable can not be NA")
-  }
-  if (is.null(interaction)) {
-    stop("Error - interaction variable can not be NULL")
-  }else{
-    if (is.na(interaction))
-      stop("Error - interaction variable can not be NA")
-  }
+  check_list = list(param_to_be_estimated,indep_var,interaction)
+  checks = sapply(check_list, check_null_na)
+  if (sum(checks) != 0)
+    stop( "Error - some of the required parameters are NULL or NA")
 
   if (is.na(family)) {
     stop("Error - information on distribution is missing")
@@ -96,7 +82,6 @@ find_glm_distribution <- function(text) {
     if (is.na(text))
       stop("Error - text can not be null or NA")
   }
-
   text <- trimws(toupper(text))
   keyword <- NULL
   if (text == "BINOMIAL" | text == "BI NOMIAL") {
@@ -216,10 +201,14 @@ check_link_glm <- function(family, link) {
 #' @importFrom lmtest dwtest
 #' @export
 #' @keywords internal
-
 do_diagnostic_glm <- function(method = "glm", fit, expression_recreated,
                               param_to_be_estimated,
                               dataset, indep_var, covariates, interaction) {
+
+  check_list = list(param_to_be_estimated,indep_var,interaction, expression_recreated)
+  checks = sapply(check_list, check_null_na)
+  if (sum(checks) != 0)
+    stop( "Error - some of the required parameters are NULL or NA")
 
   if (is.null(method)) {
     stop("Error - method should not be NULL")
@@ -228,32 +217,11 @@ do_diagnostic_glm <- function(method = "glm", fit, expression_recreated,
   }
   if (!("glm" %in% class(fit)))
     stop("Error- Fit object should be of type glm")
-  # checking if expression_created is NULL
-  if (is.null(expression_recreated))
-    stop("Error - expression_recreated object can not be null")
-
-  # checking if parameter to be estimated is NULL or NA
-  if (is.null(param_to_be_estimated)) {
-    stop("Error - parameter to be estimated can not be null")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Error - parameter to be estimated can not be NA")
-  }
 
   # checking if dataset is is NULL
   if (is.null(dataset))
     stop("Error - dataset can not be null")
 
-  # checking if independent variable  is NULL or NA
-  if (is.null(indep_var)) {
-    stop("Error - independent variable can not be null")
-  }else{
-    if (is.na(indep_var))
-      stop("Error -  independent variable can not be NA")
-  }
-  # checking if interaction is NULL
-  if (is.null(interaction))
-    stop("Error - interaction can not be null")
   # Fit R2, AIC and BIC
   R2 <- 1 - (fit$deviance / fit$null.deviance)
   AIC <- stats::AIC(fit)
@@ -378,23 +346,15 @@ find_survreg_distribution <- function(text) {
 #' covariates = c("ph.ecog"),surv_estimated$fit)
 #' }
 #' @export
-plot_return_residual_survival <- function(param_to_be_estimated, indep_var, covariates, fit) {
+plot_return_residual_survival <- function(param_to_be_estimated, indep_var,
+                                          covariates, fit) {
   if (!("survreg" %in% class(fit)))
     stop("Error- Fit object should be of type survreg")
   # checking if parameter to be estimated is NULL or NA
-  if (is.null(param_to_be_estimated)) {
-    stop("Error - parameter to be estimated can not be null")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Error - parameter to be estimated can not be NA")
-  }
- # checking if independent variable  is NULL or NA
-  if (is.null(indep_var)) {
-    stop("Error - independent variable can not be null")
-  }else{
-    if (is.na(indep_var))
-      stop("Error -  independent variable can not be NA")
-  }
+  check_list = list(param_to_be_estimated,indep_var)
+  checks = sapply(check_list, check_null_na)
+  if (sum(checks) != 0)
+    stop( "Error - some of the required parameters are NULL or NA")
 
   name_file_plot <- paste0("Survival_residuals_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
@@ -459,21 +419,13 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated, indep_var
                                                 fit, timevar_survival) {
   if (!("survreg" %in% class(fit)))
     stop("Error- Fit object should be of type survreg")
-  # checking if parameter to be estimated is NULL or NA
-  if (is.null(param_to_be_estimated)) {
-    stop("Error - parameter to be estimated can not be null")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Error - parameter to be estimated can not be NA")
-  }
-  # checking if independent variable  is NULL or NA
-  if (is.null(indep_var)) {
-    stop("Error - independent variable can not be null")
-  }else{
-    if (is.na(indep_var))
-      stop("Error -  independent variable can not be NA")
-  }
-  # dataset need not be null
+
+  check_list = list(param_to_be_estimated,indep_var,timevar_survival)
+  checks = sapply(check_list, check_null_na)
+  if (sum(checks) != 0)
+    stop( "Error - some of the required parameters are NULL or NA")
+
+  # dataset should not be null
   if (is.null(dataset))
     stop("Error - dataset can not be null")
 
@@ -482,15 +434,6 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated, indep_var
   }else{
     no_var <- 1 + length(covariates)
   }
-
-  # checking if time variable is NULL or NA
-  if (is.null(timevar_survival)) {
-    stop("Error - time variable can not be null")
-  }else{
-    if (is.na(timevar_survival))
-      stop("Error - time variable can not be NA")
-  }
-
   name_file_plot <- paste0("Survival_covariates_", param_to_be_estimated, "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   for (i in 1:no_var) {
@@ -499,7 +442,7 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated, indep_var
       other_fixed <- covariates
     }else{
       var <- covariates[i - 1]
-      other_fixed <- c(indep_var, covariates[- (i - 1)])
+      other_fixed <- c(indep_var, covariates[-(i - 1)])
     }
     categorical <- list()
     if (!is.na(other_fixed)) {
@@ -620,20 +563,11 @@ create_new_dataset <- function(var, covar, dataset, categorical) {
 #' it takes care of covariates and interaction
 form_expression_lm <- function(param_to_be_estimated, indep_var, covariates,
                                interaction) {
-  # checking if parameter to be estimated is NULL or NA
-  if (is.null(param_to_be_estimated)) {
-    stop("Error - parameter to be estimated can not be null")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Error - parameter to be estimated can not be NA")
-  }
-  # checking if independent variable  is NULL or NA
-  if (is.null(indep_var)) {
-    stop("Error - independent variable can not be null")
-  }else{
-    if (is.na(indep_var))
-      stop("Error -  independent variable can not be NA")
-  }
+  check_list = list(param_to_be_estimated,indep_var)
+  checks = sapply(check_list, check_null_na)
+  if (sum(checks) != 0)
+    stop( "Error - some of the required parameters are NULL or NA")
+
   if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
     # no need to check for interaction
     fmla <- paste("lm(", param_to_be_estimated, " ~ ", indep_var, ",
@@ -691,33 +625,18 @@ do_diagnostic_linear_regression <- function(method, fit, expression_recreated, p
   }
   if (!("lm" %in% class(fit)))
     stop("Error- Fit object should be of type lm")
-  # checking if expression_created is NULL
-  if (is.null(expression_recreated))
-    stop("Error - expression_recreated object can not be null")
 
-  # checking if parameter to be estimated is NULL or NA
-  if (is.null(param_to_be_estimated)) {
-    stop("Error - parameter to be estimated can not be null")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Error - parameter to be estimated can not be NA")
-  }
+  check_list = list(param_to_be_estimated, indep_var, expression_recreated,
+                    interaction)
+  checks = sapply(check_list, check_null_na)
+  if (sum(checks) != 0)
+    stop( "Error - some of the required parameters are NULL or NA")
+
 
   # checking if dataset is is NULL
   if (is.null(dataset))
     stop("Error - dataset can not be null")
 
-  # checking if independent variable  is NULL or NA
-  if (is.null(indep_var)) {
-    stop("Error - independent variable can not be null")
-  }else{
-    if (is.na(indep_var))
-      stop("Error -  independent variable can not be NA")
-  }
-  # checking if interaction is NULL or NA
-  if (is.null(interaction)) {
-    stop("Error - interaction can not be null")
-  }
   # Fit R2, AIC and BIC
   Adj_R2 <- summary(fit)$adj.r.squared
   AIC <- stats::AIC(fit)
@@ -800,7 +719,7 @@ do_diagnostic_linear_regression <- function(method, fit, expression_recreated, p
 #' \donttest{
 #' datafile = system.file("extdata", "binary.csv", package = "packDAMipd")
 #' mydata <- read.csv(datafile)
-#'  results_logit <- use_linear_regression("admit",dataset = mydata,
+#'  results_logit <- use_linear_regression("admit", dataset = mydata,
 #'  indep_var = "gre",covariates = NA,interaction = FALSE)
 #'  predict = prediction_regression("lm",results_logit$fit,
 #'  results_logit$fit$call, "admit",covariates = NA,"gre", FALSE )
@@ -819,28 +738,12 @@ prediction_regression <- function(method, fit, expression_recreated,
   if (!("lm" %in% class(fit))  & !("glm" %in% class(fit)))
     stop("Error- Fit object should be of type lm or glm")
   # checking if expression_created is NULL
-  if (is.null(expression_recreated))
-    stop("Error - expression_recreated object can not be null")
 
-  # checking if parameter to be estimated is NULL or NA
-  if (is.null(param_to_be_estimated)) {
-    stop("Error - parameter to be estimated can not be null")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Error - parameter to be estimated can not be NA")
-  }
-
-  # checking if independent variable  is NULL or NA
-  if (is.null(indep_var)) {
-    stop("Error - independent variable can not be null")
-  }else{
-    if (is.na(indep_var))
-      stop("Error -  independent variable can not be NA")
-  }
-  # checking if interaction is NULL or NA
-  if (is.null(interaction)) {
-    stop("Error - interaction can not be null")
-  }
+  check_list = list(param_to_be_estimated, indep_var, expression_recreated,
+                    interaction)
+  checks = sapply(check_list, check_null_na)
+  if (sum(checks) != 0)
+    stop( "Error - some of the required parameters are NULL or NA")
 
   predictor_effect <- effects::predictorEffects(fit)
   leng <- length(predictor_effect)
@@ -913,30 +816,14 @@ form_expression_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
                                         family, link) {
 
   # checking if parameter to be estimated is NULL or NA
-  if (is.null(param_to_be_estimated)) {
-    stop("Error - parameter to be estimated can not be null")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Error - parameter to be estimated can not be NA")
-  }
+  check_list = list(param_to_be_estimated, random_intercept_vars)
+  checks = sapply(check_list, check_null_na)
+  if (sum(checks) != 0)
+    stop( "Error - some of the required parameters are NULL or NA")
   # checking if dataset is is NULL
   if (is.null(dataset))
     stop("Error - dataset can not be null")
 
-  # checking if fix_eff variable  is NULL or NA
-  if (is.null(fix_eff)) {
-    stop("Error - fixed effect variable can not be null")
-  }else{
-    if (sum(is.na(fix_eff) != 0))
-      stop("Error -  fixed effect variable can not be NA")
-  }
-  # checking if random_intercept_vars is NULL or NA
-  if (is.null(random_intercept_vars)) {
-    stop("Error - random_intercept_vars can not be null")
-  }else{
-    if (sum(is.na(random_intercept_vars)) != 0)
-      stop("Error -  random_intercept_vars not be NA")
-  }
   if (!is.na(family)) {
       this_dist <- find_glm_distribution(family)
       if (!is.na(link)) {
@@ -954,8 +841,7 @@ form_expression_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
   if (is.null(fix_eff)) {
     fix_eff <- 1
     expression <- paste(expression, fix_eff, "+")
-  }
-  if (!is.null(fix_eff)) {
+  } else {
     no_interaction_var <- setdiff(fix_eff, fix_eff_interact_vars)
     i <- 1
     all_vars <- ""
@@ -1063,12 +949,10 @@ form_expression_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
     index <- stringr::str_locate(this_caller, "\\(")[1]
     method_name <- substr(this_caller, 1, index[1] - 1)
     if (method_name == "use_linear_mixed_model") {
-      expression <- paste("lme4::lmer(", expression, ", data = dataset)",
-                          sep = "")
+      expression <- paste("lme4::lmer(", expression, ", data = dataset)", sep = "")
     }
     if (method_name == "use_generalised_linear_mixed_model") {
-      expression <- paste("lme4::glmer(", expression, ", data = dataset,
-                          control = lme4::glmerControl(optimizer = \"bobyqa\"), nAGQ = 10)", sep = "")
+      expression <- paste("lme4::glmer(", expression, ", data = dataset, control = lme4::glmerControl(optimizer = \"bobyqa\"), nAGQ = 10)", sep = "")
     }
   } else {
     expression <- paste("lme4::lmer(", expression, ", data = dataset)", sep = "")

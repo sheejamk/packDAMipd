@@ -318,17 +318,13 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
                                                naaction = "stats::na.omit", param2_to_be_estimated = NA,
                                                covariates2 = NA, interaction2 = FALSE, link = NA) {
   # regular checks to see the required parameters ar given
-  if (is.na(param_to_be_estimated) | is.null(param_to_be_estimated)) {
-    stop("Need to provide parameter to be estimated")
-  }
+  check_list = c(param_to_be_estimated, method)
+  checks = sapply(check_list, check_null_na)
+  if (sum(checks) != 0)
+    stop("Some of parameters are null or NA")
+
   if (is.null(data)) {
     stop("Need to provide a data set or file to lookup the data")
-  }
-  if (is.na(indep_var)) {
-    stop("Need to provide the independent variable")
-  }
-  if (is.na(method)) {
-    stop("Please provide  a statistical method")
   }
   # if the given data is a file name , load the data in that
   if (is.character(data)) {
@@ -354,7 +350,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
   if (caps_method == "LINEAR REGRESSION" | caps_method == "LINEAR_REGRESSION" | caps_method == "LINEAR") {
     results <- use_linear_regression(param_to_be_estimated, data, indep_var, covariates, interaction)
   }
-  # ligistic regression
+  # logistic regression
   if (caps_method == "LOGISTIC REGRESSION" | caps_method == "LOGISTIC_REGRESSION" | caps_method == "LOGISTIC") {
     results <- use_generalised_linear_model(param_to_be_estimated, dataset, indep_var,
       family = info_distribution,
@@ -363,7 +359,8 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
   }
   # linear mixed effect model or multilevel model
   if (caps_method == "LINEAR MULTILEVEL MODELLING" | caps_method == "LINEAR_MULTILEVEL_MODELLING" |
-    caps_method == "LINEAR MULTILEVEL" | caps_method == "LINEAR_MULTILEVEL" | caps_method == "LINEAR MIXED EFFECT"
+    caps_method == "LINEAR MULTILEVEL" | caps_method == "LINEAR_MULTILEVEL" |
+    caps_method == "LINEAR MIXED EFFECT"
   | caps_method == "LINEAR_MIXED_EFFECT") {
     results <- use_linear_mixed_model(
       param_to_be_estimated, dataset, fix_eff, fix_eff_interact_vars,
@@ -372,7 +369,8 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data, meth
     )
   }
   # generalised linear model
-  if (caps_method == "GENERALISED LINEAR MODEL" | caps_method == "GENERALISED_LINEAR_MODEL" | caps_method == "GLM") {
+  if (caps_method == "GENERALISED LINEAR MODEL" | caps_method == "GENERALISED_LINEAR_MODEL"
+      | caps_method == "GLM" | caps_method == "GENERALISED LINEAR") {
     results <- use_generalised_linear_model(param_to_be_estimated, dataset, indep_var,
       family = info_distribution,
       covariates, interaction, naaction, link
@@ -519,6 +517,8 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var, cov
   )
   # all results in  a list and return this
   results <- list(
+    param_to_be_estimated = param_to_be_estimated,
+    expression_recreated = expression_recreated,
     fit = fit,
     summary = summary,
     model_coeff = model_coeff,
@@ -627,6 +627,8 @@ use_generalised_linear_model <- function(param_to_be_estimated, dataset, indep_v
     covariates, interaction
   )
   results <- list(
+    param_to_be_estimated = param_to_be_estimated,
+    expression_recreated = expression_recreated,
     fit = fit,
     summary = summary,
     model_coeff = model_coeff,
@@ -822,6 +824,8 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff, fix_
   # send the results
   if (is.null(nested_intercept_vars_pairs) & is.null(uncorrel_slope_intercept_pairs) & !is.null(random_slope_intercept_pairs)) {
     results <- (list(
+      param_to_be_estimated = param_to_be_estimated,
+      expression_recreated = expression_recreated,
       fit = fit,
       summary = summary,
       ci_coeff = ci_coeff,
@@ -833,6 +837,8 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff, fix_
     ))
   } else {
     results <- (list(
+      param_to_be_estimated = param_to_be_estimated,
+      expression_recreated = expression_recreated,
       fit = fit,
       summary = summary,
       ci_coeff = ci_coeff,
@@ -1009,6 +1015,8 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, f
   # results
   if (is.null(nested_intercept_vars_pairs) & is.null(uncorrel_slope_intercept_pairs) & !is.null(random_slope_intercept_pairs)) {
     results <- (list(
+      param_to_be_estimated = param_to_be_estimated,
+      expression_recreated = expression_recreated,
       fit = fit,
       summary = summary,
       ci_coeff = ci_coeff,
@@ -1020,6 +1028,8 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset, f
     ))
   } else {
     results <- (list(
+      param_to_be_estimated = param_to_be_estimated,
+      expression_recreated = expression_recreated,
       fit = fit,
       summary = summary,
       ci_coeff = ci_coeff,
@@ -1169,6 +1179,10 @@ use_seemingly_unrelated_regression <- function(param1_to_be_estimated, param2_to
   colnames(fit_diagnostics) <- c("OLS_R2", "AIC", "BIC")
 
   results <- (list(
+    param1_to_be_estimated = param1_to_be_estimated,
+    param2_to_be_estimated = param2_to_be_estimated,
+    formula_1 = formula_1,
+    formula_2 = formula_2,
     fit = fit,
     summary = summary,
     ci_coeff = ci_coeff,

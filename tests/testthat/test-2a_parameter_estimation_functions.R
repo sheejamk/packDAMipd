@@ -143,11 +143,8 @@ test_that("testing parameter using distribution read from file", {
   file <- system.file("extdata", "table_param_nostrategycol.csv", package = "packDAMipd")
   # strategy col not in the data file
   expect_error(get_parameter_def_distribution("b", file,
-                                              c("Param1_name", "Param1_value"), "Strategy", NULL))
-
+                            c("Param1_name", "Param1_value"), "Strategy", NULL))
 })
-
-
 ###############################################################################
 test_that("get parameter from estimated regression", {
   datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
@@ -183,6 +180,59 @@ test_that("get parameter from estimated regression", {
     "logistic regression", "gre", NA, "binomial", c("gpa", "rank")
   ))
 
+  # testing for linear regression
+  datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
+  mydata <- read.csv(datafile)
+  results = get_parameter_estimated_regression("gre", data = mydata, method = "linear",
+                                     info_get_method = NULL, indep_var = "gpa",
+                                     covariates = NA,
+                                     interaction = FALSE)
+  expect_equal(results$summary$coefficients[1], 192.3042, tol = 1e-4)
+  # testing logistic regression
+  results = get_parameter_estimated_regression("admit", data = mydata, method = "logistic",
+                                     info_get_method = "NULL", indep_var = "gre",
+                                     info_distribution = "binomial", covariates = NA,
+                                     interaction = FALSE, naaction = "na.omit",
+                                     link = NA)
+  expect_equal(results$summary$coefficients[1], -2.9013, tol = 1e-4)
+  # testing glm model generalised linear model
+  results = get_parameter_estimated_regression("admit", data = mydata,
+                                               method = "generalised linear",
+                                               info_get_method = "NULL",
+                                               indep_var = "gre",
+                                               info_distribution = "binomial",
+                                               covariates = NA,
+                                               interaction = FALSE, naaction = "na.omit",
+                                               link = NA)
+  expect_equal(results$summary$coefficients[1], -2.9013, tol = 1e-4)
+
+  # testing linear mixed model
+  datafile <- system.file("extdata", "lmmdata.csv", package = "packDAMipd")
+  dataset <- read.csv(datafile)
+  results1 = get_parameter_estimated_regression("extro", data = dataset,
+                                               method = "linear mixed effect", indep_var = NULL,
+                                               info_get_method = NULL,
+                                               fix_eff = c("open", "agree", "social"),
+                                               fix_eff_interact_vars = NULL,
+                                               random_intercept_vars = c("school", "class"),
+                                               nested_intercept_vars_pairs = list(c("school", "class")),
+                                               cross_intercept_vars = NULL,
+                                               uncorrel_slope_intercept_pairs = NULL,
+                                               random_slope_intercept_pairs = NULL)
+
+  expect_equal(results1$summary$coefficients[1], 60.2400412163, tol = 1e-4)
+
+  # results = get_parameter_estimated_regression("extro",
+  #                                             data = dataset,
+  #                                             method = "generalised mixed effect",
+  #                                             indep_var = NULL,
+  #                                             info_get_method = NULL,
+  #                                             info_distribution = "binomial",
+  #                                             fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
+  #                                             random_intercept_vars = c("school", "class"),
+  #                                             nested_intercept_vars_pairs = list(c("school", "class")),
+  #                                             cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
+  #                                             random_slope_intercept_pairs = NULL, link = NA)
 })
 
 
@@ -191,14 +241,12 @@ test_that("get parameter using linear regression", {
   datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
   mydata <- read.csv(datafile)
   # Error - no  parameter to be estimated
-  expect_error(use_linear_regression(NA,
-                                     dataset = mydata,
-                                     indep_var = "gpa", covariates = NA, interaction = FALSE
+  expect_error(use_linear_regression(NA, dataset = mydata,indep_var = "gpa",
+                                     covariates = NA, interaction = FALSE
   ))
   # Error - no dataset
-  expect_error(use_linear_regression("gre",
-                                     dataset = NULL,
-                                     indep_var = "gpa", covariates = NA, interaction = FALSE
+  expect_error(use_linear_regression("gre", dataset = NULL, indep_var = "gpa",
+                                     covariates = NA, interaction = FALSE
   ))
   # Error - no independent variable provided
   expect_error(use_linear_regression("gre",
@@ -208,7 +256,8 @@ test_that("get parameter using linear regression", {
 })
 ###############################################################################
 test_that("get parameter using generalised linear model", {
-  mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+  datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
+  mydata <- read.csv(datafile)
   results_logit <- use_generalised_linear_model("admit", dataset = mydata,
                                 indep_var = "gre", family = "binomial", covariates = NA,
                                 interaction = FALSE, naaction = "na.omit", link = NA
@@ -246,10 +295,8 @@ test_that("get parameter using generalised linear model", {
 })
 ###############################################################################
 test_that("get parameter using mixed effect regression", {
-dataset <-
-    read.table("http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/R_SC/Module9/lmm.data.txt",
-      header = TRUE, sep = ",", na.strings = "NA", dec = ".", strip.white = TRUE
-    )
+  datafile <- system.file("extdata", "lmmdata.csv", package = "packDAMipd")
+  dataset <- read.csv(datafile)
 # Error - parameter to be estimated not found
 expect_error(use_linear_mixed_model(NA,
                                     dataset = dataset,
@@ -291,45 +338,43 @@ expect_error(use_linear_mixed_model("extro",
 
 ###############################################################################
 test_that("get parameter using generalised linear mixed model", {
-  dataset <-
-    read.table("http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/R_SC/Module9/lmm.data.txt",
-               header = TRUE, sep = ",", na.strings = "NA", dec = ".", strip.white = TRUE
-    )
+  datafile <- system.file("extdata", "lmmdata.csv", package = "packDAMipd")
+  dataset <- read.csv(datafile)
   # Error - parameter to be estimated not found
   expect_error(use_generalised_linear_mixed_model(NA,
-                                      dataset = dataset,
+                                      dataset = dataset,family = "binomial",
                                       fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
                                       random_intercept_vars = c("school", "class"),
                                       nested_intercept_vars_pairs = list(c("school", "class")),
                                       cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-                                      random_slope_intercept_pairs = NULL
+                                      random_slope_intercept_pairs = NULL, link = NA
   ))
   # Error -dataset should not be null
   expect_error(use_generalised_linear_mixed_model("extro",
-                                      dataset = NULL,
+                                      dataset = NULL, family = "binomial",
                                       fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
                                       random_intercept_vars = c("school", "class"),
                                       nested_intercept_vars_pairs = list(c("school", "class")),
                                       cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-                                      random_slope_intercept_pairs = NULL
+                                      random_slope_intercept_pairs = NULL, link = NA
   ))
   # Error - Fixed effect variable should be provided
   expect_error(use_generalised_linear_mixed_model("extro",
-                                      dataset = dataset,
+                                      dataset = dataset, family = "binomial",
                                       fix_eff = NULL, fix_eff_interact_vars = NULL,
                                       random_intercept_vars = c("school", "class"),
                                       nested_intercept_vars_pairs = list(c("school", "class")),
                                       cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-                                      random_slope_intercept_pairs = NULL
+                                      random_slope_intercept_pairs = NULL, link = NA
   ))
   # Error - Random intercept  variable should be provided
   expect_error(use_generalised_linear_mixed_model("extro",
-                                      dataset = dataset,
+                                      dataset = dataset, family = "binomial",
                                       fix_eff = c("open"), fix_eff_interact_vars = NULL,
                                       random_intercept_vars = NULL,
                                       nested_intercept_vars_pairs = list(c("school", "class")),
                                       cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-                                      random_slope_intercept_pairs = NULL
+                                      random_slope_intercept_pairs = NULL, link = NA
   ))
 
 })

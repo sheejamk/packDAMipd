@@ -59,6 +59,9 @@ test_that("testing assigning parameters", {
   expect_error(assign_parameters(NA))
   expect_error(assign_parameters(NULL))
 
+  assign_list <- define_parameters(a = "100", cost = "a+10")
+  undebug(assign_parameters)
+  assign_parameters(assign_list)
 })
 ###############################################################################
 context("testing getting parameters between operators")
@@ -91,32 +94,78 @@ test_that("testing check the inputs for markov model and get the correct method"
   b <- health_state("Dead", 1, 0, 0, TRUE)
   health_states <- combine_state(a, b)
   this_strategy <- strategy(tm, health_states, "intervention")
+  startup_cost = c(100,100)
+  startup_util = c(0.5,0.5)
   # half cycle correction is a correct method
   changedmethod <- checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
-                                  "half cycle correction", TRUE, NULL, NULL)
+                                  "half cycle correction", TRUE, startup_cost,
+                                  startup_util, FALSE, FALSE)
   expect_equal(changedmethod, "hc_correction")
   ## can give half_cycle too
   changedmethod <- checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
-                                  "half_cycle", TRUE, NULL, NULL)
+                                  "half_cycle", TRUE, NULL, NULL,FALSE, FALSE)
   expect_equal(changedmethod, "hc_correction")
   ## method can belife_table too
   changedmethod <- checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
-                                            "life table", FALSE, NULL, NULL)
+                                            "life table", FALSE, NULL, NULL
+                                            ,FALSE, FALSE)
   expect_equal(changedmethod, "life_table")
   ## cycle is not a valid method
   expect_error(checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
-                                         "cycle", TRUE, NULL, NULL))
+                                         "cycle", TRUE, NULL, NULL,
+                                         FALSE, FALSE))
   ## size of discount vector should be 2
   expect_error(checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0, 0),
-                                         "life table", FALSE, NULL, NULL))
+                                         "life table", FALSE, NULL, NULL,
+                                         FALSE, FALSE))
   ##method life table should be followed by false for the parameter
   ## "half_cycle_correction"
   expect_error(checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
-                                         "life table", TRUE, NULL, NULL))
+                                         "life table", TRUE, NULL, NULL,
+                                         FALSE, FALSE))
   ## length of initial state vector should be equal to the number of states
   expect_error(checks_markov_pick_method(this_strategy, c(1), c(0, 0),
-                                         "life table", FALSE, NULL, NULL))
-  ## tm is not a stratgey, expected an object of type stategy
+                                         "life table", FALSE, NULL, NULL,
+                                         FALSE, FALSE))
+  ## tm is not a stratgey, expected an object of type strategy
   expect_error(checks_markov_pick_method(tm, c(1), c(0, 0),
-                                         "life table", FALSE, NULL, NULL))
+                                         "life table", FALSE, NULL, NULL,
+                                         FALSE, FALSE))
+
+  startup_cost = c(100,100, 0)
+  startup_util = c(0.5,0.5)
+  expect_error(checks_markov_pick_method(this_strategy, c(1,0), c(0, 0),
+                                         "life table", FALSE, startup_cost,
+                                         startup_util,
+                                         FALSE, FALSE))
+  startup_cost = c(100,100)
+  startup_util = c(0.5)
+  expect_error(checks_markov_pick_method(this_strategy, c(1,0), c(0, 0),
+                                         "life table", FALSE, startup_cost,
+                                         startup_util,
+                                         FALSE, FALSE))
+  # transiiton costs present -but state prevalency calculation not boolean
+  tmat_cost <- rbind(c(NA, 1), c(NA, NA))
+  colnames(tmat_cost) <- rownames(tmat) <- c("Healthy", "Dead")
+  tm_cost <- transition_cost_util(2, tmat_cost, c(10))
+  tmat_util <- rbind(c(NA, 1), c(NA, NA))
+  colnames(tmat_util) <- rownames(tmat) <- c("Healthy", "Dead")
+  tm_util <- transition_cost_util(2, tmat_cost, c(0.2))
+  this_strategy <- strategy(tm, health_states, "intervention", tm_cost, tm_util)
+  expect_error(checks_markov_pick_method(this_strategy, c(1,0), c(0, 0),
+                            "life table", FALSE, NULL, NULL,
+                            "No", FALSE))
+  expect_error(checks_markov_pick_method(this_strategy, c(1,0), c(0, 0),
+                                         "life table", FALSE, NULL, NULL,
+                                         TRUE, "No"))
+})
+# ##############################################################################
+context("testing checking null or na")
+test_that("testing checking null or na", {
+  expect_equal(check_null_na(12), 0)
+  expect_equal(check_null_na(list(12, "she")), 0)
+  b <- NULL
+  expect_equal(check_null_na(b), -1)
+  b <- c(NA, NA)
+  expect_equal(check_null_na(b), -2)
 })

@@ -42,7 +42,8 @@ Suggests:
     foreign,
     dplyr,
     knitr,
-    rmarkdown
+    rmarkdown,
+    covr
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

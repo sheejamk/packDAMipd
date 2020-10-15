@@ -1,5 +1,3 @@
-
-
 #######################################################################
 #' Function to return a list of parameters given
 #' @param ... any parameters set of name value pairs expected
@@ -71,18 +69,13 @@ assign_parameters <- function(param_list) {
       assigned_list <- append(assigned_list, this_value)
       names_assigned_list <- append(names_assigned_list, names(param_list[j]))
     } else {
-      # if the value of the ith parameter is not numeric, convert to string and
-      # then evaluate
+      # if the value of the jth parameter is not numeric,
+      # convert to string and then evaluate
       if (is.character(this_value)) {
         string_this_value <- toString(this_value)
-        string_this_value_evalu <- eval(parse(text = string_this_value))
-        if (!is.numeric(string_this_value_evalu)) {
-          stop("Error - the evaluation should bring a numerical value")
-        } else {
-          assign(names(param_list[j]), eval(parse(text = string_this_value)))
-          assigned_list <- append(assigned_list, eval(parse(text = string_this_value)))
-          names_assigned_list <- append(names_assigned_list, names(param_list[j]))
-        }
+        assign(names(param_list[j]), eval(parse(text = string_this_value)))
+        assigned_list <- append(assigned_list, eval(parse(text = string_this_value)))
+        names_assigned_list <- append(names_assigned_list, names(param_list[j]))
       }
     }
     j <- j + 1
@@ -218,7 +211,6 @@ checks_markov_pick_method <- function(current_strategy, initial_state, discount,
     if (length(startup_util) != no_states) {
       stop("number of values of start up utility should be equal to number of health states")
     }
-
   }
   # check the length of initial state should be equal to number of states
   if (length(initial_state) != no_states) {
@@ -234,7 +226,7 @@ checks_markov_pick_method <- function(current_strategy, initial_state, discount,
   }
   if (!is.null(current_strategy$transition_util)) {
     if (state_util_only_prevalent != FALSE & state_util_only_prevalent != TRUE)
-      stop("Error - the parameter 'state_cost_only_prevalent' should be boolean")
+      stop("Error - the parameter 'state_util_only_prevalent' should be boolean")
   }
   return(changed_method)
 }
@@ -243,6 +235,8 @@ checks_markov_pick_method <- function(current_strategy, initial_state, discount,
 #' Function to check the variable null or NA
 #' @param variable name of variable or list of variable to check
 #' @return -1 or -2 as error, else return 0 as success
+#' @example
+#' check_null_na(12)
 #' @export
 check_null_na <- function(variable) {
   #Error - variable can not be NULL or NA
