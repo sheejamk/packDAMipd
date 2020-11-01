@@ -38,7 +38,6 @@ Imports:
     relaimpo,
     tm
 Suggests: 
-    stata,
     ISLR,
     foreign,
     dplyr,
