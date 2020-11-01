@@ -14,10 +14,12 @@ transition_cost_util(
 \arguments{
 \item{no_states}{number of the health states}
 
-\item{tmat_cost_util}{A transition matrix for the cost/utility values in the format
-from the package 'mstate' use NA to indicate if the value is zero}
+\item{tmat_cost_util}{A transition matrix for the cost/utility
+values in the format from the package 'mstate' use NA to indicate
+if the value is zero}
 
-\item{list_values}{list of probabilities as in the order of transitions (row wise)}
+\item{list_values}{list of probabilities as in the order of transitions
+(row wise)}
 
 \item{name_states}{names of the health states}
 }
@@ -28,7 +30,8 @@ value of the transition matrix
 Create the the values of cost and utility while transition
 }
 \details{
-Similar to transition matrix but for denoting one time change during transitions
+Similar to transition matrix but for denoting one time change
+during transitions
 }
 \examples{
 tmat_cost <- rbind(c(NA, 1), c(NA, NA))

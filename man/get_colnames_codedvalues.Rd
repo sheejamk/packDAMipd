@@ -2,7 +2,8 @@
 % Please edit documentation in R/3a_trialdata_analysis_input_functions.R
 \name{get_colnames_codedvalues}
 \alias{get_colnames_codedvalues}
-\title{Function to keep the column name, coded values and non response code into a dataframe}
+\title{Function to keep the column name, coded values and non response code
+into a dataframe}
 \usage{
 get_colnames_codedvalues(variable, name, code, nrcode = NA)
 }
@@ -19,7 +20,8 @@ get_colnames_codedvalues(variable, name, code, nrcode = NA)
 data frame with all the above information
 }
 \description{
-Function to keep the column name, coded values and non response code into a dataframe
+Function to keep the column name, coded values and non response code
+into a dataframe
 }
 \examples{
 get_colnames_codedvalues("arm", "pat_trial_arm", c("Y", "N"))

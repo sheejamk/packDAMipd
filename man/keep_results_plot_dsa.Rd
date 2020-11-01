@@ -15,7 +15,8 @@ keep_results_plot_dsa(
 )
 }
 \arguments{
-\item{result_dsa_control}{result from deterministic sensitivity analysis for first or control model}
+\item{result_dsa_control}{result from deterministic sensitivity analysis
+for first or control model}
 
 \item{plotfor}{the variable to plotfor e.g. cost, utility NMB etc}
 

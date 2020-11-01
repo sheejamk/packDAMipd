@@ -39,7 +39,8 @@ them, no need to create as a list by using c() or list function
 \examples{
 param_list <- define_parameters(
   cost_direct_med_A = 1701, cost_comm_care_A = 1055,
-  cost_direct_med_B = 1774, cost_comm_care_B = 1278, cost_direct_med_C = 6948,
+  cost_direct_med_B = 1774, cost_comm_care_B = 1278,
+  cost_direct_med_C = 6948,
   cost_comm_care_C = 2059, cost_zido = 2456, cost_health_A =
   "cost_direct_med_A + cost_comm_care_A",
   cost_health_B = "cost_direct_med_B + cost_comm_care_B",

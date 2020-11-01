@@ -9,14 +9,16 @@ value_ADL_scores_IPD(ind_part_data, adl_related_words, adl_scoring, adl_nrcode)
 \arguments{
 \item{ind_part_data}{a data frame containing IPD data}
 
-\item{adl_related_words}{related words to find out which columns contain adl data}
+\item{adl_related_words}{related words to find out which columns
+contain adl data}
 
 \item{adl_scoring}{ADL scoring table}
 
 \item{adl_nrcode}{non response code for ADL}
 }
 \value{
-ADL scores converted to T score included modified data, if success -1, if failure
+ADL scores converted to T score included modified data, if
+success -1, if failure
 }
 \description{
 Function to convert ADL scores to a T score

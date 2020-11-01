@@ -23,7 +23,8 @@ First the position of all operators are found and then return the parameters
 separated by those operators
 This happens only for one level
 find_parameters_btn_operators("a+b") provides a and b
-but  for find_parameters_btn_operators("mean(a,b)+b") provides mean(a,b) and b
+but  for find_parameters_btn_operators("mean(a,b)+b")
+provides mean(a,b) and b
 }
 \examples{
 find_parameters_btn_operators("a+b")

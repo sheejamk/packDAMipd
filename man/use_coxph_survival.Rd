@@ -2,8 +2,9 @@
 % Please edit documentation in R/2b_parameter_estimation_survival_functions.R
 \name{use_coxph_survival}
 \alias{use_coxph_survival}
-\title{##########################################################################################################
-Get the parameter values using the survival analysis using cox proportional hazard}
+\title{###########################################################################
+Get the parameter values using the survival analysis using cox
+proportional hazard}
 \usage{
 use_coxph_survival(
   param_to_be_estimated,
@@ -29,17 +30,20 @@ false by default}
 the results of the regression analysis
 }
 \description{
-##########################################################################################################
-Get the parameter values using the survival analysis using cox proportional hazard
+###########################################################################
+Get the parameter values using the survival analysis using cox
+proportional hazard
 }
 \details{
-plots baseline cumulative hazard function, survival function for each covariate
-while keeping the other fixed at the mean value (using plot_survival_cox_covariates),
+plots baseline cumulative hazard function, survival function for
+each covariate
+while keeping the other fixed at the mean value
+(using plot_survival_cox_covariates),
 survival function for each combination of covariate using survfit (using
 plot_return_survival_curve) and test for cox regression results
-It also returns  risk relative to mean (predicted at mean value of each covariate)
-along with the fit results coefficients, SE of coefficients, summary, and analysis
-of deviance
+It also returns  risk relative to mean (predicted at mean value
+of each covariate) along with the fit results coefficients,
+SE of coefficients, summary, and analysis of deviance
 }
 \examples{
 \donttest{

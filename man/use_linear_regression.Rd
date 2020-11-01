@@ -2,7 +2,7 @@
 % Please edit documentation in R/2a_parameter_estimation_functions.R
 \name{use_linear_regression}
 \alias{use_linear_regression}
-\title{##########################################################################################################
+\title{###########################################################################
 Get the parameter values using the linear regression}
 \usage{
 use_linear_regression(
@@ -20,30 +20,31 @@ use_linear_regression(
 
 \item{indep_var}{the independent variable (column name in data file)}
 
-\item{covariates}{list of covariates - calculations to be done before passing}
+\item{covariates}{list of covariates-calculations to be done before passing}
 
-\item{interaction}{boolean value to indicate interaction in the case of linear regression,
-false by default}
+\item{interaction}{boolean value to indicate interaction in the case of
+linear regression, false by default}
 }
 \value{
 the results of the regression analysis
 }
 \description{
-##########################################################################################################
+###########################################################################
 Get the parameter values using the linear regression
 }
 \details{
 This function returns the results and plots after doing linear regression
-Requires param to be estimated, dataset, independent variables and information on
-covariates, and interaction variables if there are
-Uses form_expression_lm to create the expression as per R standard for e.g lm(y ~ x )
-Returns the fit result,s summary results as returned by summary(), confidence interval for
-fit coefficients (ci_coeff), variance covariance matrix, cholesky decomposition matrix,
-results from correlation test, plot of diagnostic tests and model fit  assumptions, plot of model prediction
-diagnostic include AIC, R2, and BIC. The results of the prediction ie predicted values
-when each of covariate is fixed will be returned in prediction matrix
-predicted values will provide the mean value of param_to_to_estimated as calculated by the
-linear regression formula.
+Requires param to be estimated, dataset, independent variables and
+information on covariates, and interaction variables if there are
+Uses form_expression_lm to create the expression as per R standard
+for e.g lm(y ~ x ). Returns the fit result,s summary results as returned by
+summary(), confidence interval for fit coefficients (ci_coeff), variance
+covariance matrix, cholesky decomposition matrix, Results from correlation
+test, plot of diagnostic tests and model fit  assumptions, plot of model
+prediction diagnostic include AIC, R2, and BIC. The results of the
+prediction ie predicted values when each of covariate is fixed will be
+returned in prediction matrix predicted values will provide the mean value
+of param_to_to_estimated as calculated by the linear regression formula.
 ref:https://www.statmethods.net/stats/regression.html
 }
 \examples{

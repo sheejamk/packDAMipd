@@ -31,14 +31,16 @@ checks_markov_pick_method(
 
 \item{startup_util}{utility of states initially if any}
 
-\item{state_cost_only_prevalent}{boolean parameter to indicate if the costs for
-state occupancy is only for those in the state excluding those that transitioned new.
-This is relevant when the transition cost is provided for eg. in a state with dialysis
-the cost of previous dialysis is different from the newly dialysis cases.
-Then the state_cost_only_prevalent should be TRUE}
+\item{state_cost_only_prevalent}{boolean parameter to indicate
+if the costs for state occupancy is only for those in the state excluding
+those that transitioned new. This is relevant when the transition cost
+is provided for eg. in a state with dialysis the cost of previous dialysis
+is different from the newly dialysis cases.Then the
+state_cost_only_prevalent should be TRUE}
 
-\item{state_util_only_prevalent}{boolean parameter to indicate if the utilities for
-state occupancy is only for those in the state excluding those that transitioned new.}
+\item{state_util_only_prevalent}{boolean parameter to indicate if the
+utilities for state occupancy is only for those in the state excluding
+those that transitioned new.}
 }
 \value{
 changed method name

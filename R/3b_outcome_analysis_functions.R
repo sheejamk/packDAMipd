@@ -1,17 +1,18 @@
-########################################################################################
+##############################################################################
 #' Function to return mean age from a data frame
 #' @param this_data the data containing column with age
 #' @param age_nrcode non response code
 #' @return mean and sd, if success -1, if failure
 #' @examples
-#' this_data <- as.data.frame(cbind(num = c(1, 2, 3, 4), age = c(14, 25, 26, 30)))
+#' this_data <- as.data.frame(cbind(num = c(1, 2, 3, 4),
+#' age = c(14, 25, 26, 30)))
 #' get_mean_sd_age(this_data, NA)
 #' @export
 #' @details
 #' Age data is complete with the nr code given and get the mean and sd
 get_mean_sd_age <- function(this_data, age_nrcode) {
-  # Assumption is that age data is complete or incomplete data is denoted by empty
-  # entry or a valid non response code.
+  # Assumption is that age data is complete or incomplete data
+  # is denoted by empty entry or a valid non response code.
   # if age format is not right throw error
   #Error - data should not be NULL
   if (is.null(this_data))
@@ -33,7 +34,7 @@ get_mean_sd_age <- function(this_data, age_nrcode) {
     return(results)
   }
 }
-#####################################################################################
+##############################################################################
 #' Function to add EQ5D5L scores to IPD data
 #' @param ind_part_data a dataframe
 #' @param eq5d_nrcode non response code for EQ5D5L, default is NA
@@ -74,7 +75,8 @@ value_eq5d5L_IPD <- function(ind_part_data, eq5d_nrcode) {
     # pick the responses assumes the order
     eq5d_responses <- ind_part_data[rows_needed, eq5d_columnnames]
     # Check if the responses are numeric with range 1 to 5
-    results <- sapply(eq5d_columnnames, IPDFileCheck::test_data_numeric, eq5d_responses, eq5d_nrcode, 1, 5)
+    results <- sapply(eq5d_columnnames, IPDFileCheck::test_data_numeric,
+                      eq5d_responses, eq5d_nrcode, 1, 5)
     if (any(results < 0)) {
       stop("eq5d responses do not seem right")
     } else {
@@ -92,7 +94,7 @@ value_eq5d5L_IPD <- function(ind_part_data, eq5d_nrcode) {
   }
   return(ind_part_data)
 }
-##########################################################################################################
+##############################################################################
 #' Function to map EQ5D5L scores to EQ5D3L scores and then add to IPD data
 #' @param ind_part_data a data frame
 #' @param eq5d_nrcode non response code for EQ5D5L, default is NA
@@ -100,7 +102,8 @@ value_eq5d5L_IPD <- function(ind_part_data, eq5d_nrcode) {
 #' @examples
 #' \donttest{
 #' library(valueEQ5D)
-#' datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
+#' datafile <- system.file("extdata", "trial_data.csv",
+#' package = "packDAMipd")
 #' trial_data <- load_trial_data(datafile)
 #' map_eq5d5Lto3L_VanHout(trial_data, NA)
 #' }
@@ -134,7 +137,8 @@ map_eq5d5Lto3L_VanHout <- function(ind_part_data, eq5d_nrcode) {
     # pick the responses assumes the order
     eq5d_responses <- ind_part_data[rows_needed, eq5d_columnnames]
     # Check if the responses are numeric with range 1 to 5
-    results <- sapply(eq5d_columnnames, IPDFileCheck::test_data_numeric, eq5d_responses, eq5d_nrcode, 1, 5)
+    results <- sapply(eq5d_columnnames, IPDFileCheck::test_data_numeric,
+                      eq5d_responses, eq5d_nrcode, 1, 5)
     if (any(results != 0)) {
       stop("eq5d responses do not seem right")
     } else {
@@ -145,7 +149,7 @@ map_eq5d5Lto3L_VanHout <- function(ind_part_data, eq5d_nrcode) {
           eq5d_responses[i, 4], eq5d_responses[i, 5],
           sep = ""
         ))
-        index5L[i] <- valueEQ5D::map5Lto3LInd("UK", "CW", score_5L)
+        index5L[i] <- valueEQ5D::map_5Lto3L_Ind("UK", "CW", score_5L)
       }
       new_colname <- paste("EQ5D3L_from5L")
       ind_part_data[rows_needed, new_colname] <- index5L
@@ -153,19 +157,22 @@ map_eq5d5Lto3L_VanHout <- function(ind_part_data, eq5d_nrcode) {
   }
   return(ind_part_data)
 }
-##########################################################################################################
+##############################################################################
 #' Function to convert ADL scores to a T score
 #' @param ind_part_data a data frame containing IPD data
-#' @param adl_related_words related words to find out which columns contain adl data
+#' @param adl_related_words related words to find out which columns
+#' contain adl data
 #' @param adl_scoring ADL scoring table
 #' @param adl_nrcode non response code for ADL
-#' @return ADL scores converted to T score included modified data, if success -1, if failure
+#' @return ADL scores converted to T score included modified data, if
+#' success -1, if failure
 #' @examples
 #' datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
 #' trial_data <- load_trial_data(datafile)
 #' value_ADL_scores_IPD(trial_data,c("tpi"),adl_scoring,NA)
 #' @export
-value_ADL_scores_IPD <- function(ind_part_data, adl_related_words, adl_scoring, adl_nrcode) {
+value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
+                                 adl_scoring, adl_nrcode) {
   #Error - data should not be NULL
   if (is.null(ind_part_data))
     stop("data should not be NULL")
@@ -174,7 +181,8 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words, adl_scoring, 
     stop("ADL scoring table should not be NULL")
 
   adl_scoring_data_columns <- colnames(adl_scoring)
-  adl_details <- get_outcome_details(ind_part_data, "adl", adl_related_words, multiple = TRUE)
+  adl_details <- get_outcome_details(ind_part_data, "adl",
+                                     adl_related_words, multiple = TRUE)
   adl_columnnames <- adl_details$name
   ind_part_data <- data.frame(ind_part_data)
   timepoint_details <- get_timepoint_details(ind_part_data)
@@ -200,13 +208,15 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words, adl_scoring, 
       stop("error- ADL should have 8 columns")
     } else {
       # Check if the responses are numeric with range 1 to 5
-      results <- sapply(adl_columnnames, IPDFileCheck::test_data_numeric, adl_responses, adl_nrcode, 1, 5)
+      results <- sapply(adl_columnnames, IPDFileCheck::test_data_numeric,
+                        adl_responses, adl_nrcode, 1, 5)
     }
     if (any(results < 0)) {
       stop("ADL responses do not seem right")
     } else {
       # Check if ADL scoring table has columns defined in the config file
-      if (IPDFileCheck::test_columnnames(adl_scoring_data_columns, adl_scoring) == 0) {
+      if (IPDFileCheck::test_columnnames(adl_scoring_data_columns,
+                                         adl_scoring) == 0) {
         # Replace NA with 0
         adl_scoring[is.na(adl_scoring)] <- 0
         # Find the sum of scores
@@ -221,13 +231,14 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words, adl_scoring, 
         new_colname <- paste("ADLTscore")
         ind_part_data[rows_needed, new_colname] <- TscoreADL
       } else {
-        stop("Error ADL scoring column names are not equal to what specified in configuration file")
+        stop("Error ADL scoring column names are not equal to what specified
+             in configuration file")
       }
     }
   }
   return(ind_part_data)
 }
-##########################################################################################################
+##############################################################################
 #' Function to estimate the cost of tablets taken (from IPD)
 #' @param ind_part_data a dataframe containing IPD
 #' @param shows_related_words a dataframe containing IPD
@@ -243,7 +254,8 @@ value_Shows_IPD <- function(ind_part_data, shows_related_words, shows_nrcode) {
   if (is.null(ind_part_data))
     stop("data should not be NULL")
 
-  shows_details <- get_outcome_details(ind_part_data, "shows", shows_related_words, multiple = TRUE)
+  shows_details <- get_outcome_details(ind_part_data, "shows",
+                                       shows_related_words, multiple = TRUE)
   shows_columnnames <- shows_details$name
   ind_part_data <- data.frame(ind_part_data)
   timepoint_details <- get_timepoint_details(ind_part_data)
@@ -268,8 +280,10 @@ value_Shows_IPD <- function(ind_part_data, shows_related_words, shows_nrcode) {
     if (length(shows_columnnames) != 10) {
       stop("Error- ShOWS should have 10 columns")
     } else {
-      # Check if the responses are numeric with range 0 to 3 qctually --in the data it is coded from 1to 4.
-      results <- sapply(shows_columnnames, IPDFileCheck::test_data_numeric, shows_responses, shows_nrcode, 1, 4)
+      # Check if the responses are numeric with range 0 to 3 qctually
+      ## --in the data it is coded from 1to 4.
+      results <- sapply(shows_columnnames, IPDFileCheck::test_data_numeric,
+                        shows_responses, shows_nrcode, 1, 4)
     }
     if (any(results < 0)) {
       stop("ShOWS responses do not seem right")

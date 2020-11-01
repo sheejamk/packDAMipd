@@ -27,18 +27,20 @@ markov_model(
 
 \item{discount}{rate of discount for costs and qalys}
 
-\item{parameter_values}{parameters for assigning health states and probabilities}
+\item{parameter_values}{parameters for assigning health states and
+probabilities}
 
 \item{half_cycle_correction}{boolean to indicate half cycle correction}
 
-\item{state_cost_only_prevalent}{boolean parameter to indicate if the costs for
-state occupancy is only for those in the state excluding those that transitioned new.
-This is relevant when the transition cost is provided for eg. in a state with dialysis
-the cost of previous dialysis is different from the newly dialysis cases.
-Then the state_cost_only_prevalent should be TRUE}
+\item{state_cost_only_prevalent}{boolean parameter to indicate if the costs
+for state occupancy is only for those in the state excluding those that
+transitioned new. This is relevant when the transition cost is provided for
+eg. in a state with dialysis the cost of previous dialysis is different from
+the newly dialysis cases. Then the state_cost_only_prevalent should be TRUE}
 
-\item{state_util_only_prevalent}{boolean parameter to indicate if the utilites for
-state occupancy is only for those in the state excluding those that transitioned new.}
+\item{state_util_only_prevalent}{boolean parameter to indicate if the
+utilities for state occupancy is only for those in the state excluding
+those that transitioned new.}
 
 \item{method}{what type of half cycle correction needed}
 
@@ -53,12 +55,13 @@ Markov trace
 Definition of Markov model and trace
 }
 \details{
-Use the strategy, cycles, initial state values creating the markov model and trace
-As many probabilities /cost/utility value depend on age/time the evaluation
-and assignment happens during each cycle. At the heart it does a matrix multiplication
-using the previous row of the trace matrix and the columns of the transition matrix.
-Also checks for population loss, calculates cumulative costs and qalys
-(accounts for discounting and half cycle correction)
+Use the strategy, cycles, initial state values creating the markov model
+and trace. As many probabilities /cost/utility value depend on age/time the
+evaluation and assignment happens during each cycle. At the heart it does
+a matrix multiplication using the previous row of the trace matrix and the
+columns of the transition matrix. Also checks for population loss, calculates
+cumulative costs and qalys (accounts for discounting
+and half cycle correction)
 }
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))

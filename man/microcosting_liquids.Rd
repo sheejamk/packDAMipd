@@ -41,7 +41,8 @@ microcosting_liquids(
 \item{bottle_size_unit}{unit which size of the bottle is expressed}
 
 \item{unit_cost_data}{unit costs data
-#' assumes unit cost data contains the columns, name of medication, form/type, strength,
+assumes unit cost data contains the columns, name of medication,
+form/type, strength,
 unit of strength, preparation, unitcost, size and size unit
 (in which except name and form are to be passed in)}
 
@@ -61,7 +62,8 @@ unit of strength, preparation, unitcost, size and size unit
 
 \item{list_of_code_bottle_size}{list of codes for the bottle sizes fi used}
 
-\item{equiv_dose}{if cost per equivalent doses are to be calculates, provide equiv_dose}
+\item{equiv_dose}{if cost per equivalent doses are to be calculates,
+provide equiv_dose}
 
 \item{basis_time}{time needed to convert , default is day}
 }
@@ -72,8 +74,10 @@ the calculated cost of liquids along with original data
 Function to estimate the cost of liquids taken (from IPD)
 }
 \examples{
-med_costs_file <- system.file("extdata", "average_unit_costs_med.csv", package = "packDAMipd")
-data_file <- system.file("extdata", "resource_use_l.csv", package = "packDAMipd")
+med_costs_file <- system.file("extdata", "average_unit_costs_med.csv",
+package = "packDAMipd")
+data_file <- system.file("extdata", "resource_use_l.csv",
+package = "packDAMipd")
 ind_part_data <- load_trial_data(data_file)
 med_costs <- load_trial_data(med_costs_file)
 res <- microcosting_liquids(

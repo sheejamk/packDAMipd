@@ -10,8 +10,8 @@ get_timepoint_details(trialdata)
 \item{trialdata, }{data containing individual level trial data}
 }
 \value{
-the name of the variable related to time point and the unique contents
-if success, else error
+the name of the variable related to time point and
+the unique contents if success, else error
 }
 \description{
 Function to get the details of the time point column
@@ -22,5 +22,6 @@ preferably  column names "time point", "times" or "time" or "timepoint".
 If multiple column names match these, then first match will be chosen.
 }
 \examples{
-get_timepoint_details(data.frame("time" = c(21, 15), "arm" = c("control", "intervention")))
+get_timepoint_details(data.frame("time" = c(21, 15),
+"arm" = c("control", "intervention")))
 }

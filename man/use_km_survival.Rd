@@ -2,7 +2,7 @@
 % Please edit documentation in R/2b_parameter_estimation_survival_functions.R
 \name{use_km_survival}
 \alias{use_km_survival}
-\title{##########################################################################################################
+\title{###########################################################################
 Get the parameter values using the Kaplan-Meier survival analysis}
 \usage{
 use_km_survival(
@@ -28,15 +28,16 @@ use_km_survival(
 the results of the regression analysis, fit results, summary and plot
 }
 \description{
-##########################################################################################################
+###########################################################################
 Get the parameter values using the Kaplan-Meier survival analysis
 }
 \details{
 This function is for survival analysis using Kaplan Meier.
 This plots the cumulative survival function for each combination of covariate
 If the covariate is numeric, R takes it as different levels.
-The plot uses the returned list of survfit and extracts the time and the strata from
-summary of the fit (implemented in plot_return_survival_curve function)
+The plot uses the returned list of survfit and extracts the time
+and the strata from summary of the fit (implemented in
+plot_return_survival_curve function)
 }
 \examples{
 \donttest{

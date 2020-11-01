@@ -33,8 +33,8 @@ plot and the survival function values
 Predict risk/hazard function for  cox ph regression
 }
 \details{
-"risk" option for "type" returns the hazard ratio relative to mean e.g given below
-For lung data with
+"risk" option for "type" returns the hazard ratio relative to mean
+e.g given below For lung data with
 data_for_survival <- survival::lung
 fit <- use_coxph_survival("status", data_for_survival, "sex",
 covariates = c("ph.ecog"), "time")

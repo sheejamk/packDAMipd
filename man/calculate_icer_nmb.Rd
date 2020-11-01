@@ -7,7 +7,8 @@
 calculate_icer_nmb(list_markov, threshold, comparator = NULL)
 }
 \arguments{
-\item{list_markov}{list of Markov model objects with their Markov trace, cost matrix and utility matrix}
+\item{list_markov}{list of Markov model objects with their Markov trace,
+cost matrix and utility matrix}
 
 \item{threshold}{threshold value of WTP}
 

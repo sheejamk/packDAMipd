@@ -1,14 +1,16 @@
-#' ##########################################################################################################
+#' ############################################################################
 #' Get the parameter values using the survival analysis
-#'
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
 #' @param indep_var the independent variable (column name in data file)
-#' @param info_get_method additional information on methods e.g Kaplan-Meier ot hazard
-#' @param info_distribution distribution name  eg. for logistic regression -binomial
-#' @param covariates list of covariates - calculations to be done before passing
-#' @param timevar_survival time variable for survival analysis, default is NA
-#'
+#' @param info_get_method additional information on methods e.g
+#' Kaplan-Meier ot hazard
+#' @param info_distribution distribution name  eg. for logistic
+#' regression -binomial
+#' @param covariates list of covariates - calculations to be done
+#' before passing
+#' @param timevar_survival time variable for survival analysis,
+#' default is NA
 #' @return the results of the regression analysis
 #' @examples
 #' \donttest{
@@ -26,40 +28,32 @@
 use_survival_analysis <- function(param_to_be_estimated, dataset,
                                   indep_var, info_get_method, info_distribution,
                                   covariates, timevar_survival) {
-  if (is.null(param_to_be_estimated)) {
-    stop("Need to provide parameter to be estimated")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Need to provide parameter to be estimated")
-  }
+  # checking if parameters are NULL or NA
+  check_list <- list(param_to_be_estimated, indep_var, info_get_method)
+  checks <- sapply(check_list, check_null_na)
+  if (sum(checks) != 0) stop("Error - some parameters are NULL or NA")
+
   if (is.null(dataset)) {
     stop("Need to provide a data set or file to lookup the data")
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
+    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }
-  if (is.null(indep_var)) {
-    stop("Need to provide the independent variable")
-  }else{
-    if (is.na(indep_var))
-      stop("Need to provide the independent variable")
-  }
-  if (is.null(info_get_method)) {
-    stop("Please provide  a statistical method")
-  }else{
-    if (is.na(info_get_method))
-      stop("Please provide  a statistical method")
-  }
-  data_details <- c(param_to_be_estimated, indep_var, covariates, timevar_survival)
+
+  data_details <- c(param_to_be_estimated, indep_var, covariates,
+                    timevar_survival)
   data_details <- data_details[!is.na(data_details)]
-  check_cols_exist <- unlist(lapply(data_details, IPDFileCheck::check_column_exists, dataset))
+  check_cols_exist <- unlist(lapply(data_details,
+                                    IPDFileCheck::check_column_exists, dataset))
   if (sum(check_cols_exist) != 0) {
     stop("Given column(s) can not be found !!!")
   }
   caps_info_method <- toupper(info_get_method)
-  if (caps_info_method == "PARAMETRIC SURVIVAL" | caps_info_method == "PARAMETRIC") {
+  if (caps_info_method == "PARAMETRIC SURVIVAL" |
+      caps_info_method == "PARAMETRIC") {
     results <- use_parametric_survival(
       param_to_be_estimated, dataset, indep_var,
       info_distribution, covariates, timevar_survival
@@ -94,37 +88,40 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
   }
   return(results)
 }
-#' ##########################################################################################################
+#' ###########################################################################
 #' Get the parameter values using the survival analysis parametric survival
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
 #' @param indep_var the independent variable (column name in data file)
-#' @param info_distribution distribution name  eg. for logistic regression -binomial
+#' @param info_distribution distribution name  eg. for logistic
+#' regression -binomial
 #' @param covariates list of covariates
-#' @param timevar_survival time variable for survival analysis, default is NA
+#' @param timevar_survival time variable for survival analysis,
+#' default is NA
 #' @return the results of the regression analysis
 #' @examples
 #' \donttest{
 #' data_for_survival <- survival::lung
-#' surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
-#'          info_distribution = "weibull",covariates = c("ph.ecog"), "time")
+#' surv_estimated <- use_parametric_survival("status",
+#' data_for_survival, "sex", info_distribution = "weibull",
+#' covariates = c("ph.ecog"), "time")
 #' }
 #' @export
 #' @importFrom SurvRegCensCov ConvertWeibull
 #' @details
-#' This function is the last in the layer of function for parametric survival analysis
-#' This then returns the parameters of interest, plots the results etc
-#' if the distribution is weibull it uses the package SurvRegCensCov for easy interpretation
-#' of results
-#' Returns the fit result, summary of regression, variance-covariance matrix of coeff,
-#' cholesky decomposition, the parameters that define the assumed distribution
-#' and the plot of model prediction
+#' This function is the last in the layer of function for parametric
+#' survival analysis. This then returns the parameters of interest, plots
+#' the results etc if the distribution is weibull it uses the package
+#' SurvRegCensCov for easy interpretation of results
+#' Returns the fit result, summary of regression, variance-covariance
+#' matrix of coeff, cholesky decomposition, the parameters that define the
+#' assumed distribution and the plot of model prediction
 #' Using survfit from survival package to plot the survival curve
 #' R's weibull distribution is defined as std weibull in terms of a and b
 #' as (a/b) (x/b)^ (a-1) exp((-x/b)^a) where a is the shape and b is the scale
 #' In HE the weibull distribution is parameterised as bit different
-#' it is like gamma.lambda. t^(gamma-1) .exp(-lambda*t^gamma) where gamma is the shape
-#' and lambda is the scale. The relationship is as below.
+#' it is like gamma.lambda. t^(gamma-1) .exp(-lambda*t^gamma) where
+#' gamma is the shape and lambda is the scale. The relationship is as below.
 #' HE_shape = rweibull_shape
 #' HE_scale = rweibull_scale ^(-rweibull_shape)
 #' The survreg shape and scale are again bit different and they are
@@ -139,32 +136,28 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
                                     indep_var, info_distribution, covariates,
                                     timevar_survival) {
 
-  if (is.null(param_to_be_estimated)) {
-    stop("Need to provide parameter to be estimated")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Need to provide parameter to be estimated")
-  }
+  # checking if parameters are NULL or NA
+  check_list <- list(param_to_be_estimated, indep_var)
+  checks <- sapply(check_list, check_null_na)
+  if (sum(checks) != 0) stop("Error - some parameters are NULL or NA")
+
   if (is.null(dataset)) {
     stop("Need to provide a data set or file to lookup the data")
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
+    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }
-  if (is.null(indep_var)) {
-    stop("Need to provide the independent variable")
-  }else{
-    if (is.na(indep_var))
-      stop("Need to provide the independent variable")
-  }
+
   covariates_list <- make_string_covariates(covariates)
 
   if (is.na(timevar_survival)) {
     stop("For survival analysis, please provide the variable to use as time ")
   } else {
-    surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")", sep = "")
+    surv_object <- paste("survival::Surv(", timevar_survival, ",",
+                         param_to_be_estimated, ")", sep = "")
   }
   if (is.na(info_distribution)) {
     stop("Error - information on distribution is missing")
@@ -172,13 +165,17 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
     this_dist <- find_survreg_distribution(info_distribution)
   }
   if (sum(is.na(covariates_list)) != 0) {
-    expression_recreated <- paste0("survival::survreg", "(", surv_object, " ~ ", indep_var, ", ",
-                                   "data = dataset,  dist = \"", this_dist, "\" ) ",
+    expression_recreated <- paste0("survival::survreg", "(", surv_object, " ~ ",
+                                   indep_var, ", ",
+                                   "data = dataset,  dist = \"",
+                                   this_dist, "\" ) ",
                                    sep = ""
     )
   } else {
-    expression_recreated <- paste0("survival::survreg", "(", surv_object, " ~ ", covariates_list, " + ",
-                                   indep_var, ", ", "data = dataset,  dist = \"",
+    expression_recreated <- paste0("survival::survreg", "(", surv_object, " ~ ",
+                                   covariates_list, " + ",
+                                   indep_var, ", ",
+                                   "data = dataset,  dist = \"",
                                    this_dist, "\" ) ",
                                    sep = ""
     )
@@ -195,7 +192,8 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
 
 
   if (toupper(this_dist) == "WEIBULL") {
-    distribution_parameters <- SurvRegCensCov::ConvertWeibull(fit, conf.level = 0.95)
+    distribution_parameters <- SurvRegCensCov::ConvertWeibull(fit,
+                                                        conf.level = 0.95)
     model_coeff <- distribution_parameters$vars
     LB <- model_coeff[, 1] - stats::qnorm(1 - 0.95 / 2) * model_coeff[, 2]
     UB <- model_coeff[, 1] + stats::qnorm(1 - 0.95 / 2) * model_coeff[, 2]
@@ -215,10 +213,12 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
   N <- nrow(dataset)
   McFadden_r2 <- as.vector(1 - (LLf / LL0))
   CoxSnaell_r2 <- as.vector(1 - exp((2 / N) * (LL0 - LLf)))
-  Nagelkerke_r2 <- as.vector((1 - exp((2 / N) * (LL0 - LLf))) / (1 - exp(LL0) ^ (2 / N)))
+  Nagelkerke_r2 <- as.vector((1 - exp((2 / N) * (LL0 - LLf))) /
+                               (1 - exp(LL0) ^ (2 / N)))
 
 
-  residuals_result <- plot_return_residual_survival(param_to_be_estimated, indep_var, covariates, fit)
+  residuals_result <- plot_return_residual_survival(param_to_be_estimated,
+                                                    indep_var, covariates, fit)
 
   model_fit_assessment <- structure(list(
     AIC = AIC,
@@ -250,7 +250,7 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
   return(results)
 }
 
-#' ##########################################################################################################
+#' ###########################################################################
 #' Get the parameter values using the Kaplan-Meier survival analysis
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
@@ -274,29 +274,24 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
 #' This function is for survival analysis using Kaplan Meier.
 #' This plots the cumulative survival function for each combination of covariate
 #' If the covariate is numeric, R takes it as different levels.
-#' The plot uses the returned list of survfit and extracts the time and the strata from
-#' summary of the fit (implemented in plot_return_survival_curve function)
+#' The plot uses the returned list of survfit and extracts the time
+#' and the strata from summary of the fit (implemented in
+#' plot_return_survival_curve function)
 use_km_survival <- function(param_to_be_estimated, dataset,
                             indep_var, covariates, timevar_survival) {
-  if (is.null(param_to_be_estimated)) {
-    stop("Need to provide parameter to be estimated")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Need to provide parameter to be estimated")
-  }
+  # checking if parameters are NULL or NA
+  check_list <- list(param_to_be_estimated, indep_var)
+  checks <- sapply(check_list, check_null_na)
+  if (sum(checks) != 0) stop("Error - some parameters are NULL or NA")
+
   if (is.null(dataset)) {
     stop("Need to provide a data set or file to lookup the data")
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
+    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
-  }
-  if (is.null(indep_var)) {
-    stop("Need to provide the independent variable")
-  }else{
-    if (is.na(indep_var))
-      stop("Need to provide the independent variable")
   }
 
   covariates_list <- make_string_covariates(covariates)
@@ -304,21 +299,22 @@ use_km_survival <- function(param_to_be_estimated, dataset,
   if (is.na(timevar_survival)) {
     stop("For survival analysis, please provide the variable to use as time ")
   } else {
-    surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")",
-      sep = ""
+    surv_object <- paste("survival::Surv(", timevar_survival, ",",
+                         param_to_be_estimated, ")", sep = ""
     )
   }
   # create the expression  for km fit
   if (sum(is.na(covariates_list)) != 0) {
-    expression_recreated <- paste0("survival::survfit", "(", surv_object, " ~ ", indep_var, ",type =",
-      "\"kaplan-meier\"", ", ", "data = dataset) ",
-      sep = ""
+    expression_recreated <- paste0("survival::survfit", "(",
+                                   surv_object, " ~ ", indep_var, ",type =",
+                                   "\"kaplan-meier\"", ", ", "data = dataset) ",
+                                   sep = ""
     )
   } else {
-    expression_recreated <- paste0("survival::survfit", "(", surv_object, " ~ ", covariates_list, " + ",
+    expression_recreated <- paste0("survival::survfit", "(", surv_object,
+                                   " ~ ", covariates_list, " + ",
       indep_var, ", type =", "\"kaplan-meier\"", ", ",
-      "data = dataset) ",
-      sep = ""
+      "data = dataset) ", sep = ""
     )
   }
   # fit result
@@ -338,7 +334,7 @@ use_km_survival <- function(param_to_be_estimated, dataset,
   ))
   return(results)
 }
-#' ##########################################################################################################
+#' ###########################################################################
 #' Get the parameter values using the survival analysis method FH
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
@@ -357,51 +353,47 @@ use_km_survival <- function(param_to_be_estimated, dataset,
 #' This function is for survival analysis using Kaplan Meier.
 #' This plots the cumulative survival function for each combination of covariate
 #' If the covariate is numeric, R takes it as different levels.
-#' The plot uses the returned list of survfit and extracts the time and the strata from
-#' summary of the fit (implemented in plot_return_survival_curve function)
+#' The plot uses the returned list of survfit and extracts the time and the
+#' strata from summary of the fit
+#' (implemented in plot_return_survival_curve function)
 #' @export
 use_fh_survival <- function(param_to_be_estimated, dataset,
                             indep_var, covariates, timevar_survival) {
-  if (is.null(param_to_be_estimated)) {
-    stop("Need to provide parameter to be estimated")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Need to provide parameter to be estimated")
-  }
+  # checking if parameters are NULL or NA
+  check_list <- list(param_to_be_estimated, indep_var)
+  checks <- sapply(check_list, check_null_na)
+  if (sum(checks) != 0) stop("Error - some parameters are NULL or NA")
+
   if (is.null(dataset)) {
     stop("Need to provide a data set or file to lookup the data")
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
+    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }
-  if (is.null(indep_var)) {
-    stop("Need to provide the independent variable")
-  }else{
-    if (is.na(indep_var))
-      stop("Need to provide the independent variable")
-  }
+
   covariates_list <- make_string_covariates(covariates)
 
   if (is.na(timevar_survival)) {
     stop("For survival analysis, please provide the variable to use as time ")
   } else {
-    surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")",
-      sep = ""
+    surv_object <- paste("survival::Surv(", timevar_survival, ",",
+                         param_to_be_estimated, ")", sep = ""
     )
   }
   # generate the expression
   if (sum(is.na(covariates_list)) != 0) {
-    expression_recreated <- paste0("survival::survfit", "(", surv_object, " ~ ", indep_var, ",
-                                   type =", "\"fleming-harrington\"", ", ", "data = dataset) ",
+    expression_recreated <- paste0("survival::survfit", "(", surv_object, " ~ ",
+    indep_var, ", type =", "\"fleming-harrington\"", ", ", "data = dataset) ",
       sep = ""
     )
   } else {
-    expression_recreated <- paste0("survival::survfit", "(", surv_object, " ~ ", covariates_list, " + ",
-      indep_var, ", type =", "\"fleming-harrington\"", ", ",
-      "data = dataset) ",
-      sep = ""
+    expression_recreated <- paste0("survival::survfit", "(", surv_object, " ~ ",
+                                   covariates_list, " + ", indep_var,
+                                   ", type =", "\"fleming-harrington\"", ", ",
+      "data = dataset) ", sep = ""
     )
   }
   # fit result
@@ -421,7 +413,7 @@ use_fh_survival <- function(param_to_be_estimated, dataset,
   ))
   return(results)
 }
-#' ##########################################################################################################
+#' ############################################################################
 #' Get the parameter values using the survival analysis using FH2 method
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
@@ -441,48 +433,42 @@ use_fh_survival <- function(param_to_be_estimated, dataset,
 #' This function is for survival analysis using Kaplan Meier.
 #' This plots the cumulative survival function for each combination of covariate
 #' If the covariate is numeric, R takes it as different levels.
-#' The plot uses the returned list of survfit and extracts the time and the strata from
-#' summary of the fit (implemented in plot_return_survival_curve function)
+#' The plot uses the returned list of survfit and extracts the time and
+#' the strata from summary of the fit
+#' (implemented in plot_return_survival_curve function)
 use_fh2_survival <- function(param_to_be_estimated, dataset,
                              indep_var, covariates, timevar_survival) {
-  if (is.null(param_to_be_estimated)) {
-    stop("Need to provide parameter to be estimated")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Need to provide parameter to be estimated")
-  }
+  # checking if parameters are NULL or NA
+  check_list <- list(param_to_be_estimated, indep_var)
+  checks <- sapply(check_list, check_null_na)
+  if (sum(checks) != 0) stop("Error - some parameters are NULL or NA")
+
   if (is.null(dataset)) {
     stop("Need to provide a data set or file to lookup the data")
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
+    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }
-  if (is.null(indep_var)) {
-    stop("Need to provide the independent variable")
-  }else{
-    if (is.na(indep_var))
-      stop("Need to provide the independent variable")
-  }
-
   covariates_list <- make_string_covariates(covariates)
   if (is.na(timevar_survival)) {
     stop("For survival analysis, please provide the variable to use as time ")
   } else {
-    surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")",
+    surv_object <- paste("survival::Surv(", timevar_survival, ",",
+                         param_to_be_estimated, ")",
       sep = ""
     )
   }
   # generate the expression
   if (sum(is.na(covariates_list)) != 0) {
-    expression_recreated <- paste0("survival::survfit", "(", surv_object, " ~ ", indep_var,
-      ", type =", "\"fh2\"",
-      ", ", "data = dataset) ",
-      sep = ""
-    )
+    expression_recreated <- paste0("survival::survfit", "(", surv_object,
+                                   " ~ ", indep_var, ", type =", "\"fh2\"",
+                                   ", ", "data = dataset) ", sep = "")
   } else {
-    expression_recreated <- paste0("survival::survfit", "(", surv_object, " ~ ", covariates_list,
+    expression_recreated <- paste0("survival::survfit", "(",
+                                   surv_object, " ~ ", covariates_list,
       " + ", indep_var, ", type =", "\"fh2\"", ", ", "data = dataset) ",
       sep = ""
     )
@@ -504,8 +490,9 @@ use_fh2_survival <- function(param_to_be_estimated, dataset,
   ))
   return(results)
 }
-#' ##########################################################################################################
-#' Get the parameter values using the survival analysis using cox proportional hazard
+#' ###########################################################################
+#' Get the parameter values using the survival analysis using cox
+#' proportional hazard
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
 #' @param indep_var the independent variable (column name in data file)
@@ -527,34 +514,30 @@ use_fh2_survival <- function(param_to_be_estimated, dataset,
 #' @export
 #' @importFrom survminer ggcoxzph
 #' @details
-#' plots baseline cumulative hazard function, survival function for each covariate
-#' while keeping the other fixed at the mean value (using plot_survival_cox_covariates),
+#' plots baseline cumulative hazard function, survival function for
+#' each covariate
+#' while keeping the other fixed at the mean value
+#' (using plot_survival_cox_covariates),
 #' survival function for each combination of covariate using survfit (using
 #' plot_return_survival_curve) and test for cox regression results
-#' It also returns  risk relative to mean (predicted at mean value of each covariate)
-#' along with the fit results coefficients, SE of coefficients, summary, and analysis
-#' of deviance
+#' It also returns  risk relative to mean (predicted at mean value
+#' of each covariate) along with the fit results coefficients,
+#' SE of coefficients, summary, and analysis of deviance
 use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
                                covariates, timevar_survival) {
-  if (is.null(param_to_be_estimated)) {
-    stop("Need to provide parameter to be estimated")
-  }else{
-    if (is.na(param_to_be_estimated))
-      stop("Need to provide parameter to be estimated")
-  }
+  # checking if parameters are NULL or NA
+  check_list <- list(param_to_be_estimated, indep_var)
+  checks <- sapply(check_list, check_null_na)
+  if (sum(checks) != 0) stop("Error - some parameters are NULL or NA")
+
   if (is.null(dataset)) {
     stop("Need to provide a data set or file to lookup the data")
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
+    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
-  }
-  if (is.null(indep_var)) {
-    stop("Need to provide the independent variable")
-  }else{
-    if (is.na(indep_var))
-      stop("Need to provide the independent variable")
   }
 
   covariates_list <- make_string_covariates(covariates)
@@ -562,27 +545,30 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
   if (is.na(timevar_survival)) {
     stop("For survival analysis, please provide the variable to use as time ")
   } else {
-    surv_object <- paste("survival::Surv(", timevar_survival, ",", param_to_be_estimated, ")",
-      sep = ""
+    surv_object <- paste("survival::Surv(", timevar_survival, ",",
+                         param_to_be_estimated, ")", sep = ""
     )
   }
   if (sum(is.na(covariates_list)) != 0) {
-    expression_recreated <- paste0("survival::coxph", "(", surv_object, " ~ ", indep_var, ", ",
-      "data = dataset) ",
-      sep = ""
+    expression_recreated <- paste0("survival::coxph", "(", surv_object, " ~ ",
+                                   indep_var, ", ", "data = dataset) ",
+                                   sep = ""
     )
-    expression_recreated_forsurfit <- paste0("survival::survfit", "(", surv_object, " ~ ", indep_var, ", ",
-      "data = dataset)",
-      sep = ""
+    expression_recreated_forsurfit <- paste0("survival::survfit", "(",
+                                             surv_object, " ~ ",
+                                             indep_var, ", ", "data = dataset)",
+                                             sep = ""
     )
   } else {
-    expression_recreated <- paste0("survival::coxph", "(", surv_object, " ~ ", covariates_list, " + ",
-      indep_var, ", ", "data = dataset) ",
-      sep = ""
+    expression_recreated <- paste0("survival::coxph", "(", surv_object, " ~ ",
+                                   covariates_list, " + ", indep_var, ", ",
+                                   "data = dataset) ", sep = ""
     )
-    expression_recreated_forsurfit <- paste0("survival::survfit", "(", surv_object, " ~ ", covariates_list, " + ",
-      indep_var, ", ", "data = dataset)",
-      sep = ""
+    expression_recreated_forsurfit <- paste0("survival::survfit", "(",
+                                             surv_object, " ~ ",
+                                             covariates_list, " + ",
+                                             indep_var, ", ", "data = dataset)",
+                                             sep = ""
     )
   }
   # fit result
@@ -617,12 +603,14 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
   CoxSnaell_r2 <- as.vector(1 - exp((2 / N) * (LL0 - LLf)))
   Nagelkerke_r2 <- as.vector((1 - exp((2 / N) * (LL0 - LLf))) / (1 - exp(LL0) ^ (2 / N)))
   # wald test for model diagnostics
-  wald_test <- as.data.frame(cbind(summary$coefficients[, 4], summary$coefficients[, 5]))
+  wald_test <- as.data.frame(cbind(summary$coefficients[, 4],
+                                   summary$coefficients[, 5]))
   colnames(wald_test) <- c("wald.test", "p.value")
   # analysis of deviance
   analysis_deviance <- car::Anova(fit, test.statistic = "LR")
   # plot of residuals to check themodel fit
-  residuals_result <- plot_return_residual_cox(param_to_be_estimated, indep_var, covariates, fit, dataset)
+  residuals_result <- plot_return_residual_cox(param_to_be_estimated,
+                                        indep_var, covariates, fit, dataset)
 
   model_fit_assessment <- structure(list(
     AIC = AIC,
@@ -634,10 +622,12 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
     residuals_result = residuals_result
     ))
   # survival cox curves
-  plot_survival_cox_covariates(fit, dataset, param_to_be_estimated, covariates, indep_var)
+  plot_survival_cox_covariates(fit, dataset, param_to_be_estimated,
+                               covariates, indep_var)
   # model diagnostics and the plor
   model_diagnostics <- survival::cox.zph(fit)
-  name_file_plot <- paste0("Coxph_survival_diganostic_", param_to_be_estimated, "_", indep_var,
+  name_file_plot <- paste0("Coxph_survival_diganostic_",
+                           param_to_be_estimated, "_", indep_var,
     ".pdf",
     sep = ""
   )
@@ -645,7 +635,8 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
   plot_prediction <- survminer::ggcoxzph(model_diagnostics)
   grDevices::dev.off()
   # prediction after cox fit
-  prediction_coxph <- predict_coxph(fit, dataset, param_to_be_estimated, covariates, indep_var, timevar_survival)
+  prediction_coxph <- predict_coxph(fit, dataset, param_to_be_estimated,
+                                    covariates, indep_var, timevar_survival)
   # results
   results <- structure(list(
     fit = fit,
@@ -657,7 +648,8 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
     residuals = residuals_result,
     model_fit_assessment = model_fit_assessment,
     model_diagnostics = model_diagnostics,
-    prediction_results = prediction_coxph
+    prediction_results = prediction_coxph,
+    plot_prediction = plot_prediction
   ))
   return(results)
 }

@@ -41,11 +41,13 @@ Bivariate regression for correlated observations
 }
 \examples{
 \donttest{
-mydata <- foreign::read.dta("https://stats.idre.ucla.edu/stat/stata/notes/hsb2.dta")
+datafile <- system.file("extdata", "sureg_data.csv", package = "packDAMipd")
+dataset <- read.csv(datafile, stringsAsFactors = TRUE)
 results_sureg <- use_seemingly_unrelated_regression("read", "math",
-  dataset = mydata,
+  dataset = dataset,
   indep_var = "female", covariates1 = c("as.numeric(ses)", "socst"),
-  covariates2 = c("as.numeric(ses)", "science"), interaction1 = FALSE, interaction2 = FALSE
+  covariates2 = c("as.numeric(ses)", "science"), interaction1 = FALSE,
+  interaction2 = FALSE
 )
 }
 }

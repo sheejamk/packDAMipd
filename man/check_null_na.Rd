@@ -15,3 +15,7 @@ check_null_na(variable)
 \description{
 Function to check the variable null or NA
 }
+\examples{
+var = c("a")
+check_null_na(var)
+}

@@ -18,7 +18,8 @@ Function to get the details of the trial arm
 }
 \details{
 expecting the data contains the information on trial arm
-preferably  column names "arm", "trial" or "trial arm". If multiple column names
+preferably  column names "arm", "trial" or "trial arm". If
+multiple column names
 match these, then first match will be chosen.
 }
 \examples{

@@ -24,8 +24,8 @@ Get the parameter values from reading a file
 \details{
 This function read the parameter from a file given that
 the file has these column names (at least) Parameter and Value
-Strategy col and name are optional. Check if the data file contains column names parameter
-and value and then get the results.
+Strategy col and name are optional. Check if the data file contains
+column names parameter and value and then get the results.
 }
 \examples{
 a <- get_parameter_read("cost_IT", paramfile = system.file("extdata",

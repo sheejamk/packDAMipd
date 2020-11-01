@@ -7,7 +7,8 @@
 check_list_markov_models(list_markov)
 }
 \arguments{
-\item{list_markov}{list of Markov model objects with their Markov trace, cost matrix and utility matrix}
+\item{list_markov}{list of Markov model objects with their Markov
+trace, cost matrix and utility matrix}
 }
 \value{
 0 if success else error
@@ -22,7 +23,8 @@ disabled <- health_state("disabled", cost = 100, utility = 1)
 dead <- health_state("dead", cost = 0, utility = 0)
 tmat <- rbind(c(1, 2, 3), c(NA, 4, 5), c(NA, NA, 6))
 colnames(tmat) <- rownames(tmat) <- c("well", "disabled", "dead")
-tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1), colnames(tmat))
+tm <- populate_transition_matrix(3, tmat, c(0.6, 0.2, 0.2, 0.6, 0.4, 1),
+colnames(tmat))
 health_states <- combine_state(well, disabled, dead)
 this.strategy <- strategy(tm, health_states, "example")
 this_markov <- markov_model(this.strategy, 24, c(1000, 0, 0), c(0,0))
@@ -31,7 +33,8 @@ disabled <- health_state("disabled", cost = 10, utility = 0.5)
 dead <- health_state("dead", cost = 0, utility = 0)
 tmat <- rbind(c(1, 2, 3), c(NA, 4, 5), c(NA, NA, 6))
 colnames(tmat) <- rownames(tmat) <- c("well", "disabled", "dead")
-tm <- populate_transition_matrix(3, tmat, c(0.4, 0.4, 0.2, 0.6, 0.4, 1), colnames(tmat))
+tm <- populate_transition_matrix(3, tmat, c(0.4, 0.4, 0.2, 0.6, 0.4, 1),
+colnames(tmat))
 health_states <- combine_state(well, disabled, dead)
 this.strategy <- strategy(tm, health_states, "example_two")
 sec_markov <- markov_model(this.strategy, 24, c(1000, 0, 0), c(0, 0))

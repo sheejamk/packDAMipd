@@ -7,11 +7,13 @@
 get_mortality_from_file(paramfile, age, mortality_colname, gender = NULL)
 }
 \arguments{
-\item{paramfile}{parameter file to get the mortality eg.national life table data}
+\item{paramfile}{parameter file to get the mortality eg.national life
+table data}
 
 \item{age}{age to get the age specific data}
 
-\item{mortality_colname}{column name with the mortality rates if it is not gender specific}
+\item{mortality_colname}{column name with the mortality rates if it is not
+gender specific}
 
 \item{gender}{gender details to get the gender specific mortality data}
 }
@@ -23,17 +25,19 @@ Get the mortality rate  values from reading a file
 }
 \details{
 Provides the mortality rates as age and gender dependent
-Assumes the data contains mortality rate for single year and once it extracted
+Assumes the data contains mortality rate for single year and once
+it extracted
 per gender will retrieve single value
 Age column can consists of range of values, or a particular value
-also assumes that the mortality rate for each gender is listed under the gender column
-for gender specific values. if the mortality is not gender specific, the column
-name should be passed on to the function
+also assumes that the mortality rate for each gender is listed under
+the gender column for gender specific values. if the mortality
+is not gender specific, the column name should be passed on to the function
 if gender is not null, mortality_name will be ignored
 }
 \examples{
 paramfile <- system.file("extdata", "LifeTable_USA_Mx_2015.csv",
   package = "packDAMipd"
 )
-a <- get_mortality_from_file(paramfile, age = 10, mortality_colname = "total", gender = NULL)
+a <- get_mortality_from_file(paramfile, age = 10, mortality_colname =
+"total", gender = NULL)
 }

@@ -23,5 +23,6 @@ preferably  column names "age", "dob" or "yob" or "date of birth".
 If multiple column names match these, then first match will be chosen.
 }
 \examples{
-get_age_details(data.frame("Age" = c(21, 15), "arm" = c("control", "intervention")))
+get_age_details(data.frame("Age" = c(21, 15),
+"arm" = c("control", "intervention")))
 }

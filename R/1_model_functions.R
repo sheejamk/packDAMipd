@@ -152,6 +152,7 @@ combine_state <- function(...) {
 #' @details
 #' This is to check if the values are numeric during  the run time,
 #' else to throw an error
+
 check_values_states <- function(health_states) {
   no_states <- length(health_states)
   for (j in 1:no_states) {
@@ -172,7 +173,6 @@ check_values_states <- function(health_states) {
   }
   return(TRUE)
 }
-
 #######################################################################
 # A4.  Evaluate and assign values to attributes of health state
 #' Attribute values in health states
@@ -225,15 +225,15 @@ eval_assign_values_states <- function(health_states, assigned_param) {
          entry <- this_state[[this_name]]
          # Need to process the entry if it is not numeric
          if (!is.numeric(entry)) {
-           string_entry <- toString(entry)
-           string_entry_evalu <- eval(substitute(string_entry))
+           string_entry_evalu <- eval(substitute(toString(entry)))
            # Need to process the converted string expression further
            # if it is not numeric
            if (is.na(suppressWarnings(as.numeric(string_entry_evalu)))) {
 
              # Identify the operators and get the parameters between them
              # in string expression
-             all_params_expr <- find_parameters_btn_operators(string_entry_evalu)
+             all_params_expr <-
+               find_parameters_btn_operators(string_entry_evalu)
 
              for (m in seq_len(length(all_params_expr))) {
 
@@ -279,10 +279,12 @@ eval_assign_values_states <- function(health_states, assigned_param) {
 #' define_transition_table(tmat)
 #' @export
 #' @details
-#' Generating a table for transition matrix for efficient understanding and checking
-#' The transition matrix in the format as per 'mstate' package is  transformed to a table.
-#' if tmat is not a square matrix, it gives error
-#' else it spells out the transition number, probability name and from state to to state
+#' Generating a table for transition matrix for efficient understanding and
+#' checking
+#' The transition matrix in the format as per 'mstate' package is
+#' transformed to a table. if tmat is not a square matrix, it gives error
+#' else it spells out the transition number, probability name and from state
+#'  to state
 define_transition_table <- function(tmat) {
   rows <- nrow(tmat)
   cols <- ncol(tmat)
@@ -294,10 +296,13 @@ define_transition_table <- function(tmat) {
       trans_no <- row_contents[which(!is.na(row_contents))]
       from <- rep(i, length(trans_no))
       to <- which(!is.na(row_contents))
-      probability_names <- paste("prob_", names[from], "_to_", names[to], sep = "")
-      this_table <- data.table::data.table(trans_no, probability_names, from, names[from], to,
+      probability_names <- paste("prob_", names[from], "_to_",
+                                 names[to], sep = "")
+      this_table <- data.table::data.table(trans_no, probability_names,
+                                           from, names[from], to,
                                            names[which(!is.na(row_contents))])
-      names(this_table) <- c("transition number", "probabiliy name", "from", "from state", "to",
+      names(this_table) <- c("transition number", "probabiliy name", "from",
+                             "from state", "to",
                              "to state")
       l <- list(trans_table, this_table)
       trans_table <- data.table::rbindlist(l)
@@ -311,7 +316,8 @@ define_transition_table <- function(tmat) {
 # B2.  Finally populate transition matrix
 #' Populate transition matrix
 #' @param no_states  number of the health states
-#' @param list_prob list of probabilities as in the order of transitions (row wise)
+#' @param list_prob list of probabilities as in the order of
+#' transitions (row wise)
 #' @param tmat A transition matrix in the format from the package 'mstate'
 #' @param name_states names of the health states
 #' @return value of the transition matrix
@@ -322,10 +328,12 @@ define_transition_table <- function(tmat) {
 #' @export
 #' @details
 #' If the state names are null, they are replaced with numbers starting from 1
-#' First find those missing probabilities, and fill a list from the given list of
-#' probabilities and fill those are not NA in the matrix
-#' Note that the probabilities need not be numeric here and no checks are needed for sum
-populate_transition_matrix <- function(no_states, tmat, list_prob, name_states = NULL) {
+#' First find those missing probabilities, and fill a list from the given
+#' list of probabilities and fill those are not NA in the matrix
+#' Note that the probabilities need not be numeric here and no checks are
+#'  needed for sum
+populate_transition_matrix <- function(no_states, tmat, list_prob,
+                                       name_states = NULL) {
   if (!is.numeric(no_states))
     stop("no of states should be numeric")
   if (is.null(name_states)) {
@@ -342,7 +350,8 @@ populate_transition_matrix <- function(no_states, tmat, list_prob, name_states =
       tmat_list[index] <- list_prob[i]
     }
   } else {
-    stop("Length of probabilities not same as the number of required probabilities")
+    stop("Length of probabilities not same as the number of required
+         probabilities")
   }
   print("The transition matrix as explained")
   print(define_transition_table(tmat))
@@ -359,32 +368,39 @@ populate_transition_matrix <- function(no_states, tmat, list_prob, name_states =
 # B3.  Attribute parameters to probabilities of transition matrix
 #' Attribute parameters to probabilities of transition matrix
 #' @param tm A transition matrix in the format from the package 'mstate'
-#' @param parameter_values name value pairs of parameter values in the probability matrix
+#' @param parameter_values name value pairs of parameter values in the
+#' probability matrix
 #' @return the transition table with the probabilities
 #' @examples
 #' tmat <- rbind(c(1, 2), c(3, 4))
 #' colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-#' tmat <- populate_transition_matrix(2, tmat, list_prob = c("p1", "p2", "p3", "p4"))
-#' tmat_assigned <- eval_assign_trans_prob(tmat, c(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5))
+#' tmat <- populate_transition_matrix(2, tmat,
+#' list_prob = c("p1", "p2", "p3", "p4"))
+#' tmat_assigned <- eval_assign_trans_prob(tmat,
+#' c(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5))
 #' @export
 #' @details
-#' Once the transition matrix is populated, the probabilities in transition matrix
-#' gets evaluated and assigned in this function call
+#' Once the transition matrix is populated, the probabilities in
+#' transition matrix gets evaluated and assigned in this function call
 #' If the entry in transition matrix is NA, replaces it with zero
-#' similarly to evaluate and assign health states, the parameter values is excepted to be a
-#' list from assign_parameter() and define_parameter().
-#' The exception is that if the parameters are defined directly and no nested calculation is
-#' required. For eg.assign_list = c(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5)
+#' similarly to evaluate and assign health states, the parameter values
+#' is excepted to be a list from assign_parameter() and define_parameter().
+#' The exception is that if the parameters are defined directly and no nested
+#' calculation is required. For eg.
+#' assign_list = c(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5)
 #' prob <- eval_assign_trans_prob(tmat, assign_list) will work
 #' For those with nested calculations, this has to be defined as below
-#' assign_list<-assign_parameters(define_parameters(p1 = 0.2, p2 = 0.3, p3 = 0.4, p4 = 0.5))
+#' assign_list<-assign_parameters(define_parameters(p1 = 0.2, p2 = 0.3,
+#' p3 = 0.4, p4 = 0.5))
 #' prob <- eval_assign_trans_prob(tmat, assign_list)
 #' The below will give error
 #' assign_list <- c(p1=0.1, p2 = "p1 + 0.2", p3=0, p4=0.3)
 #' prob <- eval_assign_trans_prob(tmat, assign_list)
 eval_assign_trans_prob <- function(tm, parameter_values) {
-  if (!("transition_matrix" %in% class(tm)) & !("transition_cost_util" %in% class(tm))) {
-    stop("class of matrix should be transition_matrix - use populate_transition_matrix")
+  if (!("transition_matrix" %in% class(tm)) &
+      !("transition_cost_util" %in% class(tm))) {
+    stop("class of matrix should be transition_matrix - use
+         populate_transition_matrix")
   }
   # if transition is not allowed replace with zero
   tm$trans_matrix[which(is.na(tm$trans_matrix))] <- 0
@@ -455,9 +471,11 @@ check_trans_prob <- function(trans_mat) {
 # B5.  Create the values of cost and utility while transition
 #' Create the the values of cost and utility while transition
 #' @param no_states  number of the health states
-#' @param tmat_cost_util A transition matrix for the cost/utility values in the format
-#' from the package 'mstate' use NA to indicate if the value is zero
-#' @param list_values list of probabilities as in the order of transitions (row wise)
+#' @param tmat_cost_util A transition matrix for the cost/utility
+#' values in the format from the package 'mstate' use NA to indicate
+#' if the value is zero
+#' @param list_values list of probabilities as in the order of transitions
+#' (row wise)
 #' @param name_states names of the health states
 #' @return value of the transition matrix
 #' @examples
@@ -466,8 +484,10 @@ check_trans_prob <- function(trans_mat) {
 #' transition_cost_util(2, tmat_cost, list_values = c(500))
 #' @export
 #' @details
-#' Similar to transition matrix but for denoting one time change during transitions
-transition_cost_util <- function(no_states, tmat_cost_util, list_values, name_states = NULL) {
+#' Similar to transition matrix but for denoting one time change
+#' during transitions
+transition_cost_util <- function(no_states, tmat_cost_util, list_values,
+                                 name_states = NULL) {
   if (!is.numeric(no_states))
     stop("no of states should be numeric")
   if (is.null(name_states)) {
@@ -514,9 +534,10 @@ transition_cost_util <- function(no_states, tmat_cost_util, list_values, name_st
 #' strategy(tm, states, "intervention")
 #' @export
 #' @details
-#' Defining strategy keeping all transition matrix, states and names together to use
-#' in defining Markov model
-strategy <- function(trans_mat, states, name, trans_cost = NULL, trans_util = NULL) {
+#' Defining strategy keeping all transition matrix, states and names
+#' together to use in defining Markov model
+strategy <- function(trans_mat, states, name, trans_cost = NULL,
+                     trans_util = NULL) {
   if (!("transition_matrix" %in% class(trans_mat))) {
     stop("class is not a transition matrix")
   }
@@ -579,14 +600,16 @@ init_trace <- function(health_states, cycles) {
 #' @param initial_state value of states initially
 #' @param discount rate of discount for costs and qalys
 #' @param half_cycle_correction boolean to indicate half cycle correction
-#' @param parameter_values parameters for assigning health states and probabilities
-#' @param state_cost_only_prevalent boolean parameter to indicate if the costs for
-#' state occupancy is only for those in the state excluding those that transitioned new.
-#' This is relevant when the transition cost is provided for eg. in a state with dialysis
-#' the cost of previous dialysis is different from the newly dialysis cases.
-#' Then the state_cost_only_prevalent should be TRUE
-#' @param state_util_only_prevalent boolean parameter to indicate if the utilites for
-#' state occupancy is only for those in the state excluding those that transitioned new.
+#' @param parameter_values parameters for assigning health states and
+#' probabilities
+#' @param state_cost_only_prevalent boolean parameter to indicate if the costs
+#' for state occupancy is only for those in the state excluding those that
+#' transitioned new. This is relevant when the transition cost is provided for
+#' eg. in a state with dialysis the cost of previous dialysis is different from
+#' the newly dialysis cases. Then the state_cost_only_prevalent should be TRUE
+#' @param state_util_only_prevalent boolean parameter to indicate if the
+#' utilities for state occupancy is only for those in the state excluding
+#' those that transitioned new.
 #' @param method what type of half cycle correction needed
 #' @param startup_cost cost of states initially
 #' @param startup_util utility of states initially if any
@@ -602,22 +625,28 @@ init_trace <- function(health_states, cycles) {
 #' markov_model(this.strategy, 10, c(1, 0))
 #' @export
 #' @details
-#' Use the strategy, cycles, initial state values creating the markov model and trace
-#' As many probabilities /cost/utility value depend on age/time the evaluation
-#' and assignment happens during each cycle. At the heart it does a matrix multiplication
-#' using the previous row of the trace matrix and the columns of the transition matrix.
-#' Also checks for population loss, calculates cumulative costs and qalys
-#' (accounts for discounting and half cycle correction)
-markov_model <- function(current_strategy, cycles, initial_state, discount = c(0, 0),
+#' Use the strategy, cycles, initial state values creating the markov model
+#' and trace. As many probabilities /cost/utility value depend on age/time the
+#' evaluation and assignment happens during each cycle. At the heart it does
+#' a matrix multiplication using the previous row of the trace matrix and the
+#' columns of the transition matrix. Also checks for population loss, calculates
+#' cumulative costs and qalys (accounts for discounting
+#'  and half cycle correction)
+markov_model <- function(current_strategy, cycles, initial_state,
+                         discount = c(0, 0),
                          parameter_values = NULL, half_cycle_correction = TRUE,
-                         state_cost_only_prevalent = FALSE, state_util_only_prevalent = FALSE,
+                         state_cost_only_prevalent = FALSE,
+                         state_util_only_prevalent = FALSE,
                          method = "half cycle correction",
                          startup_cost = NULL, startup_util = NULL) {
 
   # Do all checks and picks the method
-  changed_method <- checks_markov_pick_method(current_strategy, initial_state, discount,
-                    method, half_cycle_correction, startup_cost, startup_util,
-                    state_cost_only_prevalent, state_util_only_prevalent)
+  changed_method <- checks_markov_pick_method(current_strategy, initial_state,
+                                              discount, method,
+                                              half_cycle_correction,
+                                              startup_cost, startup_util,
+                                              state_cost_only_prevalent,
+                                              state_util_only_prevalent)
   # initialising matrices
   health_states <- current_strategy$states
   no_states <- length(health_states)
@@ -625,31 +654,38 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
   trace_matrix <- init_trace(health_states, cycles)
   utility_matrix <- init_trace(health_states, cycles)
   cost_matrix <- init_trace(health_states, cycles)
-  param_matrix <- matrix(0, nrow = cycles + 1, ncol = length(parameter_values) + 1)
+  param_matrix <- matrix(0, nrow = cycles + 1, ncol =
+                           length(parameter_values) + 1)
   ending <- cycles + 1
   trace_matrix[1, ] <- initial_state
   # Run for each cycle
   for (i in 1:ending) {
     markov_cycle <- i - 1
     # Get parameter values
-    extended_parameter_values <- c(markov_cycle = markov_cycle, parameter_values)
+    extended_parameter_values <- c(markov_cycle = markov_cycle,
+                                   parameter_values)
     assigned_param <- assign_parameters(extended_parameter_values)
 
     # Get all the value of health states assigned
-    health_states_assigned <- eval_assign_values_states(health_states, assigned_param)
+    health_states_assigned <- eval_assign_values_states(health_states,
+                                                        assigned_param)
     param_matrix[i, ] <- unlist(assigned_param)
 
     # Get all the values of probability assigned
-    trans_mat <- eval_assign_trans_prob(current_strategy$transition_matrix, assigned_param)
+    trans_mat <- eval_assign_trans_prob(current_strategy$transition_matrix,
+                                        assigned_param)
 
     if (check_trans_prob(trans_mat) == 0) {
       for (j in 1:no_states) {
-      # at start of of cycle no start up cost (utility), transition cost (utility)
-      # and half cycle correction is not to be accounted
+      # at start of of cycle no start up cost (utility), transition
+      # cost (utility) and half cycle correction is not to be accounted
       if (i > 1) {
-        # total transitions made to jth state including those from the same state
-        transitions_made_state <- trace_matrix[i - 1, ] * trans_mat$trans_matrix[, j]
-        # total transitions made to jth state excluding those from the same state
+        # total transitions made to jth state including those
+        # from the same state
+        transitions_made_state <-
+          trace_matrix[i - 1, ] * trans_mat$trans_matrix[, j]
+        # total transitions made to jth state excluding those
+        # from the same state
         new_transitions_to_state <- transitions_made_state
         new_transitions_to_state[j] <- 0
 
@@ -667,18 +703,21 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
                                           trans_cost$trans_matrix[, j]
         }
 
-        #utility calculation if the transition utility is different that state utilities
+        #utility calculation if the transition utility is different
+        #that state utilities
         if (is.null(current_strategy$transition_utility)) {
-          utility_occured_due_transitions <- 0
+          utility_due_transitions <- 0
         } else {
           trans_util <- eval_assign_trans_prob(current_strategy$transition_utility,
                                                assigned_param)
-          utility_occured_due_transitions <- transitions_made_state %*%
+          utility_due_transitions <- transitions_made_state %*%
                                             trans_util$trans_matrix[, j]
         }
         if (i == 2) {
-          if (changed_method != "hc_correction" & changed_method == "life_table")
-            trace_matrix[i, j] <- (trace_matrix[i, j] + trace_matrix[i - 1, j]) / 2
+          if (changed_method != "hc_correction" &
+              changed_method == "life_table")
+            trace_matrix[i, j] <- (trace_matrix[i, j] +
+                                     trace_matrix[i - 1, j]) / 2
         }
 
         # cost entries in cost matrix
@@ -686,13 +725,15 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
             (as.numeric(unlist(health_states_assigned[[j]]$cost))) +
             cost_occured_due_transitions
 
-        # if the transition cost are only for those newly transitioned, then we need to split it up
-        # Flagged by the presence of transition_cost and state_cost_only_prevalent values
+        # if the transition cost are only for those newly transitioned,
+        # then we need to split it up. Flagged by the presence of
+        # transition_cost and state_cost_only_prevalent values
         if (!is.null(current_strategy$transition_cost)) {
           trans_cost_which_state <- which(trans_cost$trans_matrix[, j] != 0)
           if (length(trans_cost_which_state) != 0) {
             if (state_cost_only_prevalent) {
-              already_in_state <- trace_matrix[i, j] - sum(new_transitions_to_state)
+              already_in_state <- trace_matrix[i, j] -
+                sum(new_transitions_to_state)
               cost_matrix[i, j]  <-  already_in_state *
                 (as.numeric(unlist(health_states_assigned[[j]]$cost))) +
                 new_transitions_to_state %*% trans_cost$trans_matrix[, j]
@@ -702,14 +743,16 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
         # cost entries in cost matrix
         utility_matrix[i, j] <- trace_matrix[i, j] *
                     (as.numeric(unlist(health_states_assigned[[j]]$utility))) +
-                      utility_occured_due_transitions
-        # if the transition cost are only for those newly transitioned, then we need to split it up
-        # Flagged by the presence of transition_cost and state_cost_only_prevalent values
+                      utility_due_transitions
+        # if the transition cost are only for those newly transitioned,
+        # then we need to split it up. Flagged by the presence of
+        # transition_cost and state_cost_only_prevalent values
         if (!is.null(current_strategy$transition_util)) {
           trans_cost_which_state <- which(trans_util$trans_matrix[, j] != 0)
           if (length(trans_cost_which_state) != 0) {
             if (state_util_only_prevalent) {
-              already_in_state <- trace_matrix[i, j] - sum(new_transitions_to_state)
+              already_in_state <- trace_matrix[i, j] -
+                sum(new_transitions_to_state)
               cost_matrix[i, j]  <-  already_in_state *
                 (as.numeric(unlist(health_states_assigned[[j]]$utility))) +
                 new_transitions_to_state %*% trans_util$trans_matrix[, j]
@@ -727,10 +770,10 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
         }
         if (!is.null(startup_util)) {
             utility_matrix[1, j] <- trace_matrix[1, j] * (startup_util[j] +
-                        as.numeric(unlist(health_states_assigned[[j]]$utility)))
+                  as.numeric(unlist(health_states_assigned[[j]]$utility)))
         } else {
             utility_matrix[1, j] <- trace_matrix[1, j] *
-                      (as.numeric(unlist(health_states_assigned[[j]]$utility)))
+                (as.numeric(unlist(health_states_assigned[[j]]$utility)))
          }
       }
     }
@@ -750,8 +793,10 @@ markov_model <- function(current_strategy, cycles, initial_state, discount = c(0
   if (changed_method == "hc_correction" & half_cycle_correction) {
     cost_matrix[1, no_states + 1] <- cost_matrix[1, no_states + 1] * 0.5
     utility_matrix[1, no_states + 1] <- utility_matrix[1, no_states + 1] * 0.5
-    cost_matrix[ending, no_states + 1] <- cost_matrix[ending, no_states + 1] * 0.5
-    utility_matrix[ending, no_states + 1] <- utility_matrix[ending, no_states + 1] * 0.5
+    cost_matrix[ending, no_states + 1] <-
+      cost_matrix[ending, no_states + 1] * 0.5
+    utility_matrix[ending, no_states + 1] <-
+    utility_matrix[ending, no_states + 1] * 0.5
   }
   # Find the cumulative sums and total values of cost and utility
   cost_matrix[, no_states + 2] <- cumsum(cost_matrix[, no_states + 1])

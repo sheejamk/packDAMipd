@@ -38,12 +38,14 @@ Imports:
     relaimpo,
     tm
 Suggests: 
+    stata,
     ISLR,
     foreign,
     dplyr,
     knitr,
     rmarkdown,
-    covr
+    covr,
+    testthat
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

@@ -23,7 +23,8 @@ Function to map EQ5D5L scores to EQ5D3L scores and then add to IPD data
 \examples{
 \donttest{
 library(valueEQ5D)
-datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
+datafile <- system.file("extdata", "trial_data.csv",
+package = "packDAMipd")
 trial_data <- load_trial_data(datafile)
 map_eq5d5Lto3L_VanHout(trial_data, NA)
 }

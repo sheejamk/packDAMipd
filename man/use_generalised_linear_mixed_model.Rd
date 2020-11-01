@@ -11,7 +11,7 @@ use_generalised_linear_mixed_model(
   fix_eff_interact_vars,
   random_intercept_vars,
   nested_intercept_vars_pairs,
-  cross_intercept_vars,
+  cross_intercept_vars_pairs,
   uncorrel_slope_intercept_pairs,
   random_slope_intercept_pairs,
   family,
@@ -25,17 +25,22 @@ use_generalised_linear_mixed_model(
 
 \item{fix_eff}{names of variables as fixed effect predictors}
 
-\item{fix_eff_interact_vars, }{those of the fixed effect predictors that show interaction}
+\item{fix_eff_interact_vars, }{those of the fixed effect predictors that
+show interaction}
 
 \item{random_intercept_vars, }{names of variables for random intercept}
 
-\item{nested_intercept_vars_pairs, }{those of the random intercept variables with nested effect}
+\item{nested_intercept_vars_pairs, }{those of the random intercept variables
+with nested effect}
 
-\item{cross_intercept_vars, }{those of the random intercept variables with crossed effect}
+\item{cross_intercept_vars_pairs, }{those of the random intercept variables
+with crossed effect}
 
-\item{uncorrel_slope_intercept_pairs, }{variables with no correlated intercepts}
+\item{uncorrel_slope_intercept_pairs, }{variables with no
+correlated intercepts}
 
-\item{random_slope_intercept_pairs, }{random slopes intercept pairs - this is a list of paired variables}
+\item{random_slope_intercept_pairs, }{random slopes intercept pairs -
+this is a list of paired variables}
 
 \item{family, }{family of distributions for the response variable}
 
@@ -46,4 +51,15 @@ result regression result with plot if success and -1, if failure
 }
 \description{
 Function for generalised linear mixed model
+}
+\examples{
+datafile <- system.file("extdata", "culcita_data.csv",
+package = "packDAMipd")
+dataset <- read.csv(datafile)
+results1 = use_generalised_linear_mixed_model("predation",
+dataset = datafile,fix_eff = c("ttt"), family = "binomial",
+fix_eff_interact_vars = NULL, random_intercept_vars = c("block"),
+nested_intercept_vars_pairs = NULL, cross_intercept_vars_pairs = NULL,
+uncorrel_slope_intercept_pairs = NULL, random_slope_intercept_pairs = NULL,
+ link = NA)
 }

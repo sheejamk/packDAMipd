@@ -3,8 +3,9 @@
 tmat <- rbind(c(1, 2), c(3, 4))
 #define colnames
 colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
-# populate the matrix - fixed values here, can use variables to estimate during run time,
-# then they need to use define_parameters() and should be passed on when using markov_model
+# populate the matrix - fixed values here, can use variables to estimate
+# during run time, then they need to use define_parameters() and should be
+# passed on when using markov_model
 tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
 # state a named healthy with cost 1 and utility 1, not an absorbing state
 a <- health_state("Healthy", 1, 0.5, 0, FALSE)
@@ -21,12 +22,14 @@ A_model <- markov_model(A_strategy, 10, c(1, 0))
 A_model$trace_matrix
 A_model$cost_matrix
 A_model$utility_matrix
-# plot the markov states - no commented please uncomment to run plot_model(A_model)
+# plot the markov states - no commented please uncomment to
+# run plot_model(A_model)
 
-#Now follow the same for the strategy B
-#if the transitions are same we can use the same tmat, and tm - no need to redefine
-# health state costs and utilities are different, so redefining them
-# state a named healthy with cost 10 and utility 1, not an absoring state
+# Now follow the same for the strategy B
+#if the transitions are same we can use the same tmat, and tm -
+# no need to redefine health state costs and utilities are different,
+# so redefining them state a named healthy with cost 10 and utility 1,
+# not an absoring state
 a <- health_state("Healthy", 10, 1, 0, FALSE)
 # state a named dead with cost 1 and utility 0,  an absoring state
 b <- health_state("Dead", 1, 0, 0, TRUE)
@@ -41,7 +44,8 @@ B_model <- markov_model(B_strategy, 10, c(1, 0))
 B_model$trace_matrix
 B_model$cost_matrix
 B_model$utility_matrix
-# plot the markov states - now commented please uncomment to run plot_model(B_model)
+# plot the markov states - now commented please uncomment to
+# run plot_model(B_model)
 
 #Here the trace is same only cost and utility different
 # now can calculate ICER nad NMB if threshold given use 20000

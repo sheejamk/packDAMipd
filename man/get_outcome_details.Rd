@@ -23,9 +23,9 @@ the unique contents if success, else error
 Function to get the details of the outcome column
 }
 \details{
-if the words related to outcome is given, the function will get the columns and
-the codes used for the outcome, the difference here is that certain outcomes
-can  be distributed in multiple columns
+if the words related to outcome is given, the function will get the
+columns and the codes used for the outcome, the difference here is that
+certain outcomes can  be distributed in multiple columns
 }
 \examples{
 get_outcome_details(

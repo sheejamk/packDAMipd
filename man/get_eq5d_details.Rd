@@ -10,7 +10,8 @@ get_eq5d_details(trialdata)
 \item{trialdata, }{data containing individual level trial data}
 }
 \value{
-the name of the variable related to EQ5D and the unique contents if success, else error
+the name of the variable related to EQ5D and the unique contents
+if success, else error
 }
 \description{
 Function to get the details of the EQ5D column

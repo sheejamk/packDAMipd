@@ -21,7 +21,8 @@
 #' @export
 #' @details
 #'  expecting the data contains the information on trial arm
-#' preferably  column names "arm", "trial" or "trial arm". If multiple column names
+#' preferably  column names "arm", "trial" or "trial arm". If
+#' multiple column names
 #' match these, then first match will be chosen.
 get_trial_arm_details <- function(trialdata) {
   trialdata <- data.table::data.table(trialdata, stringsAsFactors = FALSE)
@@ -108,7 +109,8 @@ get_gender_details <- function(trialdata) {
 #' @return the name of the variable related to age and the unique contents
 #' if success, else error
 #' @examples
-#' get_age_details(data.frame("Age" = c(21, 15), "arm" = c("control", "intervention")))
+#' get_age_details(data.frame("Age" = c(21, 15),
+#' "arm" = c("control", "intervention")))
 #' @importFrom IPDFileCheck  check_colno_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
@@ -123,7 +125,8 @@ get_age_details <- function(trialdata) {
     stop("Error - trial data should not be NULL")
   }
   names <- colnames(trialdata)
-  related_words <- c("age", "dob", "yob", "date of birth", "year of birth", "birth year")
+  related_words <- c("age", "dob", "yob", "date of birth",
+                     "year of birth", "birth year")
   exists <- unlist(lapply(
     related_words, IPDFileCheck::check_colno_pattern_colname,
     names
@@ -154,10 +157,11 @@ get_age_details <- function(trialdata) {
 # 2.2.4 Get the colnames of "time point" column
 #' Function to get the details of the time point column
 #' @param trialdata, data containing individual level trial data
-#' @return the name of the variable related to time point and the unique contents
-#' if success, else error
+#' @return the name of the variable related to time point and
+#' the unique contents if success, else error
 #' @examples
-#' get_timepoint_details(data.frame("time" = c(21, 15), "arm" = c("control", "intervention")))
+#' get_timepoint_details(data.frame("time" = c(21, 15),
+#' "arm" = c("control", "intervention")))
 #' @importFrom IPDFileCheck  check_colno_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
@@ -218,10 +222,11 @@ get_timepoint_details <- function(trialdata) {
 #' )
 #' @export
 #' @details
-#' if the words related to outcome is given, the function will get the columns and
-#' the codes used for the outcome, the difference here is that certain outcomes
-#' can  be distributed in multiple columns
-get_outcome_details <- function(trialdata, name, related_words, multiple = FALSE) {
+#' if the words related to outcome is given, the function will get the
+#' columns and the codes used for the outcome, the difference here is that
+#' certain outcomes can  be distributed in multiple columns
+get_outcome_details <- function(trialdata, name, related_words,
+                                multiple = FALSE) {
   #Error - no null trial data
   if (is.null(trialdata))
     stop("Error - trial data should not be NULL")
@@ -229,7 +234,8 @@ get_outcome_details <- function(trialdata, name, related_words, multiple = FALSE
     stop("Error - name should not be NULL")
 
   names <- colnames(trialdata)
-  exists <- unlist(lapply(related_words, IPDFileCheck::check_colno_pattern_colname, names))
+  exists <- unlist(lapply(related_words,
+                          IPDFileCheck::check_colno_pattern_colname, names))
   ind <- which(exists == TRUE)
   colnumbers <- unlist(lapply(
     related_words[ind], IPDFileCheck::get_colno_pattern_colname,
@@ -274,7 +280,8 @@ get_outcome_details <- function(trialdata, name, related_words, multiple = FALSE
 # 2.3.2 Get the column names of eq5d column
 #' Function to get the details of the EQ5D column
 #' @param trialdata, data containing individual level trial data
-#' @return the name of the variable related to EQ5D and the unique contents if success, else error
+#' @return the name of the variable related to EQ5D and the unique contents
+#' if success, else error
 #' @examples
 #' get_eq5d_details(data.frame(
 #'   "MO" = c(1, 2), "SC" = c(1, 2), "UA" = c(1, 2),
@@ -318,11 +325,13 @@ get_eq5d_details <- function(trialdata) {
   colnumbers <- 0
   while (i <= length(words_set)) {
     this <- unlist(words_set[i])
-    result <- unlist(lapply(this, IPDFileCheck::check_colno_pattern_colname, names))
+    result <- unlist(lapply(this,
+                            IPDFileCheck::check_colno_pattern_colname, names))
     if (any(result == FALSE)) {
       i <- i + 1
     } else {
-      colnumbers <- unlist(lapply(this, IPDFileCheck::get_colno_pattern_colname, names))
+      colnumbers <- unlist(lapply(this,
+                          IPDFileCheck::get_colno_pattern_colname, names))
       i <- length(words_set) + 1
     }
   }
@@ -350,7 +359,8 @@ get_eq5d_details <- function(trialdata) {
 # 3 Miscellaneous
 #######################################################################
 # 3.1 Keep the column name, coded values and non response code into a dataframe
-#' Function to keep the column name, coded values and non response code into a dataframe
+#' Function to keep the column name, coded values and non response code
+#' into a dataframe
 #' @param variable, name of the variable in the column
 #' @param name, column name
 #' @param code, coded values
@@ -369,14 +379,17 @@ get_colnames_codedvalues <- function(variable, name, code, nrcode = NA) {
             colname <- name
             nrcode <- nrcode
             if (is.null(code)) {
-              df <- data.frame(c(variable, colname, nrcode), stringsAsFactors = FALSE)
+              df <- data.frame(c(variable, colname, nrcode),
+                               stringsAsFactors = FALSE)
               the_names <- (c("variable", "colname", "nonrescode"))
             } else {
               coded_values <- code
               lizt <- seq(1, length(coded_values))
               coded_value_names <- sapply(lizt, paste0, "_coded_value")
-              df <- data.frame(c(variable, colname, coded_values, nrcode), stringsAsFactors = FALSE)
-              the_names <- (c("variable", "colname", unlist(coded_value_names), "nonrescode"))
+              df <- data.frame(c(variable, colname, coded_values, nrcode),
+                               stringsAsFactors = FALSE)
+              the_names <- (c("variable", "colname", unlist(coded_value_names),
+                              "nonrescode"))
             }
             df  <- as.data.frame(t(df))
             colnames(df) <- the_names

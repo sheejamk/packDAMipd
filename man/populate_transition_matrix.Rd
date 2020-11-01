@@ -11,7 +11,8 @@ populate_transition_matrix(no_states, tmat, list_prob, name_states = NULL)
 
 \item{tmat}{A transition matrix in the format from the package 'mstate'}
 
-\item{list_prob}{list of probabilities as in the order of transitions (row wise)}
+\item{list_prob}{list of probabilities as in the order of
+transitions (row wise)}
 
 \item{name_states}{names of the health states}
 }
@@ -23,9 +24,10 @@ Populate transition matrix
 }
 \details{
 If the state names are null, they are replaced with numbers starting from 1
-First find those missing probabilities, and fill a list from the given list of
-probabilities and fill those are not NA in the matrix
-Note that the probabilities need not be numeric here and no checks are needed for sum
+First find those missing probabilities, and fill a list from the given
+list of probabilities and fill those are not NA in the matrix
+Note that the probabilities need not be numeric here and no checks are
+needed for sum
 }
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))

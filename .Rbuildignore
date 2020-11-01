@@ -4,6 +4,7 @@
 ^cran-comments.md$
 ^data-raw$
 ^doc$
+^docs$
 ^Meta$
 ^results$
 ^Rplots\.pdf$

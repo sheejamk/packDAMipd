@@ -22,7 +22,8 @@ define_parameters <- function(...) {
 #' @examples
 #' param_list <- define_parameters(
 #'   cost_direct_med_A = 1701, cost_comm_care_A = 1055,
-#'   cost_direct_med_B = 1774, cost_comm_care_B = 1278, cost_direct_med_C = 6948,
+#'   cost_direct_med_B = 1774, cost_comm_care_B = 1278,
+#'   cost_direct_med_C = 6948,
 #'   cost_comm_care_C = 2059, cost_zido = 2456, cost_health_A =
 #'   "cost_direct_med_A + cost_comm_care_A",
 #'   cost_health_B = "cost_direct_med_B + cost_comm_care_B",
@@ -74,8 +75,10 @@ assign_parameters <- function(param_list) {
       if (is.character(this_value)) {
         string_this_value <- toString(this_value)
         assign(names(param_list[j]), eval(parse(text = string_this_value)))
-        assigned_list <- append(assigned_list, eval(parse(text = string_this_value)))
-        names_assigned_list <- append(names_assigned_list, names(param_list[j]))
+        assigned_list <- append(assigned_list,
+                                eval(parse(text = string_this_value)))
+        names_assigned_list <- append(names_assigned_list,
+                                      names(param_list[j]))
       }
     }
     j <- j + 1
@@ -98,7 +101,8 @@ assign_parameters <- function(param_list) {
 #' separated by those operators
 #' This happens only for one level
 #' find_parameters_btn_operators("a+b") provides a and b
-#' but  for find_parameters_btn_operators("mean(a,b)+b") provides mean(a,b) and b
+#' but  for find_parameters_btn_operators("mean(a,b)+b")
+#' provides mean(a,b) and b
 find_parameters_btn_operators <- function(expr) {
   if (is.null(expr)) {
     stop("Error - expression can not be NULL")
@@ -151,13 +155,15 @@ find_parameters_btn_operators <- function(expr) {
 #' @param half_cycle_correction boolean to indicate half cycle correction
 #' @param startup_cost cost of states initially
 #' @param startup_util utility of states initially if any
-#' @param state_cost_only_prevalent boolean parameter to indicate if the costs for
-#' state occupancy is only for those in the state excluding those that transitioned new.
-#' This is relevant when the transition cost is provided for eg. in a state with dialysis
-#' the cost of previous dialysis is different from the newly dialysis cases.
-#' Then the state_cost_only_prevalent should be TRUE
-#' @param state_util_only_prevalent boolean parameter to indicate if the utilities for
-#' state occupancy is only for those in the state excluding those that transitioned new.
+#' @param state_cost_only_prevalent boolean parameter to indicate
+#' if the costs for state occupancy is only for those in the state excluding
+#' those that transitioned new. This is relevant when the transition cost
+#' is provided for eg. in a state with dialysis the cost of previous dialysis
+#' is different from the newly dialysis cases.Then the
+#' state_cost_only_prevalent should be TRUE
+#' @param state_util_only_prevalent boolean parameter to indicate if the
+#' utilities for state occupancy is only for those in the state excluding
+#' those that transitioned new.
 #' @return changed method name
 #' @examples
 #' \donttest{
@@ -173,7 +179,8 @@ find_parameters_btn_operators <- function(expr) {
 #' }
 #' @export
 checks_markov_pick_method <- function(current_strategy, initial_state, discount,
-                        method, half_cycle_correction, startup_cost, startup_util,
+                        method, half_cycle_correction, startup_cost,
+                        startup_util,
                         state_cost_only_prevalent, state_util_only_prevalent) {
 
 
@@ -198,18 +205,18 @@ checks_markov_pick_method <- function(current_strategy, initial_state, discount,
   }
   # check the class of current strategy
   if (class(current_strategy) != "strategy") {
-    stop("class is not a strategy")
+    stop("Class is not a strategy")
   }
   # check the length of start up cost should be equal to number of states
   if (!is.null(startup_cost)) {
     if (length(startup_cost) != no_states) {
-      stop("number of values of start up cost should be equal to number of health states")
+      stop("Length of startup cost should be equal to that of health states")
     }
   }
   # check the length of start up utility should be equal to number of states
   if (!is.null(startup_util)) {
     if (length(startup_util) != no_states) {
-      stop("number of values of start up utility should be equal to number of health states")
+      stop("Length of startup utility should be equal to that of health states")
     }
   }
   # check the length of initial state should be equal to number of states
@@ -222,21 +229,22 @@ checks_markov_pick_method <- function(current_strategy, initial_state, discount,
   }
   if (!is.null(current_strategy$transition_cost)) {
     if (state_cost_only_prevalent != FALSE & state_cost_only_prevalent != TRUE)
-      stop("Error - the parameter 'state_cost_only_prevalent' should be boolean")
+      stop("The parameter 'state_cost_only_prevalent' should be boolean")
   }
   if (!is.null(current_strategy$transition_util)) {
     if (state_util_only_prevalent != FALSE & state_util_only_prevalent != TRUE)
-      stop("Error - the parameter 'state_util_only_prevalent' should be boolean")
+      stop("The parameter 'state_util_only_prevalent' should be boolean")
   }
   return(changed_method)
 }
 
-##########################################################################################################
+##############################################################################
 #' Function to check the variable null or NA
 #' @param variable name of variable or list of variable to check
 #' @return -1 or -2 as error, else return 0 as success
-#' @example
-#' check_null_na(12)
+#' @examples
+#' var = c("a")
+#' check_null_na(var)
 #' @export
 check_null_na <- function(variable) {
   #Error - variable can not be NULL or NA

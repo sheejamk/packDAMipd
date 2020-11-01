@@ -24,8 +24,8 @@ object strategy
 Definition of strategy - or arm
 }
 \details{
-Defining strategy keeping all transition matrix, states and names together to use
-in defining Markov model
+Defining strategy keeping all transition matrix, states and names
+together to use in defining Markov model
 }
 \examples{
 tmat <- rbind(c(1, 2), c(3, 4))

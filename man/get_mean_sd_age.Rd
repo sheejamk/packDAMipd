@@ -21,6 +21,7 @@ Function to return mean age from a data frame
 Age data is complete with the nr code given and get the mean and sd
 }
 \examples{
-this_data <- as.data.frame(cbind(num = c(1, 2, 3, 4), age = c(14, 25, 26, 30)))
+this_data <- as.data.frame(cbind(num = c(1, 2, 3, 4),
+age = c(14, 25, 26, 30)))
 get_mean_sd_age(this_data, NA)
 }

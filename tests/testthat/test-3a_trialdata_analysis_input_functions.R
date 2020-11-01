@@ -9,10 +9,11 @@ test_that("testing getting the trial arm details", {
   expect_error(get_trial_arm_details(data.table::data.table("Age" = c(21, 15),
                                 "control" = c("control", "intervention"))))
   details <- get_trial_arm_details(data.table::data.table("Age" = c(21, 15),
-                                        "trial" = c("control", "intervention")))
+                                  "trial" = c("control", "intervention")))
   expect_equal(details$name, "trial")
   details <- get_trial_arm_details(data.table::data.table("Age" = c(21, 15),
-                            "trial" = c("control", "intervention"), "arm" = c(1, 2)))
+                            "trial" = c("control", "intervention"),
+                            "arm" = c(1, 2)))
   expect_equal(details$name, "arm")
   #Error - trial data should not be NULL
   expect_error(get_trial_arm_details(NULL))
@@ -25,7 +26,7 @@ test_that("testing getting the gender details", {
   expect_equal(details$name, "sex")
   expect_equal(details$codes, c("m", "f"))
   details <- get_gender_details(data.table::data.table("Age" = c(21, 15),
-                                                       "gender" = c("male", "female")))
+                                            "gender" = c("male", "female")))
   expect_equal(details$name, "gender")
   expect_equal(details$codes, c("male", "female"))
   # Error- no matching column found
@@ -41,10 +42,13 @@ test_that("testing getting the gender details", {
 ##############################################################################
 context("testing getting the age details")
 test_that("testing getting the age details", {
-  details <- get_age_details(data.table::data.table("Age" = c(21, 15), "sex" = c("m", "f")))
+  details <- get_age_details(data.table::data.table("Age" = c(21, 15),
+                                                    "sex" = c("m", "f")))
   expect_equal(details$name, "Age")
   expect_equal(details$codes, c(21, 15))
-  details <- get_age_details(data.table::data.table("dob" = c("1997-02-12", "1978-04-01"), "gender" = c("male", "female")))
+  details <- get_age_details(data.table::data.table("dob" =
+                                        c("1997-02-12", "1978-04-01"),
+                                        "gender" = c("male", "female")))
   expect_equal(details$name, "dob")
   expect_equal(details$codes, c("1997-02-12", "1978-04-01"))
   # Error - no matching column
@@ -54,20 +58,26 @@ test_that("testing getting the age details", {
   #Error - trial data should not be NULL
   expect_error(get_age_details(NULL))
 
-  details <- get_age_details(data.table::data.table("Age" = c(20, 30), yob = c(2000, 1990), "sex" = c("m", "f")))
+  details <- get_age_details(data.table::data.table("Age" = c(20, 30),
+                                                    yob = c(2000, 1990),
+                                                    "sex" = c("m", "f")))
   expect_equal(details$name, "Age")
 
 })
 ##############################################################################
 context("testing getting the timepoint details")
 test_that("testing getting the timepoint details", {
-  details <- get_timepoint_details(data.table::data.table("time" = c(21, 15), "sex" = c("m", "f")))
+  details <- get_timepoint_details(data.table::data.table("time" = c(21, 15),
+                                                     "sex" = c("m", "f")))
   expect_equal(details$name, "time")
   expect_equal(details$codes, c(21, 15))
-  details <- get_timepoint_details(data.table::data.table("timepoint" = c(21, 15), "sex" = c("m", "f")))
+  details <- get_timepoint_details(data.table::data.table("timepoint" = c(21, 15),
+                                                      "sex" = c("m", "f")))
   expect_equal(details$name, "timepoint")
   expect_equal(details$codes, c(21, 15))
-  details <- get_timepoint_details(data.table::data.table("point" = c(21, 15), "control" = c("control", "intervention")))
+  details <- get_timepoint_details(data.table::data.table("point" = c(21, 15),
+                                                  "control" = c("control",
+                                                          "intervention")))
   # no time point in column- returning NA
   expect_identical(details, NA)
   #Error - trial data should not be NULL
@@ -80,7 +90,9 @@ test_that("testing getting the outcome details", {
                   "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)), "eq5d", "qol", TRUE)
   expect_equal(details$name, c("qol.MO", "qol.PD", "qol.AD"))
   expect_equal(details$codes, c(1, 2))
-  details <- get_outcome_details(data.table::data.table("qol1" = c(1, 2), "qol2" = c(1, 2)), "eq5d", "qol", TRUE)
+  details <- get_outcome_details(data.table::data.table("qol1" = c(1, 2),
+                                                        "qol2" = c(1, 2)),
+                                 "eq5d", "qol", TRUE)
   expect_equal(details$name, c("qol1", "qol2"))
   expect_equal(details$codes, c(1, 2))
   # Error no atching columns
@@ -109,11 +121,16 @@ test_that("testing getting the outcome details", {
 ###############################################################################
 context("testing getting the outcome details")
 test_that("testing getting the outcome details", {
-  details <- get_eq5d_details(data.table::data.table("MO" = c(1, 2), "SC" = c(1, 2), "UA" = c(1, 2), "PD" = c(1, 2), "AD" = c(1, 2)))
+  details <- get_eq5d_details(data.table::data.table("MO" = c(1, 2),
+                                                     "SC" = c(1, 2),
+                                                     "UA" = c(1, 2),
+                                                     "PD" = c(1, 2),
+                                                     "AD" = c(1, 2)))
   expect_equal(details$name, c("MO", "SC", "UA", "PD", "AD"))
   expect_equal(details$codes, c(1, 2))
   # Error - need to match 5 columns
-  expect_error(get_eq5d_details(data.table::data.table("qol1" = c(1, 2), "qol2" = c(1, 2))))
+  expect_error(get_eq5d_details(data.table::data.table("qol1" = c(1, 2),
+                                                       "qol2" = c(1, 2))))
   # Error - no matching columns
   expect_error(get_eq5d_details(data.table::data.table("point" = c(21, 15))))
 

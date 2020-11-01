@@ -1,37 +1,97 @@
-
 ###############################################################################
 test_that("get parameter using survival analysis", {
-  data_for_survival <- survival::aml
+  datafile <- system.file("extdata", "survival_aml.csv", package = "packDAMipd")
+  data_for_survival <- read.csv(datafile)
+  surv_results <- use_survival_analysis("status", datafile,
+                                        "x", info_get_method = "parametric",
+                                        info_distribution
+                                        = "weibull", covariates = NA, "time"
+  )
+  expect_equal(surv_results$model_coeff[1], 0.00554, tol = 1e-5)
   data_for_survival <- na.omit(data_for_survival)
+  surv_results <- use_survival_analysis("status", data_for_survival,
+                        "x",
+                        info_get_method = "parametric", info_distribution
+                        = "weibull", covariates = NA, "time"
+  )
+  expect_equal(surv_results$model_coeff[1], 0.00554, tol = 1e-5)
+
+  surv_results <- use_survival_analysis("status", data_for_survival,
+                                        "x",
+                                    info_get_method = "km",
+                                    info_distribution = "weibull",
+                                    covariates = NA, "time"
+  )
+  expect_equal(surv_results$fit$n, c(11, 12))
+  surv_results <- use_survival_analysis("status", data_for_survival,
+                                        "x",
+                                    info_get_method = "fh",
+                                    info_distribution
+                                    = "weibull", covariates = NA, "time"
+  )
+  expect_equal(surv_results$fit$n, c(11, 12))
+  surv_results <- use_survival_analysis("status", data_for_survival,
+                                        "x",
+                                    info_get_method = "fh2",
+                                    info_distribution = "weibull",
+                                    covariates = NA, "time"
+  )
+  expect_equal(surv_results$fit$n, c(11, 12))
+
+  surv_results <- use_survival_analysis("status", data_for_survival,
+                                        "x",
+                                    info_get_method = "coxph",
+                                    info_distribution = "weibull",
+                                    covariates = NA, "time"
+  )
+  expect_equal(unname(surv_results$fit$coefficients), 0.9155, tol = 1e-4)
+  # columns cant be found
+  expect_error(use_survival_analysis("status", data_for_survival,
+                                     "sex",
+                                     info_get_method = "parametric",
+                                     info_distribution = "weibull",
+                                     covariates = NA, "time"
+  ))
   # Error - parameter to be estimated is not found
   expect_error(use_survival_analysis(NULL, data_for_survival,
                                      "x",
-                                     info_get_method = "parametric", info_distribution
-                                     = "weibull", covariates = NA, "time"
+                                     info_get_method = "parametric",
+                                     info_distribution = "weibull",
+                                     covariates = NA, "time"
   ))
   # Error - dataset is not found
   expect_error(use_survival_analysis("status", NULL, "x",
-                                     info_get_method = "parametric", info_distribution
-                                     = "weibull", covariates = NA, "time"))
+                                     info_get_method = "parametric",
+                                     info_distribution = "weibull",
+                                     covariates = NA, "time"))
   # Error - independent variable is not found
   expect_error(use_survival_analysis("status", data_for_survival,
                                      NA,
-                                     info_get_method = "parametric", info_distribution
-                                     = "weibull", covariates = NA, "time"
+                                     info_get_method = "parametric",
+                                     info_distribution = "weibull",
+                                     covariates = NA, "time"
   ))
   # Error - method is missing
   expect_error(use_survival_analysis("status", data_for_survival, "x", NA,
-                                     info_distribution = "weibull", covariates = NA,
+                                     info_distribution = "weibull",
+                                     covariates = NA,
                                      "time"
   ))
 })
 ###############################################################################
 test_that("get parameter using parametric regression survival analysis", {
-  data_for_survival <- survival::lung
-  data_for_survival <- na.omit(data_for_survival)
+  datafile <- system.file("extdata", "survival_lung.csv",
+                          package = "packDAMipd")
+  data_for_survival <- read.csv(datafile)
   surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
                                             info_distribution = "weibull",
                                             covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated$model_coeff[1], 0.00035, tol = 1e-4)
+
+  surv_estimated <- use_parametric_survival("status", datafile, "sex",
+                                            info_distribution = "weibull",
+                                            covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated$model_coeff[1], 0.00035, tol = 1e-4)
 
   # error - param to be estimated not valid
   expect_error(use_parametric_survival(NA, data_for_survival, "sex",
@@ -61,62 +121,127 @@ test_that("get parameter using parametric regression survival analysis", {
 ###############################################################################
 
 test_that("get parameter using kaplan meier survival analysis", {
-  data_for_survival <- survival::aml
-  data_for_survival <- na.omit(data_for_survival)
-  surv_estimated_aml <- use_km_survival("status", data_for_survival, "x", covariates = NA, "time")
+
+  datafile <- system.file("extdata", "survival_lung.csv",
+                          package = "packDAMipd")
+  data_for_survival <- read.csv(datafile)
+
+  surv_estimated_aml <- use_km_survival("status", data_for_survival, "sex",
+                                        covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated_aml$fit$n, c(36, 27, 71, 42, 29, 21,  1))
+
+  surv_estimated_aml <- use_km_survival("status", datafile, "sex",
+                                        covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated_aml$fit$n, c(28, 19, 52, 29, 22, 16, 1))
+  datafile <- system.file("extdata", "survival_aml.csv",
+                          package = "packDAMipd")
+  data_for_survival <- read.csv(datafile)
+  surv_estimated_aml <- use_km_survival("status", data_for_survival, "x",
+                                        covariates = NA, "time")
+  expect_equal(surv_estimated_aml$fit$n, c(11, 12))
+  surv_estimated_aml <- use_km_survival("status", datafile, "x",
+                                        covariates = NA, "time")
+  expect_equal(surv_estimated_aml$fit$n, c(11, 12))
+
+
   # Error - parameter to be estimated is not found
-  expect_error(use_km_survival(NA, data_for_survival, "x", covariates = NA, "time"))
+  expect_error(use_km_survival(NA, data_for_survival, "x",
+                               covariates = NA, "time"))
   # Error - dataset not provided
   expect_error(use_km_survival("status", NULL, "x", covariates = NA, "time"))
   # Error - independent variable not given
-  expect_error(use_km_survival("status", data_for_survival, NA, covariates = NA, "time"))
+  expect_error(use_km_survival("status", data_for_survival, NA,
+                               covariates = NA, "time"))
   # Error - time variable not given
-  expect_error(use_km_survival("status", data_for_survival, "x", covariates = NA, NA))
+  expect_error(use_km_survival("status", data_for_survival, "x",
+                               covariates = NA, NA))
 })
 ###############################################################################
 
 test_that("get parameter using FH survival analysis", {
+  datafile <- system.file("extdata", "survival_lung.csv",
+                          package = "packDAMipd")
+  data_for_survival <- read.csv(datafile)
+  surv_estimated_aml <- use_fh_survival("status", data_for_survival, "sex",
+                                        covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated_aml$fit$n, c(36, 27, 71, 42, 29, 21,  1))
+  surv_estimated_aml <- use_fh_survival("status", datafile, "sex",
+                                        covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated_aml$fit$n, c(28, 19, 52, 29, 22, 16, 1))
+
   data_for_survival <- survival::aml
   data_for_survival <- na.omit(data_for_survival)
-  surv_estimated_aml <- use_fh_survival("status", data_for_survival, "x", covariates = NA, "time")
+  surv_estimated_aml <- use_fh_survival("status", data_for_survival, "x",
+                                        covariates = NA, "time")
   # Error - parameter to be estimated is not found
-  expect_error(use_fh_survival(NA, data_for_survival, "x", covariates = NA, "time"))
+  expect_error(use_fh_survival(NA, data_for_survival, "x", covariates = NA,
+                               "time"))
   # Error - dataset not provided
   expect_error(use_fh_survival("status", NULL, "x", covariates = NA, "time"))
   # Error - independent variable not given
-  expect_error(use_fh_survival("status", data_for_survival, NA, covariates = NA, "time"))
+  expect_error(use_fh_survival("status", data_for_survival, NA,
+                               covariates = NA, "time"))
   # Error - time variable not given
-  expect_error(use_fh_survival("status", data_for_survival, "x", covariates = NA, NA))
+  expect_error(use_fh_survival("status", data_for_survival, "x",
+                               covariates = NA, NA))
 })
 ###############################################################################
 
 test_that("get parameter using FH2 survival analysis", {
+  datafile <- system.file("extdata", "survival_lung.csv",
+                          package = "packDAMipd")
+  data_for_survival <- read.csv(datafile)
+  surv_estimated_aml <- use_fh2_survival("status", data_for_survival, "sex",
+                                        covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated_aml$fit$n, c(36, 27, 71, 42, 29, 21,  1))
+  surv_estimated_aml <- use_fh2_survival("status", datafile, "sex",
+                                        covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated_aml$fit$n, c(28, 19, 52, 29, 22, 16, 1))
+
   data_for_survival <- survival::aml
   data_for_survival <- na.omit(data_for_survival)
-  surv_estimated_aml <- use_fh2_survival("status", data_for_survival, "x", covariates = NA, "time")
+  surv_estimated_aml <- use_fh2_survival("status", data_for_survival, "x",
+                                         covariates = NA, "time")
   # Error - parameter to be estimated is not found
-  expect_error(use_fh2_survival(NA, data_for_survival, "x", covariates = NA, "time"))
+  expect_error(use_fh2_survival(NA, data_for_survival, "x",
+                                covariates = NA, "time"))
   # Error - dataset not provided
   expect_error(use_fh2_survival("status", NULL, "x", covariates = NA, "time"))
   # Error - independent variable not given
-  expect_error(use_fh2_survival("status", data_for_survival, NA, covariates = NA, "time"))
+  expect_error(use_fh2_survival("status", data_for_survival, NA,
+                                covariates = NA, "time"))
   # Error - time variable not given
-  expect_error(use_fh2_survival("status", data_for_survival, "x", covariates = NA, NA))
+  expect_error(use_fh2_survival("status", data_for_survival, "x",
+                                covariates = NA, NA))
 })
 ###############################################################################
 
 test_that("get parameter using cox ph survival analysis", {
-  data_for_survival <- survival::lung
+  datafile <- system.file("extdata", "survival_lung.csv",
+                          package = "packDAMipd")
+  data_for_survival <- read.csv(datafile)
   data_for_survival <- na.omit(data_for_survival)
-  surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
+
+  surv_estimated_aml <- use_coxph_survival("status", data_for_survival, "sex",
+                                        covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated_aml$fit$n, c(167))
+  surv_estimated_aml <- use_coxph_survival("status", datafile, "sex",
+                                           covariates = c("ph.ecog"), "time")
+  expect_equal(surv_estimated_aml$fit$n, c(167))
+
+   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
     covariates = c("ph.ecog"), "time"
   )
   # Error - parameter to be estimated is not found
-  expect_error(use_coxph_survival(NA, data_for_survival, "sex", covariates = NA, "time"))
+  expect_error(use_coxph_survival(NA, data_for_survival, "sex",
+                                  covariates = NA, "time"))
   # Error - dataset not provided
-  expect_error(use_coxph_survival("status", NULL, "sex", covariates = NA, "time"))
+  expect_error(use_coxph_survival("status", NULL, "sex", covariates = NA,
+                                  "time"))
   # Error - independent variable not given
-  expect_error(use_coxph_survival("status", data_for_survival, NA, covariates = NA, "time"))
+  expect_error(use_coxph_survival("status", data_for_survival, NA,
+                                  covariates = NA, "time"))
   # Error - time variable not given
-  expect_error(use_coxph_survival("status", data_for_survival, "sex", covariates = NA, NA))
+  expect_error(use_coxph_survival("status", data_for_survival, "sex",
+                                  covariates = NA, NA))
 })

@@ -2,7 +2,7 @@
 % Please edit documentation in R/2b_parameter_estimation_survival_functions.R
 \name{use_survival_analysis}
 \alias{use_survival_analysis}
-\title{##########################################################################################################
+\title{############################################################################
 Get the parameter values using the survival analysis}
 \usage{
 use_survival_analysis(
@@ -22,19 +22,23 @@ use_survival_analysis(
 
 \item{indep_var}{the independent variable (column name in data file)}
 
-\item{info_get_method}{additional information on methods e.g Kaplan-Meier ot hazard}
+\item{info_get_method}{additional information on methods e.g
+Kaplan-Meier ot hazard}
 
-\item{info_distribution}{distribution name  eg. for logistic regression -binomial}
+\item{info_distribution}{distribution name  eg. for logistic
+regression -binomial}
 
-\item{covariates}{list of covariates - calculations to be done before passing}
+\item{covariates}{list of covariates - calculations to be done
+before passing}
 
-\item{timevar_survival}{time variable for survival analysis, default is NA}
+\item{timevar_survival}{time variable for survival analysis,
+default is NA}
 }
 \value{
 the results of the regression analysis
 }
 \description{
-##########################################################################################################
+############################################################################
 Get the parameter values using the survival analysis
 }
 \details{

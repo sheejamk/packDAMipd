@@ -53,11 +53,13 @@ microcosting_tablets_patches(
 
 \item{list_of_code_names}{if names is coded, give the code:name pairs}
 
-\item{list_of_code_freq}{if frequency is coded, give the code:frequency pairs}
+\item{list_of_code_freq}{if frequency is coded, give the
+code:frequency pairs}
 
 \item{list_of_code_dose_unit}{if unit is coded, give the code:unit pairs}
 
-\item{equiv_dose}{if cost per equivalent doses are to be calculates, provide equiv_dose}
+\item{equiv_dose}{if cost per equivalent doses are to be calculates,
+provide equiv_dose}
 }
 \value{
 the calculated cost of tablets along with original data
@@ -66,11 +68,11 @@ the calculated cost of tablets along with original data
 Function to estimate the cost of tablets and patches taken (from IPD)
 }
 \details{
-Assumes individual level data has name of medication, dose, dose unit, number taken,
-frequency taken, and basis time
-Assumes unit cost data contains the name of medication, form/type, strength,
-unit of strength (or the unit in which the cost calculated), preparation,
-unit cost, size and size unit
+Assumes individual level data has name of medication, dose, dose unit,
+number taken, frequency taken, and basis time
+Assumes unit cost data contains the name of medication, form/type,
+strength, unit of strength (or the unit in which the cost calculated),
+preparation, unit cost, size and size unit
 (in which name, forms, size, size unit, and preparation  are not passed on)
 }
 \examples{
@@ -84,8 +86,10 @@ freq_desc <- c(
 )
 codes <- c(seq(1:19))
 this_list <- list(freq_desc, codes)
-med_costs_file <- system.file("extdata", "average_unit_costs_med.csv", package = "packDAMipd")
-data_file <- system.file("extdata", "resource_use_t.csv", package = "packDAMipd")
+med_costs_file <- system.file("extdata", "average_unit_costs_med.csv",
+package = "packDAMipd")
+data_file <- system.file("extdata", "resource_use_t.csv",
+package = "packDAMipd")
 ind_part_data <- load_trial_data(data_file)
 med_costs <- load_trial_data(med_costs_file)
 res <- microcosting_tablets_patches("tablets",

@@ -1,134 +1,4 @@
-###############################################################################
-context("testing  form expression for glm")
-test_that("testing form expression for glm", {
-  formula <- form_expression_glm("admit",
-    indep_var = "gre", family = "binomial",
-    covariates = c("gpa", "rank"), interaction = FALSE, naaction = "na.omit",
-    link = "logit")
-  # Error - parameter to be estimated should not be NULL or NA
-  expect_error(form_expression_glm(NA, "gre", "binomial", covariates = NA,
-                      interaction = FALSE, naaction = "na.omit", link = NA))
-  expect_error(form_expression_glm(NULL, "gre", "binomial", covariates = NA,
-                                   interaction = FALSE, naaction = "na.omit", link = NA))
-  # Error - independent variable should not be NULL or NA
-  expect_error(form_expression_glm("admit", NA, "binomial", covariates = NA,
-                      interaction = FALSE, naaction = "na.omit", link = NA))
-  expect_error(form_expression_glm("admit", NULL, "binomial", covariates = NA,
-                                   interaction = FALSE, naaction = "na.omit", link = NA))
-  # Error - distribution should not be NULL or NA
-  expect_error(form_expression_glm("admit", "gre", NA, covariates = NA,
-                       interaction = FALSE, naaction = "na.omit", link = NA))
-  # Error - interaction should not be NULL or NA
-  expect_error(form_expression_glm("admit", "gre", "binomial", covariates = NA,
-                      interaction = NA, naaction = "na.omit", link = NA))
-  # Error - interaction should not be NULL or NA
-  expect_error(form_expression_glm("admit", "gre", "binomial", covariates = NA,
-                      interaction = NULL, naaction = "na.omit", link = NA))
-  expect_error(form_expression_glm("admit",
-                                 indep_var = "gre", family = "binomial",
-                                 covariates = c("gpa", "rank"), interaction = FALSE, naaction = "na.omit",
-                                 link = "identity"))
-  epxr = form_expression_glm("admit",
-                                   indep_var = "gre", family = "binomial",
-                                   covariates = c("gpa", "rank"), interaction = TRUE, naaction = "na.omit",
-                                   link = "logit")
-  expect_identical(epxr$short_formula, " ~ gpa * rank + gre")
-})
-###############################################################################
-context("testing  getting family of distribution for glm")
-test_that("testing  getting family of distribution for glm", {
-  expect_equal(find_glm_distribution("normal"), "gaussian")
-  expect_equal(find_glm_distribution("poisson"), "poisson")
-  expect_error(find_glm_distribution("logical"))
-  # Error the parameter can not be null
-  expect_error(find_glm_distribution(NULL))
-  expect_error(find_glm_distribution(NA))
-  expect_equal(find_glm_distribution("gamma"), "gamma")
-  expect_equal(find_glm_distribution("inverse gaussian"), "inverse.gaussian")
-  expect_equal(find_glm_distribution("quasi binomial"), "quasibinomial")
-  expect_equal(find_glm_distribution("quasi poisson"), "quasipoisson")
-  expect_equal(find_glm_distribution("quasi"), "quasi")
-})
-###############################################################################
-context("testing  getting link function for the family of distribution for glm")
-test_that("testing  getting link function for the family of distribution for glm", {
-  expect_equal(check_link_glm("gaussian", "log"), "log")
-  expect_equal(check_link_glm("poisson", "identity"), "identity")
-  expect_error(check_link_glm("logical", NULL))
-  expect_error(check_link_glm("poisson", "probit"))
-  # Error the parameter can not be Na or NULL
-  expect_error(check_link_glm(NULL, NULL))
-  # Error the parameter can not be Na or NULL
-  expect_error(check_link_glm("gaussian", NULL))
-  #family not na
-  expect_error(check_link_glm(NA, "identity"))
-  # Error the parameter can not be Na or NULL
-  expect_error(check_link_glm("gaussian", NA))
-  expect_equal(check_link_glm("gamma", "identity"), "identity")
-  expect_equal(check_link_glm("inverse.gaussian", "identity"), "identity")
-  expect_equal(check_link_glm("quasi", "identity"), "identity")
-  expect_equal(check_link_glm("quasibinomial", "logit"), "logit")
-  expect_equal(check_link_glm("quasipoisson", "logit"), "logit")
-})
-###############################################################################
-context("testing  diagnosis for glm fit")
-test_that("testing  diagnosis for glm fit", {
-  datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
-  mydata <- read.csv(datafile)
-  results_logit <- use_generalised_linear_model("admit", dataset = mydata,
-                              indep_var = "gre", family = "binomial", covariates = NA,
-                              interaction = FALSE, naaction = "na.omit", link = NA)
-  #Error method should be glm
-  expect_error(do_diagnostic_glm(NULL, results_logit$fit,
-                                 results_logit$expression_recreated,
-                                 results_logit$param_to_be_estimated,
-                                 mydata, "gre", covariates = NA, interaction = FALSE))
-  #Error method is not glm
-  expect_error(do_diagnostic_glm("lm", "fit", results_logit$expression_recreated,
-                                 results_logit$param_to_be_estimated,
-                                 mydata, "gre", covariates = NA, interaction = FALSE))
 
-  #Error "fit" is not glm fit object
-  expect_error(do_diagnostic_glm("glm", "fit", results_logit$expression_recreated,
-                                 results_logit$param_to_be_estimated,
-                                 mydata, "gre", covariates = NA, interaction = FALSE))
-  # expression created can not be null
-  expect_error(do_diagnostic_glm("glm", results_logit$fit, NULL, results_logit$param_to_be_estimated,
-                                 mydata, "gre", covariates = NA, interaction = FALSE))
-
-  # param_to_be_estimated can not be null
-  expect_error(do_diagnostic_glm("glm", results_logit$fit, results_logit$expression_recreated, NULL,
-                                 mydata, "gre", covariates = NA, interaction = FALSE))
-
-  # dataset can not be null
-  expect_error(do_diagnostic_glm("glm", results_logit$fit, results_logit$expression_recreated, "gre",
-                                 NULL, "gre", covariates = NA, interaction = FALSE))
-  # indep_var can not be null
-  expect_error(do_diagnostic_glm("glm", results_logit$fit, results_logit$expression_recreated, "gre",
-                                 mydata, NULL, covariates = NA, interaction = FALSE))
-
-  # interaction can not be null
-  expect_error(do_diagnostic_glm("glm", results_logit$fit, results_logit$expression_recreated, "gre",
-                                 mydata, "gre", covariates = NA, NULL))
-})
-###############################################################################
-context("testing find distribution for survreg")
-test_that("testing  diagnosis for glm fit", {
-  expect_equal(find_survreg_distribution("weibull"), "weibull")
-  expect_equal(find_survreg_distribution("expo"), "exponential")
-  # Error - text can not be NULL or NA
-  expect_error(find_survreg_distribution(NULL))
-  expect_error(find_survreg_distribution(NA))
-  # Error - distribution not recognised
-  expect_error(find_survreg_distribution("NULL"))
-  expect_equal(find_survreg_distribution("gaussian"), "gaussian")
-  expect_equal(find_survreg_distribution("log gaussian"), "loggaussian")
-  expect_equal(find_survreg_distribution("rayleigh"), "rayleigh")
-  expect_equal(find_survreg_distribution("logistic"), "logistic")
-  expect_equal(find_survreg_distribution("log normal"), "lognormal")
-  expect_equal(find_survreg_distribution("log logistic"), "loglogistic")
-  expect_equal(find_survreg_distribution("log normal"), "lognormal")
-})
 ###############################################################################
 context("testing returning residual for survival")
 test_that("testing  returning residual for survival", {
@@ -153,9 +23,9 @@ context("testing plotting prediction parameteric survival")
 test_that("testing  plotting prediction parameteric survival", {
   data_for_survival <- survival::lung
 
-  newdata = data_for_survival
-  newdata[newdata$sex == 2, ]$sex = "male"
-  newdata[newdata$sex == 1,]$sex = "female"
+  newdata <- data_for_survival
+  newdata[newdata$sex == 2, ]$sex <- "male"
+  newdata[newdata$sex == 1, ]$sex <- "female"
 
   surv_estimated <- use_parametric_survival("status", newdata, "sex",
                                             info_distribution = "weibull",
@@ -169,21 +39,26 @@ test_that("testing  plotting prediction parameteric survival", {
                                     covariates = NA, "time")
 
   plot_prediction_parametric_survival("status", "sex", covariates = NA,
-                                      data_for_survival, surv_estimated$fit, "time")
+                                      data_for_survival, surv_estimated$fit,
+                                      "time")
 
   surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
                                             info_distribution = "weibull",
-                                            covariates = c("ph.ecog"), "time")
+                                            covariates = c("ph.ecog"),
+                                            "time")
 
   plot_prediction_parametric_survival("status", "sex",
-            covariates = c("ph.ecog"), data_for_survival, surv_estimated$fit, "time")
+            covariates = c("ph.ecog"), data_for_survival, surv_estimated$fit,
+            "time")
 
   #Error - parameter to be estimated can not be NA
   expect_error(plot_prediction_parametric_survival(NA, "sex",
-          covariates = c("ph.ecog"), data_for_survival, surv_estimated$fit, "time"))
+          covariates = c("ph.ecog"), data_for_survival, surv_estimated$fit,
+          "time"))
   #Error - independent variable  can not be NULL
   expect_error(plot_prediction_parametric_survival("status", NULL,
-            covariates = c("ph.ecog"), data_for_survival, surv_estimated$fit, "time"))
+            covariates = c("ph.ecog"), data_for_survival,
+            surv_estimated$fit, "time"))
   #Error - dataset should not be NULL
   expect_error(plot_prediction_parametric_survival("status", "sex",
               covariates = c("ph.ecog"), NULL, surv_estimated$fit, "time"))
@@ -195,7 +70,6 @@ test_that("testing  plotting prediction parameteric survival", {
         covariates = c("ph.ecog"), data_for_survival, surv_estimated$fit, NULL))
 })
 ###############################################################################
-
 context("testing creating a new dataset based on given one")
 test_that("testing creating a new dataset based on given one", {
   dataset <- survival::lung
@@ -210,255 +84,66 @@ test_that("testing creating a new dataset based on given one", {
   expect_error(create_new_dataset("status1", c("age"), dataset, c(FALSE)))
   df <- data.frame(status = c(1, 2),
                   age = c(62.44737, 62.44737))
-  expect_equal(create_new_dataset("status", c("age"), dataset, c(FALSE)), df, tol = 1e-3)
+  expect_equal(create_new_dataset("status", c("age"), dataset,
+                                  c(FALSE)), df, tol = 1e-3)
 })
 ###############################################################################
-context("testing creating expression for linear regression ")
-test_that("testing creating expression for linear regression", {
-  formula <- form_expression_lm("gre", indep_var = "gpa", covariates = NA,
-                                interaction = FALSE)
-  #Error -parameter to be estimated is NULL
-  expect_error(form_expression_lm(NULL, indep_var = "gpa", covariates = NA,
-                                  interaction = FALSE))
-  # Error- independent variable  null
-  expect_error(form_expression_lm("gre", indep_var = NULL, covariates = NA,
-                                  interaction = FALSE))
-  formula <- form_expression_lm("gre", indep_var = "gpa", covariates = c("age", "sex"),
-                                interaction = FALSE)
-  expect_equal(formula$short_formula," ~ age + sex + gpa")
-  formula <- form_expression_lm("gre", indep_var = "gpa", covariates = c("age", "sex"),
-                                interaction = TRUE)
-  expect_equal(formula$short_formula," ~ age * sex + gpa")
-})
-###############################################################################
-context("testing  diagnosis for lm fit")
-test_that("testing  diagnosis for lm fit", {
-  datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
-  mydata <- read.csv(datafile)
-  results_logit <- use_linear_regression("admit", dataset = mydata,
-                            indep_var = "gre", covariates = NA, interaction = FALSE)
-  #Error method should be lm
-  expect_error(do_diagnostic_linear_regression("glm", results_logit$fit, expression_recreated,
-                                               param_to_be_estimated, mydata, "gre", covariates, interaction))
-   #Error method should be glm
-  expect_error(do_diagnostic_linear_regression(NULL, results_logit$fit, expression_recreated,
-                         param_to_be_estimated, mydata, "gre", covariates, interaction))
-  #Error "fit" is not lm fit object
-  expect_error(do_diagnostic_linear_regression("lm", "fit", expression_recreated,
-                  param_to_be_estimated, mydata, "gre", covariates, interaction))
-  # expression created can not be null
-  expect_error(do_diagnostic_linear_regression("lm", results_logit$fit, NULL,
-                      param_to_be_estimated, mydata, "gre", covariates, interaction))
-
-  # param_to_be_estimated can not be null
-  expect_error(do_diagnostic_linear_regression("lm", results_logit$fit, results_logit$fit$call, NULL,
-                                 mydata, "gre", covariates, interaction))
-
-  # dataset can not be null
-  expect_error(do_diagnostic_linear_regression("lm", results_logit$fit, results_logit$fit$call, "gre",
-                                 NULL, "gre", covariates, interaction))
-  # indep_var can not be null
-  expect_error(do_diagnostic_linear_regression("lm", results_logit$fit, results_logit$fit$call, "gre",
-                                 mydata, NULL, covariates, interaction))
-
-  # interaction can not be null
-  expect_error(do_diagnostic_linear_regression("lm", results_logit$fit, results_logit$fit$call, "gre",
-                                 mydata, "gre", covariates, NULL))
-})
-###############################################################################
-context("testing predicting regression")
-test_that("testing predicting regression", {
-  datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
-  mydata <- read.csv(datafile)
-  results_logit <- use_linear_regression("admit", dataset = mydata,
-                                         indep_var = "gre", covariates = NA,
-                                         interaction = FALSE)
-  predict <- prediction_regression("lm", results_logit$fit, results_logit$fit$call, "admit",
-                                  covariates = NA, "gre", FALSE)
-  #Error method should be glm or lm
-  expect_error(prediction_regression(NULL, results_logit$fit, results_logit$fit$call, "admit",
-                                      covariates = NA, "gre", FALSE))
-  expect_error(prediction_regression("fit", results_logit$fit, results_logit$fit$call, "admit",
-                                     covariates = NA, "gre", FALSE))
-
-  #Error "fit" is not lm fit object
-  expect_error(prediction_regression("lm", "fit", results_logit$fit$call, "admit",
-                                     covariates = NA, "gre", FALSE))
-  # expression created can not be null
-  expect_error(prediction_regression("lm", results_logit$fit, NULL, "admit",
-                                     covariates = NA, "gre", FALSE))
-  # param_to_be_estimated can not be null
-  expect_error(prediction_regression("lm", results_logit$fit,
-                                     results_logit$expression_recreated, NULL,
-                                     covariates = NA, "gre", FALSE))
-  # indep_var can not be null
-  expect_error(prediction_regression("lm", results_logit$fit,
-                                     results_logit$expression_recreated, "admit",
-                                     covariates = NA, NULL, FALSE))
-
-  # interaction can not be null
-  expect_error(prediction_regression("lm", results_logit$fit,
-                                     results_logit$expression_recreated, "admit",
-                                     covariates = NA, "gre", NULL))
-  results_lm <- use_linear_regression("mpg",
-    dataset = mtcars,
-    indep_var = "disp", covariates = c("hp", "wt", "drat"),
-    interaction = FALSE)
-
-  pred <- prediction_regression("lm", results_lm$fit,
-                        results_lm$expression_recreated, "admit",
-                        covariates = c("hp", "wt", "drat"), "gre", FALSE)
-
-
-})
-###############################################################################
-context("testing forming expression for mixed model")
-test_that("testing forming expression for mixed model", {
-  datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
-  mydata <- read.csv(datafile)
-  formula <- form_expression_mixed_model("extro",
-    dataset = mydata,
-    fix_eff = c("open", "agree", "social"),
-    fix_eff_interact_vars = NULL,
-    random_intercept_vars = c("school", "class"),
-    nested_intercept_vars_pairs = list(c("school", "class")),
-    cross_intercept_vars = NULL,
-    uncorrel_slope_intercept_pairs = NULL,
-    random_slope_intercept_pairs = NULL, family = "binomial", link = "logit"
-  )
-  form_expression_mixed_model("extro",
-                                         dataset = mydata,
-                                         fix_eff = c("open", "agree", "social"),
-                                         fix_eff_interact_vars = NULL,
-                                         random_intercept_vars = c("school", "class"),
-                                         nested_intercept_vars_pairs = list(c("school", "class")),
-                                         cross_intercept_vars = NULL,
-                                         uncorrel_slope_intercept_pairs = NULL,
-                                         random_slope_intercept_pairs = NULL,
-                                         family = "binomial", link = NA)
-  #Error - parameter to be estimated can not be null
-  expect_error(form_expression_mixed_model(NULL, dataset = mydata,
-            fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
-            random_intercept_vars = c("school", "class"),
-            nested_intercept_vars_pairs = list(c("school", "class")),
-            cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-          random_slope_intercept_pairs = NULL, family = "binomial", link = NA
-  ))
-  #Error - dataset can not be null
-  expect_error(form_expression_mixed_model("extro", dataset = NULL,
-                                           fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
-                                           random_intercept_vars = c("school", "class"),
-                                           nested_intercept_vars_pairs = list(c("school", "class")),
-                                           cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-                                           random_slope_intercept_pairs = NULL, family = "binomial", link = NA
-  ))
-
-  form_expression_mixed_model("extro", dataset = mydata,
-                                           fix_eff = NULL, fix_eff_interact_vars = NULL,
-                                           random_intercept_vars = c("school", "class"),
-                                           nested_intercept_vars_pairs = list(c("school", "class")),
-                                           cross_intercept_vars = NULL,
-                                          uncorrel_slope_intercept_pairs = NULL,
-                                           random_slope_intercept_pairs = NULL, family = "binomial", link = NA
-  )
-  form_expression_mixed_model("extro", dataset = mydata,
-                              fix_eff = NULL, fix_eff_interact_vars = NULL,
-                              random_intercept_vars = c("school", "class"),
-                              nested_intercept_vars_pairs = list(c("school", "class")),
-                              cross_intercept_vars = c("school", "class"),
-                              uncorrel_slope_intercept_pairs = NULL,
-                              random_slope_intercept_pairs = NULL, family = "binomial", link = NA
-  )
-  form_expression_mixed_model("extro", dataset = mydata,
-                              fix_eff = c("open", "agree", "social"),
-                              fix_eff_interact_vars = c("open", "agree"),
-                              random_intercept_vars = c("school", "class"),
-                              nested_intercept_vars_pairs = list(c("school", "class")),
-                              cross_intercept_vars = NULL,
-                              uncorrel_slope_intercept_pairs = NULL,
-                              random_slope_intercept_pairs = NULL,
-                              family = "binomial", link = NA
-  )
-  form_expression_mixed_model("extro", dataset = mydata,
-                              fix_eff = c("open", "agree", "social"),
-                              fix_eff_interact_vars = c("open", "agree"),
-                              random_intercept_vars = c("school", "class"),
-                              nested_intercept_vars_pairs = list(c("school", "class")),
-                              cross_intercept_vars = c("school", "class"),
-                              uncorrel_slope_intercept_pairs = NULL,
-                              random_slope_intercept_pairs = NULL,
-                              family = "binomial", link = NA
-  )
-  form_expression_mixed_model("extro", dataset = mydata,
-                              fix_eff = c("open", "agree", "social"),
-                              fix_eff_interact_vars = c("open", "agree"),
-                              random_intercept_vars = c("school", "class"),
-                              nested_intercept_vars_pairs = list(c("school", "class")),
-                              cross_intercept_vars = c("school", "class"),
-                              uncorrel_slope_intercept_pairs = c("school", "class"),
-                              random_slope_intercept_pairs = NULL,
-                              family = "binomial", link = NA
-  )
-  # random intercept variables can not be null
-  expect_error(form_expression_mixed_model("extro", dataset = mydata,
-                                           fix_eff = c("open", "agree", "social"),
-                                           fix_eff_interact_vars = NULL,
-                                           random_intercept_vars = NULL,
-                                           nested_intercept_vars_pairs = list(c("school", "class")),
-                                           cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-                                           random_slope_intercept_pairs = NULL, family = "binomial", link = NA
-  ))
-  # Error - family can not be NULL
-  expect_error(form_expression_mixed_model("extro", dataset = mydata,
-                              fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
-                              random_intercept_vars = c("school", "class"),
-                              nested_intercept_vars_pairs = list(c("school", "class")),
-                              cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-                              random_slope_intercept_pairs = NULL, family = NULL, link = NA
-  ))
-  # Error - nested intercept vars and cross intercept vars both can not be NULL
-  expect_error(form_expression_mixed_model("extro", dataset = mydata,
-                                           fix_eff = c("open", "agree", "social"), fix_eff_interact_vars = NULL,
-                                           random_intercept_vars = c("school", "class"),
-                                           nested_intercept_vars_pairs = NULL,
-                                           cross_intercept_vars = NULL, uncorrel_slope_intercept_pairs = NULL,
-                                           random_slope_intercept_pairs = NULL, family = "binomial", link = NA
-  ))
-})
-###############################################################################
-
 context("testing plotting survival function")
 test_that("testingplotting survival function", {
   data_for_survival <- survival::lung
   data_for_survival <- na.omit(data_for_survival)
-  plot_return_survival_curve(param_to_be_estimated = "status", dataset = data_for_survival,
-                             indep_var = "sex", covariates = c("ph.ecog"), timevar_survival = "time")
+  plot_return_survival_curve(param_to_be_estimated = "status",
+                             dataset = data_for_survival,
+                             indep_var = "sex",
+                             covariates = c("ph.ecog"),
+                             timevar_survival = "time")
 
-  plot_return_survival_curve(param_to_be_estimated = "status", dataset = data_for_survival,
-                             indep_var = "sex", covariates = NA, timevar_survival = "time")
+  plot_return_survival_curve(param_to_be_estimated = "status",
+                             dataset = data_for_survival,
+                             indep_var = "sex", covariates = NA,
+                             timevar_survival = "time")
 
   #Error - parameter to be estimated can not be NA or NULL
-  expect_error(plot_return_survival_curve(param_to_be_estimated = NULL, dataset = data_for_survival,
-                          indep_var = "sex", covariates = c("ph.ecog"), timevar_survival = "time"))
-  expect_error(plot_return_survival_curve(param_to_be_estimated = NA, dataset = data_for_survival,
-                          indep_var = "sex", covariates = c("ph.ecog"), timevar_survival = "time"))
+  expect_error(plot_return_survival_curve(param_to_be_estimated = NULL,
+                                          dataset = data_for_survival,
+                                          indep_var = "sex",
+                                          covariates = c("ph.ecog"),
+                                          timevar_survival = "time"))
+  expect_error(plot_return_survival_curve(param_to_be_estimated = NA,
+                                          dataset = data_for_survival,
+                                          indep_var = "sex",
+                                          covariates = c("ph.ecog"),
+                                          timevar_survival = "time"))
 
   #Error -data set can not be NULL
-  expect_error(plot_return_survival_curve(param_to_be_estimated =  "status", dataset = NULL,
-                        indep_var = "sex", covariates = c("ph.ecog"), timevar_survival = "time"))
+  expect_error(plot_return_survival_curve(param_to_be_estimated =  "status",
+                                          dataset = NULL, indep_var = "sex",
+                                          covariates = c("ph.ecog"),
+                                          timevar_survival = "time"))
 
   #Error -independent variable can not be NULL or NA
-  expect_error(plot_return_survival_curve(param_to_be_estimated = "status", dataset = data_for_survival,
-                        indep_var = NULL, covariates = c("ph.ecog"), timevar_survival = "time"))
+  expect_error(plot_return_survival_curve(param_to_be_estimated = "status",
+                                          dataset = data_for_survival,
+                                          indep_var = NULL,
+                                          covariates = c("ph.ecog"),
+                                          timevar_survival = "time"))
 
-  expect_error(plot_return_survival_curve(param_to_be_estimated = "status", dataset = data_for_survival,
-                      indep_var = NA, covariates = c("ph.ecog"), timevar_survival = "time"))
+  expect_error(plot_return_survival_curve(param_to_be_estimated = "status",
+                                          dataset = data_for_survival,
+                      indep_var = NA, covariates = c("ph.ecog"),
+                      timevar_survival = "time"))
 
   #Error -time variable can not be NULL or NA
-  expect_error(plot_return_survival_curve(param_to_be_estimated = "status", dataset = data_for_survival,
-                    indep_var = "sex", covariates = c("ph.ecog"), timevar_survival = NULL))
-  expect_error(plot_return_survival_curve(param_to_be_estimated = "status", dataset = data_for_survival,
-                    indep_var = "sex", covariates = c("ph.ecog"), timevar_survival = NA))
+  expect_error(plot_return_survival_curve(param_to_be_estimated = "status",
+                                          dataset = data_for_survival,
+                                          indep_var = "sex",
+                                          covariates = c("ph.ecog"),
+                                          timevar_survival = NULL))
+  expect_error(plot_return_survival_curve(param_to_be_estimated = "status",
+                                          dataset = data_for_survival,
+                                          indep_var = "sex",
+                                          covariates = c("ph.ecog"),
+                                          timevar_survival = NA))
 
 })
 ###############################################################################
@@ -474,19 +159,28 @@ test_that("testing plotting residual for cox ph models", {
   plot_return_residual_cox("status", "sex", covariates = c("ph.ecog"),
                            surv_estimated$fit,  data_for_survival)
   #Error - param to be estimated can not be null  or NA
-  expect_error(plot_return_residual_cox(NULL, "sex", covariates = c("ph.ecog"),
-                                        surv_estimated$fit, data_for_survival))
-  expect_error(plot_return_residual_cox(NA, "sex", covariates = c("ph.ecog"),
-                                        surv_estimated$fit, data_for_survival))
+  expect_error(plot_return_residual_cox(NULL, "sex",
+                                        covariates = c("ph.ecog"),
+                                        surv_estimated$fit,
+                                        data_for_survival))
+  expect_error(plot_return_residual_cox(NA, "sex",
+                                        covariates = c("ph.ecog"),
+                                        surv_estimated$fit,
+                                        data_for_survival))
 
   #Error - independent variable  can not be null or na
-  expect_error(plot_return_residual_cox("status", NULL, covariates = c("ph.ecog"),
-                                        surv_estimated$fit, data_for_survival))
-  expect_error(plot_return_residual_cox("status", NA, covariates = c("ph.ecog"),
-                                        surv_estimated$fit, data_for_survival))
+  expect_error(plot_return_residual_cox("status", NULL,
+                                        covariates = c("ph.ecog"),
+                                        surv_estimated$fit,
+                                        data_for_survival))
+  expect_error(plot_return_residual_cox("status", NA,
+                                        covariates = c("ph.ecog"),
+                                        surv_estimated$fit,
+                                        data_for_survival))
 
   # Error - fit object is not of type coxph
-  expect_error(plot_return_residual_cox("status", "sex", covariates = c("ph.ecog"),
+  expect_error(plot_return_residual_cox("status", "sex",
+                                        covariates = c("ph.ecog"),
                                         "fit", data_for_survival))
 })
 ###############################################################################
@@ -513,16 +207,18 @@ test_that("testing plotting residual for cox ph models", {
                              covariates = c("ph.ecog"), "time"))
 
   #Error - independent varaible should not be NULL or NA
-  expect_error(predict_coxph(surv_estimated$fit, data_for_survival, "status", NULL,
+  expect_error(predict_coxph(surv_estimated$fit, data_for_survival,
+                             "status", NULL,
                              covariates = c("ph.ecog"), "time"))
-  expect_error(predict_coxph(surv_estimated$fit, data_for_survival, "status", NA,
+  expect_error(predict_coxph(surv_estimated$fit, data_for_survival,
+                             "status", NA,
                              covariates = c("ph.ecog"), "time"))
 
   #Error -time variable should not be NULL or NA
-  expect_error(predict_coxph(surv_estimated$fit, data_for_survival, "status", "sex",
-                             covariates = c("ph.ecog"), NULL))
-  expect_error(predict_coxph(surv_estimated$fit, data_for_survival, "status", "sex",
-                             covariates = c("ph.ecog"), NA))
+  expect_error(predict_coxph(surv_estimated$fit, data_for_survival, "status",
+                             "sex", covariates = c("ph.ecog"), NULL))
+  expect_error(predict_coxph(surv_estimated$fit, data_for_survival, "status",
+                             "sex", covariates = c("ph.ecog"), NA))
 
 })
 ###############################################################################
@@ -530,27 +226,48 @@ context("testing plotting residual for cox ph models")
 test_that("testing plotting residual for cox ph models", {
   data_for_survival <- survival::lung
   data_for_survival <- na.omit(data_for_survival)
+
   surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
                                        covariates = c("ph.ecog"), "time")
   plot_survival_cox_covariates(surv_estimated$fit, data_for_survival, "status",
                 covariates = c("ph.ecog"), "sex")
+
+  new_data <- data_for_survival
+  new_data[new_data$sex == 1, ]$sex <- "F"
+  new_data[new_data$sex == 2, ]$sex <- "M"
+  surv_estimated <- use_coxph_survival("status", new_data, "sex",
+                                       covariates = c("ph.ecog"), "time")
+
+  plot_survival_cox_covariates(surv_estimated$fit, new_data, "status",
+                               covariates = c("ph.ecog"), "age")
+
+  surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
+                                       covariates = NA, "time")
+  plot_survival_cox_covariates(surv_estimated$fit, data_for_survival, "status",
+                               covariates = NA, "sex")
+
   #Error - fit object is not of coxph type
-  expect_error(plot_survival_cox_covariates("fit", data_for_survival, "status",
+  expect_error(plot_survival_cox_covariates("fit", data_for_survival,
+                                            "status",
                              covariates = c("ph.ecog"), "sex"))
   #Error - dataset should not be NULL
-  expect_error(plot_survival_cox_covariates(surv_estimated$fit, NULL, "status",
+  expect_error(plot_survival_cox_covariates(surv_estimated$fit,
+                                            NULL, "status",
                                             covariates = c("ph.ecog"), "sex"))
 
   #Error - param to be estimated should not be NULL or NA
-  expect_error(plot_survival_cox_covariates(surv_estimated$fit, data_for_survival, NULL,
+  expect_error(plot_survival_cox_covariates(surv_estimated$fit,
+                                            data_for_survival, NULL,
                              covariates = c("ph.ecog"), "sex"))
   expect_error(predict_coxph(surv_estimated$fit, data_for_survival, NA,
                              covariates = c("ph.ecog"), "sex", NA))
 
   #Error - independent varaible should not be NULL or NA
-  expect_error(plot_survival_cox_covariates(surv_estimated$fit, data_for_survival, "status",
+  expect_error(plot_survival_cox_covariates(surv_estimated$fit,
+                                            data_for_survival, "status",
                              covariates = c("ph.ecog"), NULL))
-  expect_error(plot_survival_cox_covariates(surv_estimated$fit, data_for_survival, "status",
+  expect_error(plot_survival_cox_covariates(surv_estimated$fit,
+                                            data_for_survival, "status",
                              covariates = c("ph.ecog"), NA))
 
 

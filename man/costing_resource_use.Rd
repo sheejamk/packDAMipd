@@ -30,26 +30,31 @@ length/number of  repeated use eg. hospital admission}
 bool indicators for the use of resource if this
 is to be included for the particular provider, say an nhs hospital use}
 
-\item{unit_length_use}{the column name that contains how many or how long used}
+\item{unit_length_use}{the column name that contains how many or
+how long used}
 
-\item{unit_cost_data}{unit costs data where the assumption is that the unit cost for resources
-such as hospital use, gp visit are listed in column resource/resource use with unit costs in another
+\item{unit_cost_data}{unit costs data where the assumption is that
+the unit cost for resources
+such as hospital use, gp visit are listed in column resource/resource
+use with unit costs in another
 column and the units calculated as in another column}
 
-\item{name_use_unit_cost}{name of resource use (the column name in the unit cost
+\item{name_use_unit_cost}{name of resource use (the column name in
+the unit cost
 data is assumed to be name/resource/type etc) in unit cost data}
 
 \item{unit_cost_column}{column name of unit cost in unit_cost_data}
 
 \item{cost_calculated_in}{column name of unit where the cost is calculated}
 
-\item{list_code_use_indicator}{if the column name_use_col  shows codes to indicate
-the resource use provide the list of codes and resource use
+\item{list_code_use_indicator}{if the column name_use_col  shows codes
+to indicate the resource use provide the list of codes and resource use
 for eg., list(c("yes", "no", c(1,2)))}
 
-\item{list_code_provider_indicator}{if the column each_use_provider_indicator
+\item{list_code_provider_indicator}{column each_use_provider_indicator
 shows codes to indicate the resource use
-provide the list of codes and resource use for eg., list(c("yes", "no", c(1,2)))}
+provide the list of codes and resource use for eg.,
+list(c("yes", "no", c(1,2)))}
 }
 \value{
 the calculated cost of resource uses along with original data
@@ -58,8 +63,10 @@ the calculated cost of resource uses along with original data
 Function to estimate the cost of resource use taken (from IPD)
 }
 \examples{
-costs_file <- system.file("extdata", "costs_resource_use.csv", package = "packDAMipd")
-datafile <- system.file("extdata", "resource_use_hc_2.csv", package = "packDAMipd")
+costs_file <- system.file("extdata", "costs_resource_use.csv",
+package = "packDAMipd")
+datafile <- system.file("extdata", "resource_use_hc_2.csv",
+package = "packDAMipd")
 ind_part_data <- load_trial_data(datafile)
 unit_cost_data <- load_trial_data(costs_file)
 res <- costing_resource_use(

@@ -16,10 +16,12 @@ test_that("testing assigning parameters", {
   # the cost is calculated correctly
   expect_equal(assigned_list$cost, 1)
 
-  param_list <- define_parameters(dd = 1, ee = 2, ff = "dd + ee", cost = "dd +ff")
+  param_list <- define_parameters(dd = 1, ee = 2, ff = "dd + ee",
+                                  cost = "dd +ff")
   assigned_list <- assign_parameters(param_list)
   expect_equal(assigned_list$ff, 3)
-  # can give multiple expressions provided the unknown can be estimated sequentially
+  # can give multiple expressions provided the unknown can be estimated
+  # sequentially
   expect_equal(assigned_list$cost, 4)
 
   assign_list <- c(cost_A = 100, cost_B = 10)
@@ -58,9 +60,7 @@ test_that("testing assigning parameters", {
   # Error - list can not be NA or null
   expect_error(assign_parameters(NA))
   expect_error(assign_parameters(NULL))
-
   assign_list <- define_parameters(a = "100", cost = "a+10")
-  undebug(assign_parameters)
   assign_parameters(assign_list)
 })
 ###############################################################################
@@ -69,7 +69,8 @@ test_that("testing getting parameters between operators", {
   # parameters between arithmetic operations
   expect_equal(find_parameters_btn_operators("a+b"), c("a", "b"))
   # parameters even if they are function
-  expect_equal(find_parameters_btn_operators("mean(a,b)+c"), c("mean(a, b)", "c"))
+  expect_equal(find_parameters_btn_operators("mean(a,b)+c"),
+               c("mean(a, b)", "c"))
 
   expect_equal(find_parameters_btn_operators("cost_a + cost_b * rr - cost_c"),
                c("cost_a", "cost_b", "rr", "cost_c"))
@@ -86,7 +87,7 @@ test_that("testing getting parameters between operators", {
 })
 ###############################################################################
 context("testing check the inputs for markov model and get the correct method")
-test_that("testing check the inputs for markov model and get the correct method", {
+test_that("testing check the inputs for model and get the correct method", {
   tmat <- rbind(c(1, 2), c(3, 4))
   colnames(tmat) <- rownames(tmat) <- c("Healthy", "Dead")
   tm <- populate_transition_matrix(2, tmat, c(0.5, 0.5, 0, 1))
@@ -94,8 +95,8 @@ test_that("testing check the inputs for markov model and get the correct method"
   b <- health_state("Dead", 1, 0, 0, TRUE)
   health_states <- combine_state(a, b)
   this_strategy <- strategy(tm, health_states, "intervention")
-  startup_cost = c(100,100)
-  startup_util = c(0.5,0.5)
+  startup_cost <- c(100, 100)
+  startup_util <- c(0.5, 0.5)
   # half cycle correction is a correct method
   changedmethod <- checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
                                   "half cycle correction", TRUE, startup_cost,
@@ -103,12 +104,12 @@ test_that("testing check the inputs for markov model and get the correct method"
   expect_equal(changedmethod, "hc_correction")
   ## can give half_cycle too
   changedmethod <- checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
-                                  "half_cycle", TRUE, NULL, NULL,FALSE, FALSE)
+                                  "half_cycle", TRUE, NULL, NULL, FALSE, FALSE)
   expect_equal(changedmethod, "hc_correction")
   ## method can belife_table too
   changedmethod <- checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
                                             "life table", FALSE, NULL, NULL
-                                            ,FALSE, FALSE)
+                                            , FALSE, FALSE)
   expect_equal(changedmethod, "life_table")
   ## cycle is not a valid method
   expect_error(checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
@@ -132,15 +133,15 @@ test_that("testing check the inputs for markov model and get the correct method"
                                          "life table", FALSE, NULL, NULL,
                                          FALSE, FALSE))
 
-  startup_cost = c(100,100, 0)
-  startup_util = c(0.5,0.5)
-  expect_error(checks_markov_pick_method(this_strategy, c(1,0), c(0, 0),
+  startup_cost <- c(100, 100, 0)
+  startup_util <- c(0.5, 0.5)
+  expect_error(checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
                                          "life table", FALSE, startup_cost,
                                          startup_util,
                                          FALSE, FALSE))
-  startup_cost = c(100,100)
-  startup_util = c(0.5)
-  expect_error(checks_markov_pick_method(this_strategy, c(1,0), c(0, 0),
+  startup_cost <- c(100, 100)
+  startup_util <- c(0.5)
+  expect_error(checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
                                          "life table", FALSE, startup_cost,
                                          startup_util,
                                          FALSE, FALSE))
@@ -152,10 +153,10 @@ test_that("testing check the inputs for markov model and get the correct method"
   colnames(tmat_util) <- rownames(tmat) <- c("Healthy", "Dead")
   tm_util <- transition_cost_util(2, tmat_cost, c(0.2))
   this_strategy <- strategy(tm, health_states, "intervention", tm_cost, tm_util)
-  expect_error(checks_markov_pick_method(this_strategy, c(1,0), c(0, 0),
+  expect_error(checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
                             "life table", FALSE, NULL, NULL,
                             "No", FALSE))
-  expect_error(checks_markov_pick_method(this_strategy, c(1,0), c(0, 0),
+  expect_error(checks_markov_pick_method(this_strategy, c(1, 0), c(0, 0),
                                          "life table", FALSE, NULL, NULL,
                                          TRUE, "No"))
 })

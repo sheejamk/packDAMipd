@@ -5,17 +5,22 @@
 #' @examples
 #' param_list <- define_parameters(
 #'   cost_zido = 2278, cost_direct_med_A = 1701,
-#'   cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
-#'   cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
-#'   tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
-#'   tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
+#'   cost_comm_care_A = 1055, cost_direct_med_B = 1774,
+#'   cost_comm_care_B = 1278,
+#'   cost_direct_med_C = 6948, cost_comm_care_C = 2059,
+#'   tpAtoA = 1251 / (1251 + 483),
+#'   tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618),
+#'   tpAtoD = 17 / (17 + 1717),
+#'   tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746),
+#'   tpBtoD = 15 / (15 + 1243),
 #'   tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
 #'   cost_health_A = "cost_direct_med_A+ cost_comm_care_A",
 #'   cost_health_B = "cost_direct_med_B+ cost_comm_care_B",
 #'   cost_health_C = "cost_direct_med_C+ cost_comm_care_C",
 #'   cost_drug = "cost_zido"
 #' )
-#' sample_list <- define_parameters(cost_zido = "gamma(mean = 2756, sd = sqrt(2756))")
+#' sample_list <- define_parameters(cost_zido = "gamma(mean = 2756,
+#' sd = sqrt(2756))")
 #' param_table <- define_parameters_psa(param_list, sample_list)
 #' @export
 define_parameters_psa <- function(base_param_list, sample_list) {
@@ -23,14 +28,14 @@ define_parameters_psa <- function(base_param_list, sample_list) {
     stop("Error - one or more of the parameters are null")
   }
   if (typeof(base_param_list) != "list" || typeof(sample_list) != "list") {
-    stop("Error - Parameter list should be of type list - use define_parameters to create such list")
+    stop("Parameter list should be of type list - use define_parameters")
   }
   sample_list_all <- base_param_list
   short1 <- names(sample_list)
   long <- names(base_param_list)
   index1 <- match(short1, long)
   if (sum(is.na(index1)) == length(short1)) {
-    stop("Error- parmaeters given in sample list should be there in base parameter list")
+    stop("Parameters in sample list should be there in base parameter list")
   }
   len <- length(index1)
   for (i in 1:len) {
@@ -55,10 +60,14 @@ define_parameters_psa <- function(base_param_list, sample_list) {
 #' \donttest{
 #' param_list <- define_parameters(
 #'   cost_zido = 2278, cost_direct_med_A = 1701,
-#'   cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
-#'   cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
-#'   tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
-#'   tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
+#'   cost_comm_care_A = 1055, cost_direct_med_B = 1774,
+#'   cost_comm_care_B = 1278,
+#'   cost_direct_med_C = 6948, cost_comm_care_C = 2059,
+#'   tpAtoA = 1251 / (1251 + 483),
+#'   tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618),
+#'   tpAtoD = 17 / (17 + 1717),
+#'   tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746),
+#'   tpBtoD = 15 / (15 + 1243),
 #'   tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
 #'   cost_health_A = "cost_direct_med_A+ cost_comm_care_A",
 #'   cost_health_B = "cost_direct_med_B+ cost_comm_care_B",
@@ -69,7 +78,8 @@ define_parameters_psa <- function(base_param_list, sample_list) {
 #' B <- health_state("B", cost = "cost_health_B + cost_drug", utility = 1)
 #' C <- health_state("C", cost = "cost_health_C + cost_drug", utility = 1)
 #' D <- health_state("D", cost = 0, utility = 0)
-#' tmat <- rbind(c(1, 2, 3, 4), c(NA, 5, 6, 7), c(NA, NA, 8, 9), c(NA, NA, NA, 10))
+#' tmat <- rbind(c(1, 2, 3, 4), c(NA, 5, 6, 7), c(NA, NA, 8, 9),
+#' c(NA, NA, NA, 10))
 #' colnames(tmat) <- rownames(tmat) <- c("A", "B", "C", "D")
 #' tm <- populate_transition_matrix(4, tmat, c(
 #'   "tpAtoA", "tpAtoB", "tpAtoC", "tpAtoD",
@@ -79,7 +89,8 @@ define_parameters_psa <- function(base_param_list, sample_list) {
 #' mono_strategy <- strategy(tm, health_states, "mono")
 #' mono_markov <- markov_model(mono_strategy, 20, discount = c(0.06, 0),
 #' initial_state =c(1,0,0,0),param_list)
-#' sample_list <- define_parameters(cost_zido = "gamma(mean = 2756, sd = sqrt(2756))")
+#' sample_list <- define_parameters(cost_zido = "gamma(mean = 2756,
+#' sd = sqrt(2756))")
 #' param_table <- define_parameters_psa(param_list, sample_list)
 #' result <- do_psa(mono_markov, param_table, 10)
 #' }
@@ -99,7 +110,7 @@ do_psa <- function(this_markov, psa_table, num_rep) {
   this_markov_rep_all <- list()
   this_param_list <- NULL
   if (num_rep <= 0) {
-    warning("Returning only the base case scenario as no of rep given is  <= 0 ")
+    warning("Returning the base case scenario as number of repetitions <= 0")
   }
   for (j in 1:num_rep) {
     for (i in 1:no_entries) {
@@ -112,7 +123,7 @@ do_psa <- function(this_markov, psa_table, num_rep) {
       }
     }
     if (is.null(this_param_list)) {
-      this_param_list <- psa_table$base_param_list
+       this_param_list <- psa_table$base_param_list
     }
     this_markov_rep <- markov_model(
       this_markov$strategy, this_markov$cycles, this_markov$initial_state,
@@ -135,10 +146,10 @@ do_psa <- function(this_markov, psa_table, num_rep) {
 }
 #######################################################################
 #' Function to list probabilistic sensitivity analysis results parameterwise
-#' @param result_psa_params_control  result from probabilistic sensitivity analysis
-#' for first or control model
-#' @param result_psa_params_treat result from probabilistic sensitivity analysis
-#' for the comparative Markov model
+#' @param result_psa_params_control  result from probabilistic
+#' sensitivity analysis for first or control model
+#' @param result_psa_params_treat result from probabilistic sensitivity
+#'  analysis for the comparative Markov model
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
 #' @return plot of  sensitivity analysis
@@ -146,10 +157,14 @@ do_psa <- function(this_markov, psa_table, num_rep) {
 #' \donttest{
 #' param_list <- define_parameters(
 #'   cost_zido = 2278, cost_direct_med_A = 1701,
-#'   cost_comm_care_A = 1055, cost_direct_med_B = 1774, cost_comm_care_B = 1278,
-#'   cost_direct_med_C = 6948, cost_comm_care_C = 2059, tpAtoA = 1251 / (1251 + 483),
-#'   tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618), tpAtoD = 17 / (17 + 1717),
-#'   tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746), tpBtoD = 15 / (15 + 1243),
+#'   cost_comm_care_A = 1055, cost_direct_med_B = 1774,
+#'   cost_comm_care_B = 1278,
+#'   cost_direct_med_C = 6948, cost_comm_care_C = 2059,
+#'   tpAtoA = 1251 / (1251 + 483),
+#'   tpAtoB = 350 / (350 + 1384), tpAtoC = 116 / (116 + 1618),
+#'   tpAtoD = 17 / (17 + 1717),
+#'   tpBtoB = 731 / (731 + 527), tpBtoC = 512 / (512 + 746),
+#'   tpBtoD = 15 / (15 + 1243),
 #'   tpCtoC = 1312 / (1312 + 437), tpCtoD = 437 / (437 + 1312), tpDtoD = 1,
 #'   cost_health_A = "cost_direct_med_A + cost_comm_care_A",
 #'   cost_health_B = "cost_direct_med_B + cost_comm_care_B",
@@ -160,7 +175,8 @@ do_psa <- function(this_markov, psa_table, num_rep) {
 #' B <- health_state("B", cost = "cost_health_B + cost_drug", utility = 1)
 #' C <- health_state("C", cost = "cost_health_C + cost_drug", utility = 1)
 #' D <- health_state("D", cost = 0, utility = 0)
-#' tmat <- rbind(c(1, 2, 3, 4), c(NA, 5, 6, 7), c(NA, NA, 8, 9), c(NA, NA, NA, 10))
+#' tmat <- rbind(c(1, 2, 3, 4), c(NA, 5, 6, 7), c(NA, NA, 8, 9),
+#' c(NA, NA, NA, 10))
 #' colnames(tmat) <- rownames(tmat) <- c("A", "B", "C", "D")
 #' tm <- populate_transition_matrix(4, tmat, c(
 #'   "tpAtoA", "tpAtoB", "tpAtoC", "tpAtoD",
@@ -170,13 +186,15 @@ do_psa <- function(this_markov, psa_table, num_rep) {
 #' mono_strategy <- strategy(tm, health_states, "mono")
 #' mono_markov <- markov_model(mono_strategy, 20, initial_state = c(1,0,0,0),
 #' discount = c(0.06, 0),param_list)
-#' sample_list <- define_parameters(cost_zido = "gamma(mean = 2756, sd = sqrt(2756))")
+#' sample_list <- define_parameters(cost_zido = "gamma(mean = 2756,
+#' sd = sqrt(2756))")
 #' param_table <- define_parameters_psa(param_list, sample_list)
 #' result <- do_psa(mono_markov, param_table, 10)
 #' list_paramwise_psa_result(result, NULL, NULL, NULL)
 #' }
 #' @export
-list_paramwise_psa_result <- function(result_psa_params_control, result_psa_params_treat,
+list_paramwise_psa_result <- function(result_psa_params_control,
+                                      result_psa_params_treat,
                                       threshold, comparator) {
   if (is.null(result_psa_params_control))
     stop("Error - result for psa for control strategy should not be null")
@@ -195,12 +213,24 @@ list_paramwise_psa_result <- function(result_psa_params_control, result_psa_para
     this_var_result_name <- names(result_psa_params_control)[i]
     if (!is.null(result_psa_params_treat)) {
       var_name_treat <- names(result_psa_params_treat)[i]
+      control_params <- colnames(result_psa_params_control[[this_var_result_name]]$param_matrix)
+      treat_params  <- colnames(result_psa_params_treat[[var_name_treat]]$param_matrix)
+
+      if (length(control_params) <=  length(treat_params)) {
+          mem_sum <- sum(control_params  %in% treat_params)
+        if (mem_sum != length(control_params))
+          stop("Error - Parameters seems to be different")
+      } else {
+         mem_sum <- sum(treat_params %in% control_params)
+         if (mem_sum != length(treat_params))
+           stop("Error - Parameters seems to be different")
+      }
       if (this_var_result_name != var_name_treat) {
-        stop("variable names are different, please check the markov model lists")
+        stop("Repetition names are different")
       }
       treat_len <- length(result_psa_params_treat) - 1
       if (treat_len != len) {
-        stop("no of repetitions are different, please check the markov model lists")
+        stop("No of repetitions are different")
       }
       list_markov <- combine_markov(
         result_psa_params_control[[this_var_result_name]],
@@ -242,10 +272,10 @@ list_paramwise_psa_result <- function(result_psa_params_control, result_psa_para
 }
 #######################################################################
 #' Function to summarise and plot probabilistic sensitivity analysis
-#' @param result_psa_params_control  result from probabilistic sensitivity analysis
-#' for first or control model
-#' @param result_psa_params_treat result from probabilistic sensitivity analysis
-#' for the comparative Markov model
+#' @param result_psa_params_control  result from probabilistic
+#'  sensitivity analysis for first or control model
+#' @param result_psa_params_treat result from probabilistic sensitivity
+#' analysis for the comparative Markov model
 #' @param threshold threshold value of WTP
 #' @param comparator the strategy to be compared with
 #' @return plot of  sensitivity analysis
@@ -258,14 +288,16 @@ list_paramwise_psa_result <- function(result_psa_params_control, result_psa_para
 #'  tpBtoB = 0.3, tpBtoC = 0.7,
 #'  tpCtoC = 1,cost_health_A = "cost_direct_med_A",
 #'  cost_health_B = "cost_direct_med_B")
-#'  sample_list <- define_parameters(cost_direct_med_A = "gamma(mean = 1701, sd = sqrt(1701))")
+#'  sample_list <- define_parameters(cost_direct_med_A = "gamma(mean = 1701,
+#'  sd = sqrt(1701))")
 #'  A <- health_state("A", cost = "cost_health_A ", utility = 1)
 #'  B <- health_state("B", cost = "cost_health_B", utility = 1)
 #'  C <- health_state("C", cost = 0, utility = 0, absorb = "TRUE")
 #'  tmat <- rbind(c(1, 2, 3), c(NA, 4, 5), c(NA, NA, 6))
 #'  colnames(tmat) <- rownames(tmat) <- c("A", "B", "C")
 #'  tm <- populate_transition_matrix(3, tmat, c(
-#'  "tpAtoA", "tpAtoB", "tpAtoC",  "tpBtoB", "tpBtoC", "tpCtoC"), colnames(tmat))
+#'  "tpAtoA", "tpAtoB", "tpAtoC",  "tpBtoB", "tpBtoC", "tpCtoC"),
+#'  colnames(tmat))
 #'  health_states <- combine_state(A, B, C)
 #'  mono_strategy <- strategy(tm, health_states, "mono")
 #'  mono_markov <- markov_model(mono_strategy, 20, initial_state =c(1,0,0),
@@ -278,17 +310,21 @@ list_paramwise_psa_result <- function(result_psa_params_control, result_psa_para
 #'  tpAtoB = 0.1, tpAtoC = 0.3,tpBtoB = 0.3, tpBtoC = 0.7,tpCtoC = 1,
 #'  cost_health_A = "cost_direct_med_A",cost_health_B = "cost_direct_med_B")
 #'  comb_strategy <- strategy(tm, health_states, "comb")
-#'  comb_markov <- markov_model(comb_strategy, 20, c(1, 0, 0),discount = c(0.06, 0), param_list)
+#'  comb_markov <- markov_model(comb_strategy, 20, c(1, 0, 0),
+#'  discount = c(0.06, 0), param_list)
 #'  param_table_comb <- define_parameters_psa(param_list_comb, sample_list)
 #'  result_comb <- do_psa(comb_markov, param_table_comb, 3)
 #'  summary_plot_psa(result, result_comb, 2000, "mono")
 #'  }
 #' @export
-summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat = NULL, threshold = NULL, comparator = NULL) {
+summary_plot_psa <- function(result_psa_params_control,
+                             result_psa_params_treat = NULL, threshold = NULL,
+                             comparator = NULL) {
   if (is.null(result_psa_params_control))
     stop("Error - result for psa for control strategy should not be null")
   if (!is.null(result_psa_params_treat)) {
-    if (is.null(threshold) | is.null(comparator) | !is.numeric(threshold) | threshold <= 0)
+    if (is.null(threshold) | is.null(comparator) | !is.numeric(threshold) |
+        threshold <= 0)
       stop("Error - threshold values/comparator is not valid")
   }
   if (!is.null(result_psa_params_treat)) {
@@ -304,7 +340,8 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
     mean_nmb <- mean(this_nmb)
     sd_icer <- stats::sd(this_icer)
     sd_nmb <- stats::sd(this_nmb)
-    name_file_plot <- paste0("Probabilistic sensitivity analysis_ICER_NMB.pdf", sep = "")
+    name_file_plot <- paste0("Probabilistic sensitivity analysis_ICER_NMB.pdf",
+                             sep = "")
     grDevices::pdf(name_file_plot)
     plot1 <- ggplot2::ggplot(data = list_all, ggplot2::aes(
       x = this_icer,
@@ -395,7 +432,8 @@ summary_plot_psa <- function(result_psa_params_control, result_psa_params_treat 
     grDevices::pdf(name_file_plot)
     plot3 <- ggplot2::ggplot(data = list_all, ggplot2::aes_(x = ~utility)) +
       ggplot2::geom_histogram(bins = 20, color = "black", fill = "white") +
-      ggplot2::labs(title = "Histogram of utility values", x = "Utility", y = "Count") +
+      ggplot2::labs(title = "Histogram of utility values", x = "Utility",
+                    y = "Count") +
       ggplot2::geom_vline(ggplot2::aes_(xintercept = mean(list_all$utility)),
         color = "red", linetype = "dashed", size = 1
       ) +

@@ -9,7 +9,12 @@ test_that("testing mean and sd of age from data", {
   # Error - format wrong
   expect_error(get_mean_sd_age(this_data, NA))
   # Error - data should not be NULL
-  expect_error(get_mean_sd_age(NULL))
+  expect_error(get_mean_sd_age(NULL, NA))
+
+  this_data <- data.table::data.table("Age" = c(21, 15, -1),
+                                      "sex" = c("m", "f", "f"))
+  results <- get_mean_sd_age(this_data, -1)
+  expect_equal(results$mean, 18.00)
 })
 ###############################################################################
 context("testing adding EQ5D5L values to the data")
@@ -30,6 +35,11 @@ test_that("testing adding EQ5D5L values to the data", {
   expect_error(value_eq5d5L_IPD(trial_data, NA))
   # Error - data should not be NULL
   expect_error(value_eq5d5L_IPD(NULL, NA))
+  trialdatafile <- system.file("extdata", "trial_data_sampleEq5d.csv", package = "packDAMipd")
+  trial_data <- read.csv(trialdatafile)
+  results <- value_eq5d5L_IPD(trial_data, NA)
+  expect_equal(results$EQ5D5LIndex[1], 0.535)
+
 })
 ###############################################################################
 context("testing mapping EQ5D5L values to 3L ")
@@ -50,6 +60,11 @@ test_that("testing adding EQ5D5L values to the data", {
   expect_error(map_eq5d5Lto3L_VanHout(trial_data, NA))
   #Error - data should not be NULL
   expect_error(map_eq5d5Lto3L_VanHout(NULL, NA))
+  trialdatafile <- system.file("extdata", "trial_data_sampleEq5d.csv",
+                               package = "packDAMipd")
+  trial_data <- read.csv(trialdatafile)
+  results <- map_eq5d5Lto3L_VanHout(trial_data, NA)
+  expect_equal(results$EQ5D3L_from5L[1], 0.1311, tol = 1e-4)
 })
 ##############################################################################
 
@@ -79,6 +94,24 @@ test_that("testing adding EQ5D5L values to the data", {
   #Error no matching columns
   expect_error(value_ADL_scores_IPD(trial_data, NULL, adl_scoring, NA))
 
+  trialdatafile <- system.file("extdata", "trial_data_sampleEq5d.csv",
+                               package = "packDAMipd")
+  trial_data <- read.csv(trialdatafile)
+  results <- value_ADL_scores_IPD(trial_data, c("tpi"), adl_scoring, NA)
+  expect_equal(results$ADLTscore[1], 60.2, tol = 1e-4)
+
+  trialdatafile <- system.file("extdata", "trial_data_sample_notenoughcol.csv",
+                               package = "packDAMipd")
+  trial_data <- read.csv(trialdatafile)
+  # Error - ADL should have  columns
+  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"), adl_scoring, NA))
+
+  trialdatafile <- system.file("extdata", "trial_data_sample_error.csv",
+                               package = "packDAMipd")
+  trial_data <- read.csv(trialdatafile)
+  # Error - ADL responses do not seem right
+  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"), adl_scoring, NA))
+
 })
 ###############################################################################
 
@@ -101,4 +134,24 @@ test_that("testing adding EQ5D5L values to the data", {
   expect_error(value_Shows_IPD(trial_data, NA, NA))
   #Error data should not be NULL
   expect_error(value_Shows_IPD(NULL, NA, NA))
+
+  trialdatafile <- system.file("extdata", "trial_data_sampleEq5d.csv",
+                               package = "packDAMipd")
+  trial_data <- read.csv(trialdatafile)
+  results <- value_Shows_IPD(trial_data, c("qsy"), NA)
+  expect_equal(results$ShOWSscore[1], 16, tol = 1e-4)
+
+  trialdatafile <- system.file("extdata", "trial_data_sample_notenoughcol.csv",
+                               package = "packDAMipd")
+  trial_data <- read.csv(trialdatafile)
+  # Error - Shows should have 10  columns
+  expect_error(value_Shows_IPD(trial_data, c("qsy"), NA))
+
+  trialdatafile <- system.file("extdata", "trial_data_sample_error.csv",
+                               package = "packDAMipd")
+  trial_data <- read.csv(trialdatafile)
+  # Error - shows responses do not seem right
+  expect_error(value_Shows_IPD(trial_data, c("qsy"), NA))
+
+
 })
