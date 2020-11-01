@@ -13,3 +13,5 @@ You can install the released version from CRAN with the command:
 install.packages("packDAMipd")
 
 Alternatively, the latest release can be installed from www.github.com/sheejamk/packDAMipd
+
+[![Codecov test coverage](https://codecov.io/gh/sheejamk/packDAMipd/branch/master/graph/badge.svg)](https://codecov.io/gh/sheejamk/packDAMipd?branch=master)
