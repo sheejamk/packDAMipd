@@ -11,7 +11,7 @@ Description: A collection of functions to construct Markov model for model-based
     data entry rules. 
 License: GNU General Public License
 Depends:
-    R (>= 3.5.0)
+    R (>= 3.6.0)
 Imports:
     stringr,
     data.table,
