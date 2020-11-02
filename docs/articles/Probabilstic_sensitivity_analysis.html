@@ -95,7 +95,7 @@
       <h1 data-toc-skip>Probabilistic sensitivity analysis</h1>
                         <h4 class="author">Sheeja Manchira Krishnan</h4>
             
-            <h4 class="date">2020-11-01</h4>
+            <h4 class="date">2020-11-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/sheejamk/packDAMipd/blob/master/vignettes/Probabilstic_sensitivity_analysis.Rmd"><code>vignettes/Probabilstic_sensitivity_analysis.Rmd</code></a></small>
       <div class="hidden name"><code>Probabilstic_sensitivity_analysis.Rmd</code></div>
@@ -278,13 +278,13 @@ cost_drug <span class="op">=</span> <span class="st">"cost_zido"</span><span cla
 <span id="cb15-12"><a href="#cb15-12"></a></span>
 <span id="cb15-13"><a href="#cb15-13"></a><span class="kw">summary_plot_psa</span>(result_psa_mono, <span class="ot">NULL</span>, <span class="ot">NULL</span>, <span class="ot">NULL</span>)</span>
 <span id="cb15-14"><a href="#cb15-14"></a><span class="op">&gt;</span><span class="st"> </span><span class="er">$</span>mean_cost</span>
-<span id="cb15-15"><a href="#cb15-15"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">48665.8</span></span>
+<span id="cb15-15"><a href="#cb15-15"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">48774.74</span></span>
 <span id="cb15-16"><a href="#cb15-16"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb15-17"><a href="#cb15-17"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>mean_utility</span>
 <span id="cb15-18"><a href="#cb15-18"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">8.475325</span></span>
 <span id="cb15-19"><a href="#cb15-19"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb15-20"><a href="#cb15-20"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>sd_cost</span>
-<span id="cb15-21"><a href="#cb15-21"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">62.55798</span></span>
+<span id="cb15-21"><a href="#cb15-21"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">147.4321</span></span>
 <span id="cb15-22"><a href="#cb15-22"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb15-23"><a href="#cb15-23"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>sd_utility</span>
 <span id="cb15-24"><a href="#cb15-24"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="dv">0</span></span>
@@ -299,16 +299,16 @@ cost_drug <span class="op">=</span> <span class="st">"cost_zido"</span><span cla
 <p><img src="Probabilstic_sensitivity_analysis_files/figure-html/unnamed-chunk-15-3.png" width="576"></p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">summary_plot_psa</span>(result_psa_comb, <span class="ot">NULL</span>, <span class="ot">NULL</span>, <span class="ot">NULL</span>)</span>
 <span id="cb18-2"><a href="#cb18-2"></a><span class="op">&gt;</span><span class="st"> </span><span class="er">$</span>mean_cost</span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">47201.57</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">45234.02</span></span>
 <span id="cb18-4"><a href="#cb18-4"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb18-5"><a href="#cb18-5"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>mean_utility</span>
-<span id="cb18-6"><a href="#cb18-6"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">7.478789</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">6.961729</span></span>
 <span id="cb18-7"><a href="#cb18-7"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb18-8"><a href="#cb18-8"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>sd_cost</span>
-<span id="cb18-9"><a href="#cb18-9"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">1114.968</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">2712.719</span></span>
 <span id="cb18-10"><a href="#cb18-10"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb18-11"><a href="#cb18-11"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>sd_utility</span>
-<span id="cb18-12"><a href="#cb18-12"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">0.3136128</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">0.7107791</span></span>
 <span id="cb18-13"><a href="#cb18-13"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb18-14"><a href="#cb18-14"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>cost_utility_plot</span></code></pre></div>
 <p><img src="Probabilstic_sensitivity_analysis_files/figure-html/unnamed-chunk-15-4.png" width="576"></p>
@@ -320,16 +320,16 @@ cost_drug <span class="op">=</span> <span class="st">"cost_zido"</span><span cla
 <p><img src="Probabilstic_sensitivity_analysis_files/figure-html/unnamed-chunk-15-6.png" width="576"></p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">summary_plot_psa</span>(result_psa_mono,result_psa_comb, <span class="dv">20000</span>, <span class="st">"mono"</span>)</span>
 <span id="cb21-2"><a href="#cb21-2"></a><span class="op">&gt;</span><span class="st"> </span><span class="er">$</span>mean_icer</span>
-<span id="cb21-3"><a href="#cb21-3"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">1299.942</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">2080.14</span></span>
 <span id="cb21-4"><a href="#cb21-4"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb21-5"><a href="#cb21-5"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>mean_nmb</span>
-<span id="cb21-6"><a href="#cb21-6"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">102374.2</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">94000.57</span></span>
 <span id="cb21-7"><a href="#cb21-7"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb21-8"><a href="#cb21-8"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>sd_icer</span>
-<span id="cb21-9"><a href="#cb21-9"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">701.802</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">700.5022</span></span>
 <span id="cb21-10"><a href="#cb21-10"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb21-11"><a href="#cb21-11"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>sd_nmb</span>
-<span id="cb21-12"><a href="#cb21-12"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">5157.516</span></span>
+<span id="cb21-12"><a href="#cb21-12"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="fl">11503.35</span></span>
 <span id="cb21-13"><a href="#cb21-13"></a><span class="op">&gt;</span><span class="st"> </span></span>
 <span id="cb21-14"><a href="#cb21-14"></a><span class="er">&gt;</span><span class="st"> </span><span class="er">$</span>icer_nmb_plot</span></code></pre></div>
 <p><img src="Probabilstic_sensitivity_analysis_files/figure-html/unnamed-chunk-15-7.png" width="576"></p>
