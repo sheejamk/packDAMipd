@@ -311,11 +311,10 @@ test_that("get parameter using linear regression", {
                                      covariates = NA, interaction = FALSE)
   expect_equal(unname(result$model_coeff[1]), -0.4223, tol = 1e-3)
 
-  dat <- read.csv("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2018-September-Bioinformatics-Prerequisites/master/friday/lm_example_data.csv")
 
   datafile <- system.file("extdata", "lm_dat.csv", package = "packDAMipd")
   mydata <- read.csv(datafile, stringsAsFactors = TRUE)
-  result <- use_linear_regression("expression", dataset = dat,
+  result <- use_linear_regression("expression", dataset = mydata,
                                  indep_var = "treatment",
                                  covariates = "temperature",
                                  interaction = FALSE)

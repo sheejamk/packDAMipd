@@ -16,14 +16,14 @@ C <- health_state("C", cost = "cost_health_C + cost_drug",utility = 1)
 D <- health_state("D", cost = 0,utility = 0)
 
 ## -----------------------------------------------------------------------------
-tmat <- rbind(c(1, 2,3,4), c(NA, 5,6,7),c(NA, NA, 8,9), c(NA,NA,NA,10))
-colnames(tmat) <- rownames(tmat) <- c("A","B" ,"C","D")
+tmat <- rbind(c(1, 2,3,4), c(NA, 5,6,7),c(NA, NA, 8,9), c(NA, NA, NA,10))
+colnames(tmat) <- rownames(tmat) <- c("A", "B" , "C", "D")
 
 
 ## -----------------------------------------------------------------------------
-tm <- populate_transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
+tm <- populate_transition_matrix(4, tmat, c("tpAtoA", "tpAtoB", "tpAtoC", "tpAtoD",
                                    "tpBtoB", "tpBtoC", "tpBtoD",
-                                   "tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
+                                   "tpCtoC", "tpCtoD", "tpDtoD" ), colnames(tmat) )
 
 ## -----------------------------------------------------------------------------
 health_states <- combine_state(A,B,C,D)
@@ -81,14 +81,14 @@ D <- health_state("D", cost = 0, utility = 0)
 
 
 ## -----------------------------------------------------------------------------
-tmat <- rbind(c(1, 2,3,4), c(NA, 5,6,7),c(NA, NA, 8,9), c(NA,NA,NA,10))
-colnames(tmat) <- rownames(tmat) <- c("A","B" ,"C","D")
+tmat <- rbind(c(1, 2,3,4), c(NA, 5,6,7),c(NA, NA, 8,9), c(NA, NA, NA,10))
+colnames(tmat) <- rownames(tmat) <- c("A", "B" , "C", "D")
 
 
 ## -----------------------------------------------------------------------------
-tm <- populate_transition_matrix(4, tmat, c("tpAtoA_rr","tpAtoB_rr","tpAtoC_rr","tpAtoD_rr",
+tm <- populate_transition_matrix(4, tmat, c("tpAtoA_rr", "tpAtoB_rr", "tpAtoC_rr", "tpAtoD_rr",
                                    "tpBtoB_rr", "tpBtoC_rr", "tpBtoD_rr",
-                                   "tpCtoC_rr","tpCtoD_rr","tpDtoD_rr" ), colnames(tmat) )
+                                   "tpCtoC_rr", "tpCtoD_rr", "tpDtoD_rr" ), colnames(tmat) )
 
 
 ## -----------------------------------------------------------------------------
@@ -143,15 +143,16 @@ comb_markov <- markov_model(comb_strategy, 20, c(1, 0,0,0), discount = c(0.06,0.
 sample_list <- define_parameters(rr = "lognormal(mean = 0.509, sd = 0.173)",
                                  cost_comm_care_C = "gamma(mean = 2756, sd = sqrt(2756))")
 param_table_mono <- define_parameters_psa(mono_param_list, sample_list)
-param_table_combo <- define_parameters_psa(comb_param_list,sample_list)
-result_psa_mono = do_psa(mono_markov,param_table_mono,5)
-result_psa_comb = do_psa(comb_markov,param_table_combo,5)
+param_table_combo <- define_parameters_psa(comb_param_list, sample_list)
 
-list_result_psa_mono <- list_paramwise_psa_result(result_psa_mono,NULL,NULL,NULL)
-list_result_psa_comb <- list_paramwise_psa_result(result_psa_comb,NULL,NULL,NULL)
-list_all <- list_paramwise_psa_result(result_psa_mono,result_psa_comb,20000,"mono")
+result_psa_mono = do_psa(mono_markov, param_table_mono, 5)
+result_psa_comb = do_psa(comb_markov, param_table_combo, 5)
 
-summary_plot_psa(result_psa_mono,NULL,NULL,NULL)
-summary_plot_psa(result_psa_comb,NULL,NULL,NULL)
-summary_plot_psa(result_psa_mono,result_psa_comb,20000,"mono")
+list_result_psa_mono <- list_paramwise_psa_result(result_psa_mono, NULL, NULL, NULL)
+list_result_psa_comb <- list_paramwise_psa_result(result_psa_comb, NULL, NULL, NULL)
+list_all <- list_paramwise_psa_result(result_psa_mono,result_psa_comb, 20000, "mono")
+
+summary_plot_psa(result_psa_mono, NULL, NULL, NULL)
+summary_plot_psa(result_psa_comb, NULL, NULL, NULL)
+summary_plot_psa(result_psa_mono,result_psa_comb, 20000, "mono")
 
