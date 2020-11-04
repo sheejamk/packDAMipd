@@ -888,7 +888,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
   # source  https://gist.github.com/tmalsburg/df66e6c2ab494fad83ee
   no_fixed_eff <- length(fix_eff)
   if (!is.null(fix_eff)) {
-    name_file_plot <- paste0("lmer_fixed_eff_predicted and simulated",
+    name_file_plot <- paste0("lmer_fixed_eff_predicted and simulated_",
                              param_to_be_estimated, ".pdf", sep = "")
     grDevices::pdf(name_file_plot)
     oldpar <- graphics::par(no.readonly = TRUE)
@@ -912,7 +912,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
   }
 
   no_random_eff <- length(random_intercept_vars)
-  name_file_plot <- paste0("lmer_random_eff_predicted and simulated",
+  name_file_plot <- paste0("lmer_random_eff_predicted and simulated_",
                            param_to_be_estimated, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   oldpar <- graphics::par(no.readonly = TRUE)
@@ -1009,6 +1009,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
 #' @param link, link function for the variances
 #' @return result regression result with plot if success and -1, if failure
 #' @examples
+#' \donttest{
 #' datafile <- system.file("extdata", "culcita_data.csv",
 #' package = "packDAMipd")
 #' dataset <- read.csv(datafile)
@@ -1018,7 +1019,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
 #' nested_intercept_vars_pairs = NULL, cross_intercept_vars_pairs = NULL,
 #' uncorrel_slope_intercept_pairs = NULL, random_slope_intercept_pairs = NULL,
 #'  link = NA)
-
+#'  }
 #' @export
 use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset,
                                                fix_eff, fix_eff_interact_vars,
@@ -1121,7 +1122,7 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset,
   no_fixed_eff <- length(fix_eff)
 
   if (!is.null(fix_eff)) {
-    name_file_plot <- paste0("glmer_fixed_eff_predicted and simulated",
+    name_file_plot <- paste0("glmer_fixed_eff_predicted and simulated_",
                              param_to_be_estimated, ".pdf", sep = "")
     grDevices::pdf(name_file_plot)
     oldpar <- graphics::par(no.readonly = TRUE)
@@ -1148,7 +1149,7 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset,
     grDevices::dev.off()
   }
   no_random_eff <- length(random_intercept_vars)
-  name_file_plot <- paste0("glmer_random_eff_predicted and simulated",
+  name_file_plot <- paste0("glmer_random_eff_predicted and simulated_",
                            param_to_be_estimated, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   oldpar <- graphics::par(no.readonly = TRUE)

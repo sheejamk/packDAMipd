@@ -53,6 +53,7 @@ result regression result with plot if success and -1, if failure
 Function for generalised linear mixed model
 }
 \examples{
+\donttest{
 datafile <- system.file("extdata", "culcita_data.csv",
 package = "packDAMipd")
 dataset <- read.csv(datafile)
@@ -62,4 +63,5 @@ fix_eff_interact_vars = NULL, random_intercept_vars = c("block"),
 nested_intercept_vars_pairs = NULL, cross_intercept_vars_pairs = NULL,
 uncorrel_slope_intercept_pairs = NULL, random_slope_intercept_pairs = NULL,
  link = NA)
+ }
 }
