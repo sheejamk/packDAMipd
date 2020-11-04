@@ -262,7 +262,7 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset,
 
   if (sum(is.na(covariates_list)) != 0) {
     expression_recreated_forsurfit <- paste0("survival::survfit", "(",
-                                             surv_object, " ~ ", indep_var, ", ",
+                                          surv_object, " ~ ", indep_var, ", ",
                                              "data = dataset)",
                                              sep = ""
     )
@@ -270,7 +270,7 @@ plot_return_survival_curve <- function(param_to_be_estimated, dataset,
     expression_recreated_forsurfit <- paste0("survival::survfit", "(",
                                              surv_object, " ~ ",
                                              covariates_list, " + ",
-                                             indep_var, ", ", "data = dataset)",
+                                        indep_var, ", ", "data = dataset)",
                                              sep = ""
     )
   }

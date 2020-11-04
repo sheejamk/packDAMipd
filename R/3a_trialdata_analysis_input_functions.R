@@ -3,7 +3,6 @@
 #######################################################################
 # 2 Get the trial data ready
 # 2.1 Load the data
-
 #######################################################################
 # 2.2 Get the required fields and codes for time points, demography
 # - age and gender, qol measure -EQ5D and any other analysis requires
