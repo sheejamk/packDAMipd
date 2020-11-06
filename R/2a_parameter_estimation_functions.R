@@ -242,12 +242,17 @@ get_parameter_def_distribution <- function(parameter, paramfile,
                sep = ""))
   }
   distr_colno <- IPDFileCheck::get_columnno_fornames(dataset, "distribution")
-  this_val <- dataset[dataset[[param_colno]] == parameter, ][[distr_colno]]
-  # if the value from the distribution col is not existing throw an error
-  if (sum(is.na(this_val)) > 0) stop("This specific distribution can not be NA")
-  if (length(this_val) == 0 | this_val == "") {
-    stop("This parameter may not be estimated from a distribution")
+  required_row = dataset[dataset[[param_colno]] == parameter, ]
+  if (nrow(required_row) < 1) {
+        stop("Parameter not found")
+  } else {
+        this_val <- dataset[dataset[[param_colno]] == parameter, ][[distr_colno]]
   }
+  # if the value from the distribution col is not existing throw an error
+  if (sum(is.na(this_val)) > 0)
+    stop("The distribution can not be NA")
+  if (identical(this_val, character(0)) | length(this_val) == 0 | this_val == "")
+        stop("This parameter may not be estimated from a distribution")
 
   # the parameter name and value that define the distribution should exist
   if (is.null(colnames_paramdistr) | sum(is.na(colnames_paramdistr) != 0)) {

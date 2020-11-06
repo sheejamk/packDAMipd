@@ -129,6 +129,10 @@ test_that("testing parameter using distribution read from file", {
   # but no value for it
   expect_error(get_parameter_def_distribution("rr", table_param_distrb_no,
                                               NULL))
+  expect_error(get_parameter_def_distribution("rr3", table_param_distrb_no,
+                                              NULL))
+  expect_error(get_parameter_def_distribution("rr4", table_param_distrb_no,
+                                              NULL))
 
   # error column names for distribution parameters not given or can not be null
   expect_error(get_parameter_def_distribution("rr", file, NULL))
