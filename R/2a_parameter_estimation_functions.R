@@ -360,7 +360,7 @@ get_parameter_def_distribution <- function(parameter, paramfile,
 #' linear multilevel or mixed model, and seemingly unrelated regression
 get_parameter_estimated_regression <- function(param_to_be_estimated, data,
                                           method, indep_var,
-                                          info_get_method,
+                                          info_get_method = NA,
                                           info_distribution = NA,
                                           covariates = NA,
                                           timevar_survival = NA,
@@ -402,8 +402,6 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data,
   if (sum(check_cols_exist) != 0) {
     stop("Given column(s) can not be found !!!")
   }
-  # omitting any missing information
-  dataset <- stats::na.omit(dataset)
   # now  depending on the method, call the corresponding regression methods
   caps_method <- toupper(method)
   # linear regression

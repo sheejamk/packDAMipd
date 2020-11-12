@@ -132,7 +132,7 @@ test_that("get parameter using kaplan meier survival analysis", {
 
   surv_estimated_aml <- use_km_survival("status", datafile, "sex",
                                         covariates = c("ph.ecog"), "time")
-  expect_equal(surv_estimated_aml$fit$n, c(28, 19, 52, 29, 22, 16, 1))
+  expect_equal(surv_estimated_aml$fit$n, c(36, 27, 71, 42, 29, 21,  1))
   datafile <- system.file("extdata", "survival_aml.csv",
                           package = "packDAMipd")
   data_for_survival <- read.csv(datafile)
@@ -167,7 +167,7 @@ test_that("get parameter using FH survival analysis", {
   expect_equal(surv_estimated_aml$fit$n, c(36, 27, 71, 42, 29, 21,  1))
   surv_estimated_aml <- use_fh_survival("status", datafile, "sex",
                                         covariates = c("ph.ecog"), "time")
-  expect_equal(surv_estimated_aml$fit$n, c(28, 19, 52, 29, 22, 16, 1))
+  expect_equal(surv_estimated_aml$fit$n, c(36, 27, 71, 42, 29, 21,  1))
 
   data_for_survival <- survival::aml
   data_for_survival <- na.omit(data_for_survival)
@@ -196,7 +196,7 @@ test_that("get parameter using FH2 survival analysis", {
   expect_equal(surv_estimated_aml$fit$n, c(36, 27, 71, 42, 29, 21,  1))
   surv_estimated_aml <- use_fh2_survival("status", datafile, "sex",
                                         covariates = c("ph.ecog"), "time")
-  expect_equal(surv_estimated_aml$fit$n, c(28, 19, 52, 29, 22, 16, 1))
+  expect_equal(surv_estimated_aml$fit$n, c(36, 27, 71, 42, 29, 21,  1))
 
   data_for_survival <- survival::aml
   data_for_survival <- na.omit(data_for_survival)
@@ -220,14 +220,15 @@ test_that("get parameter using cox ph survival analysis", {
   datafile <- system.file("extdata", "survival_lung.csv",
                           package = "packDAMipd")
   data_for_survival <- read.csv(datafile)
+  myvars <- c("status", "time", "sex", "ph.ecog")
+  data_for_survival <- data_for_survival[myvars]
   data_for_survival <- na.omit(data_for_survival)
-
   surv_estimated_aml <- use_coxph_survival("status", data_for_survival, "sex",
                                         covariates = c("ph.ecog"), "time")
-  expect_equal(surv_estimated_aml$fit$n, c(167))
-  surv_estimated_aml <- use_coxph_survival("status", datafile, "sex",
-                                           covariates = c("ph.ecog"), "time")
-  expect_equal(surv_estimated_aml$fit$n, c(167))
+  expect_equal(surv_estimated_aml$fit$n, c(227))
+  # surv_estimated_aml <- use_coxph_survival("status", datafile, "sex",
+  #                                          covariates = c("ph.ecog"), "time")
+  # expect_equal(surv_estimated_aml$fit$n, c(227))
 
    surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
     covariates = c("ph.ecog"), "time"

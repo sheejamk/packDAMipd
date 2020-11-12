@@ -478,10 +478,7 @@ form_expression_glm <- function(param_to_be_estimated, indep_var, family,
   }
   if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
     # no need to check for interaction
-    fmla <- paste("glm(", param_to_be_estimated, " ~ ", indep_var, ",
-                  family = ", family_def,
-                  ", data = dataset, na.action =", naaction, ")",
-                  sep = ""
+    fmla <- paste("glm(", param_to_be_estimated, " ~ ", indep_var, ", family = ", family_def,", data = dataset, na.action =", naaction, ")", sep = ""
     )
     short_fmla <- paste(" ~ ", indep_var, sep = "")
   } else {
@@ -496,10 +493,7 @@ form_expression_glm <- function(param_to_be_estimated, indep_var, family,
       }
       i <- i + 1
     }
-    fmla <- paste("glm(", param_to_be_estimated, " ~ ", expre, " + ",
-                  indep_var, ", family = ", family_def,
-                  ", data = dataset, na.action =", naaction, ")",
-                  sep = ""
+    fmla <- paste("glm(", param_to_be_estimated, " ~ ", expre, " + ", indep_var, ", family = ", family_def, ", data = dataset, na.action = ", naaction, ")", sep = ""
     )
     short_fmla <- paste(" ~ ", expre, " + ", indep_var, sep = "")
   }

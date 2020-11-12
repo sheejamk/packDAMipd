@@ -38,7 +38,6 @@ use_survival_analysis <- function(param_to_be_estimated, dataset,
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
-    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }
@@ -146,7 +145,6 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
-    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }
@@ -289,7 +287,6 @@ use_km_survival <- function(param_to_be_estimated, dataset,
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
-    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }
@@ -369,7 +366,6 @@ use_fh_survival <- function(param_to_be_estimated, dataset,
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
-    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }
@@ -448,7 +444,6 @@ use_fh2_survival <- function(param_to_be_estimated, dataset,
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
-    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }
@@ -535,7 +530,6 @@ use_coxph_survival <- function(param_to_be_estimated, dataset, indep_var,
   }
   if (is.character(dataset)) {
     dataset <- load_trial_data(dataset)
-    dataset <- stats::na.omit(dataset)
   } else {
     dataset <- dataset
   }

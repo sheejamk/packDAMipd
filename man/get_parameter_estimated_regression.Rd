@@ -9,7 +9,7 @@ get_parameter_estimated_regression(
   data,
   method,
   indep_var,
-  info_get_method,
+  info_get_method = NA,
   info_distribution = NA,
   covariates = NA,
   timevar_survival = NA,
