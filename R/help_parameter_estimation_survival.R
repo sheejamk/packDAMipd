@@ -25,7 +25,7 @@ plot_return_residual_survival <- function(param_to_be_estimated, indep_var,
   if (sum(checks) != 0)
     stop("Error - some of the required parameters are NULL or NA")
 
-  name_file_plot <- paste0("nnSurvival_residuals_", param_to_be_estimated,
+  name_file_plot <- paste0("Survival_residuals_", param_to_be_estimated,
                            "_", indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
   oldpar <- graphics::par(no.readonly = TRUE)
