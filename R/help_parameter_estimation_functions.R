@@ -478,7 +478,7 @@ form_expression_glm <- function(param_to_be_estimated, indep_var, family,
   }
   if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
     # no need to check for interaction
-    fmla <- paste("glm(", param_to_be_estimated, " ~ ", indep_var, ", family = ", family_def,", data = dataset, na.action =", naaction, ")", sep = ""
+    fmla <- paste("glm(", param_to_be_estimated, " ~ ", indep_var, ", family = ", family_def, ", data = dataset, na.action =", naaction, ")", sep = ""
     )
     short_fmla <- paste(" ~ ", indep_var, sep = "")
   } else {
@@ -708,12 +708,10 @@ do_diagnostic_glm <- function(method = "glm", fit, expression_recreated,
   on.exit(graphics::par(oldpar))
   grDevices::dev.off()
 
-
   name_file_plot <- paste0(method, "_Residuals_", param_to_be_estimated, "_",
                            indep_var, ".pdf", sep = "")
   grDevices::pdf(name_file_plot)
-  plot_diagnostics <- ggplot2::autoplot(fit, toPdf = TRUE,
-                                        file = name_file_plot)
+  plot_diagnostics <- graphics::plot(fit)
   grDevices::dev.off()
 
   results <- list(
