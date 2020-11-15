@@ -221,7 +221,7 @@ create_new_dataset <- function(var, covar, dataset, categorical) {
       }
       fixed <- dataset[[covar[i]]]
       if (categorical[i]) {
-        fixed_covar <- min(fixed[!is.na(fixed)])
+        fixed_covar <- levels(fixed)[1]
       } else {
         fixed_covar <- mean(fixed, na.rm = TRUE)
       }
