@@ -150,7 +150,7 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated,
     if (sum(is.na(result)) == 0) {
       indep_lvl <- result
     } else {
-      indep_lvl <- unique(as.numeric(as.factor(indep)))
+      indep_lvl <- unique(as.numeric(as.factor(indep)), na.rm = TRUE)
     }
     for (m in seq_len(length(indep_lvl))) {
       graphics::matplot(cbind(prediction_value$fit[m, ],
