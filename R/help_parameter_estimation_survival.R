@@ -46,8 +46,6 @@ plot_return_residual_survival <- function(param_to_be_estimated, indep_var,
   } else {
     nos <- ceiling(3 + length(covariates)) / 2
   }
-
-
   residuals_matrix <- stats::residuals(fit, type = "matrix")
   residuals_dfbeta <- stats::residuals(fit, type = "dfbeta")
   residuals_dfbetas <- stats::residuals(fit, type = "dfbetas")
@@ -135,7 +133,7 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated,
       for (j in seq_len(length(other_fixed))) {
         variable <- dataset[[other_fixed[j]]]
         result <- suppressWarnings(as.numeric(levels(factor(variable))))
-        if (sum(is.na(result)) == 0) catego <- TRUE else catego <- FALSE
+        if (sum(is.na(result)) == 0) catego <- FALSE else catego <- TRUE
         categorical <- c(categorical, catego)
       }
     }

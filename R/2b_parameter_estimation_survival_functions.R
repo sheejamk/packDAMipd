@@ -214,7 +214,6 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
   Nagelkerke_r2 <- as.vector((1 - exp((2 / N) * (LL0 - LLf))) /
                                (1 - exp(LL0) ^ (2 / N)))
 
-
   residuals_result <- plot_return_residual_survival(param_to_be_estimated,
                                                     indep_var, covariates, fit)
 

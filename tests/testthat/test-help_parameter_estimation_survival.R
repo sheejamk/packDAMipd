@@ -22,6 +22,9 @@ test_that("testing  returning residual for survival", {
 context("testing plotting prediction parameteric survival")
 test_that("testing  plotting prediction parameteric survival", {
   data_for_survival <- survival::lung
+  surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
+                                            info_distribution = "weibull",
+                                            covariates = c("ph.ecog"), "time")
 
   newdata <- data_for_survival
   newdata[newdata$sex == 2, ]$sex <- "male"
@@ -272,3 +275,4 @@ test_that("testing plotting residual for cox ph models", {
 
 
 })
+
