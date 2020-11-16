@@ -109,14 +109,42 @@ test_that("get parameter using parametric regression survival analysis", {
                               "time"
   ))
   # Error - no information on distribution
-  expect_error(use_parametric_survival("status", data_for_survival, "x",
+  expect_error(use_parametric_survival("status", data_for_survival,
+                                       "sex",
                                        NA,
                                        covariates = NA, "time"
   ))
   # Error - no information on the time variable
-  expect_error(use_parametric_survival("status", data_for_survival, "x",
+  expect_error(use_parametric_survival("status", data_for_survival, "sex",
                 info_distribution = "weibull", covariates = NA, NA
   ))
+  # Error - no cluster variable in dataset
+  expect_error(use_parametric_survival("status", data_for_survival, "sex",
+                                       info_distribution = "weibull",
+                                       covariates = NA, "time",
+                                       cluster_var = "open"
+  ))
+  # Error - no cluster variable in dataset
+  expect_error(use_parametric_survival("status", data_for_survival, "sex",
+                                       info_distribution = "weibull",
+                                       covariates = "ph.ecog", "time",
+                                       cluster_var = "open"
+  ))
+  data_for_survival <- data_for_survival[!is.na(data_for_survival$meal.cal),]
+  surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
+                                            info_distribution = "weibull",
+                                            covariates = c("ph.ecog"), "time" ,
+                                            cluster_var = "meal.cal"
+  )
+  expect_equal(surv_estimated$model_coeff[1], 0.00035, tol = 1e-4)
+
+  surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
+                                            info_distribution = "weibull",
+                                            covariates = NA, "time" ,
+                                            cluster_var = "meal.cal"
+  )
+  expect_equal(surv_estimated$model_coeff[1], 0.000816, tol = 1e-4)
+
 })
 ###############################################################################
 

@@ -12,7 +12,8 @@ use_survival_analysis(
   info_get_method,
   info_distribution,
   covariates,
-  timevar_survival
+  timevar_survival,
+  cluster_var = NA
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ before passing}
 
 \item{timevar_survival}{time variable for survival analysis,
 default is NA}
+
+\item{cluster_var}{cluster variable for survival analysis}
 }
 \value{
 the results of the regression analysis

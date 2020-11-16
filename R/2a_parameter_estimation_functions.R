@@ -336,6 +336,7 @@ get_parameter_def_distribution <- function(parameter, paramfile,
 #' 2 in bivariate regression
 #' @param link link function to be provided if not using the default link
 #' for each of the info_distribution
+#' @param cluster_var cluster variable if any
 #' @return the results of the regression analysis
 #' @examples
 #'\donttest{
@@ -376,7 +377,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data,
                                           param2_to_be_estimated = NA,
                                           covariates2 = NA,
                                           interaction2 = FALSE,
-                                          link = NA) {
+                                          link = NA, cluster_var = NA) {
   # regular checks to see the required parameters ar given
   check_list <- c(param_to_be_estimated, method)
   checks <- sapply(check_list, check_null_na)
@@ -482,7 +483,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data,
   if (caps_method == "SURVIVAL" | caps_method == "SURVIVAL ANALYSIS") {
     results <- use_survival_analysis(
       param_to_be_estimated, dataset, indep_var, info_get_method,
-      info_distribution, covariates, timevar_survival
+      info_distribution, covariates, timevar_survival, cluster_var
     )
   }
   return(results)

@@ -25,7 +25,8 @@ get_parameter_estimated_regression(
   param2_to_be_estimated = NA,
   covariates2 = NA,
   interaction2 = FALSE,
-  link = NA
+  link = NA,
+  cluster_var = NA
 )
 }
 \arguments{
@@ -86,6 +87,8 @@ bivariate regression}
 
 \item{link}{link function to be provided if not using the default link
 for each of the info_distribution}
+
+\item{cluster_var}{cluster variable if any}
 }
 \value{
 the results of the regression analysis
