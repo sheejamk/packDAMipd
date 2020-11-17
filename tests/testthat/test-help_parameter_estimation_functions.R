@@ -142,7 +142,7 @@ test_that("loading a datafile", {
                                     package = "packDAMipd"))
   expect_equal(mean(df$id), 100.5, tol = 1e-2)
   df <- load_trial_data(NULL)
-  expect_equal(mean(df$age), 57.484, tol = 1e-3)
+  expect_equal(mean(df$age), 57.5, tol = 1e-3)
 
 })
 ###############################################################################
@@ -470,7 +470,7 @@ test_that("testing forming expression for mixed model", {
   datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
   mydata <- read.csv(datafile)
   # nested intercept
-  formula <- form_expression_mixed_model("extro",
+  formula <- form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -486,7 +486,7 @@ test_that("testing forming expression for mixed model", {
   this_formula <- "lme4::lmer(extro ~ open +  agree +  social +   ( 1 | school / class ) , family = binomial(link = logit), data = dataset)"
   expect_equal(formula, this_formula)
 
-  expect_error(form_expression_mixed_model("extro",
+  expect_error(form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -498,7 +498,7 @@ test_that("testing forming expression for mixed model", {
                                          family = "binomial", link = "logit"
   ))
 
-  formula <- form_expression_mixed_model("extro",
+  formula <- form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -513,8 +513,24 @@ test_that("testing forming expression for mixed model", {
   )
   this_formula <- "lme4::lmer(extro ~ open +  agree +  social +   ( 1 | school / class ) , family = binomial, data = dataset)"
   expect_equal(formula, this_formula)
+
+  formula <- form_expression_mixed_model_lme4("extro",
+                                              dataset = mydata,
+                                fix_eff = c("open", "agree", "social"),
+                                fix_eff_interact_vars = c("agree", "social"),
+                                random_intercept_vars = c("class", "school"),
+                                nested_intercept_vars_pairs =
+                                  list(c("class", "school")),
+                                cross_intercept_vars_pairs = NULL,
+                                uncorrel_slope_intercept_pairs = NULL,
+                                random_slope_intercept_pairs = NULL,
+                              family = "binomial", link = NA
+  )
+  this_formula <- "lme4::lmer(extro ~ open +  agree *  social +   ( 1 | school / class ) , family = binomial, data = dataset)"
+  expect_equal(formula, this_formula)
+
   # cross intercept variables
-  formula <- form_expression_mixed_model("extro",
+  formula <- form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -529,7 +545,7 @@ test_that("testing forming expression for mixed model", {
   )
   this_formula <- "lme4::lmer(extro ~ open +  agree +  social +   ( 1 | class ) +  ( 1 | school ) , family = binomial(link = logit), data = dataset)"
   expect_equal(formula, this_formula)
-  form_expression_mixed_model("extro",
+  form_expression_mixed_model_lme4("extro",
                               dataset = mydata,
                               fix_eff = NULL,
                               fix_eff_interact_vars = NULL,
@@ -542,7 +558,7 @@ test_that("testing forming expression for mixed model", {
                               family = "binomial", link = "logit"
   )
   #Error - parameter to be estimated can not be null
-  expect_error(form_expression_mixed_model(NULL,
+  expect_error(form_expression_mixed_model_lme4(NULL,
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -556,7 +572,7 @@ test_that("testing forming expression for mixed model", {
                                          family = "binomial", link = "logit"
   ), "Error - param to be estimated or random intercepts is NULL or NA")
   # Error - dataset can not be null
-  expect_error(form_expression_mixed_model("extro",
+  expect_error(form_expression_mixed_model_lme4("extro",
                                          dataset = NULL,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -570,7 +586,7 @@ test_that("testing forming expression for mixed model", {
                                          family = "binomial", link = "logit"
   ))
   # both nested and cross - error
-  expect_error(form_expression_mixed_model("extro",
+  expect_error(form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -585,7 +601,7 @@ test_that("testing forming expression for mixed model", {
                                          family = "binomial", link = "logit"
   ), "Random intercepts should not be in both nested or crossed")
   # both nested and cross - error
-  expect_error(form_expression_mixed_model("extro",
+  expect_error(form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -601,7 +617,7 @@ test_that("testing forming expression for mixed model", {
   ), "Random intercepts should not be in both nested or crossed")
 
   # Error - nested variables should be in pairs
-  expect_error(form_expression_mixed_model("extro",
+  expect_error(form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -616,7 +632,7 @@ test_that("testing forming expression for mixed model", {
   ), "Nested intercepts have to be given as a list of pairs")
 
   # Error - cross intercept variables should be in pairs
-  expect_error(form_expression_mixed_model("extro",
+  expect_error(form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -631,7 +647,7 @@ test_that("testing forming expression for mixed model", {
   ), "Cross intercepts have to be given as a list of pairs")
 
   # an extra variable in random effect, that is not termed as cross or nested.
-  formula <- form_expression_mixed_model("extro",
+  formula <- form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -648,7 +664,7 @@ test_that("testing forming expression for mixed model", {
   expect_equal(formula, this_formula)
 
   # more than one slope intercept (crossed) pairs
-  formula <- form_expression_mixed_model("extro",
+  formula <- form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -667,7 +683,7 @@ test_that("testing forming expression for mixed model", {
   expect_equal(formula, this_formula)
 
   # more than one slope intercept(nested) pairs
-  formula <- form_expression_mixed_model("extro",
+  formula <- form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,
@@ -685,7 +701,7 @@ test_that("testing forming expression for mixed model", {
   this_formula <- "lme4::lmer(extro ~ open +  agree +  social +   ( 1 +  open | school / class ) +  ( 1 +  agree | school / class ), family = binomial(link = logit), data = dataset)"
   expect_equal(formula, this_formula)
 
-  formula <- form_expression_mixed_model("extro",
+  formula <- form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars =
@@ -703,7 +719,7 @@ test_that("testing forming expression for mixed model", {
   this_formula <- "lme4::lmer(extro ~ open +  agree *  social +   ( 1 | class ) +  ( 1 +  open | school ) , family = binomial(link = logit), data = dataset)"
   expect_equal(formula, this_formula)
 
-  formula <- form_expression_mixed_model("extro",
+  formula <- form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars =
@@ -723,7 +739,7 @@ test_that("testing forming expression for mixed model", {
   expect_equal(formula, this_formula)
 
   # random intercept variables can not be null
-  expect_error(form_expression_mixed_model("extro",
+  expect_error(form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars =
@@ -740,7 +756,7 @@ test_that("testing forming expression for mixed model", {
   ), "Error - param to be estimated or random intercepts is NULL or NA")
 
   # Error - family can not be NULL
-  expect_error(form_expression_mixed_model("extro",
+  expect_error(form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars =
@@ -757,7 +773,7 @@ test_that("testing forming expression for mixed model", {
                                          family = NULL, link = "logit"
   ), "Error - family can not be null")
 
-  formula <- form_expression_mixed_model("extro",
+  formula <- form_expression_mixed_model_lme4("extro",
                                          dataset = mydata,
                                          fix_eff = c("open", "agree", "social"),
                                          fix_eff_interact_vars = NULL,

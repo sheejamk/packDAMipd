@@ -13,7 +13,8 @@ use_linear_mixed_model(
   nested_intercept_vars_pairs,
   cross_intercept_vars_pairs,
   uncorrel_slope_intercept_pairs,
-  random_slope_intercept_pairs
+  random_slope_intercept_pairs,
+  package_mixed_model
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ intercepts}
 
 \item{random_slope_intercept_pairs, }{random slopes intercept pairs - this
 is a list of paired variables}
+
+\item{package_mixed_model}{package to be used for mixed model}
 }
 \value{
 result regression result with plot if success and -1, if failure
@@ -59,6 +62,6 @@ result <- use_linear_mixed_model("extro",
   random_intercept_vars = c("school", "class"),
   nested_intercept_vars_pairs = list(c("school", "class")),
   cross_intercept_vars_pairs = NULL, uncorrel_slope_intercept_pairs = NULL,
-  random_slope_intercept_pairs = NULL)
+  random_slope_intercept_pairs = NULL, package_mixed_model = NA)
 }
 }

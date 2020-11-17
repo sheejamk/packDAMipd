@@ -42,6 +42,33 @@ test_that("testing adding EQ5D5L values to the data", {
 
 })
 ###############################################################################
+context("testing adding EQ5D3L values to the data")
+test_that("testing adding EQ5D3L values to the data", {
+  library(valueEQ5D)
+
+  trial_data <- data.frame(
+    "qol.MO" = c(1, 3), "qol.SC" = c(1, 3), "qol.UA" = c(1, 1),
+    "qol.PD" = c(3, 2), "qol.AD" = c(2, 2)
+  )
+  results <- value_eq5d3L_IPD(trial_data, NA)
+  expect_equal(results$EQ5D3LIndex, c(0.193, -0.072))
+  this_data <- data.table::data.table("Age" = c("k", 15), "sex" = c("m", "f"))
+  expect_error(value_eq5d3L_IPD(this_data, NA))
+  # Error - invalid EQ5D responses
+  trial_data <- data.frame(
+    "qol.MO" = c(1, 2), "qol.SC" = c(1, 5), "qol.UA" = c(1, 2),
+    "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)
+  )
+  expect_error(value_eq5d3L_IPD(trial_data, NA))
+  # Error - data should not be NULL
+  expect_error(value_eq5d3L_IPD(NULL, NA))
+  trialdatafile <- system.file("extdata", "trial_data_sampleEq5d3l.csv", package = "packDAMipd")
+  trial_data <- read.csv(trialdatafile)
+  results <- value_eq5d3L_IPD(trial_data, NA)
+  expect_equal(results$EQ5D3LIndex[1], 0.014)
+
+})
+###############################################################################
 context("testing mapping EQ5D5L values to 3L ")
 test_that("testing adding EQ5D5L values to the data", {
   trial_data <- data.frame(

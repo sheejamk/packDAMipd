@@ -337,7 +337,9 @@ get_parameter_def_distribution <- function(parameter, paramfile,
 #' @param link link function to be provided if not using the default link
 #' for each of the info_distribution
 #' @param cluster_var cluster variable if any
-#' @return the results of the regression analysis
+#' @param package_mixed_model package to be used for mixed model
+#' ie nlme or lme4
+#' @return results the results of the regression analysis
 #' @examples
 #'\donttest{
 #' result <- get_parameter_estimated_regression(
@@ -377,7 +379,8 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data,
                                           param2_to_be_estimated = NA,
                                           covariates2 = NA,
                                           interaction2 = FALSE,
-                                          link = NA, cluster_var = NA) {
+                                          link = NA, cluster_var = NA,
+                                          package_mixed_model = NA) {
   # regular checks to see the required parameters ar given
   check_list <- c(param_to_be_estimated, method)
   checks <- sapply(check_list, check_null_na)
@@ -428,12 +431,19 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data,
       caps_method == "LINEAR MULTILEVEL" |
       caps_method == "LINEAR_MULTILEVEL" |
       caps_method == "LINEAR MIXED EFFECT" |
-      caps_method == "LINEAR_MIXED_EFFECT") {
-    results <- use_linear_mixed_model(
-      param_to_be_estimated, dataset, fix_eff, fix_eff_interact_vars,
-      random_intercept_vars, nested_intercept_vars_pairs,
-      cross_intercept_vars_pairs,
-      uncorrel_slope_intercept_pairs, random_slope_intercept_pairs
+      caps_method == "LINEAR_MIXED_EFFECT" |
+      caps_method == "LINEAR MIXED" |
+      caps_method == "LINEAR_MIXED") {
+    results <- use_linear_mixed_model(param_to_be_estimated,
+                                      dataset,
+                                      fix_eff, fix_eff_interact_vars,
+                                      random_intercept_vars,
+                                      nested_intercept_vars_pairs,
+                                      cross_intercept_vars_pairs,
+                                      uncorrel_slope_intercept_pairs,
+                                      random_slope_intercept_pairs,
+                                      package_mixed_model
+
     )
   }
   # generalised linear model
@@ -452,7 +462,9 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data,
       caps_method == "GENERALISED_MULTILEVEL" |
       caps_method == "GENERALISED MULTILEVEL" |
       caps_method == "GENERALISED MIXED EFFECT" |
-      caps_method == "GENERALISED_MIXED_EFFECT") {
+      caps_method == "GENERALISED_MIXED_EFFECT" |
+      caps_method == "GENERALISED MIXED" |
+      caps_method == "GENERALISED_MIXED") {
     results <- use_generalised_linear_mixed_model(param_to_be_estimated,
                                               dataset, fix_eff,
                                               fix_eff_interact_vars,
@@ -462,7 +474,7 @@ get_parameter_estimated_regression <- function(param_to_be_estimated, data,
                                               uncorrel_slope_intercept_pairs,
                                               random_slope_intercept_pairs,
                                               family = info_distribution,
-                                              link)
+                                              link, package_mixed_model)
   }
   # seemingly unrelated regression or bivariate regression
   if (caps_method == "SEEMINGLY UNRELATED REGRESSION" |
@@ -545,7 +557,6 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var,
   } else {
     dataset <- dataset
   }
-
   # create the expression for linear regression in R using the keyword "lm"
   expression_recreated <- form_expression_lm(param_to_be_estimated, indep_var,
                                              covariates, interaction)
@@ -754,6 +765,7 @@ use_generalised_linear_model <- function(param_to_be_estimated, dataset,
 }
 ###############################################################################
 #' Function for mixed effect regression
+#' @param package_mixed_model package to be used for mixed model
 #' @param param_to_be_estimated column name of dependent variable
 #' @param dataset a dataframe
 #' @param fix_eff names of variables as fixed effect predictors
@@ -782,18 +794,20 @@ use_generalised_linear_model <- function(param_to_be_estimated, dataset,
 #'   random_intercept_vars = c("school", "class"),
 #'   nested_intercept_vars_pairs = list(c("school", "class")),
 #'   cross_intercept_vars_pairs = NULL, uncorrel_slope_intercept_pairs = NULL,
-#'   random_slope_intercept_pairs = NULL)
+#'   random_slope_intercept_pairs = NULL, package_mixed_model = NA)
 #' }
 #' @export
 #' @importFrom utils read.csv
 #' @importFrom utils read.table
-use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
+use_linear_mixed_model <- function(param_to_be_estimated, dataset,
+                                   fix_eff,
                                    fix_eff_interact_vars,
                                    random_intercept_vars,
                                    nested_intercept_vars_pairs,
                                    cross_intercept_vars_pairs,
                                    uncorrel_slope_intercept_pairs,
-                                   random_slope_intercept_pairs) {
+                                   random_slope_intercept_pairs,
+                                   package_mixed_model) {
   # regular checks to see the required parameters ar given
   check_list <- c(param_to_be_estimated, fix_eff, random_intercept_vars)
   checks <- sapply(check_list, check_null_na)
@@ -807,18 +821,46 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
   } else {
     dataset <- dataset
   }
+  if (sum(is.na(nested_intercept_vars_pairs)) != 0)
+    nested_intercept_vars_pairs = NULL
+  if (sum(is.na(cross_intercept_vars_pairs)) != 0)
+    cross_intercept_vars_pairs = NULL
+  if (sum(is.na(uncorrel_slope_intercept_pairs)) != 0)
+    uncorrel_slope_intercept_pairs = NULL
+  if (sum(is.na(random_slope_intercept_pairs)) != 0)
+    random_slope_intercept_pairs = NULL
+  if (sum(is.na(fix_eff_interact_vars)) != 0)
+    fix_eff_interact_vars = NULL
+
   # create expression for mixed model using the variables fixed effect and
   # random intercept
-  expression_recreated <- form_expression_mixed_model(param_to_be_estimated,
-                                                dataset,
-                                                fix_eff,
-                                                fix_eff_interact_vars,
-                                                random_intercept_vars,
-                                                nested_intercept_vars_pairs,
-                                                cross_intercept_vars_pairs,
-                                                uncorrel_slope_intercept_pairs,
-                                                random_slope_intercept_pairs,
-                                                family = NA, link = NA)
+  if (is.na(package_mixed_model) | is.null(package_mixed_model) |
+      package_mixed_model == "lme4" ) {
+    expression_recreated <- form_expression_mixed_model_lme4(param_to_be_estimated,
+                                                    dataset,
+                                                    fix_eff,
+                                                    fix_eff_interact_vars,
+                                                    random_intercept_vars,
+                                                    nested_intercept_vars_pairs,
+                                                  cross_intercept_vars_pairs,
+                                                  uncorrel_slope_intercept_pairs,
+                                                  random_slope_intercept_pairs,
+                                                  family = NA, link = NA)
+  } else {
+    if (package_mixed_model == "nlme" ) {
+        expression_recreated <- form_expression_mixed_model_lme4(param_to_be_estimated,
+                                                      dataset,
+                                                    fix_eff,
+                                                    fix_eff_interact_vars,
+                                                    random_intercept_vars,
+                                                    nested_intercept_vars_pairs,
+                                                    cross_intercept_vars_pairs,
+                                                    uncorrel_slope_intercept_pairs,
+                                                    random_slope_intercept_pairs,
+                                                    family = NA, link = NA)
+    }
+  }
+
   # fit result
   fit <- eval(parse(text = expression_recreated))
   # summary of fit
@@ -830,6 +872,8 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
   varcorr_random_eff <- as.data.frame(lme4::VarCorr(fit))
   # cholsky decompisiton matrix for random effect
   to_extract <- 2 * length(random_slope_intercept_pairs)
+
+
   if (is.null(nested_intercept_vars_pairs) &
       is.null(uncorrel_slope_intercept_pairs)
       & !is.null(random_slope_intercept_pairs)) {
@@ -1011,6 +1055,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
 #' this is a list of paired variables
 #' @param family, family of distributions for the response variable
 #' @param link, link function for the variances
+#' @param package_mixed_model package to be used for mixed model
 #' @return result regression result with plot if success and -1, if failure
 #' @examples
 #' \donttest{
@@ -1022,7 +1067,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset, fix_eff,
 #' fix_eff_interact_vars = NULL, random_intercept_vars = c("block"),
 #' nested_intercept_vars_pairs = NULL, cross_intercept_vars_pairs = NULL,
 #' uncorrel_slope_intercept_pairs = NULL, random_slope_intercept_pairs = NULL,
-#'  link = NA)
+#'  link = NA, package_mixed_model = NA)
 #'  }
 #' @export
 use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset,
@@ -1032,7 +1077,7 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset,
                                                cross_intercept_vars_pairs,
                                                uncorrel_slope_intercept_pairs,
                                                random_slope_intercept_pairs,
-                                               family, link) {
+                                               family, link, package_mixed_model) {
   # regular checks to see the required parameters ar given
   check_list <- list(param_to_be_estimated, random_intercept_vars, family)
   checks <- sapply(check_list, check_null_na)
@@ -1047,13 +1092,36 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset,
   } else {
     dataset <- dataset
   }
-   expression_recreated <- form_expression_mixed_model(
-    param_to_be_estimated, dataset, fix_eff, fix_eff_interact_vars,
-    random_intercept_vars, nested_intercept_vars_pairs,
-    cross_intercept_vars_pairs,
-    uncorrel_slope_intercept_pairs, random_slope_intercept_pairs, family,
-    link
-  )
+  if (sum(is.na(nested_intercept_vars_pairs)) != 0)
+    nested_intercept_vars_pairs = NULL
+  if (sum(is.na(cross_intercept_vars_pairs)) != 0)
+    cross_intercept_vars_pairs = NULL
+  if (sum(is.na(uncorrel_slope_intercept_pairs)) != 0)
+    uncorrel_slope_intercept_pairs = NULL
+  if (sum(is.na(random_slope_intercept_pairs)) != 0)
+    random_slope_intercept_pairs = NULL
+  if (sum(is.na(fix_eff_interact_vars)) != 0)
+    fix_eff_interact_vars = NULL
+  if (is.na(package_mixed_model) | is.null(package_mixed_model) |
+          package_mixed_model == "lme4") {
+    expression_recreated <- form_expression_mixed_model_lme4(
+      param_to_be_estimated, dataset, fix_eff, fix_eff_interact_vars,
+      random_intercept_vars, nested_intercept_vars_pairs,
+      cross_intercept_vars_pairs,
+      uncorrel_slope_intercept_pairs, random_slope_intercept_pairs, family,
+      link
+    )
+  } else {
+    if (package_mixed_model == "nlme") {
+      expression_recreated <- form_expression_mixed_model_lme4(
+        param_to_be_estimated, dataset, fix_eff, fix_eff_interact_vars,
+        random_intercept_vars, nested_intercept_vars_pairs,
+        cross_intercept_vars_pairs,
+        uncorrel_slope_intercept_pairs, random_slope_intercept_pairs, family,
+        link
+      )
+    }
+  }
   # fit result
   fit <- eval(parse(text = expression_recreated))
   # summary of fit

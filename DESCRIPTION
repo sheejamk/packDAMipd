@@ -19,6 +19,7 @@ Imports:
     rlang,
     stats,
     lme4,
+    nlme,
     flexsurv,
     survminer,
     SurvRegCensCov,

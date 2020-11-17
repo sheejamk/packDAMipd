@@ -41,7 +41,6 @@ test_that("testing  plotting prediction parameteric survival", {
   newdata <- data_for_survival
   newdata[newdata$sex == 2, ]$sex <- "male"
   newdata[newdata$sex == 1, ]$sex <- "female"
-
   surv_estimated <- use_parametric_survival("status", newdata, "sex",
                                             info_distribution = "weibull",
                                             covariates = NA, "time")

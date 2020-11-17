@@ -26,7 +26,8 @@ get_parameter_estimated_regression(
   covariates2 = NA,
   interaction2 = FALSE,
   link = NA,
-  cluster_var = NA
+  cluster_var = NA,
+  package_mixed_model = NA
 )
 }
 \arguments{
@@ -89,9 +90,12 @@ bivariate regression}
 for each of the info_distribution}
 
 \item{cluster_var}{cluster variable if any}
+
+\item{package_mixed_model}{package to be used for mixed model
+ie nlme or lme4}
 }
 \value{
-the results of the regression analysis
+results the results of the regression analysis
 }
 \description{
 Get the parameter values using the provided statistical regression methods

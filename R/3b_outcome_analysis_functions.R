@@ -35,6 +35,66 @@ get_mean_sd_age <- function(this_data, age_nrcode) {
   }
 }
 ##############################################################################
+#' Function to add EQ5D3L scores to IPD data
+#' @param ind_part_data a dataframe
+#' @param eq5d_nrcode non response code for EQ5D3L, default is NA
+#' @return qaly included modified data, if success -1, if failure
+#' @examples
+#' datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
+#' trial_data <- load_trial_data(datafile)
+#' value_eq5d5L_IPD(trial_data, NA)
+#' @export
+#' @source
+#' http://eprints.whiterose.ac.uk/121473/1/Devlin_et_al-2017-Health_Economics.pdf
+value_eq5d3L_IPD <- function(ind_part_data, eq5d_nrcode) {
+  #Error - data should not be NULL
+  if (is.null(ind_part_data))
+    stop("data should not be NULL")
+  ind_part_data <- data.frame(ind_part_data)
+  # get the eq5d details and time point
+  eq5d_details <- get_eq5d_details(ind_part_data)
+  eq5d_columnnames <- eq5d_details$name
+  timepoint_details <- get_timepoint_details(ind_part_data)
+  # get the number of time points
+  if (sum(is.na(timepoint_details)) == 0) {
+    timepointscol <- timepoint_details$name
+    timepoints <- unique(ind_part_data[[timepointscol]])
+    nooftimepoints <- length(timepoints)
+  } else {
+    timepointscol <- NA
+    timepoints <- NA
+    nooftimepoints <- 1
+  }
+  # get the rows for the time points identified
+  for (j in 1:nooftimepoints) {
+    if (is.na(timepointscol) || timepointscol == "NA") {
+      rows_needed <- seq(1:nrow(ind_part_data))
+    } else {
+      rows_needed <- which(ind_part_data[[timepointscol]] == timepoints[j])
+    }
+    # pick the responses assumes the order
+    eq5d_responses <- ind_part_data[rows_needed, eq5d_columnnames]
+    # Check if the responses are numeric with range 1 to 3
+    results <- sapply(eq5d_columnnames, IPDFileCheck::test_data_numeric,
+                      eq5d_responses, eq5d_nrcode, 1, 3)
+    if (any(results < 0)) {
+      stop("eq5d responses do not seem right")
+    } else {
+      index3L <- rep(0, nrow(eq5d_responses))
+      for (i in seq(nrow(eq5d_responses))) {
+        index3L[i] <- valueEQ5D::value_3L_Ind(
+          "UK", "TTO", eq5d_responses[i, 1],
+          eq5d_responses[i, 2], eq5d_responses[i, 3],
+          eq5d_responses[i, 4], eq5d_responses[i, 5]
+        )
+      }
+      new_colname <- paste("EQ5D3LIndex")
+      ind_part_data[rows_needed, new_colname] <- index3L
+    }
+  }
+  return(ind_part_data)
+}
+##############################################################################
 #' Function to add EQ5D5L scores to IPD data
 #' @param ind_part_data a dataframe
 #' @param eq5d_nrcode non response code for EQ5D5L, default is NA

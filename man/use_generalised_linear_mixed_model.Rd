@@ -15,7 +15,8 @@ use_generalised_linear_mixed_model(
   uncorrel_slope_intercept_pairs,
   random_slope_intercept_pairs,
   family,
-  link
+  link,
+  package_mixed_model
 )
 }
 \arguments{
@@ -45,6 +46,8 @@ this is a list of paired variables}
 \item{family, }{family of distributions for the response variable}
 
 \item{link, }{link function for the variances}
+
+\item{package_mixed_model}{package to be used for mixed model}
 }
 \value{
 result regression result with plot if success and -1, if failure
@@ -62,6 +65,6 @@ dataset = datafile,fix_eff = c("ttt"), family = "binomial",
 fix_eff_interact_vars = NULL, random_intercept_vars = c("block"),
 nested_intercept_vars_pairs = NULL, cross_intercept_vars_pairs = NULL,
 uncorrel_slope_intercept_pairs = NULL, random_slope_intercept_pairs = NULL,
- link = NA)
+ link = NA, package_mixed_model = NA)
  }
 }

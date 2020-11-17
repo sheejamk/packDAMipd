@@ -232,7 +232,7 @@ test_that("get parameter from estimated regression", {
                                                covariates = NA,
                                                interaction = FALSE,
                                                naaction = "na.omit",
-                                               link = NA)
+                                               link = NA, )
   expect_equal(results$summary$coefficients[1], -2.9013, tol = 1e-4)
 
   # testing linear mixed model
@@ -254,7 +254,9 @@ test_that("get parameter from estimated regression", {
                                                uncorrel_slope_intercept_pairs =
                                                  NULL,
                                                random_slope_intercept_pairs =
-                                                 NULL)
+                                                 NULL, cluster_var = NA,
+                                               package_mixed_model = NA
+                                               )
 
  expect_equal(results1$summary$coefficients[1], 60.2400412163, tol = 1e-4)
 
@@ -276,7 +278,8 @@ test_that("get parameter from estimated regression", {
                                             uncorrel_slope_intercept_pairs =
                                                 NULL,
                                               random_slope_intercept_pairs =
-                                                NULL)
+                                                NULL, cluster_var = NA,
+                                            package_mixed_model = NA)
 
  expect_equal(results1$summary$coefficients[1], -1.412, tol = 1e-3)
 
@@ -424,9 +427,34 @@ test_that("get parameter using mixed effect regression", {
                            list(c("school", "class")),
                          cross_intercept_vars_pairs = NULL,
                          uncorrel_slope_intercept_pairs = NULL,
-                         random_slope_intercept_pairs = NULL
+                         random_slope_intercept_pairs = NULL,
+                         package_mixed_model = "lme4"
   )
   expect_equal((result$summary$coefficients[1]), 60.240, tol = 1e-4)
+  result <- use_linear_mixed_model("extro",
+                                   dataset = dataset,
+                                   fix_eff = c("open", "agree", "social"),
+                                   fix_eff_interact_vars = NA,
+                                   random_intercept_vars = c("school", "class"),
+                                   nested_intercept_vars_pairs = NA,
+                                   cross_intercept_vars_pairs = NA,
+                                   uncorrel_slope_intercept_pairs = NA,
+                                   random_slope_intercept_pairs = NA,
+                                   package_mixed_model = "lme4"
+  )
+  expect_equal((result$summary$coefficients[1]), 60.2, tol = 1e-2)
+  result <- use_linear_mixed_model("extro",
+                                   dataset = dataset,
+                                   fix_eff = c("open", "agree", "social"),
+                                   fix_eff_interact_vars = NA,
+                                   random_intercept_vars = c("school", "class"),
+                                   nested_intercept_vars_pairs = NA,
+                                   cross_intercept_vars_pairs = NA,
+                                   uncorrel_slope_intercept_pairs = NA,
+                                   random_slope_intercept_pairs = NA,
+                                   package_mixed_model = "nlme"
+  )
+  expect_equal((result$summary$coefficients[1]), 60.2, tol = 1e-2)
   result <- use_linear_mixed_model("extro",
                                   dataset = datafile,
                                   fix_eff = c("open", "agree", "social"),
@@ -437,7 +465,8 @@ test_that("get parameter using mixed effect regression", {
                                     list(c("school", "class")),
                                   cross_intercept_vars_pairs = NULL,
                                   uncorrel_slope_intercept_pairs = NULL,
-                                  random_slope_intercept_pairs = NULL
+                                  random_slope_intercept_pairs = NULL,
+                                  package_mixed_model = "lme4"
   )
   expect_equal(unname(result$summary$coefficients[1]), 60.240, tol = 1e-4)
 
@@ -452,7 +481,8 @@ test_that("get parameter using mixed effect regression", {
                                       list(c("school", "class")),
                                     cross_intercept_vars_pairs = NULL,
                                     uncorrel_slope_intercept_pairs = NULL,
-                                    random_slope_intercept_pairs = NULL
+                                    random_slope_intercept_pairs = NULL,
+                                    package_mixed_model = "lme4"
   ))
  # Error -dataset should not be null
   expect_error(use_linear_mixed_model("extro",
@@ -465,7 +495,8 @@ test_that("get parameter using mixed effect regression", {
                                       list(c("school", "class")),
                                     cross_intercept_vars_pairs = NULL,
                                     uncorrel_slope_intercept_pairs = NULL,
-                                    random_slope_intercept_pairs = NULL
+                                    random_slope_intercept_pairs = NULL,
+                                    package_mixed_model = "lme4"
   ))
   result <- use_linear_mixed_model("extro",
                                     dataset = dataset,
@@ -477,7 +508,8 @@ test_that("get parameter using mixed effect regression", {
                                      list(c("school", "class")),
                                     cross_intercept_vars_pairs = NULL,
                                     uncorrel_slope_intercept_pairs = NULL,
-                                    random_slope_intercept_pairs = NULL
+                                    random_slope_intercept_pairs = NULL,
+                                   package_mixed_model = "lme4"
  )
  expect_equal(result$summary$coefficients[1], 60.26744, tol = 1e-4)
 
@@ -491,7 +523,8 @@ test_that("get parameter using mixed effect regression", {
                                  cross_intercept_vars_pairs =
                                    list(c("school", "class")),
                                  uncorrel_slope_intercept_pairs = NULL,
-                                 random_slope_intercept_pairs = NULL
+                                 random_slope_intercept_pairs = NULL,
+                                 package_mixed_model = "lme4"
  )
  expect_equal(result$summary$coefficients[1], 60.26744, tol = 1e-4)
 
@@ -505,7 +538,8 @@ test_that("get parameter using mixed effect regression", {
                                       list(c("school", "class")),
                                     cross_intercept_vars_pairs = NULL,
                                     uncorrel_slope_intercept_pairs = NULL,
-                                    random_slope_intercept_pairs = NULL
+                                    random_slope_intercept_pairs = NULL,
+                                    package_mixed_model = "lme4"
 ))
  datafile <- system.file("extdata", "glmm_data.csv", package = "packDAMipd")
  dataset <- read.csv(datafile)
@@ -521,7 +555,8 @@ test_that("get parameter using mixed effect regression", {
                                       list(c("FamilyHx", "Married")),
                                     uncorrel_slope_intercept_pairs = NULL,
                                     random_slope_intercept_pairs =
-                                      list(c("Age", "Married")))
+                                      list(c("Age", "Married")),
+                                  package_mixed_model = "lme4")
  expect_equal(result$summary$coefficients[1], 0.62, tol = 1e-2)
 
 })
@@ -544,7 +579,27 @@ test_that("get parameter using generalised linear mixed model", {
                                                   NULL,
                                                 random_slope_intercept_pairs =
                                                   NULL,
-                                                link = NA)
+                                                link = NA,
+                                                package_mixed_model = "lme4")
+
+  expect_equal(unname(results1$fit_diagnostics[1]), 70.3, tol = 1e-3)
+
+  results1 <- use_generalised_linear_mixed_model("predation", dataset = dataset,
+                                                 fix_eff = c("ttt"),
+                                                 family = "binomial",
+                                                 fix_eff_interact_vars = NA,
+                                                 random_intercept_vars =
+                                                   c("block"),
+                                                 nested_intercept_vars_pairs =
+                                                   NA,
+                                                 cross_intercept_vars_pairs =
+                                                   NA,
+                                                 uncorrel_slope_intercept_pairs =
+                                                   NA,
+                                                 random_slope_intercept_pairs =
+                                                   NA,
+                                                 link = NA,
+                                                 package_mixed_model = "lme4")
 
   expect_equal(unname(results1$fit_diagnostics[1]), 70.3, tol = 1e-3)
 
@@ -563,7 +618,27 @@ test_that("get parameter using generalised linear mixed model", {
                                                   NULL,
                                                 random_slope_intercept_pairs =
                                                   NULL,
-                                                link = NA)
+                                                link = NA,
+                                         package_mixed_model = "lme4")
+
+  expect_equal(unname(results1$fit_diagnostics[1]), 70.3, tol = 1e-3)
+  results1 <- use_generalised_linear_mixed_model("predation",
+                                                 dataset = datafile,
+                                                 fix_eff = c("ttt"),
+                                                 family = "binomial",
+                                                 fix_eff_interact_vars = NULL,
+                                                 random_intercept_vars =
+                                                   c("block"),
+                                                 nested_intercept_vars_pairs =
+                                                   NULL,
+                                                 cross_intercept_vars_pairs =
+                                                   NULL,
+                                                 uncorrel_slope_intercept_pairs =
+                                                   NULL,
+                                                 random_slope_intercept_pairs =
+                                                   NULL,
+                                                 link = NA,
+                                                 package_mixed_model = "nlme")
 
   expect_equal(unname(results1$fit_diagnostics[1]), 70.3, tol = 1e-3)
 
@@ -580,7 +655,7 @@ test_that("get parameter using generalised linear mixed model", {
                                      cross_intercept_vars_pairs = c("DID"),
                                      uncorrel_slope_intercept_pairs = NULL,
                                      random_slope_intercept_pairs = NULL,
-                                     link = NA))
+                                     link = NA, package_mixed_model = "lme4"))
   # Error -dataset should not be null
   expect_error(use_generalised_linear_mixed_model("remission", dataset = NULL,
                                      fix_eff = "Age",
@@ -591,7 +666,7 @@ test_that("get parameter using generalised linear mixed model", {
                                      cross_intercept_vars_pairs = c("DID"),
                                      uncorrel_slope_intercept_pairs = NULL,
                                      random_slope_intercept_pairs = NULL,
-                                     link = NA))
+                                     link = NA, package_mixed_model = "lme4"))
 
   # Error - Random intercept  variable should be provided
   expect_error(use_generalised_linear_mixed_model("remission",
@@ -604,7 +679,7 @@ test_that("get parameter using generalised linear mixed model", {
                                      cross_intercept_vars_pairs = c("DID"),
                                      uncorrel_slope_intercept_pairs = NULL,
                                      random_slope_intercept_pairs = NULL,
-                                     link = NA))
+                                     link = NA, package_mixed_model = "lme4"))
 
 })
 

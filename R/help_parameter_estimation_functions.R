@@ -1363,7 +1363,7 @@ get_slope_intercept_nested <- function(expression, random_intercept_vars,
 #' datafile <- system.file("extdata", "data_linear_mixed_model.csv",
 #' package = "packDAMipd")
 #' dt = utils::read.csv(datafile, header = TRUE)
-#' formula <- form_expression_mixed_model("extro",
+#' formula <- form_expression_mixed_model_lme4("extro",
 #'   dataset = dt,
 #'   fix_eff = c("open", "agree", "social"),
 #'   fix_eff_interact_vars = NULL,
@@ -1377,11 +1377,12 @@ get_slope_intercept_nested <- function(expression, random_intercept_vars,
 #' @export
 #' @details
 #' Form the expression for mixed model
-form_expression_mixed_model <- function(param_to_be_estimated, dataset,
+form_expression_mixed_model_lme4 <- function(param_to_be_estimated, dataset,
                                         fix_eff,
                                         fix_eff_interact_vars,
                                         random_intercept_vars,
-nested_intercept_vars_pairs, cross_intercept_vars_pairs,
+                                        nested_intercept_vars_pairs,
+                                        cross_intercept_vars_pairs,
                                         uncorrel_slope_intercept_pairs,
                                         random_slope_intercept_pairs,
                                         family, link) {
@@ -1452,11 +1453,7 @@ nested_intercept_vars_pairs, cross_intercept_vars_pairs,
     all_interact_vars <- ""
     while (i <= length(fix_eff_interact_vars)) {
       if (i == length(fix_eff_interact_vars)) {
-        if (!is.null(random_intercept_vars)) {
-          this <- paste(fix_eff_interact_vars[i], "+ ")
-        } else {
-          this <- paste(fix_eff_interact_vars[i])
-        }
+        this <- paste(fix_eff_interact_vars[i], "+ ")
       } else {
         this <- paste(fix_eff_interact_vars[i], "* ")
       }
