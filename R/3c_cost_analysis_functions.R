@@ -698,7 +698,7 @@ costing_resource_use <- function(ind_part_data,
   column_names <- colnames(ind_part_data)
   new_col <- paste("totcost_", name_use_col, sep = "")
   if (is.na(match(new_col, column_names))) {
-    ind_part_data[[new_col]] <- 0
+    ind_part_data[[new_col]] <- NA
   }
   # if the name of the resource use in unit cost is not null, find the subset of
   # data with that resource use

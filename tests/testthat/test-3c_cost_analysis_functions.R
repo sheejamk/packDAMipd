@@ -862,7 +862,7 @@ test_that("testing costing resource use", {
     "UnitUsed",
     NULL, NULL
   )
-  expect_equal(res$totcost_hospital_admission_1, c(20, 80, 0, 0, 0))
+  expect_equal(res$totcost_hospital_admission_1, c(20, 80, NA, NA, NA))
   #units of resource use expressed and calculated are different
   costs_file <- system.file("extdata",
                             "costs_resource_use_unitexpressed_notright.csv",
