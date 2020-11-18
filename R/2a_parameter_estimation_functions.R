@@ -822,15 +822,15 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset,
     dataset <- dataset
   }
   if (sum(is.na(nested_intercept_vars_pairs)) != 0)
-    nested_intercept_vars_pairs = NULL
+    nested_intercept_vars_pairs <- NULL
   if (sum(is.na(cross_intercept_vars_pairs)) != 0)
-    cross_intercept_vars_pairs = NULL
+    cross_intercept_vars_pairs <- NULL
   if (sum(is.na(uncorrel_slope_intercept_pairs)) != 0)
-    uncorrel_slope_intercept_pairs = NULL
+    uncorrel_slope_intercept_pairs <- NULL
   if (sum(is.na(random_slope_intercept_pairs)) != 0)
-    random_slope_intercept_pairs = NULL
+    random_slope_intercept_pairs <- NULL
   if (sum(is.na(fix_eff_interact_vars)) != 0)
-    fix_eff_interact_vars = NULL
+    fix_eff_interact_vars <- NULL
 
   # create expression for mixed model using the variables fixed effect and
   # random intercept
@@ -1093,15 +1093,15 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset,
     dataset <- dataset
   }
   if (sum(is.na(nested_intercept_vars_pairs)) != 0)
-    nested_intercept_vars_pairs = NULL
+    nested_intercept_vars_pairs <- NULL
   if (sum(is.na(cross_intercept_vars_pairs)) != 0)
-    cross_intercept_vars_pairs = NULL
+    cross_intercept_vars_pairs <- NULL
   if (sum(is.na(uncorrel_slope_intercept_pairs)) != 0)
-    uncorrel_slope_intercept_pairs = NULL
+    uncorrel_slope_intercept_pairs <- NULL
   if (sum(is.na(random_slope_intercept_pairs)) != 0)
-    random_slope_intercept_pairs = NULL
+    random_slope_intercept_pairs <- NULL
   if (sum(is.na(fix_eff_interact_vars)) != 0)
-    fix_eff_interact_vars = NULL
+    fix_eff_interact_vars <- NULL
   if (is.na(package_mixed_model) | is.null(package_mixed_model) |
           package_mixed_model == "lme4") {
     expression_recreated <- form_expression_mixed_model_lme4(
