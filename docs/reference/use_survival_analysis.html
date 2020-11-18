@@ -75,7 +75,7 @@ Get the parameter values using the survival analysis" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">packDAMipd</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -153,7 +153,8 @@ Get the parameter values using the survival analysis</p>
   <span class='va'>info_get_method</span>,
   <span class='va'>info_distribution</span>,
   <span class='va'>covariates</span>,
-  <span class='va'>timevar_survival</span>
+  <span class='va'>timevar_survival</span>,
+  cluster_var <span class='op'>=</span> <span class='cn'>NA</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -190,6 +191,10 @@ before passing</p></td>
       <th>timevar_survival</th>
       <td><p>time variable for survival analysis,
 default is NA</p></td>
+    </tr>
+    <tr>
+      <th>cluster_var</th>
+      <td><p>cluster variable for survival analysis</p></td>
     </tr>
     </table>
 

@@ -1,7 +1,7 @@
 
 # packDAMipd
 <!-- badges: start -->
-   [![Build Status](https://travis-ci.org/sheejamk/valueEQ5D.svg?branch=master)](https://travis-ci.org/sheejamk/valueEQ5D)
+   [![Build Status](https://travis-ci.org/sheejamk/packDAMipd.svg?branch=master)](https://travis-ci.org/sheejamk/packDAMipd)
 <!-- badges: end -->
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/sheejamk/packDAMipd/branch/master/graph/badge.svg)](https://codecov.io/gh/sheejamk/packDAMipd?branch=master)

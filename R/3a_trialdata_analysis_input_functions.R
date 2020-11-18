@@ -29,7 +29,7 @@ get_trial_arm_details <- function(trialdata) {
   related_words <- c("arm", "trial", "trialarm")
   exists <- unlist(lapply(
     related_words,
-    IPDFileCheck::check_colno_pattern_colname, names
+    IPDFileCheck::check_col_pattern_colname, names
   ))
   ind <- which(exists == TRUE)
   # find colnumbers that contains the related words
@@ -62,7 +62,7 @@ get_trial_arm_details <- function(trialdata) {
 #' if success, else error
 #' @examples
 #' get_gender_details(data.frame("Age" = c(21, 15), "sex" = c("m", "f")))
-#' @importFrom IPDFileCheck  check_colno_pattern_colname
+#' @importFrom IPDFileCheck  check_col_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
 #' @details
@@ -77,7 +77,7 @@ get_gender_details <- function(trialdata) {
   names <- colnames(trialdata)
   related_words <- c("sex", "gender", "female", "male", "females", "males")
   exists <- unlist(lapply(related_words,
-    IPDFileCheck::check_colno_pattern_colname, names
+    IPDFileCheck::check_col_pattern_colname, names
   ))
   ind <- which(exists == TRUE)
   colnumbers <- unlist(lapply(
@@ -110,7 +110,7 @@ get_gender_details <- function(trialdata) {
 #' @examples
 #' get_age_details(data.frame("Age" = c(21, 15),
 #' "arm" = c("control", "intervention")))
-#' @importFrom IPDFileCheck  check_colno_pattern_colname
+#' @importFrom IPDFileCheck  check_col_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
 #' @details
@@ -127,7 +127,7 @@ get_age_details <- function(trialdata) {
   related_words <- c("age", "dob", "yob", "date of birth",
                      "year of birth", "birth year")
   exists <- unlist(lapply(
-    related_words, IPDFileCheck::check_colno_pattern_colname,
+    related_words, IPDFileCheck::check_col_pattern_colname,
     names
   ))
   ind <- which(exists == TRUE)
@@ -161,7 +161,7 @@ get_age_details <- function(trialdata) {
 #' @examples
 #' get_timepoint_details(data.frame("time" = c(21, 15),
 #' "arm" = c("control", "intervention")))
-#' @importFrom IPDFileCheck  check_colno_pattern_colname
+#' @importFrom IPDFileCheck  check_col_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
 #' @details
@@ -177,7 +177,7 @@ get_timepoint_details <- function(trialdata) {
   names <- colnames(trialdata)
   related_words <- c("time point", "times", "time", "timepoint")
   exists <- unlist(lapply(
-    related_words, IPDFileCheck::check_colno_pattern_colname,
+    related_words, IPDFileCheck::check_col_pattern_colname,
     names
   ))
   ind <- which(exists == TRUE)
@@ -234,7 +234,7 @@ get_outcome_details <- function(trialdata, name, related_words,
 
   names <- colnames(trialdata)
   exists <- unlist(lapply(related_words,
-                          IPDFileCheck::check_colno_pattern_colname, names))
+                          IPDFileCheck::check_col_pattern_colname, names))
   ind <- which(exists == TRUE)
   colnumbers <- unlist(lapply(
     related_words[ind], IPDFileCheck::get_colno_pattern_colname,
@@ -286,7 +286,7 @@ get_outcome_details <- function(trialdata, name, related_words,
 #'   "MO" = c(1, 2), "SC" = c(1, 2), "UA" = c(1, 2),
 #'   "PD" = c(1, 2), "AD" = c(1, 2)
 #' ))
-#' @importFrom IPDFileCheck  check_colno_pattern_colname
+#' @importFrom IPDFileCheck  check_col_pattern_colname
 #' @importFrom IPDFileCheck get_colno_pattern_colname
 #' @export
 #' @details
@@ -325,7 +325,7 @@ get_eq5d_details <- function(trialdata) {
   while (i <= length(words_set)) {
     this <- unlist(words_set[i])
     result <- unlist(lapply(this,
-                            IPDFileCheck::check_colno_pattern_colname, names))
+                            IPDFileCheck::check_col_pattern_colname, names))
     if (any(result == FALSE)) {
       i <- i + 1
     } else {

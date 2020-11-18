@@ -102,7 +102,7 @@ microcosting_tablets_patches <- function(form, ind_part_data,
   # get colnames for name, form, dosage and unit
   name_pattern <- c("name", "drug", "medication", "med")
   bool_res <- unlist(lapply(name_pattern,
-                            IPDFileCheck::check_colno_pattern_colname,
+                            IPDFileCheck::check_col_pattern_colname,
                             colnames(unit_cost_data)))
   if (any(bool_res)) {
     name_ind <- which(bool_res == TRUE)
@@ -115,7 +115,7 @@ microcosting_tablets_patches <- function(form, ind_part_data,
 
   form_pattern <- c("form", "drug form", "patch/tablet", "type")
   bool_res <- unlist(lapply(form_pattern,
-                            IPDFileCheck::check_colno_pattern_colname,
+                            IPDFileCheck::check_col_pattern_colname,
                             colnames(unit_cost_data)))
   if (any(bool_res)) {
     form_ind <- which(bool_res == TRUE)
@@ -387,7 +387,7 @@ microcosting_liquids <- function(ind_part_data,
   # get colnames for name, form, dosage and unit
   name_pattern <- c("name", "drug", "medication", "med")
   bool_res <- unlist(lapply(name_pattern,
-                            IPDFileCheck::check_colno_pattern_colname,
+                            IPDFileCheck::check_col_pattern_colname,
                             colnames(unit_cost_data)))
   if (any(bool_res)) {
     name_ind <- which(bool_res == TRUE)
@@ -401,7 +401,7 @@ microcosting_liquids <- function(ind_part_data,
   form_pattern <- c("form", "drug form", "patch/tablet/liquid/injection",
                     "type")
   bool_res <- unlist(lapply(form_pattern,
-                            IPDFileCheck::check_colno_pattern_colname,
+                            IPDFileCheck::check_col_pattern_colname,
                             colnames(unit_cost_data)))
   if (any(bool_res)) {
     form_ind <- which(bool_res == TRUE)
@@ -421,7 +421,7 @@ microcosting_liquids <- function(ind_part_data,
 
   prepar_pattern <- c("preparation")
   bool_res <- unlist(lapply(prepar_pattern,
-                            IPDFileCheck::check_colno_pattern_colname,
+                            IPDFileCheck::check_col_pattern_colname,
                             colnames(unit_cost_data)))
   if (!is.null(preparation)) {
     if (any(bool_res)) {
@@ -682,7 +682,7 @@ costing_resource_use <- function(ind_part_data,
   # find the column name under which each resource use is listed
   name_pattern <- c("name", "resource", "resource use", "type of resource")
   bool_res <- unlist(lapply(name_pattern,
-                            IPDFileCheck::check_colno_pattern_colname,
+                            IPDFileCheck::check_col_pattern_colname,
                             colnames(unit_cost_data)))
   if (any(bool_res)) {
     name_ind <- which(bool_res == TRUE)

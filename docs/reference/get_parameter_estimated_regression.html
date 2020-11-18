@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">packDAMipd</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -146,7 +146,7 @@
   <span class='va'>data</span>,
   <span class='va'>method</span>,
   <span class='va'>indep_var</span>,
-  <span class='va'>info_get_method</span>,
+  info_get_method <span class='op'>=</span> <span class='cn'>NA</span>,
   info_distribution <span class='op'>=</span> <span class='cn'>NA</span>,
   covariates <span class='op'>=</span> <span class='cn'>NA</span>,
   timevar_survival <span class='op'>=</span> <span class='cn'>NA</span>,
@@ -162,7 +162,9 @@
   param2_to_be_estimated <span class='op'>=</span> <span class='cn'>NA</span>,
   covariates2 <span class='op'>=</span> <span class='cn'>NA</span>,
   interaction2 <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  link <span class='op'>=</span> <span class='cn'>NA</span>
+  link <span class='op'>=</span> <span class='cn'>NA</span>,
+  cluster_var <span class='op'>=</span> <span class='cn'>NA</span>,
+  package_mixed_model <span class='op'>=</span> <span class='cn'>NA</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -268,11 +270,20 @@ bivariate regression</p></td>
       <td><p>link function to be provided if not using the default link
 for each of the info_distribution</p></td>
     </tr>
+    <tr>
+      <th>cluster_var</th>
+      <td><p>cluster variable if any</p></td>
+    </tr>
+    <tr>
+      <th>package_mixed_model</th>
+      <td><p>package to be used for mixed model
+ie nlme or lme4</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the results of the regression analysis</p>
+    <p>results the results of the regression analysis</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>This function is the top in the layer of functions used for regression
@@ -328,7 +339,7 @@ linear multilevel or mixed model, and seemingly unrelated regression</p>
 #&gt; &lt;none&gt;      1731.2 1733.2
 #&gt; + Lag1  1   1729.2 1733.2
 #&gt; + Lag2  1   1730.5 1734.5
-#&gt; + Lag3  1   1731.1 1735.1</div><div class='output co'>#&gt; <span class='message'>`geom_smooth()` using formula 'y ~ x'</span></div><div class='output co'>#&gt; <span class='message'>`geom_smooth()` using formula 'y ~ x'</span></div><div class='output co'>#&gt; <span class='message'>`geom_smooth()` using formula 'y ~ x'</span></div><div class='output co'>#&gt; <span class='message'>`geom_smooth()` using formula 'y ~ x'</span></div><div class='input'>  <span class='co'># }</span>
+#&gt; + Lag3  1   1731.1 1735.1</div><div class='input'>  <span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
