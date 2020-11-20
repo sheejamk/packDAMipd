@@ -32,7 +32,7 @@ the results of the regression analysis
 Get the parameter values using the survival analysis method FH
 }
 \details{
-This function is for survival analysis using Kaplan Meier.
+This function is for survival analysis using FH.
 This plots the cumulative survival function for each combination of covariate
 If the covariate is numeric, R takes it as different levels.
 The plot uses the returned list of survfit and extracts the time and the

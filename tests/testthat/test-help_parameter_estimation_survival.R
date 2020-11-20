@@ -11,10 +11,10 @@ test_that("testing  returning residual for survival", {
   plot_return_residual_survival("status", "sex",
                     covariates = c("ph.ecog"), surv_estimated$fit)
 
-  data_for_survival <- data_for_survival[!is.na(data_for_survival$meal.cal),]
+  data_for_survival <- data_for_survival[!is.na(data_for_survival$meal.cal), ]
   surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
                                             info_distribution = "weibull",
-                                            covariates = c("ph.ecog"), "time" ,
+                                            covariates = c("ph.ecog"), "time",
                                             cluster_var = "meal.cal"
   )
   plot_return_residual_survival("status", "sex",
@@ -88,7 +88,7 @@ test_that("testing  plotting prediction parameteric survival", {
 context("testing creating a new dataset based on given one")
 test_that("testing creating a new dataset based on given one", {
   dataset <- survival::lung
-  temp <- sample(c("no","yes"), nrow(dataset), replace = T)
+  temp <- sample(c("no", "yes"), nrow(dataset), replace = T)
   dataset[["check"]] <- temp
   new <- create_new_dataset("status", c("check"), dataset, c(TRUE))
   expect_equal(unique(new$check), "no")
@@ -292,4 +292,3 @@ test_that("testing plotting residual for cox ph models", {
 
 
 })
-

@@ -266,8 +266,8 @@ microcosting_tablets_patches <- function(form, ind_part_data,
       }
       total_cost_basis <- total_med_basis * unit_cost_med_prep * unit_multiplier
       total_cost_basis_equiv_dose <- total_cost_basis / equiv_dose_div[i]
-      period_given_basis <- convert_to_given_timeperiod(period_desc_from_code[i],
-                                                        basis_time)
+      period_given_basis <-
+        convert_to_given_timeperiod(period_desc_from_code[i], basis_time)
 
       total_cost_timeperiod <- total_cost_basis * period_given_basis
       total_cost_timeperiod_equiv_dose <-
@@ -533,15 +533,16 @@ microcosting_liquids <- function(ind_part_data,
 
       if (any(subset2[[dosage_col_no]] == dose_medication)) {
         if (!is.null(preparation)) {
-          unit_cost_med_prep <- subset2[subset2[[dosage_col_no]] == dose_medication &
-                                subset2[[prepar_col_no]] == this_preparation &
-                                subset2[[size_col_no]] == size_number &
-              subset2[[unit_col_no]] == unit_used_costing, ][[unit_cost_column]]
+          unit_cost_med_prep <-
+            subset2[subset2[[dosage_col_no]] == dose_medication &
+            subset2[[prepar_col_no]] == this_preparation &
+            subset2[[size_col_no]] == size_number &
+            subset2[[unit_col_no]] == unit_used_costing, ][[unit_cost_column]]
         } else {
-          unit_cost_med_prep <- subset2[subset2[[dosage_col_no]] == dose_medication &
-                                subset2[[size_col_no]] == size_number &
-                                subset2[[unit_col_no]] ==
-                                unit_used_costing, ][[unit_cost_column]]
+          unit_cost_med_prep <-
+            subset2[subset2[[dosage_col_no]] == dose_medication &
+            subset2[[size_col_no]] == size_number &
+            subset2[[unit_col_no]] == unit_used_costing, ][[unit_cost_column]]
         }
       } else {
         stop("The used dosage is not in costing table")
@@ -550,36 +551,46 @@ microcosting_liquids <- function(ind_part_data,
           is.na(unit_cost_med_prep))
         stop("Error - unit cost for the medicine is not valid")
       cost_bottle <- unit_cost_med_prep
-      period_given_basis <- convert_to_given_timeperiod(period_desc_from_code[i],
-                                                        basis_time)
-      bottle_used_time_given_basis <- convert_to_given_timeperiod(remain_time,
-                                                                  basis_time)
-      med_required_timeperiod <- (total_med_for_remain_time / bottle_used_time_given_basis) * period_given_basis
+      period_given_basis <-
+        convert_to_given_timeperiod(period_desc_from_code[i], basis_time)
+      bottle_used_time_given_basis <-
+        convert_to_given_timeperiod(remain_time, basis_time)
+      med_required_timeperiod <-
+        (total_med_for_remain_time / bottle_used_time_given_basis) *
+        period_given_basis
       no_bottle_timeperiod <- ceiling(med_required_timeperiod / size_number)
       # need to check if what it actually mean by equivalent dose
       # 1mg/ml of liquid equivalent to mg of morphine ?
-      no_bottle_timeperiod_equiv_dose <- no_bottle_timeperiod / equiv_dose_div[i]
+      no_bottle_timeperiod_equiv_dose <-
+        no_bottle_timeperiod / equiv_dose_div[i]
       total_cost_timeperiod <- no_bottle_timeperiod * cost_bottle
-      total_cost_timeperiod_equiv_dose <- total_cost_timeperiod / equiv_dose_div[i]
+      total_cost_timeperiod_equiv_dose <-
+        total_cost_timeperiod / equiv_dose_div[i]
     } else {
       no_bottle_timeperiod <- NA
       no_bottle_timeperiod_equiv_dose <- NA
       total_cost_timeperiod <- NA
       total_cost_timeperiod_equiv_dose <- NA
     }
-    list_total_bottle_timeperiod <- append(list_total_bottle_timeperiod,
-                                           no_bottle_timeperiod)
-    list_total_bottle_timeperiod_equiv_dose <- append(list_total_bottle_timeperiod_equiv_dose,
-                                              no_bottle_timeperiod_equiv_dose)
-    list_total_cost_timeperiod <- append(list_total_cost_timeperiod,
-                                         total_cost_timeperiod)
-    list_total_cost_timeperiod_equiv_dose <- append(list_total_cost_timeperiod_equiv_dose,
-                                          total_cost_timeperiod_equiv_dose)
+    list_total_bottle_timeperiod <-
+      append(list_total_bottle_timeperiod, no_bottle_timeperiod)
+    list_total_bottle_timeperiod_equiv_dose <-
+      append(list_total_bottle_timeperiod_equiv_dose,
+             no_bottle_timeperiod_equiv_dose)
+    list_total_cost_timeperiod <-
+      append(list_total_cost_timeperiod, total_cost_timeperiod)
+    list_total_cost_timeperiod_equiv_dose <-
+      append(list_total_cost_timeperiod_equiv_dose,
+             total_cost_timeperiod_equiv_dose)
   }
-  ind_part_data[["tot_timeperiod_bottle"]] <- unlist(list_total_bottle_timeperiod)
-  ind_part_data[["tot_timeperiod_equiv_dose_bottle"]] <- unlist(list_total_bottle_timeperiod_equiv_dose)
-  ind_part_data[["totcost_timeperiod_liquids"]] <- unlist(list_total_cost_timeperiod)
-  ind_part_data[["totcost_timeperiod_equiv_dose_liquids"]] <- unlist(list_total_cost_timeperiod_equiv_dose)
+  ind_part_data[["tot_timeperiod_bottle"]] <-
+    unlist(list_total_bottle_timeperiod)
+  ind_part_data[["tot_timeperiod_equiv_dose_bottle"]] <-
+    unlist(list_total_bottle_timeperiod_equiv_dose)
+  ind_part_data[["totcost_timeperiod_liquids"]] <-
+    unlist(list_total_cost_timeperiod)
+  ind_part_data[["totcost_timeperiod_equiv_dose_liquids"]] <-
+    unlist(list_total_cost_timeperiod_equiv_dose)
   return(ind_part_data)
 }
 ##############################################################################
@@ -675,7 +686,8 @@ costing_resource_use <- function(ind_part_data,
 
   # check columns exist in unit cost data
   info_list <- c(unit_cost_column, cost_calculated_in)
-  checks <- sapply(info_list, IPDFileCheck::check_column_exists, unit_cost_data)
+  checks <- sapply(info_list, IPDFileCheck::check_column_exists,
+                   unit_cost_data)
   if (sum(checks) != 0) {
     stop("Any one of the required columns can not be found in unit cost data")
   }
@@ -691,7 +703,8 @@ costing_resource_use <- function(ind_part_data,
     resource, resource use,
          or type of resource to indicate the medication")
   }
-  name_col_no <- IPDFileCheck::get_colno_pattern_colname(name_pattern[name_ind],
+  name_col_no <-
+    IPDFileCheck::get_colno_pattern_colname(name_pattern[name_ind],
                                                   colnames(unit_cost_data))
 
   # initialising the result columns
@@ -739,6 +752,8 @@ costing_resource_use <- function(ind_part_data,
       total_length_num <- 0
       # each_length_num_use is the column names where it is given the
       # length of use
+      if (is.null(each_length_num_use))
+        stop("Length or number of use should be given in columns")
       for (m in seq_len(length(each_length_num_use))) {
         # check each column exists
         if (IPDFileCheck::check_column_exists(each_length_num_use[m],
@@ -750,10 +765,12 @@ costing_resource_use <- function(ind_part_data,
             # then use the code
             if (is.null(list_code_provider_indicator)) {
               this_column_name <- unlist(each_use_provider_indicator[m])
-              use_desc_from_code <- toupper(ind_part_data[[this_column_name]][i])
+              use_desc_from_code <-
+                toupper(ind_part_data[[this_column_name]][i])
             } else {
               # else read it from ind data
-              use_code <- stats::setNames(as.list(list_code_provider_indicator[[1]]),
+              use_code <-
+                stats::setNames(as.list(list_code_provider_indicator[[1]]),
                                           list_code_provider_indicator[[2]])
               this_column_name <- unlist(each_use_provider_indicator[m])
               use_from_data <- ind_part_data[[this_column_name]][i]
@@ -773,7 +790,8 @@ costing_resource_use <- function(ind_part_data,
           # for multiple uses of resource, add the numbers together
           if (use_desc_from_code == "YES" | use_desc_from_code == "TRUE") {
             this_column_name <- unlist(each_length_num_use[m])
-            total_length_num <- total_length_num + ind_part_data[[this_column_name]][i]
+            total_length_num <-
+              total_length_num + ind_part_data[[this_column_name]][i]
           }
         }
       }

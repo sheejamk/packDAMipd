@@ -537,34 +537,43 @@ keep_results_plot_dsa <- function(result_dsa_control, plotfor,
                             nchar(this_var_result_name))
     if (plotfor == "ICER" | plotfor == "NMB") {
       if (!is.null(result_dsa_treat)) {
-        list_markov <- combine_markov(result_dsa_control[[this_var_result_name]],
-                                      result_dsa_treat[[this_var_result_name]])
-        list_markov_low <- combine_markov(result_dsa_control[[low_var_result_name]],
-                                      result_dsa_treat[[low_var_result_name]])
-        list_markov_upp <- combine_markov(result_dsa_control[[upp_var_result_name]],
-                                      result_dsa_treat[[upp_var_result_name]])
+        list_markov <-
+          combine_markov(result_dsa_control[[this_var_result_name]],
+                                  result_dsa_treat[[this_var_result_name]])
+        list_markov_low <-
+          combine_markov(result_dsa_control[[low_var_result_name]],
+                                  result_dsa_treat[[low_var_result_name]])
+        list_markov_upp <-
+          combine_markov(result_dsa_control[[upp_var_result_name]],
+                                  result_dsa_treat[[upp_var_result_name]])
 
       }else{
-        list_markov <- combine_markov(result_dsa_control[[this_var_result_name]])
-        list_markov_low <- combine_markov(result_dsa_control[[low_var_result_name]])
-        list_markov_upp <- combine_markov(result_dsa_control[[upp_var_result_name]])
+        list_markov <-
+          combine_markov(result_dsa_control[[this_var_result_name]])
+        list_markov_low <-
+          combine_markov(result_dsa_control[[low_var_result_name]])
+        list_markov_upp <-
+          combine_markov(result_dsa_control[[upp_var_result_name]])
       }
       results_icer_nmb_base <- as.data.frame(calculate_icer_nmb(list_markov,
                                                 threshold, comparator))
       results_icer_nmb_base[["parameter"]] <- rep(this_var_name,
                                                   nrow(results_icer_nmb_base))
-      results_icer_nmb_base[["value_limit"]] <- rep("base",
-                                                    nrow(results_icer_nmb_base))
-      res_icer_nmb <- rbind(res_icer_nmb, results_icer_nmb_base)
-      results_icer_nmb_low <- as.data.frame(calculate_icer_nmb(list_markov_low,
-                                                  threshold, comparator))
+      results_icer_nmb_base[["value_limit"]] <-
+        rep("base", nrow(results_icer_nmb_base))
+      res_icer_nmb <-
+        rbind(res_icer_nmb, results_icer_nmb_base)
+      results_icer_nmb_low <-
+        as.data.frame(calculate_icer_nmb(list_markov_low, threshold,
+                                         comparator))
       results_icer_nmb_low[["parameter"]] <- rep(this_var_name,
                                                 nrow(results_icer_nmb_low))
       results_icer_nmb_low[["value_limit"]] <- rep("lower",
                                                    nrow(results_icer_nmb_low))
       res_icer_nmb <- rbind(res_icer_nmb, results_icer_nmb_low)
-      results_icer_nmb_upp <- as.data.frame(calculate_icer_nmb(list_markov_upp,
-                                                  threshold, comparator))
+      results_icer_nmb_upp <-
+        as.data.frame(calculate_icer_nmb(list_markov_upp, threshold,
+                                         comparator))
       results_icer_nmb_upp[["parameter"]] <- rep(this_var_name,
                                                  nrow(results_icer_nmb_upp))
       results_icer_nmb_upp[["value_limit"]] <- rep("upper",
@@ -649,12 +658,15 @@ plot_dsa_icer_range <- function(ob_results, plot_var) {
   if (sum(checks) != 0) stop("Error - some parameters are NULL or NA")
 
   results_icer_nmb <- ob_results$results_icer_nmb
-  results_icer_nmb_all <- data.frame(results_icer_nmb)
-  low <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit
+  res_icer_nmb_all <- data.frame(results_icer_nmb)
+  low <-
+    as.numeric(as.character(res_icer_nmb_all[res_icer_nmb_all$value_limit
                                                       == "lower", ]$ICER))
-  base <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit
+  base <-
+    as.numeric(as.character(res_icer_nmb_all[res_icer_nmb_all$value_limit
                                                        == "base", ]$ICER))
-  upp <- as.numeric(as.character(results_icer_nmb_all[results_icer_nmb_all$value_limit
+  upp <-
+    as.numeric(as.character(res_icer_nmb_all[res_icer_nmb_all$value_limit
                                                       == "upper", ]$ICER))
   low <- low[which(!is.na(low))]
   low <- low[which(!is.na(low))]
@@ -664,29 +676,29 @@ plot_dsa_icer_range <- function(ob_results, plot_var) {
                            sep = "")
   grDevices::pdf(name_file_plot)
 
-  p <- ggplot2::ggplot(results_icer_nmb_all[results_icer_nmb_all$value_limit ==
+  p <- ggplot2::ggplot(res_icer_nmb_all[res_icer_nmb_all$value_limit ==
                                               "lower"
-                                 & !is.na(results_icer_nmb_all$ICER), ]) +
+                                 & !is.na(res_icer_nmb_all$ICER), ]) +
     ggplot2::geom_segment(ggplot2::aes(
       x = low, xend = upp,
-      y = unique(results_icer_nmb_all$parameter),
-      yend = unique(results_icer_nmb_all$parameter)
+      y = unique(res_icer_nmb_all$parameter),
+      yend = unique(res_icer_nmb_all$parameter)
     ),
     size = 3, color = "orange"
     ) +
     ggplot2::geom_point(ggplot2::aes(
       x = base,
-      y = unique(results_icer_nmb_all$parameter),
+      y = unique(res_icer_nmb_all$parameter),
       color = "base value"
     ), size = 4) +
     ggplot2::geom_point(ggplot2::aes(
       x = low,
-      y = unique(results_icer_nmb_all$parameter),
+      y = unique(res_icer_nmb_all$parameter),
       color = "lower"
     ), size = 4, shape = 15) +
     ggplot2::geom_point(ggplot2::aes(
       x = upp,
-      y = unique(results_icer_nmb_all$parameter),
+      y = unique(res_icer_nmb_all$parameter),
       color = "upper"
     ), size = 4, shape = 15) +
     ggplot2::labs(colour = "", y = "Parameters") +
@@ -726,12 +738,12 @@ plot_dsa_nmb_range <- function(ob_results, plot_var) {
                                    == strategy_names[2], ]
 
     results_parameters_treat <- as.data.frame(parameters)
-    results_parameters_treat[["lower"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                  == "lower", ]$NMB)
-    results_parameters_treat[["base"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                 == "base", ]$NMB)
-    results_parameters_treat[["upper"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                  == "upper", ]$NMB)
+    results_parameters_treat[["lower"]] <-
+      as.numeric(results_treat[results_treat$value_limit == "lower", ]$NMB)
+    results_parameters_treat[["base"]] <-
+      as.numeric(results_treat[results_treat$value_limit == "base", ]$NMB)
+    results_parameters_treat[["upper"]] <-
+      as.numeric(results_treat[results_treat$value_limit == "upper", ]$NMB)
   }
   name_file_plot <- paste0("Deterministic sensitivity analysis NMB.pdf",
                            sep = "")
@@ -845,12 +857,12 @@ plot_dsa_difference <- function(ob_results, plotfor, plot_var) {
                                         == strategy_names[2], ]
 
       results_parameters_treat <- as.data.frame(parameter)
-      results_parameters_treat[["lower"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                      == "lower", ]$NMB)
-      results_parameters_treat[["base"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                     == "base", ]$NMB)
-      results_parameters_treat[["upper"]] <- as.numeric(results_treat[results_treat$value_limit
-                                                                      == "upper", ]$NMB)
+      results_parameters_treat[["lower"]] <-
+        as.numeric(results_treat[results_treat$value_limit == "lower", ]$NMB)
+      results_parameters_treat[["base"]] <-
+        as.numeric(results_treat[results_treat$value_limit == "base", ]$NMB)
+      results_parameters_treat[["upper"]] <-
+        as.numeric(results_treat[results_treat$value_limit == "upper", ]$NMB)
 
   } else {
     results <- ob_results$results

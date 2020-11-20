@@ -708,7 +708,8 @@ markov_model <- function(current_strategy, cycles, initial_state,
         if (is.null(current_strategy$transition_utility)) {
           utility_due_transitions <- 0
         } else {
-          trans_util <- eval_assign_trans_prob(current_strategy$transition_utility,
+          trans_util <-
+            eval_assign_trans_prob(current_strategy$transition_utility,
                                                assigned_param)
           utility_due_transitions <- transitions_made_state %*%
                                             trans_util$trans_matrix[, j]
@@ -787,8 +788,10 @@ markov_model <- function(current_strategy, cycles, initial_state,
   trace_matrix <- cbind(trace_matrix, nozeros)
   # Taking care of discounting
   for (i in 1:ending) {
-    cost_matrix[i, no_states + 1] <- sum(cost_matrix[i, ]) / ((1 + discount[1]) ^ (i - 1))
-    utility_matrix[i, no_states + 1] <- sum(utility_matrix[i, ]) / ((1 + discount[2]) ^ (i - 1))
+    cost_matrix[i, no_states + 1] <-
+      sum(cost_matrix[i, ]) / ((1 + discount[1]) ^ (i - 1))
+    utility_matrix[i, no_states + 1] <-
+      sum(utility_matrix[i, ]) / ((1 + discount[2]) ^ (i - 1))
   }
   if (changed_method == "hc_correction" & half_cycle_correction) {
     cost_matrix[1, no_states + 1] <- cost_matrix[1, no_states + 1] * 0.5

@@ -130,17 +130,17 @@ test_that("get parameter using parametric regression survival analysis", {
                                        covariates = "ph.ecog", "time",
                                        cluster_var = "open"
   ))
-  data_for_survival <- data_for_survival[!is.na(data_for_survival$meal.cal),]
+  data_for_survival <- data_for_survival[!is.na(data_for_survival$meal.cal), ]
   surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
                                             info_distribution = "weibull",
-                                            covariates = c("ph.ecog"), "time" ,
+                                            covariates = c("ph.ecog"), "time",
                                             cluster_var = "meal.cal"
   )
   expect_equal(surv_estimated$model_coeff[1], 0.00035, tol = 1e-4)
 
   surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
                                             info_distribution = "weibull",
-                                            covariates = NA, "time" ,
+                                            covariates = NA, "time",
                                             cluster_var = "meal.cal"
   )
   expect_equal(surv_estimated$model_coeff[1], 0.000816, tol = 1e-4)
@@ -254,9 +254,6 @@ test_that("get parameter using cox ph survival analysis", {
   surv_estimated_aml <- use_coxph_survival("status", data_for_survival, "sex",
                                         covariates = c("ph.ecog"), "time")
   expect_equal(surv_estimated_aml$fit$n, c(227))
-  # surv_estimated_aml <- use_coxph_survival("status", datafile, "sex",
-  #                                          covariates = c("ph.ecog"), "time")
-  # expect_equal(surv_estimated_aml$fit$n, c(227))
 
    surv_estimated <- use_coxph_survival("status", data_for_survival, "sex",
     covariates = c("ph.ecog"), "time"

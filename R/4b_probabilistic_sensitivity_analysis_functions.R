@@ -208,13 +208,16 @@ list_paramwise_psa_result <- function(result_psa_params_control,
   results_cost_util <- data.frame()
   results_icer_nmb <- data.frame()
   first_name <- names(result_psa_params_control)[1]
-  no_params_parammatrix <- ncol(result_psa_params_control[[first_name]]$param_matrix)
+  no_params_parammatrix <-
+    ncol(result_psa_params_control[[first_name]]$param_matrix)
   for (i in 1:len) {
     this_var_result_name <- names(result_psa_params_control)[i]
     if (!is.null(result_psa_params_treat)) {
       var_name_treat <- names(result_psa_params_treat)[i]
-      control_params <- colnames(result_psa_params_control[[this_var_result_name]]$param_matrix)
-      treat_params  <- colnames(result_psa_params_treat[[var_name_treat]]$param_matrix)
+      control_params <-
+      colnames(result_psa_params_control[[this_var_result_name]]$param_matrix)
+      treat_params  <-
+        colnames(result_psa_params_treat[[var_name_treat]]$param_matrix)
 
       if (length(control_params) <=  length(treat_params)) {
           mem_sum <- sum(control_params  %in% treat_params)
@@ -240,7 +243,8 @@ list_paramwise_psa_result <- function(result_psa_params_control,
       res_icer_nmb <- calculate_icer_nmb(list_markov, threshold, comparator)
       res_icer_nmb_df <- data.frame(res_icer_nmb)
       comparator_row <- which(res_icer_nmb_df$Strategy == comparator)
-      results_icer_nmb <- rbind(results_icer_nmb, res_icer_nmb_df[-comparator_row, ])
+      results_icer_nmb <-
+        rbind(results_icer_nmb, res_icer_nmb_df[-comparator_row, ])
       colnames(results_icer_nmb) <- colnames(res_icer_nmb_df)
     } else {
       this_var_result <- result_psa_params_control[[this_var_result_name]]

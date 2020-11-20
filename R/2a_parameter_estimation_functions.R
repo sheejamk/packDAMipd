@@ -242,16 +242,18 @@ get_parameter_def_distribution <- function(parameter, paramfile,
                sep = ""))
   }
   distr_colno <- IPDFileCheck::get_columnno_fornames(dataset, "distribution")
-  required_row = dataset[dataset[[param_colno]] == parameter, ]
+  required_row <- dataset[dataset[[param_colno]] == parameter, ]
   if (nrow(required_row) < 1) {
         stop("Parameter not found")
   } else {
-        this_val <- dataset[dataset[[param_colno]] == parameter, ][[distr_colno]]
+        this_val <-
+          dataset[dataset[[param_colno]] == parameter, ][[distr_colno]]
   }
   # if the value from the distribution col is not existing throw an error
   if (sum(is.na(this_val)) > 0)
     stop("The distribution can not be NA")
-  if (identical(this_val, character(0)) | length(this_val) == 0 | this_val == "")
+  if (identical(this_val, character(0)) |
+      length(this_val) == 0 | this_val == "")
         stop("This parameter may not be estimated from a distribution")
 
   # the parameter name and value that define the distribution should exist
@@ -264,15 +266,18 @@ get_parameter_def_distribution <- function(parameter, paramfile,
       stop("File should have parameters for the distribtution as column name")
     }
     this_param <- dataset[dataset[param_colno] == parameter, ][[param_colno]]
-    this_distr_name <- dataset[dataset[param_colno] == parameter, ][[distr_colno]]
+    this_distr_name <-
+      dataset[dataset[param_colno] == parameter, ][[distr_colno]]
     expression_created <- paste(this_distr_name, "(", sep = "")
     i <- 1
     while (i <= length(colnames_paramdistr)) {
       # expect the column name for parameter name should have "name" in it
       result <- grep("name", colnames_paramdistr[i])
       if (length(result) != 0) {
-        param1 <- dataset[dataset[param_colno] == parameter, ][[colnames_paramdistr[i]]]
-        param1_value <- dataset[dataset[param_colno] == parameter, ][[colnames_paramdistr[i + 1]]]
+        param1 <-
+         dataset[dataset[param_colno] == parameter, ][[colnames_paramdistr[i]]]
+        param1_value <-
+         dataset[dataset[param_colno] == parameter, ][[colnames_paramdistr[i + 1]]]
         if (!is.numeric(param1_value)) {
           stop("Parameter values should be numeric for evaluation")
         }
@@ -291,8 +296,10 @@ get_parameter_def_distribution <- function(parameter, paramfile,
     }
   }
   # substitute proper parameters that R can understand
-  expression_recreated <- check_estimate_substitute_proper_params(expression_created)
-  param_with_expression <- paste(this_param, " = ", expression_recreated, sep = "")
+  expression_recreated <-
+    check_estimate_substitute_proper_params(expression_created)
+  param_with_expression <-
+    paste(this_param, " = ", expression_recreated, sep = "")
   # evaluate that expression and return the value obtained.
   param_obtained <- eval(parse(text = param_with_expression))
   return(param_obtained)
@@ -835,29 +842,27 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset,
   # create expression for mixed model using the variables fixed effect and
   # random intercept
   if (is.na(package_mixed_model) | is.null(package_mixed_model) |
-      package_mixed_model == "lme4" ) {
-    expression_recreated <- form_expression_mixed_model_lme4(param_to_be_estimated,
-                                                    dataset,
-                                                    fix_eff,
-                                                    fix_eff_interact_vars,
-                                                    random_intercept_vars,
-                                                    nested_intercept_vars_pairs,
-                                                  cross_intercept_vars_pairs,
-                                                  uncorrel_slope_intercept_pairs,
-                                                  random_slope_intercept_pairs,
-                                                  family = NA, link = NA)
+      package_mixed_model == "lme4") {
+    expression_recreated <-
+      form_expression_mixed_model_lme4(param_to_be_estimated, dataset,
+                                       fix_eff, fix_eff_interact_vars,
+                                       random_intercept_vars,
+                                       nested_intercept_vars_pairs,
+                                       cross_intercept_vars_pairs,
+                                       uncorrel_slope_intercept_pairs,
+                                       random_slope_intercept_pairs,
+                                       family = NA, link = NA)
   } else {
-    if (package_mixed_model == "nlme" ) {
-        expression_recreated <- form_expression_mixed_model_lme4(param_to_be_estimated,
-                                                      dataset,
-                                                    fix_eff,
-                                                    fix_eff_interact_vars,
-                                                    random_intercept_vars,
-                                                    nested_intercept_vars_pairs,
-                                                    cross_intercept_vars_pairs,
-                                                    uncorrel_slope_intercept_pairs,
-                                                    random_slope_intercept_pairs,
-                                                    family = NA, link = NA)
+    if (package_mixed_model == "nlme") {
+        expression_recreated <-
+          form_expression_mixed_model_lme4(param_to_be_estimated, dataset,
+                                           fix_eff, fix_eff_interact_vars,
+                                           random_intercept_vars,
+                                           nested_intercept_vars_pairs,
+                                           cross_intercept_vars_pairs,
+                                           uncorrel_slope_intercept_pairs,
+                                           random_slope_intercept_pairs,
+                                           family = NA, link = NA)
     }
   }
 
@@ -1071,13 +1076,13 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset,
 #'  }
 #' @export
 use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset,
-                                               fix_eff, fix_eff_interact_vars,
-                                               random_intercept_vars,
-                                               nested_intercept_vars_pairs,
-                                               cross_intercept_vars_pairs,
-                                               uncorrel_slope_intercept_pairs,
-                                               random_slope_intercept_pairs,
-                                               family, link, package_mixed_model) {
+                                          fix_eff, fix_eff_interact_vars,
+                                          random_intercept_vars,
+                                          nested_intercept_vars_pairs,
+                                          cross_intercept_vars_pairs,
+                                          uncorrel_slope_intercept_pairs,
+                                          random_slope_intercept_pairs,
+                                          family, link, package_mixed_model) {
   # regular checks to see the required parameters ar given
   check_list <- list(param_to_be_estimated, random_intercept_vars, family)
   checks <- sapply(check_list, check_null_na)

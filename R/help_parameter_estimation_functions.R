@@ -289,7 +289,7 @@ check_estimate_required_params <- function(the_expr, distr_key) {
       result <- structure(list(shape = this_shape, rate = this_rate))
       return(result)
     }else{
-      stop("Error - distribution is gamma while parameters are not mean and sd")
+      stop("Error - distribution is gamma, but parameters are not mean and sd")
     }
   } else {
     print("For the distributions other than gamma,the code is not equipped to
@@ -478,8 +478,7 @@ form_expression_glm <- function(param_to_be_estimated, indep_var, family,
   }
   if (length(covariates) == 0 | sum(is.na(covariates)) == length(covariates)) {
     # no need to check for interaction
-    fmla <- paste("glm(", param_to_be_estimated, " ~ ", indep_var, ", family = ", family_def, ", data = dataset, na.action =", naaction, ")", sep = ""
-    )
+    fmla <- paste("glm(", param_to_be_estimated, " ~ ", indep_var, ", family = ", family_def, ", data = dataset, na.action =", naaction, ")", sep = "")
     short_fmla <- paste(" ~ ", indep_var, sep = "")
   } else {
     expre <- paste(covariates[1], sep = "")
@@ -493,8 +492,7 @@ form_expression_glm <- function(param_to_be_estimated, indep_var, family,
       }
       i <- i + 1
     }
-    fmla <- paste("glm(", param_to_be_estimated, " ~ ", expre, " + ", indep_var, ", family = ", family_def, ", data = dataset, na.action = ", naaction, ")", sep = ""
-    )
+    fmla <- paste("glm(", param_to_be_estimated, " ~ ", expre, " + ", indep_var, ", family = ", family_def, ", data = dataset, na.action = ", naaction, ")", sep = "")
     short_fmla <- paste(" ~ ", expre, " + ", indep_var, sep = "")
   }
   expressions <- list(formula = fmla, short_formula = short_fmla)
@@ -618,7 +616,8 @@ check_link_glm <- function(family, link) {
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
 #' @param indep_var the independent variable (column name in data file)
-#' @param covariates list of covariates - calculations to be done before passing
+#' @param covariates list of covariates - calculations to be done before
+#' passing
 #' @param interaction boolean value to indicate interaction in the case
 #' of linear regression, false by default
 #' @return the results of the regression analysis
@@ -826,7 +825,8 @@ form_expression_lm <- function(param_to_be_estimated, indep_var, covariates,
 #' @param param_to_be_estimated  parameter of interest
 #' @param dataset data set to be provided
 #' @param indep_var the independent variable (column name in data file)
-#' @param covariates list of covariates - calculations to be done before passing
+#' @param covariates list of covariates - calculations to be done before
+#' passing
 #' @param interaction boolean value to indicate interaction in the case of
 #' linear regression, false by default
 #' @return the results of the regression analysis
@@ -1040,7 +1040,8 @@ get_slope_intercept_cross <- function(expression, random_intercept_vars,
       len_ran_eff <- length(random_intercept_vars)
       len_inte_pairs <- length(unlist(intercept_vars_pairs))
       if (len_ran_eff > len_inte_pairs) {
-        mem_checks <- !(random_intercept_vars %in% unlist(intercept_vars_pairs))
+        mem_checks <- !(random_intercept_vars %in%
+                          unlist(intercept_vars_pairs))
         notin_intercept <- random_intercept_vars[mem_checks]
         m <- 1
         for (m in seq_len(length(notin_intercept))) {

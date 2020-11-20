@@ -9,7 +9,8 @@
 #' @examples
 #' \donttest{
 #' data_for_survival <- survival::lung
-#' surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
+#' surv_estimated <- use_parametric_survival("status", data_for_survival,
+#' "sex",
 #' info_distribution = "weibull",covariates = c("ph.ecog"), "time")
 #' plot_return_residual_survival("status", "sex",
 #' covariates = c("ph.ecog"),surv_estimated$fit)
@@ -53,7 +54,7 @@ plot_return_residual_survival <- function(param_to_be_estimated, indep_var,
 
   graphics::par(mfrow = c(2, 3))
   for (i in seq_len(dim(residuals_matrix)[2])) {
-    main_name = paste("Matrix", colnames(residuals_matrix)[i], sep = ":")
+    main_name <- paste("Matrix", colnames(residuals_matrix)[i], sep = ":")
     plot(residuals_matrix[, i], type = "p", main = main_name, ylab =
            "Residuals", lwd = 2)
   }
@@ -92,7 +93,8 @@ plot_return_residual_survival <- function(param_to_be_estimated, indep_var,
 #' @examples
 #' \donttest{
 #' data_for_survival <- survival::lung
-#' surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
+#' surv_estimated <- use_parametric_survival("status", data_for_survival,
+#' "sex",
 #' info_distribution = "weibull",covariates = c("ph.ecog"),"time")
 #' plot_prediction_parametric_survival("status", "sex",
 #' covariates = c("ph.ecog"),data_for_survival, surv_estimated$fit, "time")
@@ -159,7 +161,8 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated,
       graphics::matplot(cbind(prediction_value$fit[m, ],
                               prediction_value$fit[m, ] +
                     2 * prediction_value$se.fit[m, ],
-                    prediction_value$fit[m, ] - 2 * prediction_value$se.fit[m, ]) / 30.5,
+                    prediction_value$fit[m, ] - 2 *
+                      prediction_value$se.fit[m, ]) / 30.5,
                     1 - pct, xlab = timevar_survival, ylab = "Survival",
                     type = "l",
                     lty = c(1, 2, 2), col = 3)
@@ -642,9 +645,11 @@ plot_survival_cox_covariates <- function(coxfit, dataset,
         graphics::plot(baseline_haz[, 2], exp(-baseline_haz[, 1]) ^ (exp_coef),
                        col = i, xaxt = "n", yaxt = "n", ann = FALSE)
       }
-      graphics::lines(baseline_haz[, 2], exp(-baseline_haz[, 1]) ^ (exp_coef_ci1),
+      graphics::lines(baseline_haz[, 2],
+                      exp(-baseline_haz[, 1]) ^ (exp_coef_ci1),
                       col = i, lty = 2)
-      graphics::lines(baseline_haz[, 2], exp(-baseline_haz[, 1]) ^ (exp_coef_ci2),
+      graphics::lines(baseline_haz[, 2],
+                      exp(-baseline_haz[, 1]) ^ (exp_coef_ci2),
                       col = i, lty = 2)
       graphics::par(new = TRUE)
     }
