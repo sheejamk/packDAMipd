@@ -13,6 +13,7 @@ License: GPL-3
 Depends:
     R (>= 3.6.0)
 Imports:
+    readxl,
     stringr,
     data.table,
     reshape2,

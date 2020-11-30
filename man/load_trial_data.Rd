@@ -4,10 +4,12 @@
 \alias{load_trial_data}
 \title{Function to load the file containing trial data and return it}
 \usage{
-load_trial_data(file = NULL)
+load_trial_data(file = NULL, sheet = NULL)
 }
 \arguments{
 \item{file, }{name of the file in full}
+
+\item{sheet}{name of the sheet if excel work book is given}
 }
 \value{
 trial data if success, else -1

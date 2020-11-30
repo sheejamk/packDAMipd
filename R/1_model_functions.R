@@ -152,7 +152,6 @@ combine_state <- function(...) {
 #' @details
 #' This is to check if the values are numeric during  the run time,
 #' else to throw an error
-
 check_values_states <- function(health_states) {
   no_states <- length(health_states)
   for (j in 1:no_states) {
@@ -301,7 +300,7 @@ define_transition_table <- function(tmat) {
       this_table <- data.table::data.table(trans_no, probability_names,
                                            from, names[from], to,
                                            names[which(!is.na(row_contents))])
-      names(this_table) <- c("transition number", "probabiliy name", "from",
+      names(this_table) <- c("transition number", "probability name", "from",
                              "from state", "to",
                              "to state")
       l <- list(trans_table, this_table)

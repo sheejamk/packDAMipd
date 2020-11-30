@@ -35,7 +35,8 @@ test_that("testing adding EQ5D5L values to the data", {
   expect_error(value_eq5d5L_IPD(trial_data, NA))
   # Error - data should not be NULL
   expect_error(value_eq5d5L_IPD(NULL, NA))
-  trialdatafile <- system.file("extdata", "trial_data_sampleEq5d.csv", package = "packDAMipd")
+  trialdatafile <- system.file("extdata", "trial_data_sampleEq5d.csv",
+                               package = "packDAMipd")
   trial_data <- read.csv(trialdatafile)
   results <- value_eq5d5L_IPD(trial_data, NA)
   expect_equal(results$EQ5D5LIndex[1], 0.535)
@@ -62,7 +63,8 @@ test_that("testing adding EQ5D3L values to the data", {
   expect_error(value_eq5d3L_IPD(trial_data, NA))
   # Error - data should not be NULL
   expect_error(value_eq5d3L_IPD(NULL, NA))
-  trialdatafile <- system.file("extdata", "trial_data_sampleEq5d3l.csv", package = "packDAMipd")
+  trialdatafile <- system.file("extdata", "trial_data_sampleEq5d3l.csv",
+                               package = "packDAMipd")
   trial_data <- read.csv(trialdatafile)
   results <- value_eq5d3L_IPD(trial_data, NA)
   expect_equal(results$EQ5D3LIndex[1], 0.014)

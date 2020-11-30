@@ -29,7 +29,8 @@ Plotting and return the residuals after survival model
 \examples{
 \donttest{
 data_for_survival <- survival::lung
-surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
+surv_estimated <- use_parametric_survival("status", data_for_survival,
+"sex",
 info_distribution = "weibull",covariates = c("ph.ecog"), "time")
 plot_return_residual_survival("status", "sex",
 covariates = c("ph.ecog"),surv_estimated$fit)

@@ -594,9 +594,9 @@ test_that("get parameter using generalised linear mixed model", {
                                                    NA,
                                                  cross_intercept_vars_pairs =
                                                    NA,
-                                                 uncorrel_slope_intercept_pairs =
+                                            uncorrel_slope_intercept_pairs =
                                                    NA,
-                                                 random_slope_intercept_pairs =
+                                            random_slope_intercept_pairs =
                                                    NA,
                                                  link = NA,
                                                  package_mixed_model = "lme4")
@@ -633,9 +633,9 @@ test_that("get parameter using generalised linear mixed model", {
                                                    NULL,
                                                  cross_intercept_vars_pairs =
                                                    NULL,
-                                                 uncorrel_slope_intercept_pairs =
+                                              uncorrel_slope_intercept_pairs =
                                                    NULL,
-                                                 random_slope_intercept_pairs =
+                                              random_slope_intercept_pairs =
                                                    NULL,
                                                  link = NA,
                                                  package_mixed_model = "nlme")

@@ -71,7 +71,8 @@ test_that("testing getting the timepoint details", {
                                                      "sex" = c("m", "f")))
   expect_equal(details$name, "time")
   expect_equal(details$codes, c(21, 15))
-  details <- get_timepoint_details(data.table::data.table("timepoint" = c(21, 15),
+  details <- get_timepoint_details(data.table::data.table("timepoint" =
+                                                            c(21, 15),
                                                       "sex" = c("m", "f")))
   expect_equal(details$name, "timepoint")
   expect_equal(details$codes, c(21, 15))

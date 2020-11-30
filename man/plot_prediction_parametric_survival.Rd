@@ -35,7 +35,8 @@ Plot the predicted survival curves for covariates keeping the others fixed
 \examples{
 \donttest{
 data_for_survival <- survival::lung
-surv_estimated <- use_parametric_survival("status", data_for_survival, "sex",
+surv_estimated <- use_parametric_survival("status", data_for_survival,
+"sex",
 info_distribution = "weibull",covariates = c("ph.ecog"),"time")
 plot_prediction_parametric_survival("status", "sex",
 covariates = c("ph.ecog"),data_for_survival, surv_estimated$fit, "time")

@@ -412,3 +412,4 @@ check_treatment_arm <- function(arm) {
     stop("Error specifying the treatment arm")
   }
 }
+#######################################################################

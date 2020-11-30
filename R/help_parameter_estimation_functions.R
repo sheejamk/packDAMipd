@@ -379,13 +379,14 @@ get_extension_file <- function(filename) {
 #######################################################################
 #' Function to load the file containing trial data and return it
 #' @param file, name of the file in full
+#' @param sheet name of the sheet if excel work book is given
 #' @return trial data if success, else -1
 #' @examples
 #' load_trial_data(system.file("extdata", "trial_data.csv",
 #'   package = "packDAMipd"
 #' ))
 #' @export
-load_trial_data <- function(file = NULL) {
+load_trial_data <- function(file = NULL, sheet = NULL) {
   # Load trial data from file input or stored in package
   if (!is.null(file)) {
     if (IPDFileCheck::test_file_exist_read(file) == 0) {
@@ -403,6 +404,13 @@ load_trial_data <- function(file = NULL) {
       }
       if (get_extension_file(file) == "dta") {
         df_trial_data <- foreign::read.dta(file = file)
+      }
+      if (get_extension_file(file) == "xls" |
+          get_extension_file(file) == "xlsx" ) {
+        if (is.null(sheet))
+          df_trial_data <- readxl::read_excel(file)
+        else
+          df_trial_data <- readxl::read_excel(file, sheet = sheet)
       }
     } else {
       stop("Error in reading given file")

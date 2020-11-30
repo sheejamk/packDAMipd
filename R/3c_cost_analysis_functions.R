@@ -642,7 +642,7 @@ microcosting_liquids <- function(ind_part_data,
 #' @export
 costing_resource_use <- function(ind_part_data,
                                  name_use_col,
-                                 each_length_num_use = NULL,
+                                 each_length_num_use,
                                  each_use_provider_indicator = NULL,
                                  unit_length_use = "day",
                                  unit_cost_data,
@@ -805,6 +805,270 @@ costing_resource_use <- function(ind_part_data,
       }
       ind_part_data[[new_col]][i] <- total_cost
     }
+  }
+  return(ind_part_data)
+}
+##############################################################################
+#' Function to extract the unit hospital inpatient admission by
+#' matching HRG code
+#' @param hrg the form of medication either tablet or patch
+#' @param ref_cost_data_file file that has unit cost
+#' @param col_name_hrg_code name of the column that has the hrg code
+#' @param unit_cost_col name of the colum with the unit cost
+#' @param sheet sheet if excel file is given
+#' @return unit cost the unit cost matching the hrg code
+#' @examples
+#' ref_cost_data_file <- system.file("extdata",
+#' "National_schedule_of_NHS_costs_2019.csv", package = "packDAMipd")
+#' get_cost_inpatient_hrg("AA22C", ref_cost_data_file, "Currency_Code",
+#' "National_Average_Unit_Cost")
+#' @export
+get_cost_inpatient_hrg <- function(hrg, ref_cost_data_file, col_name_hrg_code,
+                                   unit_cost_col, sheet = NULL){
+  check_list <- list(hrg, col_name_hrg_code, unit_cost_col)
+  checks <- sapply(check_list, check_null_na)
+  if (any(checks != 0)) {
+    stop("Error - the variables can not be NULL or NA")
+  }
+  if (is.null(ref_cost_data_file))
+    stop("Error - dataset can not be NULL")
+  if (is.character(ref_cost_data_file)) {
+    if (is.null(sheet))
+      ref_cost_data <- load_trial_data(ref_cost_data_file)
+    else
+      ref_cost_data <- load_trial_data(ref_cost_data_file, sheet)
+  } else {
+    ref_cost_data <- ref_cost_data_file
+  }
+  col_checks <- c(col_name_hrg_code, unit_cost_col)
+  results <- sapply(col_checks, IPDFileCheck::check_column_exists,
+                    ref_cost_data)
+  if (sum(results) == 0) {
+    colno <- IPDFileCheck::get_columnno_fornames(ref_cost_data,
+                                                 col_name_hrg_code)
+    cor_row <- ref_cost_data[ref_cost_data[[colno]] == hrg, ]
+    if (nrow(cor_row) < 1) {
+      stop("Error HRG code should match atleast to 1")
+    } else {
+      unit_cost_hrg <- sum(cor_row[[unit_cost_col]]) / nrow(cor_row)
+    }
+  }
+  return(unit_cost_hrg)
+
+}
+##############################################################################
+#' Function to extract the unit hospital inpatient admission by
+#' matching description
+#' @param description the form of medication either tablet or patch
+#' @param ref_cost_data_file file that has unit cost
+#' @param col_name_description name of the column that has the description
+#' @param unit_cost_col name of the column with the unit cost
+#' @param sheet sheet if excel file is given
+#' @return unit cost the unit cost matching the hrg code
+#' @export
+#' @examples
+#' ref_cost_data_file <- system.file("extdata",
+#' "National_schedule_of_NHS_costs_2019.csv", package = "packDAMipd")
+#' result <- get_cost_inpatient_description("Cerebrovascular Accident",
+#' ref_cost_data_file, "Currency_Description",
+#' "National_Average_Unit_Cost")
+get_cost_inpatient_description <- function(description, ref_cost_data_file,
+                                           col_name_description,
+                                           unit_cost_col, sheet = NULL){
+
+  check_list <- list(description, col_name_description, unit_cost_col)
+  checks <- sapply(check_list, check_null_na)
+  if (any(checks != 0)) {
+    stop("Error - description or column name not valid")
+  }
+  if (is.null(ref_cost_data_file))
+    stop("Error - dataset can not be NULL")
+  if (is.character(ref_cost_data_file)) {
+    if (is.null(sheet))
+      ref_cost_data <- load_trial_data(ref_cost_data_file)
+    else
+      ref_cost_data <- load_trial_data(ref_cost_data_file, sheet)
+  } else {
+    ref_cost_data <- ref_cost_data_file
+  }
+  col_checks <- c(col_name_description, unit_cost_col)
+  results <- sapply(col_checks, IPDFileCheck::check_column_exists,
+                    ref_cost_data)
+  if (sum(results) == 0) {
+    colno <- IPDFileCheck::get_columnno_fornames(ref_cost_data,
+                                                 col_name_description)
+    cor_row <- grep(description, ref_cost_data[[colno]])
+    the_rows <- ref_cost_data[cor_row, ]
+    if (nrow(the_rows) < 1) {
+      stop("Error description should match atleast to 1")
+    } else {
+      unit_cost <- sum(the_rows[[unit_cost_col]]) / nrow(the_rows)
+    }
+  }
+  return(unit_cost)
+}
+##############################################################################
+#' Function to estimate the cost of inpatient admission but taken from
+#' GP records where HRG code or description known
+#' @param ind_part_data IPD
+#' @param hrg_code_ip_admi column name of hrg code (for inpatient admission)
+#' @param descrip_ip_admi column name of description for inpatient admission
+#' @param number_use_ip_admi the number of days spent in each admission if that
+#' is a criteria to be included. Otherwise each admission will be costed
+#' @param unit_cost_data unit cost data file with hrg code/descriptions
+#' and unit costs are listed for inpatient admission
+#' @param hrg_code_col  hrg code column name in unit cost data
+#' @param description_col column name of description of inpatient admission in
+#' the unit cost data
+#' @param unit_cost_col column name of unit cost in unit_cost_data
+#' @param cost_calculated_in  name of unit where the cost is calculated
+#' assumed to be per admission
+#' @param sheet sheet where the unit costs are listed in the unit costs data
+#' file
+#' @return the calculated cost of inpatient admission long with original data
+#' @examples
+#' costs_file <- system.file("extdata",
+#'  "National_schedule_of_NHS_costs_2019.csv",
+#'  package = "packDAMipd")
+#'  datafile <- system.file("extdata", "resource_use_hc_ip.csv",
+#'  package = "packDAMipd")
+#'  ind_part_data <- packDAMipd::load_trial_data(datafile)
+#'  unit_cost_data <- packDAMipd::load_trial_data(costs_file)
+#'  result <- costing_inpatient_admission(ind_part_data,
+#'  hrg_code_ip_admi = "HRGcode", descrip_ip_admi = NULL,
+#'  number_use_ip_admi = "number_use", unit_cost_data,
+#'  hrg_code_col = "Currency_Code", description_col = NULL,
+#'  unit_cost_col ="National_Average_Unit_Cost",
+#'  cost_calculated_in = "admission")
+#' @export
+costing_inpatient_admission <- function(ind_part_data,
+                                        hrg_code_ip_admi,
+                                        descrip_ip_admi,
+                                        number_use_ip_admi,
+                                        unit_cost_data,
+                                        hrg_code_col,
+                                        description_col,
+                                        unit_cost_col,
+                                        cost_calculated_in = "admission",
+                                        sheet = NULL) {
+  check_list <- list(unit_cost_col, cost_calculated_in)
+  res <- sapply(check_list, check_null_na)
+  if (sum(res) != 0)
+    stop("Error - should have valid entries for unit cost and cost unit")
+  # Error - data should not be NULL
+  if (is.null(ind_part_data) | is.null(unit_cost_data))
+    stop("data should not be NULL")
+  check1 <- sum(is.null(hrg_code_ip_admi))
+  check2 <- sum(is.null(descrip_ip_admi))
+  if (check1 != 0 & check2 != 0)
+    stop("both hrg code and description can not be NULL")
+  if (check1 != 0) {
+    info_list <- c(descrip_ip_admi)
+  } else {
+      info_list <- c(hrg_code_ip_admi)
+  }
+  # check columns exist in individual data
+  checks <- sum(sapply(info_list, IPDFileCheck::check_column_exists,
+                       ind_part_data))
+  if (checks != 0)
+     cols_ip_data <- grep(info_list, colnames(ind_part_data))
+  if (sum(cols_ip_data) == 0) {
+    stop("Any one of the required columns can not be found in IPD")
+  }
+  if (is.null(hrg_code_col) & is.null(description_col))
+    stop("both hrg code and description can not be NULL")
+  if (is.null(hrg_code_col) & check1 == 0) {
+    info <- c(description_col)
+  } else {
+    info <- c(hrg_code_col)
+  }
+  use_col <- sum(is.null(number_use_ip_admi))
+  if (sum(use_col) == 0) {
+    checks <- sapply(number_use_ip_admi, IPDFileCheck::check_column_exists,
+                     ind_part_data)
+    if (sum(checks) != 0) {
+      cols_use_ip_data <- grep(number_use_ip_admi, colnames(ind_part_data))
+      if (sum(cols_use_ip_data) == 0)
+          stop("Columns on number of admissions can not be found in ip data")
+    }
+  }
+  # check columns exist in unit cost data
+  info_list <- c(info, unit_cost_col)
+  checks <- sapply(info_list, IPDFileCheck::check_column_exists,
+                   unit_cost_data)
+  if (sum(checks) != 0) {
+    stop("Any one of the required columns can not be found in unit cost data")
+  }
+  if ( cost_calculated_in != "admission")
+    stop("Error- cost should be calculated per admission")
+  # initialising the result columns
+  column_names <- colnames(ind_part_data)
+  new_col <- paste("totcost_ip_admission", sep = "")
+  if (is.na(match(new_col, column_names))) {
+    ind_part_data[[new_col]] <- NA
+  }
+  for (i in 1:nrow(ind_part_data)) {
+    if (check1 == 0) {
+      if (is.null(hrg_code_col))
+        stop("Error - hrg code shouldnt be null in cost data")
+      hrg_codes <- unlist(unname(ind_part_data[i, cols_ip_data]))
+      hrg_codes <- hrg_codes[hrg_codes != "" & !is.na(hrg_codes)]
+      unit_costs_hrg <- sapply(hrg_codes, get_cost_inpatient_hrg,
+                               unit_cost_data, hrg_code_col,
+             unit_cost_col, sheet)
+
+      if (sum(use_col) == 0) {
+        numbers_use <- unlist(unname(ind_part_data[i, cols_use_ip_data]))
+        numbers_use <- numbers_use[numbers_use != "" & !is.na(numbers_use)]
+        len_num_use <- length(numbers_use)
+        len_cost_des <- length(unit_costs_hrg)
+         if (len_num_use > len_cost_des) {
+            stop("Number of admissions and unit costs extracted are different")
+
+          } else {
+            if (len_num_use < len_cost_des) {
+              needed <- len_cost_des - len_num_use
+              start <- len_num_use + 1
+              end <- len_num_use + needed
+              numbers_use[start:end] <- 1
+            }
+        }
+        unit_cost_ip_adm <- sum(numbers_use * unit_costs_hrg)
+      }else {
+        unit_cost_ip_adm <- sum(unit_costs_hrg)
+
+      }
+    } else {
+      if (is.null(description_col))
+        stop("Error - description col shouldnt be null in cost data")
+      descriptions <- unlist(unname(ind_part_data[i, cols_ip_data]))
+      descriptions <- descriptions[descriptions != ""]
+      unit_costs_descriptions <- sapply(descriptions,
+                                        get_cost_inpatient_description,
+                               unit_cost_data, description_col,
+                               unit_cost_col, sheet)
+      if (sum(use_col) == 0) {
+        numbers_use <- unlist(unname(ind_part_data[i, cols_use_ip_data]))
+        numbers_use <- numbers_use[numbers_use != "" & !is.na(numbers_use)]
+        len_num_use <- length(numbers_use)
+        len_cost_des <- length(unit_costs_descriptions)
+        if (len_num_use > len_cost_des) {
+            stop("Number of admissions and unit costs extracted are different")
+
+        } else {
+          if (len_num_use < len_cost_des) {
+            needed <- len_cost_des - len_num_use
+            start <- len_num_use + 1
+            end <- len_num_use + needed
+            numbers_use[start:end] <- 1
+          }
+        }
+        unit_cost_ip_adm <- sum(numbers_use * unit_costs_descriptions)
+      } else{
+         unit_cost_ip_adm <- sum(unit_costs_descriptions)
+      }
+    }
+    ind_part_data[[new_col]][i] <- unit_cost_ip_adm
   }
   return(ind_part_data)
 }
