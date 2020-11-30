@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot the predicted survival curves for covariates keeping the others fixed — plot_prediction_parametric_survival • packDAMipd</title>
+<title>Function to extract the unit hospital inpatient admission by
+matching HRG code — get_cost_inpatient_hrg • packDAMipd</title>
 
 
 <!-- jquery -->
@@ -39,8 +40,10 @@
 
 
 
-<meta property="og:title" content="Plot the predicted survival curves for covariates keeping the others fixed — plot_prediction_parametric_survival" />
-<meta property="og:description" content="Plot the predicted survival curves for covariates keeping the others fixed" />
+<meta property="og:title" content="Function to extract the unit hospital inpatient admission by
+matching HRG code — get_cost_inpatient_hrg" />
+<meta property="og:description" content="Function to extract the unit hospital inpatient admission by
+matching HRG code" />
 
 
 
@@ -132,68 +135,60 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot the predicted survival curves for covariates keeping the others fixed</h1>
-    <small class="dont-index">Source: <a href='https://github.com/sheejamk/packDAMipd/blob/master/R/help_parameter_estimation_survival.R'><code>R/help_parameter_estimation_survival.R</code></a></small>
-    <div class="hidden name"><code>plot_prediction_parametric_survival.Rd</code></div>
+    <h1>Function to extract the unit hospital inpatient admission by
+matching HRG code</h1>
+    <small class="dont-index">Source: <a href='https://github.com/sheejamk/packDAMipd/blob/master/R/3c_cost_analysis_functions.R'><code>R/3c_cost_analysis_functions.R</code></a></small>
+    <div class="hidden name"><code>get_cost_inpatient_hrg.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot the predicted survival curves for covariates keeping the others fixed</p>
+    <p>Function to extract the unit hospital inpatient admission by
+matching HRG code</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plot_prediction_parametric_survival</span><span class='op'>(</span>
-  <span class='va'>param_to_be_estimated</span>,
-  <span class='va'>indep_var</span>,
-  <span class='va'>covariates</span>,
-  <span class='va'>dataset</span>,
-  <span class='va'>fit</span>,
-  <span class='va'>timevar_survival</span>
+    <pre class="usage"><span class='fu'>get_cost_inpatient_hrg</span><span class='op'>(</span>
+  <span class='va'>hrg</span>,
+  <span class='va'>ref_cost_data_file</span>,
+  <span class='va'>col_name_hrg_code</span>,
+  <span class='va'>unit_cost_col</span>,
+  sheet <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>param_to_be_estimated</th>
-      <td><p>parameter to be estimated</p></td>
+      <th>hrg</th>
+      <td><p>the form of medication either tablet or patch</p></td>
     </tr>
     <tr>
-      <th>indep_var</th>
-      <td><p>variable for which the levels have to be identified</p></td>
+      <th>ref_cost_data_file</th>
+      <td><p>file that has unit cost</p></td>
     </tr>
     <tr>
-      <th>covariates</th>
-      <td><p>the  covariates</p></td>
+      <th>col_name_hrg_code</th>
+      <td><p>name of the column that has the hrg code</p></td>
     </tr>
     <tr>
-      <th>dataset</th>
-      <td><p>the dataset where these variables contain</p></td>
+      <th>unit_cost_col</th>
+      <td><p>name of the colum with the unit cost</p></td>
     </tr>
     <tr>
-      <th>fit</th>
-      <td><p>the fit result survreg</p></td>
-    </tr>
-    <tr>
-      <th>timevar_survival</th>
-      <td><p>time variable from the dataset</p></td>
+      <th>sheet</th>
+      <td><p>sheet if excel file is given</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>plot</p>
+    <p>unit cost the unit cost matching the hrg code</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='va'>data_for_survival</span> <span class='op'>&lt;-</span> <span class='fu'>survival</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/survival/man/lung.html'>lung</a></span>
-<span class='va'>surv_estimated</span> <span class='op'>&lt;-</span> <span class='fu'><a href='use_parametric_survival.html'>use_parametric_survival</a></span><span class='op'>(</span><span class='st'>"status"</span>, <span class='va'>data_for_survival</span>,
-<span class='st'>"sex"</span>,
-info_distribution <span class='op'>=</span> <span class='st'>"weibull"</span>,covariates <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ph.ecog"</span><span class='op'>)</span>,<span class='st'>"time"</span><span class='op'>)</span>
-<span class='fu'>plot_prediction_parametric_survival</span><span class='op'>(</span><span class='st'>"status"</span>, <span class='st'>"sex"</span>,
-covariates <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ph.ecog"</span><span class='op'>)</span>,<span class='va'>data_for_survival</span>, <span class='va'>surv_estimated</span><span class='op'>$</span><span class='va'>fit</span>, <span class='st'>"time"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; agg_png 
-#&gt;       2 </div><div class='input'><span class='co'># }</span>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>ref_cost_data_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>,
+<span class='st'>"National_schedule_of_NHS_costs_2019.csv"</span>, package <span class='op'>=</span> <span class='st'>"packDAMipd"</span><span class='op'>)</span>
+<span class='fu'>get_cost_inpatient_hrg</span><span class='op'>(</span><span class='st'>"AA22C"</span>, <span class='va'>ref_cost_data_file</span>, <span class='st'>"Currency_Code"</span>,
+<span class='st'>"National_Average_Unit_Cost"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 5053</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

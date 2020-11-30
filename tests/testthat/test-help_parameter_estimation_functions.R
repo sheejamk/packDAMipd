@@ -152,8 +152,6 @@ test_that("loading a datafile", {
   expect_equal(df$Currency_Code[1], "AA22C")
 
   df <- load_trial_data(ref_cost_data_file)
-
-
 })
 ###############################################################################
 test_that("making a string of covariates", {

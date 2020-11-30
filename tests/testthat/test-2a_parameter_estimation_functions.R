@@ -684,9 +684,7 @@ test_that("get parameter using generalised linear mixed model", {
 })
 
 ###############################################################################
-
 test_that("Bivaraite regression for correlated values", {
-
   datafile <- system.file("extdata", "hsb2.dta", package = "packDAMipd")
   mydata <- foreign::read.dta(datafile)
   results_sureg <- use_seemingly_unrelated_regression("read", "math",

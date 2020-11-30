@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot the predicted survival curves for covariates keeping the others fixed — plot_prediction_parametric_survival • packDAMipd</title>
+<title>Function to estimate the cost of inpatient admission but taken from
+GP records where HRG code or description known — costing_inpatient_admission • packDAMipd</title>
 
 
 <!-- jquery -->
@@ -39,8 +40,10 @@
 
 
 
-<meta property="og:title" content="Plot the predicted survival curves for covariates keeping the others fixed — plot_prediction_parametric_survival" />
-<meta property="og:description" content="Plot the predicted survival curves for covariates keeping the others fixed" />
+<meta property="og:title" content="Function to estimate the cost of inpatient admission but taken from
+GP records where HRG code or description known — costing_inpatient_admission" />
+<meta property="og:description" content="Function to estimate the cost of inpatient admission but taken from
+GP records where HRG code or description known" />
 
 
 
@@ -132,67 +135,98 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot the predicted survival curves for covariates keeping the others fixed</h1>
-    <small class="dont-index">Source: <a href='https://github.com/sheejamk/packDAMipd/blob/master/R/help_parameter_estimation_survival.R'><code>R/help_parameter_estimation_survival.R</code></a></small>
-    <div class="hidden name"><code>plot_prediction_parametric_survival.Rd</code></div>
+    <h1>Function to estimate the cost of inpatient admission but taken from
+GP records where HRG code or description known</h1>
+    <small class="dont-index">Source: <a href='https://github.com/sheejamk/packDAMipd/blob/master/R/3c_cost_analysis_functions.R'><code>R/3c_cost_analysis_functions.R</code></a></small>
+    <div class="hidden name"><code>costing_inpatient_admission.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot the predicted survival curves for covariates keeping the others fixed</p>
+    <p>Function to estimate the cost of inpatient admission but taken from
+GP records where HRG code or description known</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plot_prediction_parametric_survival</span><span class='op'>(</span>
-  <span class='va'>param_to_be_estimated</span>,
-  <span class='va'>indep_var</span>,
-  <span class='va'>covariates</span>,
-  <span class='va'>dataset</span>,
-  <span class='va'>fit</span>,
-  <span class='va'>timevar_survival</span>
+    <pre class="usage"><span class='fu'>costing_inpatient_admission</span><span class='op'>(</span>
+  <span class='va'>ind_part_data</span>,
+  <span class='va'>hrg_code_ip_admi</span>,
+  <span class='va'>descrip_ip_admi</span>,
+  <span class='va'>number_use_ip_admi</span>,
+  <span class='va'>unit_cost_data</span>,
+  <span class='va'>hrg_code_col</span>,
+  <span class='va'>description_col</span>,
+  <span class='va'>unit_cost_col</span>,
+  cost_calculated_in <span class='op'>=</span> <span class='st'>"admission"</span>,
+  sheet <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>param_to_be_estimated</th>
-      <td><p>parameter to be estimated</p></td>
+      <th>ind_part_data</th>
+      <td><p>IPD</p></td>
     </tr>
     <tr>
-      <th>indep_var</th>
-      <td><p>variable for which the levels have to be identified</p></td>
+      <th>hrg_code_ip_admi</th>
+      <td><p>column name of hrg code (for inpatient admission)</p></td>
     </tr>
     <tr>
-      <th>covariates</th>
-      <td><p>the  covariates</p></td>
+      <th>descrip_ip_admi</th>
+      <td><p>column name of description for inpatient admission</p></td>
     </tr>
     <tr>
-      <th>dataset</th>
-      <td><p>the dataset where these variables contain</p></td>
+      <th>number_use_ip_admi</th>
+      <td><p>the number of days spent in each admission if that
+is a criteria to be included. Otherwise each admission will be costed</p></td>
     </tr>
     <tr>
-      <th>fit</th>
-      <td><p>the fit result survreg</p></td>
+      <th>unit_cost_data</th>
+      <td><p>unit cost data file with hrg code/descriptions
+and unit costs are listed for inpatient admission</p></td>
     </tr>
     <tr>
-      <th>timevar_survival</th>
-      <td><p>time variable from the dataset</p></td>
+      <th>hrg_code_col</th>
+      <td><p>hrg code column name in unit cost data</p></td>
+    </tr>
+    <tr>
+      <th>description_col</th>
+      <td><p>column name of description of inpatient admission in
+the unit cost data</p></td>
+    </tr>
+    <tr>
+      <th>unit_cost_col</th>
+      <td><p>column name of unit cost in unit_cost_data</p></td>
+    </tr>
+    <tr>
+      <th>cost_calculated_in</th>
+      <td><p>name of unit where the cost is calculated
+assumed to be per admission</p></td>
+    </tr>
+    <tr>
+      <th>sheet</th>
+      <td><p>sheet where the unit costs are listed in the unit costs data
+file</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>plot</p>
+    <p>the calculated cost of inpatient admission long with original data</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='va'>data_for_survival</span> <span class='op'>&lt;-</span> <span class='fu'>survival</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/survival/man/lung.html'>lung</a></span>
-<span class='va'>surv_estimated</span> <span class='op'>&lt;-</span> <span class='fu'><a href='use_parametric_survival.html'>use_parametric_survival</a></span><span class='op'>(</span><span class='st'>"status"</span>, <span class='va'>data_for_survival</span>,
-<span class='st'>"sex"</span>,
-info_distribution <span class='op'>=</span> <span class='st'>"weibull"</span>,covariates <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ph.ecog"</span><span class='op'>)</span>,<span class='st'>"time"</span><span class='op'>)</span>
-<span class='fu'>plot_prediction_parametric_survival</span><span class='op'>(</span><span class='st'>"status"</span>, <span class='st'>"sex"</span>,
-covariates <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ph.ecog"</span><span class='op'>)</span>,<span class='va'>data_for_survival</span>, <span class='va'>surv_estimated</span><span class='op'>$</span><span class='va'>fit</span>, <span class='st'>"time"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; agg_png 
-#&gt;       2 </div><div class='input'><span class='co'># }</span>
+    <pre class="examples"><div class='input'><span class='va'>costs_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>,
+ <span class='st'>"National_schedule_of_NHS_costs_2019.csv"</span>,
+ package <span class='op'>=</span> <span class='st'>"packDAMipd"</span><span class='op'>)</span>
+ <span class='va'>datafile</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"resource_use_hc_ip.csv"</span>,
+ package <span class='op'>=</span> <span class='st'>"packDAMipd"</span><span class='op'>)</span>
+ <span class='va'>ind_part_data</span> <span class='op'>&lt;-</span> <span class='fu'>packDAMipd</span><span class='fu'>::</span><span class='fu'><a href='load_trial_data.html'>load_trial_data</a></span><span class='op'>(</span><span class='va'>datafile</span><span class='op'>)</span>
+ <span class='va'>unit_cost_data</span> <span class='op'>&lt;-</span> <span class='fu'>packDAMipd</span><span class='fu'>::</span><span class='fu'><a href='load_trial_data.html'>load_trial_data</a></span><span class='op'>(</span><span class='va'>costs_file</span><span class='op'>)</span>
+ <span class='va'>result</span> <span class='op'>&lt;-</span> <span class='fu'>costing_inpatient_admission</span><span class='op'>(</span><span class='va'>ind_part_data</span>,
+ hrg_code_ip_admi <span class='op'>=</span> <span class='st'>"HRGcode"</span>, descrip_ip_admi <span class='op'>=</span> <span class='cn'>NULL</span>,
+ number_use_ip_admi <span class='op'>=</span> <span class='st'>"number_use"</span>, <span class='va'>unit_cost_data</span>,
+ hrg_code_col <span class='op'>=</span> <span class='st'>"Currency_Code"</span>, description_col <span class='op'>=</span> <span class='cn'>NULL</span>,
+ unit_cost_col <span class='op'>=</span><span class='st'>"National_Average_Unit_Cost"</span>,
+ cost_calculated_in <span class='op'>=</span> <span class='st'>"admission"</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
