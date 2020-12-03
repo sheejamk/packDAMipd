@@ -10,12 +10,12 @@ costing_inpatient_daycase_admission(
   hrg_code_ip_admi,
   descrip_ip_admi,
   number_use_ip_admi,
+  elective_col,
   unit_cost_data,
   hrg_code_col,
   description_col,
   unit_cost_col,
-  cost_calculated_in = "admission",
-  sheet = NULL
+  cost_calculated_in = "admission"
 )
 }
 \arguments{
@@ -27,6 +27,9 @@ costing_inpatient_daycase_admission(
 
 \item{number_use_ip_admi}{the number of days spent in each admission if that
 is a criteria to be included. Otherwise each admission will be costed}
+
+\item{elective_col}{colname to say whether it is an elective admission or
+non elective admission}
 
 \item{unit_cost_data}{unit cost data file with hrg code/descriptions
 and unit costs are listed for inpatient admission}
@@ -40,9 +43,6 @@ the unit cost data}
 
 \item{cost_calculated_in}{name of unit where the cost is calculated
 assumed to be per admission}
-
-\item{sheet}{sheet where the unit costs are listed in the unit costs data
-file}
 }
 \value{
 the calculated cost of inpatient admission long with original data
@@ -61,8 +61,8 @@ costs_file <- system.file("extdata",
  unit_cost_data <- packDAMipd::load_trial_data(costs_file)
  result <- costing_inpatient_daycase_admission(ind_part_data,
  hrg_code_ip_admi = "HRGcode", descrip_ip_admi = NULL,
- number_use_ip_admi = "number_use", unit_cost_data,
- hrg_code_col = "Currency_Code", description_col = NULL,
+number_use_ip_admi = "number_use", elective_col = "EL",
+unit_cost_data, hrg_code_col = "Currency_Code", description_col = NULL,
  unit_cost_col ="National_Average_Unit_Cost",
  cost_calculated_in = "admission")
 }
