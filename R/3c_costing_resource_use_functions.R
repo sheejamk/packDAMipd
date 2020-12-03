@@ -225,10 +225,10 @@ costing_resource_use <- function(ind_part_data,
 #' @examples
 #' ref_cost_data_file <- system.file("extdata",
 #' "National_schedule_of_NHS_costs_2019.csv", package = "packDAMipd")
-#' get_cost_inpatient_hrg("AA22C", ref_cost_data_file, "Currency_Code",
+#' get_cost_ip_dc_hrg("AA22C", ref_cost_data_file, "Currency_Code",
 #' "National_Average_Unit_Cost")
 #' @export
-get_cost_inpatient_hrg <- function(hrg, ref_cost_data_file, col_name_hrg_code,
+get_cost_ip_dc_hrg <- function(hrg, ref_cost_data_file, col_name_hrg_code,
                                    unit_cost_col, sheet = NULL) {
   check_list <- list(hrg, col_name_hrg_code, unit_cost_col)
   checks <- sapply(check_list, check_null_na)
@@ -274,10 +274,10 @@ get_cost_inpatient_hrg <- function(hrg, ref_cost_data_file, col_name_hrg_code,
 #' @examples
 #' ref_cost_data_file <- system.file("extdata",
 #' "National_schedule_of_NHS_costs_2019.csv", package = "packDAMipd")
-#' result <- get_cost_inpatient_description("Cerebrovascular Accident",
+#' result <- get_cost_ip_dc_description("Cerebrovascular Accident",
 #' ref_cost_data_file, "Currency_Description",
 #' "National_Average_Unit_Cost")
-get_cost_inpatient_description <- function(description, ref_cost_data_file,
+get_cost_ip_dc_description <- function(description, ref_cost_data_file,
                                            col_name_description,
                                            unit_cost_col, sheet = NULL) {
 
@@ -339,14 +339,14 @@ get_cost_inpatient_description <- function(description, ref_cost_data_file,
 #'  package = "packDAMipd")
 #'  ind_part_data <- packDAMipd::load_trial_data(datafile)
 #'  unit_cost_data <- packDAMipd::load_trial_data(costs_file)
-#'  result <- costing_inpatient_admission(ind_part_data,
+#'  result <- costing_inpatient_daycase_admission(ind_part_data,
 #'  hrg_code_ip_admi = "HRGcode", descrip_ip_admi = NULL,
 #'  number_use_ip_admi = "number_use", unit_cost_data,
 #'  hrg_code_col = "Currency_Code", description_col = NULL,
 #'  unit_cost_col ="National_Average_Unit_Cost",
 #'  cost_calculated_in = "admission")
 #' @export
-costing_inpatient_admission <- function(ind_part_data,
+costing_inpatient_daycase_admission <- function(ind_part_data,
                                         hrg_code_ip_admi,
                                         descrip_ip_admi,
                                         number_use_ip_admi,
@@ -418,7 +418,7 @@ costing_inpatient_admission <- function(ind_part_data,
         stop("Error - hrg code shouldnt be null in cost data")
       hrg_codes <- unlist(unname(ind_part_data[i, cols_ip_data]))
       hrg_codes <- hrg_codes[hrg_codes != "" & !is.na(hrg_codes)]
-      unit_costs_hrg <- sapply(hrg_codes, get_cost_inpatient_hrg,
+      unit_costs_hrg <- sapply(hrg_codes, get_cost_ip_dc_hrg,
                                unit_cost_data, hrg_code_col,
                                unit_cost_col, sheet)
 
@@ -449,7 +449,7 @@ costing_inpatient_admission <- function(ind_part_data,
       descriptions <- unlist(unname(ind_part_data[i, cols_ip_data]))
       descriptions <- descriptions[descriptions != ""]
       unit_costs_descriptions <- sapply(descriptions,
-                                        get_cost_inpatient_description,
+                                        get_cost_ip_dc_description,
                                         unit_cost_data, description_col,
                                         unit_cost_col, sheet)
       if (sum(use_col) == 0) {

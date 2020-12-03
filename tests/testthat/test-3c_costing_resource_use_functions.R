@@ -231,25 +231,25 @@ test_that("testing extracting unit cost matching hrg code", {
   ref_cost_data_file <- system.file("extdata",
                                     "National_schedule_of_NHS_costs_2019.csv",
                                     package = "packDAMipd")
-  result <- get_cost_inpatient_hrg("AA22C", ref_cost_data_file, "Currency_Code",
+  result <- get_cost_ip_dc_hrg("AA22C", ref_cost_data_file, "Currency_Code",
                                    "National_Average_Unit_Cost")
 
   expect_equal(result, 5053, tol = 1e-1)
-  expect_error(get_cost_inpatient_hrg(NULL, ref_cost_data_file,
+  expect_error(get_cost_ip_dc_hrg(NULL, ref_cost_data_file,
                                       "Currency_Code",
                                       "National_Average_Unit_Cost", "EL"))
-  expect_error(get_cost_inpatient_hrg("AA22C", NULL, "Currency_Code",
+  expect_error(get_cost_ip_dc_hrg("AA22C", NULL, "Currency_Code",
                                       "National_Average_Unit_Cost", "EL"))
-  expect_error(get_cost_inpatient_hrg("AA22C", ref_cost_data_file, NULL,
+  expect_error(get_cost_ip_dc_hrg("AA22C", ref_cost_data_file, NULL,
                                       "National_Average_Unit_Cost", "EL"))
-  expect_error(get_cost_inpatient_hrg("AA22C", ref_cost_data_file,
+  expect_error(get_cost_ip_dc_hrg("AA22C", ref_cost_data_file,
                                       "Currency_Code",
                                       NULL, "EL"))
-  get_cost_inpatient_hrg("AA22C", ref_cost_data_file,
+  result <- get_cost_ip_dc_hrg("AA22C", ref_cost_data_file,
                          "Currency_Code",
                          "National_Average_Unit_Cost", NULL)
   expect_equal(result, 5053, tol = 1e-1)
-  expect_error(get_cost_inpatient_hrg("AA", ref_cost_data_file,
+  expect_error(get_cost_ip_dc_hrg("AA", ref_cost_data_file,
                                       "Currency_Code",
                                       "National_Average_Unit_Cost", "EL"))
 
@@ -260,32 +260,33 @@ test_that("testing extracting unit cost matching description", {
   ref_cost_data_file <- system.file("extdata",
                                     "National_schedule_of_NHS_costs_2019.csv",
                                     package = "packDAMipd")
-  result <- get_cost_inpatient_description("Cerebrovascular Accident",
+  result <- get_cost_ip_dc_description("Cerebrovascular Accident",
                                            ref_cost_data_file,
                                            "Currency_Description",
                                            "National_Average_Unit_Cost", "EL")
   expect_equal(result, 3530, tol = 1e-1)
-  expect_error(get_cost_inpatient_description(NULL, ref_cost_data_file,
+  expect_error(get_cost_ip_dc_description(NULL, ref_cost_data_file,
                                               "Currency_Description",
                                               "National_Average_Unit_Cost",
                                               "EL"))
-  expect_error(get_cost_inpatient_description("Cerebrovascular Accident", NULL,
+  expect_error(get_cost_ip_dc_description("Cerebrovascular Accident", NULL,
                                               "Currency_Description",
                                               "National_Average_Unit_Cost",
                                               "EL"))
-  expect_error(get_cost_inpatient_description("Cerebrovascular Accident",
+  expect_error(get_cost_ip_dc_description("Cerebrovascular Accident",
                                               ref_cost_data_file, NULL,
                                               "National_Average_Unit_Cost",
                                               "EL"))
-  expect_error(get_cost_inpatient_description("Cerebrovascular Accident",
+  expect_error(get_cost_ip_dc_description("Cerebrovascular Accident",
                                               ref_cost_data_file,
                                               "Currency_Description",
                                               NULL, "EL"))
-  get_cost_inpatient_description("Cerebrovascular Accident",
+  result <- get_cost_ip_dc_description("Cerebrovascular Accident",
                                  ref_cost_data_file,
                                  "Currency_Description",
                                  "National_Average_Unit_Cost", NULL)
-  expect_error(get_cost_inpatient_description("hello",
+  expect_equal(result, 3530, tol = 1e-1)
+  expect_error(get_cost_ip_dc_description("hello",
                                               ref_cost_data_file,
                                               "Currency_Description",
                                               "National_Average_Unit_Cost",
@@ -302,7 +303,7 @@ test_that("testing costing inpatient admission", {
 
   ind_part_data <- packDAMipd::load_trial_data(datafile)
   unit_cost_data <- packDAMipd::load_trial_data(costs_file, sheet = "EL")
-  result <- costing_inpatient_admission(ind_part_data,
+  result <- costing_inpatient_daycase_admission(ind_part_data,
                                         hrg_code_ip_admi = "HRGcode",
                                         descrip_ip_admi = NULL,
                                         number_use_ip_admi = "number_use",
@@ -315,7 +316,7 @@ test_that("testing costing inpatient admission", {
                                         sheet = NULL)
   expect_equal(result$totcost_ip_admission[1], 5052.78, tol = 1e-2)
 
-  expect_error(costing_inpatient_admission(NULL, hrg_code_ip_admi = "HRGcode",
+  expect_error(costing_inpatient_daycase_admission(NULL, hrg_code_ip_admi = "HRGcode",
                                            descrip_ip_admi = NULL,
                                            number_use_ip_admi = "number_use",
                                            unit_cost_data,
@@ -326,7 +327,7 @@ test_that("testing costing inpatient admission", {
                                            cost_calculated_in = "admission",
                                            sheet = NULL))
 
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = NULL,
                                            descrip_ip_admi = NULL,
                                            number_use_ip_admi = "number_use",
@@ -338,7 +339,7 @@ test_that("testing costing inpatient admission", {
                                            cost_calculated_in = "admission",
                                            sheet = NULL))
 
-  result <- costing_inpatient_admission(ind_part_data,
+  result <- costing_inpatient_daycase_admission(ind_part_data,
                                         hrg_code_ip_admi = "HRGcode",
                                         descrip_ip_admi = NULL,
                                         number_use_ip_admi = NULL,
@@ -351,7 +352,7 @@ test_that("testing costing inpatient admission", {
                                         sheet = NULL)
   expect_equal(result$totcost_ip_admission[1], 5052.78, tol = 1e-2)
 
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = "HRGcode",
                                            descrip_ip_admi = NULL,
                                            number_use_ip_admi = "number_use",
@@ -362,7 +363,7 @@ test_that("testing costing inpatient admission", {
                                              "National_Average_Unit_Cost",
                                            cost_calculated_in = "admission",
                                            sheet = NULL))
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = "HRGcode",
                                            descrip_ip_admi = NULL,
                                            number_use_ip_admi = "number_use",
@@ -375,7 +376,7 @@ test_that("testing costing inpatient admission", {
                                            sheet = NULL))
 
 
-  result <- costing_inpatient_admission(ind_part_data,
+  result <- costing_inpatient_daycase_admission(ind_part_data,
                                         hrg_code_ip_admi = "HRGcode",
                                         descrip_ip_admi = NULL,
                                         number_use_ip_admi = "number_use",
@@ -388,7 +389,7 @@ test_that("testing costing inpatient admission", {
                                         sheet = NULL)
   expect_equal(result$totcost_ip_admission[1], 5052.78, tol = 1e-2)
 
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = "HRGcode",
                                            descrip_ip_admi = NULL,
                                            number_use_ip_admi = "number_use",
@@ -398,7 +399,7 @@ test_that("testing costing inpatient admission", {
                                            unit_cost_col = NULL,
                                            cost_calculated_in = "admission",
                                            sheet = NULL))
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = "HRGcode",
                                            descrip_ip_admi = NULL,
                                            number_use_ip_admi = "number_use",
@@ -409,7 +410,7 @@ test_that("testing costing inpatient admission", {
                                              "National_Average_Unit_Cost",
                                            cost_calculated_in = NULL,
                                            sheet = NULL))
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = "HRGcode",
                                            descrip_ip_admi = NULL,
                                            number_use_ip_admi = "number_use",
@@ -421,7 +422,7 @@ test_that("testing costing inpatient admission", {
                                            cost_calculated_in = "ad",
                                            sheet = NULL))
 
-  result <- costing_inpatient_admission(ind_part_data,
+  result <- costing_inpatient_daycase_admission(ind_part_data,
                                         hrg_code_ip_admi = NULL,
                                         descrip_ip_admi = "Description",
                                         number_use_ip_admi = "number_use",
@@ -438,7 +439,7 @@ test_that("testing costing inpatient admission", {
                           package = "packDAMipd")
 
   ind_part_data <- packDAMipd::load_trial_data(datafile)
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = NULL,
                                            descrip_ip_admi = "Description",
                                            number_use_ip_admi = "number_use",
@@ -454,7 +455,7 @@ test_that("testing costing inpatient admission", {
                           package = "packDAMipd")
 
   ind_part_data <- packDAMipd::load_trial_data(datafile)
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = NULL,
                                            descrip_ip_admi = "Description",
                                            number_use_ip_admi = "number_use",
@@ -471,7 +472,7 @@ test_that("testing costing inpatient admission", {
                           package = "packDAMipd")
 
   ind_part_data <- packDAMipd::load_trial_data(datafile)
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = NULL,
                                            descrip_ip_admi = "Description",
                                            number_use_ip_admi = "number_use",
@@ -492,7 +493,7 @@ test_that("testing costing inpatient admission", {
 
   ind_part_data <- packDAMipd::load_trial_data(datafile)
   unit_cost_data <- packDAMipd::load_trial_data(costs_file, sheet = "EL")
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = NULL,
                                            descrip_ip_admi = "Description",
                                            number_use_ip_admi = "number_use",
@@ -512,7 +513,7 @@ test_that("testing costing inpatient admission", {
                           package = "packDAMipd")
   ind_part_data <- packDAMipd::load_trial_data(datafile)
   unit_cost_data <- packDAMipd::load_trial_data(costs_file, sheet = "EL")
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                       hrg_code_ip_admi = "HRGcode",
                                       descrip_ip_admi = "Description",
                                       number_use_ip_admi = "number_use",
@@ -523,7 +524,7 @@ test_that("testing costing inpatient admission", {
                                       "National_Average_Unit_Cost",
                                       cost_calculated_in = "admission",
                                       sheet = NULL))
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = NULL,
                                            descrip_ip_admi = "Description",
                                            number_use_ip_admi = "number_use",
@@ -538,7 +539,7 @@ test_that("testing costing inpatient admission", {
   datafile <- system.file("extdata", "resource_use_hc_ip_numuse_wrong.csv",
                           package = "packDAMipd")
   ind_part_data <- packDAMipd::load_trial_data(datafile)
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                            hrg_code_ip_admi = "HRGcode",
                                            descrip_ip_admi = "Description",
                                            number_use_ip_admi = "number_use",
@@ -549,7 +550,7 @@ test_that("testing costing inpatient admission", {
                                              "National_Average_Unit_Cost",
                                            cost_calculated_in = "admission",
                                            sheet = NULL))
-  expect_error(costing_inpatient_admission(ind_part_data,
+  expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                       hrg_code_ip_admi = NULL,
                                       descrip_ip_admi = "Description",
                                       number_use_ip_admi = "number_use",
@@ -564,7 +565,7 @@ test_that("testing costing inpatient admission", {
   datafile <- system.file("extdata", "resource_use_hc_ip_nocol_numuse.csv",
                           package = "packDAMipd")
   ind_part_data <- packDAMipd::load_trial_data(datafile)
-  result <- costing_inpatient_admission(ind_part_data,
+  result <- costing_inpatient_daycase_admission(ind_part_data,
                                       hrg_code_ip_admi = NULL,
                                       descrip_ip_admi = "Description",
                                       number_use_ip_admi = NULL,
@@ -576,7 +577,7 @@ test_that("testing costing inpatient admission", {
                                       cost_calculated_in = "admission",
                                       sheet = NULL)
   expect_equal(result$totcost_ip_admission[1], 3530, tol = 1e-2)
-  result <- costing_inpatient_admission(ind_part_data,
+  result <- costing_inpatient_daycase_admission(ind_part_data,
                                         hrg_code_ip_admi = "HRGcode",
                                         descrip_ip_admi = "Description",
                                         number_use_ip_admi = NULL,
