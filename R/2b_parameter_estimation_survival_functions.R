@@ -191,7 +191,6 @@ use_parametric_survival <- function(param_to_be_estimated, dataset,
     } else {
       check <- IPDFileCheck::check_column_exists(cluster_var, dataset)
       if (check == 0) {
-
         expression_recreated <- paste0("survival::survreg", "(", surv_object, " ~ ", covariates_list, " + ", indep_var, "+ cluster(", cluster_var, ")", ", ", "data = dataset,  dist = \"", this_dist, "\" ) ", sep = "")
       } else {
         stop("no variable found in the dataset")

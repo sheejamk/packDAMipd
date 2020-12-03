@@ -115,7 +115,8 @@ do_psa <- function(this_markov, psa_table, num_rep) {
   for (j in 1:num_rep) {
     for (i in 1:no_entries) {
       this_name <- names(psa_table$base_param_list[i])
-      if (psa_table$base_param_list[i][[this_name]] != psa_table$sample_list[i][[this_name]]) {
+      if (psa_table$base_param_list[i][[this_name]] !=
+          psa_table$sample_list[i][[this_name]]) {
         this_param_list <- psa_table$base_param_list
         the_expr <- psa_table$sample_list[i][[this_name]]
         the_real_expr <- check_estimate_substitute_proper_params(the_expr)

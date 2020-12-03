@@ -12,7 +12,7 @@
 
 <meta name="author" content="Sheeja Manchira Krishnan" />
 
-<meta name="date" content="2020-10-02" />
+<meta name="date" content="2020-11-30" />
 
 <title>Cycle dependent</title>
 
@@ -32,6 +32,54 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -319,7 +367,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Cycle dependent</h1>
 <h4 class="author">Sheeja Manchira Krishnan</h4>
-<h4 class="date">2020-10-02</h4>
+<h4 class="date">2020-11-30</h4>
 
 
 
@@ -337,21 +385,22 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>tmat &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>), <span class="kw">c</span>(<span class="ot">NA</span>, <span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>),<span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="dv">8</span>,<span class="dv">9</span>), <span class="kw">c</span>(<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="dv">10</span>))</span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="kw">colnames</span>(tmat) &lt;-<span class="st"> </span><span class="kw">rownames</span>(tmat) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span> ,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>)</span></code></pre></div>
 <p>Define transition matrix now, but parameters are fine now</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>tm &lt;-<span class="st"> </span><span class="kw">populate_transition_matrix</span>(<span class="dv">4</span>, tmat, <span class="kw">c</span>(<span class="st">&quot;tpAtoA&quot;</span>,<span class="st">&quot;tpAtoB&quot;</span>,<span class="st">&quot;tpAtoC&quot;</span>,<span class="st">&quot;tpAtoD&quot;</span>,</span>
-<span id="cb4-2"><a href="#cb4-2"></a>                                   <span class="st">&quot;tpBtoB&quot;</span>, <span class="st">&quot;tpBtoC&quot;</span>, <span class="st">&quot;tpBtoD&quot;</span>,</span>
-<span id="cb4-3"><a href="#cb4-3"></a>                                   <span class="st">&quot;tpCtoC&quot;</span>,<span class="st">&quot;tpCtoD&quot;</span>,<span class="st">&quot;tpDtoD&quot;</span> ))</span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="st">&quot;The transition matrix as explained&quot;</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="op">&gt;</span><span class="st">     </span>transition number probabiliy name from from state to to state</span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">1</span><span class="op">:</span><span class="st">                 </span><span class="dv">1</span>     prob_A_to_A    <span class="dv">1</span>          A  <span class="dv">1</span>        A</span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">2</span><span class="op">:</span><span class="st">                 </span><span class="dv">2</span>     prob_A_to_B    <span class="dv">1</span>          A  <span class="dv">2</span>        B</span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">3</span><span class="op">:</span><span class="st">                 </span><span class="dv">3</span>     prob_A_to_C    <span class="dv">1</span>          A  <span class="dv">3</span>        C</span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">4</span><span class="op">:</span><span class="st">                 </span><span class="dv">4</span>     prob_A_to_D    <span class="dv">1</span>          A  <span class="dv">4</span>        D</span>
-<span id="cb4-10"><a href="#cb4-10"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">5</span><span class="op">:</span><span class="st">                 </span><span class="dv">5</span>     prob_B_to_B    <span class="dv">2</span>          B  <span class="dv">2</span>        B</span>
-<span id="cb4-11"><a href="#cb4-11"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">6</span><span class="op">:</span><span class="st">                 </span><span class="dv">6</span>     prob_B_to_C    <span class="dv">2</span>          B  <span class="dv">3</span>        C</span>
-<span id="cb4-12"><a href="#cb4-12"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">7</span><span class="op">:</span><span class="st">                 </span><span class="dv">7</span>     prob_B_to_D    <span class="dv">2</span>          B  <span class="dv">4</span>        D</span>
-<span id="cb4-13"><a href="#cb4-13"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">8</span><span class="op">:</span><span class="st">                 </span><span class="dv">8</span>     prob_C_to_C    <span class="dv">3</span>          C  <span class="dv">3</span>        C</span>
-<span id="cb4-14"><a href="#cb4-14"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">9</span><span class="op">:</span><span class="st">                 </span><span class="dv">9</span>     prob_C_to_D    <span class="dv">3</span>          C  <span class="dv">4</span>        D</span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span><span class="op">:</span><span class="st">                </span><span class="dv">10</span>     prob_D_to_D    <span class="dv">4</span>          D  <span class="dv">4</span>        D</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>tm &lt;-<span class="st"> </span><span class="kw">populate_transition_matrix</span>(<span class="dv">4</span>, tmat, <span class="kw">c</span>(<span class="st">&quot;tpAtoA&quot;</span>, <span class="st">&quot;tpAtoB&quot;</span>, <span class="st">&quot;tpAtoC&quot;</span>,</span>
+<span id="cb4-2"><a href="#cb4-2"></a>                                            <span class="st">&quot;tpAtoD&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3"></a>                                   <span class="st">&quot;tpBtoB&quot;</span>, <span class="st">&quot;tpBtoC&quot;</span>, <span class="st">&quot;tpBtoD&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4"></a>                                   <span class="st">&quot;tpCtoC&quot;</span>,<span class="st">&quot;tpCtoD&quot;</span>,<span class="st">&quot;tpDtoD&quot;</span> ))</span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="st">&quot;The transition matrix as explained&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="op">&gt;</span><span class="st">     </span>transition number probability name from from state to to state</span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">1</span><span class="op">:</span><span class="st">                 </span><span class="dv">1</span>      prob_A_to_A    <span class="dv">1</span>          A  <span class="dv">1</span>        A</span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">2</span><span class="op">:</span><span class="st">                 </span><span class="dv">2</span>      prob_A_to_B    <span class="dv">1</span>          A  <span class="dv">2</span>        B</span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">3</span><span class="op">:</span><span class="st">                 </span><span class="dv">3</span>      prob_A_to_C    <span class="dv">1</span>          A  <span class="dv">3</span>        C</span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">4</span><span class="op">:</span><span class="st">                 </span><span class="dv">4</span>      prob_A_to_D    <span class="dv">1</span>          A  <span class="dv">4</span>        D</span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">5</span><span class="op">:</span><span class="st">                 </span><span class="dv">5</span>      prob_B_to_B    <span class="dv">2</span>          B  <span class="dv">2</span>        B</span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">6</span><span class="op">:</span><span class="st">                 </span><span class="dv">6</span>      prob_B_to_C    <span class="dv">2</span>          B  <span class="dv">3</span>        C</span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">7</span><span class="op">:</span><span class="st">                 </span><span class="dv">7</span>      prob_B_to_D    <span class="dv">2</span>          B  <span class="dv">4</span>        D</span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">8</span><span class="op">:</span><span class="st">                 </span><span class="dv">8</span>      prob_C_to_C    <span class="dv">3</span>          C  <span class="dv">3</span>        C</span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">9</span><span class="op">:</span><span class="st">                 </span><span class="dv">9</span>      prob_C_to_D    <span class="dv">3</span>          C  <span class="dv">4</span>        D</span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span><span class="op">:</span><span class="st">                </span><span class="dv">10</span>      prob_D_to_D    <span class="dv">4</span>          D  <span class="dv">4</span>        D</span></code></pre></div>
 <p>Combine the health states and define the strategy. The current strategy ie. control or intervention - here it is mono therapy</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>health_states &lt;-<span class="st"> </span><span class="kw">combine_state</span>(A,B,C,D)</span>
 <span id="cb5-2"><a href="#cb5-2"></a>mono_strategy &lt;-<span class="st"> </span><span class="kw">strategy</span>(tm, health_states, <span class="st">&quot;mono&quot;</span>)</span></code></pre></div>
@@ -378,7 +427,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb6-20"><a href="#cb6-20"></a><span class="dt">cost_health_C =</span> <span class="st">&quot;cost_direct_med_C+ cost_comm_care_C&quot;</span>,</span>
 <span id="cb6-21"><a href="#cb6-21"></a><span class="dt">cost_drug =</span> <span class="st">&quot;cost_zido&quot;</span>)</span></code></pre></div>
 <p>We run the model with strategy mono_strategy for 20 cycles with initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and qualys are discounted following the values given in discount. Parameter values will have any parameter defined as health state values or transition probabilities, but not their values were assigned</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>mono_markov &lt;-<span class="st"> </span><span class="kw">markov_model</span>(mono_strategy, <span class="dv">20</span>, <span class="dt">initial_state =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="dt">discount =</span> <span class="kw">c</span>(<span class="fl">0.06</span>,<span class="dv">0</span>),mono_params,<span class="ot">FALSE</span>,<span class="ot">FALSE</span>,<span class="dt">method =</span> <span class="st">&quot;half cycle correction&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>mono_markov &lt;-<span class="st"> </span><span class="kw">markov_model</span>(mono_strategy, <span class="dv">20</span>, <span class="dt">initial_state =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), </span>
+<span id="cb7-2"><a href="#cb7-2"></a>                            <span class="dt">discount =</span> <span class="kw">c</span>(<span class="fl">0.06</span>,<span class="dv">0</span>), mono_params, <span class="ot">FALSE</span>, <span class="ot">FALSE</span>, </span>
+<span id="cb7-3"><a href="#cb7-3"></a>                            <span class="dt">method =</span> <span class="st">&quot;half cycle correction&quot;</span>)</span></code></pre></div>
 <p>Now for combination therapy, the transition probabilities and cost are dependent on the years or the cycle number. Thus we need to define functions that given the correct output to calculate the probabilities and costs as a function of cycle</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a> <span class="co">#Define function to set the cost to be differnt for first two cycles</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>define_comb_cost =<span class="st"> </span><span class="cf">function</span>(cycle,cost_lami) {</span>
@@ -408,17 +459,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb11-2"><a href="#cb11-2"></a>                                   <span class="st">&quot;tpBtoB_rr&quot;</span>, <span class="st">&quot;tpBtoC_rr&quot;</span>, <span class="st">&quot;tpBtoD_rr&quot;</span>,</span>
 <span id="cb11-3"><a href="#cb11-3"></a>                                   <span class="st">&quot;tpCtoC_rr&quot;</span>,<span class="st">&quot;tpCtoD_rr&quot;</span>,<span class="st">&quot;tpDtoD_rr&quot;</span> ), <span class="kw">colnames</span>(tmat) )</span>
 <span id="cb11-4"><a href="#cb11-4"></a><span class="op">&gt;</span><span class="st"> </span>[<span class="dv">1</span>] <span class="st">&quot;The transition matrix as explained&quot;</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a><span class="op">&gt;</span><span class="st">     </span>transition number probabiliy name from from state to to state</span>
-<span id="cb11-6"><a href="#cb11-6"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">1</span><span class="op">:</span><span class="st">                 </span><span class="dv">1</span>     prob_A_to_A    <span class="dv">1</span>          A  <span class="dv">1</span>        A</span>
-<span id="cb11-7"><a href="#cb11-7"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">2</span><span class="op">:</span><span class="st">                 </span><span class="dv">2</span>     prob_A_to_B    <span class="dv">1</span>          A  <span class="dv">2</span>        B</span>
-<span id="cb11-8"><a href="#cb11-8"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">3</span><span class="op">:</span><span class="st">                 </span><span class="dv">3</span>     prob_A_to_C    <span class="dv">1</span>          A  <span class="dv">3</span>        C</span>
-<span id="cb11-9"><a href="#cb11-9"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">4</span><span class="op">:</span><span class="st">                 </span><span class="dv">4</span>     prob_A_to_D    <span class="dv">1</span>          A  <span class="dv">4</span>        D</span>
-<span id="cb11-10"><a href="#cb11-10"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">5</span><span class="op">:</span><span class="st">                 </span><span class="dv">5</span>     prob_B_to_B    <span class="dv">2</span>          B  <span class="dv">2</span>        B</span>
-<span id="cb11-11"><a href="#cb11-11"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">6</span><span class="op">:</span><span class="st">                 </span><span class="dv">6</span>     prob_B_to_C    <span class="dv">2</span>          B  <span class="dv">3</span>        C</span>
-<span id="cb11-12"><a href="#cb11-12"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">7</span><span class="op">:</span><span class="st">                 </span><span class="dv">7</span>     prob_B_to_D    <span class="dv">2</span>          B  <span class="dv">4</span>        D</span>
-<span id="cb11-13"><a href="#cb11-13"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">8</span><span class="op">:</span><span class="st">                 </span><span class="dv">8</span>     prob_C_to_C    <span class="dv">3</span>          C  <span class="dv">3</span>        C</span>
-<span id="cb11-14"><a href="#cb11-14"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">9</span><span class="op">:</span><span class="st">                 </span><span class="dv">9</span>     prob_C_to_D    <span class="dv">3</span>          C  <span class="dv">4</span>        D</span>
-<span id="cb11-15"><a href="#cb11-15"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span><span class="op">:</span><span class="st">                </span><span class="dv">10</span>     prob_D_to_D    <span class="dv">4</span>          D  <span class="dv">4</span>        D</span></code></pre></div>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="op">&gt;</span><span class="st">     </span>transition number probability name from from state to to state</span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">1</span><span class="op">:</span><span class="st">                 </span><span class="dv">1</span>      prob_A_to_A    <span class="dv">1</span>          A  <span class="dv">1</span>        A</span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">2</span><span class="op">:</span><span class="st">                 </span><span class="dv">2</span>      prob_A_to_B    <span class="dv">1</span>          A  <span class="dv">2</span>        B</span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">3</span><span class="op">:</span><span class="st">                 </span><span class="dv">3</span>      prob_A_to_C    <span class="dv">1</span>          A  <span class="dv">3</span>        C</span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">4</span><span class="op">:</span><span class="st">                 </span><span class="dv">4</span>      prob_A_to_D    <span class="dv">1</span>          A  <span class="dv">4</span>        D</span>
+<span id="cb11-10"><a href="#cb11-10"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">5</span><span class="op">:</span><span class="st">                 </span><span class="dv">5</span>      prob_B_to_B    <span class="dv">2</span>          B  <span class="dv">2</span>        B</span>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">6</span><span class="op">:</span><span class="st">                 </span><span class="dv">6</span>      prob_B_to_C    <span class="dv">2</span>          B  <span class="dv">3</span>        C</span>
+<span id="cb11-12"><a href="#cb11-12"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">7</span><span class="op">:</span><span class="st">                 </span><span class="dv">7</span>      prob_B_to_D    <span class="dv">2</span>          B  <span class="dv">4</span>        D</span>
+<span id="cb11-13"><a href="#cb11-13"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">8</span><span class="op">:</span><span class="st">                 </span><span class="dv">8</span>      prob_C_to_C    <span class="dv">3</span>          C  <span class="dv">3</span>        C</span>
+<span id="cb11-14"><a href="#cb11-14"></a><span class="op">&gt;</span><span class="st">  </span><span class="dv">9</span><span class="op">:</span><span class="st">                 </span><span class="dv">9</span>      prob_C_to_D    <span class="dv">3</span>          C  <span class="dv">4</span>        D</span>
+<span id="cb11-15"><a href="#cb11-15"></a><span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span><span class="op">:</span><span class="st">                </span><span class="dv">10</span>      prob_D_to_D    <span class="dv">4</span>          D  <span class="dv">4</span>        D</span></code></pre></div>
 <p>Before we run the model, we need to give values to parameters, thus we define the parameter list.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>comb_params &lt;-<span class="st"> </span><span class="kw">define_parameters</span>(<span class="dt">cost_zido =</span> <span class="dv">2278</span>,</span>
 <span id="cb12-2"><a href="#cb12-2"></a>                     <span class="dt">cost_direct_med_A =</span> <span class="dv">1701</span>,</span>
@@ -457,8 +508,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb12-35"><a href="#cb12-35"></a>                     <span class="dt">cost_drug =</span> <span class="st">&quot;cost_zido + cost_lami_cycle&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># Combine the health states</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a>health_states &lt;-<span class="st"> </span><span class="kw">combine_state</span>(A,B,C,D)</span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="co">#The current strategy i.e. control or intervention - here it is combination therapy</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a>comb_strategy &lt;-<span class="st"> </span><span class="kw">strategy</span>(tm, health_states, <span class="st">&quot;comb&quot;</span>)</span></code></pre></div>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="co">#The current strategy i.e. control or intervention - here it is combination </span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co">#therapy</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a>comb_strategy &lt;-<span class="st"> </span><span class="kw">strategy</span>(tm, health_states, <span class="st">&quot;comb&quot;</span>)</span></code></pre></div>
 <p>We run the model with strategy mono_strategy for 20 cycles with initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and qualys are discounted following the values given in discount. Parameter values will have any parameter defined as health state values or transition probabilities, but not their values were assigned</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>comb_markov &lt;-<span class="st"> </span><span class="kw">markov_model</span>(comb_strategy, <span class="dv">20</span>, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="dt">discount =</span> <span class="kw">c</span>(<span class="fl">0.06</span>,<span class="fl">0.0</span>),comb_params,<span class="ot">FALSE</span>,<span class="ot">FALSE</span>)</span></code></pre></div>
 <p>Now we combine the Markov models given by  and  and Estimate ICER and NMB for the list of Markov models given by lost_Markov using the comparator “mono” and threshold values as 1000 GBP. We also plot cost effectiveness acceptability curve using plot_ceac method. The published report suggests that for mono therapy the accumulated cost is £44,663 while that for the combination therapy is £50,602. The utility values for mono therapy and combination therapy are 7.99 and 8.94 respectively. This provides the ICER value of £6,276.</p>

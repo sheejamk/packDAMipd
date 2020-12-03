@@ -21,7 +21,8 @@ colnames(tmat) <- rownames(tmat) <- c("A","B" ,"C","D")
 
 
 ## -----------------------------------------------------------------------------
-tm <- populate_transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
+tm <- populate_transition_matrix(4, tmat, c("tpAtoA", "tpAtoB", "tpAtoC",
+                                            "tpAtoD",
                                    "tpBtoB", "tpBtoC", "tpBtoD",
                                    "tpCtoC","tpCtoD","tpDtoD" ))
 
@@ -53,7 +54,9 @@ cost_health_C = "cost_direct_med_C+ cost_comm_care_C",
 cost_drug = "cost_zido")
 
 ## -----------------------------------------------------------------------------
-mono_markov <- markov_model(mono_strategy, 20, initial_state = c(1,0,0,0), discount = c(0.06,0),mono_params,FALSE,FALSE,method = "half cycle correction")
+mono_markov <- markov_model(mono_strategy, 20, initial_state = c(1,0,0,0), 
+                            discount = c(0.06,0), mono_params, FALSE, FALSE, 
+                            method = "half cycle correction")
 
 ## -----------------------------------------------------------------------------
  #Define function to set the cost to be differnt for first two cycles
@@ -131,7 +134,8 @@ comb_params <- define_parameters(cost_zido = 2278,
 ## -----------------------------------------------------------------------------
 # Combine the health states
 health_states <- combine_state(A,B,C,D)
-#The current strategy i.e. control or intervention - here it is combination therapy
+#The current strategy i.e. control or intervention - here it is combination 
+#therapy
 comb_strategy <- strategy(tm, health_states, "comb")
 
 

@@ -1037,7 +1037,7 @@ prediction_regression <- function(method, fit, expression_recreated,
 get_slope_intercept_cross <- function(expression, random_intercept_vars,
                                 intercept_vars_pairs,
                                 random_slope_intercept_pairs,
-                                uncorrel_slope_intercept_pairs){
+                                uncorrel_slope_intercept_pairs) {
   # checking if parameter to be estimated is NULL or NA
   check_list <- list(expression, random_intercept_vars, intercept_vars_pairs)
   checks <- sapply(check_list, check_null_na)
@@ -1208,7 +1208,7 @@ get_slope_intercept <- function(expression, random_intercept_vars,
 get_slope_intercept_nested <- function(expression, random_intercept_vars,
                                       intercept_vars_pairs,
                                       random_slope_intercept_pairs,
-                                      uncorrel_slope_intercept_pairs){
+                                      uncorrel_slope_intercept_pairs) {
   # checking if parameter to be estimated is NULL or NA
   check_list <- list(expression, random_intercept_vars, intercept_vars_pairs)
   checks <- sapply(check_list, check_null_na)

@@ -20,9 +20,11 @@ tmat <- rbind(c(1, 2,3,4), c(NA, 5,6,7),c(NA, NA, 8,9), c(NA,NA,NA,10))
 colnames(tmat) <- rownames(tmat) <- c("A","B" ,"C","D")
 
 ## -----------------------------------------------------------------------------
-tm <- populate_transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC","tpAtoD",
+tm <- populate_transition_matrix(4, tmat, c("tpAtoA","tpAtoB","tpAtoC",
+                                            "tpAtoD",
                                    "tpBtoB", "tpBtoC", "tpBtoD",
-                                   "tpCtoC","tpCtoD","tpDtoD" ), colnames(tmat) )
+                                   "tpCtoC","tpCtoD","tpDtoD" ), 
+                                 colnames(tmat))
 
 ## -----------------------------------------------------------------------------
 health_states <- combine_state(A,B,C,D)
@@ -140,9 +142,12 @@ comb_strategy <- strategy(tm, health_states, "comb")
 comb_markov <- markov_model(comb_strategy, 20, c(1, 0,0,0),discount = c(0.06,0.0),comb_params)
 
 ## -----------------------------------------------------------------------------
-min_values <- define_parameters(cost_direct_med_B = 177.4,cost_comm_care_C = 205.9)
-max_values <- define_parameters(cost_direct_med_B = 17740,cost_comm_care_C = 20590)
-param_table <- define_parameters_sens_anal(mono_params, min_values, max_values)
+min_values <- define_parameters(cost_direct_med_B = 177.4, 
+                                cost_comm_care_C = 205.9)
+max_values <- define_parameters(cost_direct_med_B = 17740, 
+                                cost_comm_care_C = 20590)
+param_table <- define_parameters_sens_anal(mono_params, min_values, 
+                                           max_values)
 
 result_dsa_control <- do_sensitivity_analysis(mono_markov,param_table)
 report_dsa_control <- report_sensitivity_analysis(result_dsa_control)
@@ -152,19 +157,25 @@ plot_dsa(result_dsa_control,"utility",type = "range")
 
 
 ## -----------------------------------------------------------------------------
-min_values <- define_parameters(cost_direct_med_B = 177.4,cost_comm_care_C = 205.9)
-max_values <- define_parameters(cost_direct_med_B = 17740,cost_comm_care_C = 20590)
+min_values <- define_parameters(cost_direct_med_B = 177.4, 
+                                cost_comm_care_C = 205.9)
+max_values <- define_parameters(cost_direct_med_B = 17740, 
+                                cost_comm_care_C = 20590)
 param_table <- define_parameters_sens_anal(comb_params, min_values, max_values)
 result_dsa_treat <- do_sensitivity_analysis(comb_markov, param_table)
-table_sa <- report_sensitivity_analysis(result_dsa_control, result_dsa_treat, 1000, "mono")
+table_sa <- report_sensitivity_analysis(result_dsa_control, 
+                                        result_dsa_treat, 1000, "mono")
 
 ## -----------------------------------------------------------------------------
-plot_dsa(result_dsa_control,"cost", type = "range",result_dsa_treat, threshold = 1000, comparator = "mono")
+plot_dsa(result_dsa_control,"cost", type = "range",result_dsa_treat, 
+         threshold = 1000, comparator = "mono")
 
 ## -----------------------------------------------------------------------------
-plot_dsa(result_dsa_control,"ICER", type = "range",result_dsa_treat, threshold = 1000, comparator = "mono")
+plot_dsa(result_dsa_control,"ICER", type = "range",result_dsa_treat, 
+         threshold = 1000, comparator = "mono")
 
 ## -----------------------------------------------------------------------------
 debug(plot_dsa_difference)
-plot_dsa(result_dsa_control,"cost", type = "difference", result_dsa_treat, threshold = 1000, comparator = "mono")
+plot_dsa(result_dsa_control,"cost", type = "difference", result_dsa_treat, 
+         threshold = 1000, comparator = "mono")
 
