@@ -13,5 +13,5 @@ weight and time units
 Function to get the weight and time units
 }
 \examples{
-generate_wt_time_units()
+ans <- generate_wt_time_units()
 }

@@ -12,3 +12,6 @@ weight and vol units
 \description{
 Function to get the weight and volume units
 }
+\examples{
+ans <- generate_wt_vol_units()
+}

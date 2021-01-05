@@ -113,7 +113,7 @@ get_col_multiple_pattern <- function(pattern, the_data) {
 #' Function to get the weight and time units
 #' @return weight and time units
 #' @examples
-#' generate_wt_time_units()
+#' ans <- generate_wt_time_units()
 #' @export
 generate_wt_time_units <- function(){
   weight_units = c("mg", "milligram", "milli gram",
@@ -140,8 +140,8 @@ generate_wt_time_units <- function(){
 #############################################################################
 #' Function to get the weight and volume units
 #' @return weight and vol units
-#' @example
-#' generate_wt_vol_units()
+#' @examples
+#' ans <- generate_wt_vol_units()
 #' @export
 generate_wt_vol_units <- function(){
   weight_units = c("mg", "milligram", "milli gram",
