@@ -38,11 +38,13 @@ Imports:
     gvlma,
     methods,
     relaimpo,
-    tm
+    tm,
+    tidyverse,
+    tibble,
+    dplyr
 Suggests: 
     ISLR,
     foreign,
-    dplyr,
     knitr,
     rmarkdown,
     covr,

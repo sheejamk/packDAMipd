@@ -1,24 +1,25 @@
-Drug,Form,Strength,StrengthUnit,Preparation,UnitCost,Size,SizeUnit
-Buprenorphine,Tablet,0.2,mg,,0.1,,
-Buprenorphine,Tablet,0.4,mg,,0.2,,
-Buprenorphine,Tablet,2,mg,,0.85,,
-Buprenorphine,Tablet,8,mg,,2.52,,
-Buprenorphine,Injection,0.3,mg/ml,300micrograms/1ml,0.49,,
-Buprenorphine,Injection,50,mg/ml,16mg/0.32ml,55.93,,
-Buprenorphine,Injection,50,mg/ml,24mg/0.48ml,55.93,,
-Buprenorphine,Injection,50,mg/ml,32mg/0.64ml,55.93,,
-Buprenorphine,Injection,50,mg/ml,8mg/0.16ml,55.93,,
-Buprenorphine,Injection,355.5555556,mg/ml,128mg/0.36ml,239.7,,
-Buprenorphine,Injection,355.5555556,mg/ml,64mg/0.18ml,239.7,,
-Buprenorphine,Injection,355.5555556,mg/ml,96mg/0.27ml,239.7,,
-Buprenorphine,Patches,5,microgram/hour,,4.4,,
-Buprenorphine,Patches,10,microgram/hour,,7.89,,
-Buprenorphine,Patches,15,microgram/hour,,12.29,,
-Buprenorphine,Patches,20,microgram/hour,,14.37,,
-Buprenorphine,Patches,35,microgram/hour,,3.95,,
-Buprenorphine,Patches,52.5,microgram/hour,,5.93,,
-Buprenorphine,Patches,70,microgram/hour,,7.9,,
-Morphine,Liquids,2,mg/ml,10mg/5ml,2.08,100,ml
-Morphine,Liquids,2,mg/ml,10mg/5ml,6.57,300,ml
-Morphine,Liquids,2,mg/ml,10mg/5ml,9.61,500,ml
-Morphine,Liquids,20,mg/ml,20mg/ml,19.5,120,ml
+Drug,Brand,Form,Strength,Preparation,UnitCost,Size,Basis
+Buprenorphine,,Tablet,0.2mg,,0.1,,per tablet
+Buprenorphine,,Tablet,0.4mg,,0.2,,per tablet
+Buprenorphine,,Tablet,2mg,,0.85,,per tablet
+Buprenorphine,,Tablet,200microgram,,2.52,,per tablet
+Buprenorphine,,Tablet,8mg,,2.52,,per tablet
+Fentanyl ,,Tablet,200mcg,,5,,per tablet
+Fentanyl ,,Tablet,400mcg,,5,,per tablet
+Fentanyl ,,Tablet,2mg,,5,,per tablet
+Buprenorphine,,Patch,5 mcg/hr,,4,,per patch
+Buprenorphine,,Patches,10microgram/hour,,12.29,,per patch
+Buprenorphine,,Patches,20microgram/hour,,14.37,,per patch
+Buprenorphine,,Patches,35microgram/hour,,3.95,,per patch
+Buprenorphine,,Patches,52.5microgram/hour,,5.93,,per patch
+Buprenorphine,,Patches,70microgram/hour,,7.9,,per patch
+Fentanyl ,,Patches,5microgram/hour,,20,,per patch
+Fentanyl ,,Patches,12microgram/hour,,20,,per patch
+Fentanyl ,,Patches,20microgram/hour,,40,,per patch
+Morphine,,Liquids,2mg/ml,10mg/5ml,2.08,100ml,per bottle
+Morphine,,Liquids,2mg/ml,10mg/5ml,6.57,300ml,per bottle
+Morphine,,Liquids,2mg/ml,10mg/5ml,9.61,500ml,per bottle
+Morphine,,Liquids,20mg/ml,20mg/ml,19.5,120ml,per bottle
+Fentanyl ,,Liquids,20mg/ml,10mg/5ml,2.08,2000ml,per bottle
+Fentanyl ,,Liquids,50mg/ml,10mg/5ml,2.08,100ml,per bottle
+Buprenorphine,,Liquids,20mg/ml,10mg/5ml,2.08,100ml,per bottle

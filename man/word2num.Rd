@@ -17,7 +17,8 @@ Function to check the variable null or NA
 }
 \details{
 https://stackoverflow.com/questions/18332463/convert-written-number-to-number-in-r
-examples
+}
+\examples{
 answer <- word2num("one forty one")
 answer <- word2num("forty one and five hundred")
 answer <- word2num("five thousand two hundred and eight")

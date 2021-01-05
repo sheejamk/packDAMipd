@@ -4,10 +4,11 @@
 \alias{plot_efficiency_frontier}
 \title{Plot efficiency frontier}
 \usage{
-plot_efficiency_frontier(results_cea, threshold)
+plot_efficiency_frontier(results_calculate_icer_nmb, threshold)
 }
 \arguments{
-\item{results_cea}{results from cea (from calculate_icer_nmb method)}
+\item{results_calculate_icer_nmb}{results from cea
+(from calculate_icer_nmb method)}
 
 \item{threshold}{threshold value}
 }

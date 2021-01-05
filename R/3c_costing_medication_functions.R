@@ -3,47 +3,50 @@
 #' @param form the form of medication either tablet or patch
 #' @param ind_part_data IPD
 #' @param name_med name of medication
-#' @param dose_med dose of medication
-#' @param dose_unit unit of strength
+#' @param brand_med brand name of medication if revealed
+#' @param dose_med dose of medication used
+#' @param unit_med unit of medication ; use null if its along with the dose
 #' @param no_taken how many taken
 #' @param freq_taken frequency of medication
-#' @param basis_time basis for time
+#' @param timeperiod time period for cost calculation
 #' @param unit_cost_data  unit costs data
 #' @param unit_cost_column column name of unit cost in unit_cost_data
-#' @param cost_calculated_in column name of unit where the cost is calculated
-#' @param strength_expressed_in column name of strength in the unit cost data
-#' @param list_period_timepoint list of time period at each timepoint if coded
-#' @param list_of_code_names if names is coded, give the code:name pairs
+#' @param cost_calculated_per column name of unit where the cost is calculated
+#' @param strength_column column column name that contain strength of
+#' medication
+#' @param list_of_code_names if names is coded, give the code:name pairs,
+#' optional
 #' @param list_of_code_freq if frequency is coded, give the
-#' code:frequency pairs
-#' @param list_of_code_dose_unit if unit is coded, give the code:unit pairs
-#' @param equiv_dose if cost per equivalent doses are to be calculates,
-#' provide equiv_dose
+#' code:frequency pairs, optional
+#' @param list_of_code_dose_unit if unit is coded, give the code:unit pairs,
+#' optional
+#' @param list_of_code_brand if brand names  are coded, give the code:brand
+#' pairs, optional
+#' @param eqdose_cov_tab table to get the conversion factor for equivalent
+#' doses, optional
+#' @param basis_strength_unit strength unit to be taken as basis
+#' required for total medication calculations
+#' @param basis_time basis for time
 #' @return the calculated cost of tablets along with original data
 #' @examples
-#' freq_desc <- c(
-#'   "Once a day", "Twice a day", "Three times a day",
-#'   "Four times a day", "Five times a day", "Six times a day",
-#'   "Seven times a day", "Eight times a day", "Nine times a day",
-#'   "Ten times a day", "Once every 2 days", "Once every 3 days",
-#'   "Once every 4 days", "Once every 5 days", "Once every 6 days",
-#'   "Once a week", "Twice a week", "Thrice a week", "Four times a week"
-#' )
-#' codes <- c(seq(1:19))
-#' this_list <- list(freq_desc, codes)
-#' med_costs_file <- system.file("extdata", "average_unit_costs_med.csv",
+#' med_costs_file <- system.file("extdata", "average_unit_costs_med_brand.csv",
 #' package = "packDAMipd")
-#' data_file <- system.file("extdata", "resource_use_t.csv",
+#' data_file <- system.file("extdata", "medication.xlsx",
 #' package = "packDAMipd")
 #' ind_part_data <- load_trial_data(data_file)
 #' med_costs <- load_trial_data(med_costs_file)
-#' res <- microcosting_tablets_patches("tablets",
-#'   ind_part_data, "Name", "tab_dosage", "tab_dosage_unit", "tab_no_taken",
-#'   "tab_frequency", "day", med_costs, "UnitCost",
-#'   "StrengthUnit", "Strength", list(c("4 weeks", "1 week"), c(1, 2)),
-#'   list(c("Buprenorphine", "Morphine"), c(1, 2)), this_list,
-#'   list(c("mcg", "mg", "gm"), c(1, 2, 3)), "tab_equiv_dose"
-#' )
+#' conv_file <- system.file("extdata", "Med_calc.xlsx", package = "packDAMipd")
+#' table <- load_trial_data(conv_file)
+#' res <- microcosting_tablets_patches_wide(form = "patch",
+#' ind_part_data = ind_part_data, name_med = "patch_name",
+#' brand_med = "patch_brand", dose_med = "patch_strength", unit_med = NULL,
+#' no_taken = "patch_no_taken", freq_taken = "patch_frequency",
+#' timeperiod = "4 months", unit_cost_data = med_costs,
+#' unit_cost_column = "UnitCost", cost_calculated_per  = "Basis",
+#' strength_column = "Strength", list_of_code_names = NULL,
+#' list_of_code_freq = NULL, list_of_code_dose_unit = NULL,
+#' list_of_code_brand = NULL, eqdose_cov_tab = table,
+#' basis_time = "day", basis_strength_unit = "mcg/hr")
 #' @export
 #' @details
 #' Assumes individual level data has name of medication, dose, dose unit,
@@ -52,544 +55,1171 @@
 #' strength, unit of strength (or the unit in which the cost calculated),
 #' preparation, unit cost, size and size unit
 #' (in which name, forms, size, size unit, and preparation  are not passed on)
-microcosting_tablets_patches <- function(form, ind_part_data,
-                                         name_med, dose_med, dose_unit,
-                                         no_taken, freq_taken, basis_time,
-                                         unit_cost_data, unit_cost_column,
-                                         cost_calculated_in,
-                                         strength_expressed_in,
-                                         list_period_timepoint = NULL,
+#'  @importFrom dplyr %>%
+microcosting_tablets_patches_wide <- function(form, ind_part_data,
+                                         name_med,
+                                         brand_med = NULL,
+                                         dose_med,
+                                         unit_med = NULL,
+                                         no_taken, freq_taken,
+                                         timeperiod,
+                                         unit_cost_data,
+                                         unit_cost_column,
+                                         cost_calculated_per,
+                                         strength_column,
                                          list_of_code_names = NULL,
                                          list_of_code_freq = NULL,
                                          list_of_code_dose_unit = NULL,
-                                         equiv_dose = NULL) {
+                                         list_of_code_brand = NULL,
+                                         eqdose_cov_tab = NULL,
+                                         basis_strength_unit = NULL,
+                                         basis_time = NULL) {
 
+  # check the form as liquids
+  if (toupper(form) == "TABLET" | toupper(form) == "TABLETS") {
+    words <- c("tablet", "tablets")
+  } else {
+    words <- c("patch", "patches")
+  }
+  generated_list <- generate_wt_time_units()
+  wt_per_time_units <- generated_list$weight_per_times
+  wt_units <- generated_list$weight_units
+  time_units <-  generated_list$time_units
   #Error - data should not be NULL
   if (is.null(ind_part_data) | is.null(unit_cost_data))
     stop("data should not be NULL")
 
   #Checking if the required parameters are NULL or NA
-  variables_check <- list(form, name_med, dose_med, dose_unit,
-                         no_taken, freq_taken, basis_time, unit_cost_column,
-                         cost_calculated_in, strength_expressed_in)
+  variables_check <- list(form, name_med, dose_med,
+                          no_taken, freq_taken,
+                          timeperiod, unit_cost_column,
+                          cost_calculated_per, strength_column)
   results <- sapply(variables_check, check_null_na)
-  names_check <- c("form", "name_med", "dose_med", "dose_unit",
-                  "no_taken", "freq_taken", "basis_time", "unit_cost_column",
-                  "cost_calculated_in", "strength_expressed_in")
+  names_check <- c("form", "name_med", "dose_med",
+                   "no_taken", "freq_taken",
+                   "timeperiod", "unit_cost_column",
+                   "cost_calculated_per", "strength_column")
   if (any(results != 0)) {
     indices <- which(results < 0)
     stop(paste("Error - the variables can not be NULL or NA,
                check the variable(s)", names_check[indices]))
   }
-
   if (toupper(form) != "PATCH" & toupper(form) != "PATCHES" &
-     toupper(form) != "TABLET" & toupper(form) != "TABLETS")
-    stop("Form of medication should be patch or tablet")
-
-  # check columns exist in individual data
-  info_list <- c(name_med, dose_med, dose_unit, no_taken, freq_taken)
-  checks <- sapply(info_list, IPDFileCheck::check_column_exists, ind_part_data)
-  if (sum(checks) != 0) {
-    stop("Atleast one of the required columns not found")
-  }
-
-  # check columns exist in unit cost  data
-  info_list <- c(unit_cost_column, cost_calculated_in, strength_expressed_in)
-  checks <- sapply(info_list, IPDFileCheck::check_column_exists, unit_cost_data)
-  if (sum(checks) != 0) {
-    stop("Atleast one of the required columns in unit cost data not found")
-  }
-  # get colnames for name, form, dosage and unit
-  name_pattern <- c("name", "drug", "medication", "med")
-  bool_res <- unlist(lapply(name_pattern,
-                            IPDFileCheck::check_col_pattern_colname,
-                            colnames(unit_cost_data)))
-  if (any(bool_res)) {
-    name_ind <- which(bool_res == TRUE)
+      toupper(form) != "TABLET" & toupper(form) != "TABLETS") {
+       stop("Form of medication should be patch or tablet")
   } else {
-    stop("Error- Name of the medication is not found. Please use name,
-         drug, medication, or med to indicate the medication")
+   if (!is.null(basis_strength_unit)) {
+      if (is.na(basis_strength_unit)) {
+        if (toupper(form) == "PATCH" | toupper(form) == "PATCHES")
+           basis_strength_unit <- "mcg/hr"
+        else
+          basis_strength_unit <- "mg"
+      }
+    } else {
+      if (toupper(form) == "PATCH" | toupper(form) == "PATCHES")
+        basis_strength_unit <- "mcg/hr"
+      else
+        basis_strength_unit <- "mg"
+    }
   }
-  name_col_no <- IPDFileCheck::get_colno_pattern_colname(name_pattern[name_ind],
-                                                colnames(unit_cost_data))
-
-  form_pattern <- c("form", "drug form", "patch/tablet", "type")
-  bool_res <- unlist(lapply(form_pattern,
-                            IPDFileCheck::check_col_pattern_colname,
-                            colnames(unit_cost_data)))
-  if (any(bool_res)) {
-    form_ind <- which(bool_res == TRUE)
+  if (toupper(form) == "PATCH" | toupper(form) == "PATCHES") {
+    if (!(basis_strength_unit %in% wt_per_time_units))
+      stop("the basis strength unit is not valid")
   } else {
-    stop("Error- Form of the medication is not found. Please use form,
-    drug form, patch/tablet, or type to indicate
-         the type of medication")
+    if (!(basis_strength_unit %in% wt_units))
+      stop("the basis strength unit is not valid")
   }
-  form_col_no <- IPDFileCheck::get_colno_pattern_colname(form_pattern[form_ind],
-                                                  colnames(unit_cost_data))
-  unit_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
-                                                     cost_calculated_in)
-  dosage_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
-                                                       strength_expressed_in)
+
+  if (!is.null(basis_time)) {
+    if (is.na(basis_time))
+      basis_time <- "day"
+  } else {
+    basis_time <- "day"
+  }
+  if (!(basis_time %in% time_units)) {
+    stop("the basis time unit is not valid")
+  }
+  brand_check <- return0_if_not_null_na(brand_med)
+  unit_med_check <-  return0_if_not_null_na(unit_med)
+
+  check_list <- c(unit_med_check, brand_check)
+  partial_list <- c(name_med, dose_med, no_taken, freq_taken)
+  another_list <- list(unit_med, brand_med)
+  another_list[check_list == -1] <- -1
+  info_list <- unlist(append(partial_list, another_list))
+
+  ipd_cols_exists <- list()
+  for (i in seq_len(length(info_list))) {
+    if (info_list[i] != -1) {
+      check <- IPDFileCheck::check_column_exists(info_list[i], ind_part_data)
+      if (sum(check) != 0) {
+        res <- grep(info_list[i], colnames(ind_part_data))
+        if (length(res) == 0)
+          stop("Atleast one of the required columns not found")
+        ipd_cols_exists[length(ipd_cols_exists) + 1] <- list(res)
+      }
+    } else {
+      ipd_cols_exists[length(ipd_cols_exists) + 1] <- -1
+    }
+  }
+  names_med_cols <- unlist(ipd_cols_exists[1])
+  doses_med_cols <- unlist(ipd_cols_exists[2])
+  numbers_taken_cols <- unlist(ipd_cols_exists[3])
+  freq_taken_cols <- unlist(ipd_cols_exists[4])
+  if (unit_med_check != -1)
+    unit_med_cols  <- unlist(ipd_cols_exists[5])
+  if (brand_check != -1)
+    brand_med_cols  <- unlist(ipd_cols_exists[6])
 
   # if the codes are being used for name, dosage, frequency and time period
   # list_of_code_names is a list of (list of codes and list of names)
   # if they are valid, assign the names to codes, read the code from data
   # and read the corresponding names using the earlier assignment
-  if (!is.null(list_of_code_names) & sum(is.na(list_of_code_names)) == 0) {
-    name_and_code <- stats::setNames(as.list(list_of_code_names[[1]]),
-                                     list_of_code_names[[2]])
-    ipd_codes <- ind_part_data[[name_med]]
-    name_from_code <- name_and_code[ipd_codes]
-    index <- which(is.na(ipd_codes))
-    if (length(index) > 0)
-      name_from_code[index] <- NA
-  } else {
-    name_from_code <- ind_part_data[[name_med]]
-  }
-  if (is.null(unlist(name_from_code)) | sum(is.na(name_from_code)) != 0) {
+  names_from_code <- encode_codes_data(list_of_code_names, names_med_cols,
+                                      ind_part_data)
+  if (is.null(unlist(names_from_code)) | sum(is.na(unlist(names_from_code))) ==
+      length(unlist(names_from_code))) {
     stop("Error - name_from_code can not be null - check the input for
          list of names and codes")
   }
-  # get the frequency from code, as same as name
-  if (!is.null(list_of_code_freq) & sum(is.na(list_of_code_freq)) == 0) {
-    freq_code <- stats::setNames(as.list(list_of_code_freq[[1]]),
-                                 list_of_code_freq[[2]])
-    ipd_codes <- ind_part_data[[freq_taken]]
-    freq_desc_from_code <- freq_code[ipd_codes]
-    index <- which(is.na(ipd_codes))
-    if (length(index) > 0)
-      freq_desc_from_code[index] <- NA
-
-    # but as the basis time might be different convert the frequency
-    # to given basis
-    freq_given_basis <- unlist(lapply(freq_desc_from_code,
-                                      convert_freq_diff_basis, basis_time))
-  } else {
-    freq_given_basis <- unlist(lapply(ind_part_data[[freq_taken]],
-                                      convert_freq_diff_basis, basis_time))
+  freq_desc_from_code <- encode_codes_data(list_of_code_freq, freq_taken_cols,
+                                          ind_part_data)
+  freq_given_basis_list <- as.list(as.data.frame(t(freq_desc_from_code)))
+  freq_given_basis <- list()
+  for (i in seq_len(length(freq_given_basis_list))) {
+    this_list <- unlist(freq_given_basis_list[i])
+    this_row <- lapply(this_list, convert_freq_diff_basis, basis_time)
+    freq_given_basis <- append(freq_given_basis, this_row)
   }
+  freq_given_basis <- unlist(freq_given_basis)
+  freq_given_basis <- matrix(freq_given_basis,
+                               nrow = dim(freq_desc_from_code)[1], byrow = TRUE)
+  colnames(freq_given_basis) <- colnames(freq_desc_from_code)
+  freq_given_basis <- as.data.frame(freq_given_basis)
 
-  if (sum(is.na(unlist(freq_given_basis))) == length(freq_given_basis)) {
-    stop("Error - freq_given_basis can not be null - check the
-         input for list of frequency")
-  }
-  if (!is.null(list_of_code_dose_unit) &
-      sum(is.na(list_of_code_dose_unit)) == 0) {
-    unit_and_code <- stats::setNames(as.list(list_of_code_dose_unit[[1]]),
-                                     list_of_code_dose_unit[[2]])
-    ipd_codes <- ind_part_data[[dose_unit]]
-    unit_from_code <- unit_and_code[ipd_codes]
-    index <- which(is.na(ipd_codes))
-    if (length(index) > 0)
-      unit_from_code[index] <- NA
-
-  } else {
-    unit_from_code <- ind_part_data[[dose_unit]]
-  }
-  if (is.null(unlist(unit_from_code))) {
-    stop("Error - unit_from_code can not be null - check the input for
-         list of codes and names")
-  }
-
-  timepoint_details <- get_timepoint_details(ind_part_data)
-  if (is.null(list_period_timepoint)) {
-    period_desc_from_code <- ind_part_data[[timepoint_details$name]]
-  } else {
-    if (sum(is.na(list_period_timepoint) != 0)) {
-      stop("Error - list of code and time points can not be NA")
+  if (brand_check != -1) {
+    brand_and_code <- encode_codes_data(list_of_code_brand, brand_med_cols,
+                                       ind_part_data)
+    if (is.null(unlist(brand_and_code)) | sum(is.na(unlist(brand_and_code))) ==
+        length(unlist(brand_and_code))) {
+      stop("Error - size_unit_from_code can not be null - check the input for
+         brand  code")
     }
-    period_code <- stats::setNames(as.list(list_period_timepoint[[1]]),
-                                   list_period_timepoint[[2]])
-    timepoint_codes <- ind_part_data[[timepoint_details$name]]
-    period_desc_from_code <- period_code[timepoint_codes]
-    index <- which(is.na(timepoint_codes))
-    if (length(index) > 0)
-      period_desc_from_code[index] <- NA
-
   }
-  if (is.null(unlist(period_desc_from_code))  |
-      sum(is.na(period_desc_from_code)) != 0) {
-    stop("Error - period_desc_from_code can not be null -
-         check the input for list of period")
-  }
-  if (is.null(equiv_dose)) {
-    equiv_dose_div <- 1
+  if (unit_med_check == -1) {
+    med_dose <- ind_part_data %>% dplyr::select(dplyr::all_of(doses_med_cols))
+    med_dose_unlist <- unlist(med_dose)
+    unit_from_code <- gsub("[0-9\\.]", "", med_dose_unlist)
+    unit_from_code <- matrix(unit_from_code,
+                             nrow = dim(med_dose)[1])
+    colnames(unit_from_code) <- colnames(med_dose)
+    unit_from_code <- as.data.frame(unit_from_code)
   } else {
-    equiv_dose_div <- ind_part_data[[equiv_dose]]
+    med_dose <- ind_part_data %>% dplyr::select(dplyr::all_of(doses_med_cols))
+    med_dose <- as.data.frame(med_dose)
+    unit_from_code <- encode_codes_data(list_of_code_dose_unit, unit_med_cols,
+                                       ind_part_data)
+  }
+  if (is.null(unlist(unit_from_code)) | sum(is.na(unlist(unit_from_code))) ==
+      length(unlist(unit_from_code))) {
+    stop("Error - unit_from_code can not be null - check the input for
+         list of units")
+  }
+
+  # check columns exist in unit cost  data
+  info_list <- c(unit_cost_column, cost_calculated_per, strength_column)
+  checks <- sapply(info_list, IPDFileCheck::check_column_exists, unit_cost_data)
+  if (sum(checks) != 0) {
+    stop("Atleast one of the required columns in unit cost data not found")
+  }
+  # get column names for name, form, dosage and unit
+  name_pattern <- c("name", "drug", "medication", "med", "patch")
+  name_col_no <- get_col_multiple_pattern(name_pattern, unit_cost_data)
+
+  form_pattern <- c("form", "drug form", "patch/tablet", "type")
+  form_col_no <- get_col_multiple_pattern(form_pattern, unit_cost_data)
+
+  unit_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
+                                                     cost_calculated_per)
+  dosage_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
+                                                       strength_column)
+  if (brand_check != -1) {
+    brand_pattern <- c("brand", "brand name", "trade", "trade name")
+    brand_col_no <- get_col_multiple_pattern(brand_pattern, unit_cost_data)
+    size_pattern <- c("size", "pack size")
+    size_pack_col_no <- get_col_multiple_pattern(size_pattern, unit_cost_data)
+  }
+  if (is.null(eqdose_cov_tab)) {
+        conversion_factor <- 1
+        eqdose_check <- -1
+  } else {
+    if (typeof(eqdose_cov_tab) != "closure" &
+        typeof(eqdose_cov_tab) != "list") {
+      if (is.na(eqdose_cov_tab)) {
+        eqdose_check <- -1
+        conversion_factor <- 1
+      }
+     } else {
+       eqdose_check <- 0
+       name_pattern <- c("name", "drug", "medication", "med")
+       drug_col_conv_table <- get_col_multiple_pattern(name_pattern,
+                                                        eqdose_cov_tab)
+
+       form_pattern <- c("form", "type")
+       form_col_conv_table <- get_col_multiple_pattern(form_pattern,
+                                                        eqdose_cov_tab)
+
+       dose_unit_pattern <- c("unit", "dose unit", "dose_unit", "unit of dose",
+                              "unit dose")
+       dose_unit_col_conv_table <- get_col_multiple_pattern(dose_unit_pattern,
+                                                             eqdose_cov_tab)
+
+       conv_factor_pattern <- c("conversion factor", "conversion_factor",
+                                "conv_factor", "factor conversion",
+                                "factor_conversion")
+       conv_factor_col <- get_col_multiple_pattern(conv_factor_pattern,
+                                                    eqdose_cov_tab)
+    }
   }
   list_total_med_basis <- list()
+  list_total_med_equiv_basis <- list()
   list_total_cost_basis <- list()
-  list_total_cost_basis_equiv_dose <- list()
-  list_total_cost_timeperiod <- list()
-  list_total_cost_timeperiod_equiv_dose <- list()
+  list_total_cost_per_equiv_basis <- list()
+  list_total_med_period <- list()
+  list_total_med_equiv_dose_period <- list()
+  list_total_cost_period <- list()
+  list_total_cost_per_equiv_period <- list()
   for (i in 1:nrow(ind_part_data)) {
-    name_medication <- name_from_code[i]
-    dose_medication <- ind_part_data[[dose_med]][i]
-    if (!is.null(dose_medication) & !is.na(dose_medication)) {
-      how_many_taken <- ind_part_data[[no_taken]][i]
-      freq_multiplier <- freq_given_basis[i]
-      this_unit <- unit_from_code[i]
-      subset1 <- unit_cost_data[toupper(unit_cost_data[[name_col_no]])
-                                == toupper(name_medication), ]
-      if (toupper(form) == "TABLET" | toupper(form) == "TABLETS")
-        subset2 <- subset1[subset1[form_col_no] == "Tablet" |
-                             subset1[form_col_no] == "Tablets" |
-                             subset1[form_col_no] == "tablet" |
-                             subset1[form_col_no] == "tablets", ]
-      else
-        subset2 <- subset1[subset1[form_col_no] == "Patch" |
-                             subset1[form_col_no] == "Patches" |
-                             subset1[form_col_no] == "patch" |
-                             subset1[form_col_no] == "patches", ]
-
-      unit_used_costing <- unique(subset2[[unit_col_no]])
-      if (length(unit_used_costing) != 1) {
-        stop("unit used for costing tablets is not unique !!!")
-      }
-      total_med_basis <- how_many_taken * freq_multiplier
-      if (toupper(form) == "TABLET" | toupper(form) == "TABLETS")
-        unit_multiplier <- convert_weight_diff_basis(this_unit,
-                                                     unit_used_costing)
-      else
-        unit_multiplier <- convert_wtpertimediff_basis(this_unit,
-                                                       unit_used_costing)
-      if (is.na(unit_multiplier))
-        stop("The unit is not identifiable to convert that used for costing")
-
-      if (any(subset2[[dosage_col_no]] == dose_medication)) {
-        unit_cost_med_prep <- subset2[subset2[[dosage_col_no]]
-                                   == dose_medication &
-                                  subset2[[unit_col_no]]
-                                  == unit_used_costing, ][[unit_cost_column]]
-      } else {
-        stop("The used dosage is not in costing table")
-      }
-      total_cost_basis <- total_med_basis * unit_cost_med_prep * unit_multiplier
-      total_cost_basis_equiv_dose <- total_cost_basis / equiv_dose_div[i]
-      period_given_basis <-
-        convert_to_given_timeperiod(period_desc_from_code[i], basis_time)
-
-      total_cost_timeperiod <- total_cost_basis * period_given_basis
-      total_cost_timeperiod_equiv_dose <-
-        total_cost_timeperiod / equiv_dose_div[i]
+    name_medication <- names_from_code[i, ]
+    if (brand_check != -1)
+      brand_medication <- brand_and_code[i, ]
+    dose_medication <- med_dose[i, ]
+    if (length(dose_medication) != length(name_medication))
+      stop("number of doses and number of medications should be equal")
+    if (is.null(name_medication)) {
+      medication_valid_check <- -1
     } else {
-      total_med_basis <- NA
-      total_cost_basis <- NA
-      total_cost_basis_equiv_dose <- NA
-      total_cost_timeperiod <- NA
-      total_cost_timeperiod_equiv_dose <- NA
+      if (sum(is.na(unname(name_medication))) >= length(name_medication))
+        medication_valid_check <- -1
+      else
+        medication_valid_check <- 0
     }
+    if (medication_valid_check != -1) {
+      how_many_taken <- as.numeric(ind_part_data[i, numbers_taken_cols])
+      freq_multiplier_basis <- freq_given_basis[i, ]
+      freq_multiplier_basis <-
+                     freq_multiplier_basis[!is.na(freq_multiplier_basis)]
+      this_unit <- unit_from_code[i, ]
+      this_unit <- this_unit[!is.na(this_unit)]
+      total_med_basis <- 0
+      total_med_equiv_dose_basis <-  0
+      total_cost_basis <-  0
+      total_cost_per_equiv_basis <-  0
+      total_med_period <-  0
+      total_med_equiv_dose_period <-  0
+      total_cost_period <-  0
+      total_cost_per_equiv_period <-  0
+      for (j in seq_len(length(name_medication))) {
+        if (!is.null(name_medication[j]) & !is.na(name_medication[j])) {
+           subset1 <- return_equal_str_col(name_col_no,
+                                           unit_cost_data, name_medication[j])
+
+          if (toupper(form) == "TABLET" | toupper(form) == "TABLETS")
+              subset2 <- subset1[subset1[form_col_no] == "Tablet" |
+                                 subset1[form_col_no] == "Tablets" |
+                                 subset1[form_col_no] == "tablet" |
+                                 subset1[form_col_no] == "tablets", ]
+          else
+              subset2 <- subset1[subset1[form_col_no] == "Patch" |
+                                 subset1[form_col_no] == "Patches" |
+                                 subset1[form_col_no] == "patch" |
+                                 subset1[form_col_no] == "patches", ]
+
+          if (brand_check != -1) {
+             subset2 <- return_equal_str_col(brand_col_no,
+                                           subset2, brand_medication[j])
+            if (nrow(subset2) < 1)
+              stop("Did not find matching brand name of medication")
+          }
+          if (unit_med_check == -1)
+            dose_num_val <-
+              as.numeric(stringr::str_extract(dose_medication[j],
+                                                          "\\d+\\.*\\d*"))
+          else
+            dose_num_val <- as.numeric(dose_medication[j])
+
+          if (eqdose_check != -1) {
+            temp <- return_equal_str_col(drug_col_conv_table, eqdose_cov_tab,
+                                         name_medication[j])
+            tempa <- return_equal_liststring_listcol(form_col_conv_table, temp,
+                                                     words)
+            if (toupper(form) == "TABLET" | toupper(form) == "TABLETS") {
+              unit_conv_table <- tempa[[dose_unit_col_conv_table]]
+              unit_converts <-
+                unlist(lapply(unit_conv_table, convert_weight_diff_basis,
+                              this_unit[j]))
+            } else {
+              unit_conv_table <- tempa[[dose_unit_col_conv_table]]
+              unit_converts <-
+                unlist(lapply(unit_conv_table, convert_wtpertimediff_basis,
+                              this_unit[j]))
+
+            }
+            unit_same <- which(unit_converts == 1)
+            temp2 <- tempa[unit_same, ]
+            if (nrow(temp2) < 1)
+              stop("The unit in the conversion table is not correct or
+                   can not be checked")
+            conver_factor <- temp2[[conv_factor_col]]
+            if (!is.numeric(conver_factor)) {
+              if (conver_factor == "N/A" | is.na(conver_factor)) {
+                conversion_factor <- 1
+              } else {
+                check_num <- suppressWarnings(as.numeric(conver_factor))
+                if (is.na(check_num))
+                  conversion_factor <-
+                    as.numeric(stringr::str_extract(conver_factor,
+                                                    "\\d+\\.*\\d*"))
+                else
+                  conversion_factor <- as.numeric(conver_factor)
+              }
+              if (toupper(form) == "PATCH" | toupper(form) == "PATCHES") {
+                conv_fact_unit <- gsub("[0-9\\.]", "", conver_factor)
+                position_unit_time <- stringr::str_locate(conv_fact_unit, "/")
+                start <- position_unit_time[1] + 1
+                stop <- nchar(conv_fact_unit)
+                unit_of_time <- substring(conv_fact_unit, start, stop)
+                if (unit_of_time != basis_time) {
+                  stop("Error - basis time should be equal to the time given
+                       in MED calculation table")
+                }
+              }
+            }
+          }
+          strength_unit_cost <- trimws(gsub("[0-9\\.]", "",
+                                            subset2[[dosage_col_no]]))
+          strength_val_cost <-
+            as.numeric(stringr::str_extract(subset2[[dosage_col_no]],
+                                            "\\d+\\.*\\d*"))
+
+          dose_in_ipd <- paste(dose_num_val, this_unit[j], sep = "")
+          strength_unit_multiplier <- c()
+          if (toupper(form) == "TABLET" | toupper(form) == "TABLETS") {
+            basis_str_unit_multiply <- convert_weight_diff_basis(this_unit[j],
+                                                        basis_strength_unit)
+            for (i in seq_len(length(strength_unit_cost))) {
+              unit_multiply <- convert_weight_diff_basis(this_unit[j],
+                                                         strength_unit_cost[i])
+              strength_unit_multiplier <- append(strength_unit_multiplier,
+                                                unit_multiply)
+            }
+          } else {
+            basis_str_unit_multiply <- convert_wtpertimediff_basis(this_unit[j],
+                                                          basis_strength_unit)
+            for (i in seq_len(length(strength_unit_cost))) {
+              unit_multiply <- convert_wtpertimediff_basis(this_unit[j],
+                                                    strength_unit_cost[i])
+              strength_unit_multiplier <- append(strength_unit_multiplier,
+                                                unit_multiply)
+            }
+          }
+          if (sum(is.na(strength_unit_multiplier)) != 0)
+            stop("The unit is not identifiable to convert for costing")
+          strength_unit_cost[which(strength_unit_multiplier == 1)] <-
+                                                              this_unit[j]
+          dose_in_cost_data <- paste(strength_val_cost,
+                                     strength_unit_cost, sep = "")
+          if (any(dose_in_cost_data == dose_in_ipd)) {
+            subset3 <- subset2[dose_in_cost_data ==  dose_in_ipd, ]
+            if (nrow(subset3) != 1)
+              stop("Error - atleast one row should be existing ")
+            unit_cost_med_prep <- subset3[[unit_cost_column]]
+          } else {
+            stop("The used dosage is not in costing table")
+          }
+          strength_unit_multip <- strength_unit_multiplier[dose_in_cost_data ==
+                                                            dose_in_ipd]
+          unit_used_costing <- unique(subset3[[unit_col_no]])
+          if (brand_check != -1) {
+            if (unit_used_costing == "per pack" |
+                unit_used_costing == "per package" |
+                unit_used_costing == "pack" |
+                unit_used_costing == "package") {
+              pack_size <- as.numeric(subset3[size_pack_col_no])
+            } else {
+              pack_size <- 1
+            }
+          } else {
+            pack_size <- 1
+          }
+          number_taken_basis <- how_many_taken[j] * freq_multiplier_basis[j]
+          packs_taken_basis <- ceiling(number_taken_basis / pack_size)
+          cost_basis <- packs_taken_basis * unit_cost_med_prep *
+                                                     strength_unit_multip
+          med_basis <- dose_num_val * number_taken_basis
+          med_basis_same_unit <- dose_num_val * number_taken_basis *
+                                                     basis_str_unit_multiply
+          med_basis_equiv_basis <- med_basis * conversion_factor
+          cost_per_equiv_basis <- cost_basis / med_basis_equiv_basis
+
+          time_multiplier <- convert_to_given_timeperiod(timeperiod, basis_time)
+          number_taken_period <- number_taken_basis * time_multiplier
+          packs_taken_period <- ceiling(number_taken_period / pack_size)
+          cost_period <- packs_taken_period * unit_cost_med_prep *
+                                                strength_unit_multip
+          med_period <- dose_num_val * number_taken_period
+          med_period_same_unit <- dose_num_val * number_taken_period *
+                                                      basis_str_unit_multiply
+          med_basis_equiv_period <- med_period * conversion_factor
+          cost_per_equiv_period <- cost_period / med_basis_equiv_period
+
+        } else {
+          cost_basis <- 0
+          med_basis <- 0
+          med_basis_same_unit <- 0
+          med_basis_equiv_basis <- 0
+          cost_per_equiv_basis <- 0
+          cost_period <- 0
+          med_period <- 0
+          med_period_same_unit <- 0
+          med_basis_equiv_period <- 0
+          cost_per_equiv_period <- 0
+
+        }
+        total_med_basis <- total_med_basis + med_basis_same_unit
+        total_med_equiv_dose_basis <- total_med_equiv_dose_basis +
+          med_basis_equiv_basis
+        total_cost_basis <- total_cost_basis + cost_basis
+        total_cost_per_equiv_basis <- total_cost_per_equiv_basis +
+          cost_per_equiv_basis
+
+        total_med_period <- total_med_period + med_period_same_unit
+        total_med_equiv_dose_period <- total_med_equiv_dose_period +
+          med_basis_equiv_period
+        total_cost_period <- total_cost_period + cost_period
+        total_cost_per_equiv_period <- total_cost_per_equiv_period +
+          cost_per_equiv_period
+      }
+     } else {
+       total_med_basis <- NA
+       total_med_equiv_dose_basis <- NA
+       total_cost_basis <- NA
+       total_cost_per_equiv_basis <- NA
+       total_med_period <- NA
+       total_med_equiv_dose_period <- NA
+       total_cost_period <- NA
+       total_cost_per_equiv_period <- NA
+     }
     if (toupper(form) == "TABLET" | toupper(form) == "TABLETS")
       keywd <- "tablets"
     else
       keywd <- "patches"
-
     list_total_med_basis <- append(list_total_med_basis, total_med_basis)
+    list_total_med_equiv_basis <- append(list_total_med_equiv_basis,
+                                        total_med_equiv_dose_basis)
     list_total_cost_basis <- append(list_total_cost_basis, total_cost_basis)
-    list_total_cost_basis_equiv_dose <- append(list_total_cost_basis_equiv_dose,
-                                               total_cost_basis_equiv_dose)
-    list_total_cost_timeperiod <- append(list_total_cost_timeperiod,
-                                         total_cost_timeperiod)
-    list_total_cost_timeperiod_equiv_dose <-
-      append(list_total_cost_timeperiod_equiv_dose,
-                                          total_cost_timeperiod_equiv_dose)
-  }
+    list_total_cost_per_equiv_basis <- append(list_total_cost_per_equiv_basis,
+                                              total_cost_per_equiv_basis)
+    list_total_med_period <- append(list_total_med_period, total_med_period)
+    list_total_med_equiv_dose_period <- append(list_total_med_equiv_dose_period,
+                                               total_med_equiv_dose_period)
+    list_total_cost_period <- append(list_total_cost_period,
+                                     total_cost_period)
+    list_total_cost_per_equiv_period <- append(list_total_cost_per_equiv_period,
+                                               total_cost_per_equiv_period)
+   }
   this_name <- paste("totmed_basis_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_basis)
+  this_name <- paste("totmed_equiv_basis_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_med_equiv_basis)
   this_name <- paste("totcost_basis_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_basis)
-  this_name <- paste("totcost_basis_equiv_dose_", keywd, sep = "")
-  ind_part_data[[this_name]] <- unlist(list_total_cost_basis_equiv_dose)
-  this_name <- paste("totcost_timeperiod_", keywd, sep = "")
-  ind_part_data[[this_name]] <- unlist(list_total_cost_timeperiod)
-  this_name <- paste("totcost_timeperiod_equiv_dose_", keywd, sep = "")
-  ind_part_data[[this_name]] <- unlist(list_total_cost_timeperiod_equiv_dose)
+  this_name <- paste("totcost_per_equiv_basis_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_cost_per_equiv_basis)
+  this_name <- paste("totmed_period_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_med_period)
+  this_name <- paste("totmed_equiv_period_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_med_equiv_dose_period)
+  this_name <- paste("totcost_period_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_cost_period)
+  this_name <- paste("totcost_per_equiv_period_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_cost_per_equiv_period)
   return(ind_part_data)
 }
-
 ##############################################################################
-#' Function to estimate the cost of liquids taken (from IPD)
+#' Function to estimate the cost of tablets and patches taken (from IPD)
+#' @param form the form of medication either tablet or patch
 #' @param ind_part_data IPD
 #' @param name_med name of medication
-#' @param dose_med dose of medication
-#' @param dose_unit unit of strength
-#' @param bottle_size_unit unit which size of the bottle is expressed
-#' @param bottle_size how many taken
-#' @param bottle_remain frequency of medication
+#' @param brand_med brand name of medication if revealed
+#' @param dose_med dose of medication used
+#' @param unit_med unit of medication ; use null if its along with the dose
+#' @param bottle_size size of the bottle used
+#' @param bottle_size_unit unit of bottle volume
+#' @param bottle_lasts how long the bottle lasted
+#' @param bottle_lasts_unit time unit of how long the bottle lasted
+#' @param preparation_dose dose if preparation is given
+#' @param preparation_unit unit of preparatio dose
+#' @param timeperiod time period for cost calculation
 #' @param unit_cost_data  unit costs data
-#' assumes unit cost data contains the columns, name of medication,
-#' form/type, strength,
-#' unit of strength, preparation, unitcost, size and size unit
-#' (in which except name and form are to be passed in)
 #' @param unit_cost_column column name of unit cost in unit_cost_data
-#' @param cost_calculated_in column name of unit where the cost is calculated
-#' @param strength_column column name of strength in the unit cost data
-#' @param list_period_timepoint list of time period at each timepoint
-#' @param preparation  preparation of liquid that is used
-#' @param list_of_code_names if names is coded, give the code:name pairs
-#' @param list_of_code_dose_unit if unit is coded, give the code:unit pairs
-#' @param list_of_code_bottle_size list of codes for the bottle sizes fi used
-#' @param equiv_dose if cost per equivalent doses are to be calculates,
-#' provide equiv_dose
-#' @param basis_time time needed to convert , default is day
-#' @return the calculated cost of liquids along with original data
+#' @param cost_calculated_per column name of unit where the cost is calculated
+#' @param strength_column column column name that has strength of medication
+#' @param list_of_code_names if names is coded, give the code:name pairs,
+#' optional
+#' @param list_of_code_brand if brand names  are coded, give the
+#' code:brand pairs, optional
+#' @param list_of_code_dose_unit if unit is coded, give the code:unit pairs,
+#' optional
+#' @param list_of_code_bottle_size_unit  list of bottle size units and codes
+#' @param list_of_code_bottle_lasts_unit list of time of bottle lasts and codes
+#' @param list_preparation_dose_unit list of preparation dose units and codes
+#' @param eqdose_covtab table to get the conversion factor for equivalent
+#' doses, optional
+#' @param basis_strength_unit strength unit to be taken as basis
+#' required for total medication calculations
+#' @param basis_time basis for time
+#' @return the calculated cost of tablets along with original data
 #' @examples
-#' med_costs_file <- system.file("extdata", "average_unit_costs_med.csv",
+#' med_costs_file <- system.file("extdata", "average_unit_costs_med_brand.csv",
 #' package = "packDAMipd")
-#' data_file <- system.file("extdata", "resource_use_l.csv",
+#' data_file <- system.file("extdata", "medication_liq.xlsx",
 #' package = "packDAMipd")
 #' ind_part_data <- load_trial_data(data_file)
 #' med_costs <- load_trial_data(med_costs_file)
-#' res <- microcosting_liquids(
-#'   ind_part_data, "Drug", "liq_dosage", "liquid_dose_unit",
-#'   "liquid_bottle_size", "liquid_bottle_remain_time", NULL,
-#'   med_costs, "UnitCost", "SizeUnit", "Strength", NULL, NULL, NULL,
-#'   NULL, NULL, "liquid_equiv_dose", "day"
-#' )
-#' @importFrom tm removeNumbers
+#' conv_file <- system.file("extdata", "Med_calc.xlsx",
+#' package = "packDAMipd")
+#' table <- load_trial_data(conv_file)
+#' res <- microcosting_liquids_wide(form = "liquid",
+#' ind_part_data = ind_part_data, name_med = "liq_name",brand_med =  NULL,
+#' dose_med = "liq_strength", unit_med = NULL,bottle_size = "liq_bottle_size",
+#' bottle_size_unit = NULL, bottle_lasts = "liq_lasts",
+#' bottle_lasts_unit = NULL, preparation_dose = NULL,preparation_unit = NULL,
+#' timeperiod = "4 months", unit_cost_data = med_costs,
+#' unit_cost_column = "UnitCost", cost_calculated_per = "Basis",
+#' strength_column = "Strength",list_of_code_names = NULL,
+#' list_of_code_brand = NULL, list_of_code_dose_unit = NULL,
+#' list_of_code_bottle_size_unit = NULL,
+#' list_of_code_bottle_lasts_unit = NULL,list_preparation_dose_unit = NULL,
+#' eqdose_covtab = table, basis_strength_unit = NULL, basis_time = NULL)
 #' @export
-microcosting_liquids <- function(ind_part_data,
-                                 name_med, dose_med, dose_unit,
-                                 bottle_size, bottle_remain,
-                                 bottle_size_unit = NULL,
-                                 unit_cost_data, unit_cost_column,
-                                 cost_calculated_in, strength_column,
-                                 list_period_timepoint,
-                                 preparation = NULL,
-                                 list_of_code_names = NULL,
-                                 list_of_code_dose_unit = NULL,
-                                 list_of_code_bottle_size = NULL,
-                                 equiv_dose = NULL, basis_time = "day") {
+#' @importFrom dplyr %>%
+microcosting_liquids_wide <- function(form ="liquid", ind_part_data,
+                                      name_med,
+                                      brand_med = NULL,
+                                      dose_med,
+                                      unit_med = NULL,
+                                      bottle_size,
+                                      bottle_size_unit = NULL,
+                                      bottle_lasts,
+                                      bottle_lasts_unit = NULL,
+                                      preparation_dose = NULL,
+                                      preparation_unit = NULL,
+                                      timeperiod,
+                                      unit_cost_data,
+                                      unit_cost_column,
+                                      cost_calculated_per,
+                                      strength_column,
+                                      list_of_code_names = NULL,
+                                      list_of_code_brand = NULL,
+                                      list_of_code_dose_unit = NULL,
+                                      list_of_code_bottle_size_unit = NULL,
+                                      list_of_code_bottle_lasts_unit = NULL,
+                                      list_preparation_dose_unit = NULL,
+                                      eqdose_covtab = NULL,
+                                      basis_strength_unit = NULL,
+                                      basis_time = NULL) {
+  # check the form as liquids
+  words <- c("liquid", "liq", "injection", "inject", "solution", "ampoule",
+             "liquids", "injections", "solutions", "ampoules")
+  form_check <- return0_if_not_null_na(form)
+
+  if (form_check == -1)
+    stop("Given form should not be NULL or NA")
+  else {
+    if (!(form %in% words))
+    stop("Given form should be of type liquid or injection")
+  }
+  generated_list <- generate_wt_vol_units()
+  wt_per_vol_units <- generated_list$weight_per_vol
+  time_units <-  generate_wt_time_units()$time_units
+
   #Error - data should not be NULL
   if (is.null(ind_part_data) | is.null(unit_cost_data))
     stop("data should not be NULL")
+
   #Checking if the required parameters are NULL or NA
-  variables_check <- list(name_med, dose_med, dose_unit,
-                         bottle_size, bottle_remain, basis_time,
-                         unit_cost_column,
-                         cost_calculated_in, strength_column)
+  variables_check <- list(name_med, dose_med,
+                          bottle_size, bottle_lasts,
+                          timeperiod, unit_cost_column,
+                          cost_calculated_per, strength_column)
   results <- sapply(variables_check, check_null_na)
-  names_check <- c("name_med", "dose_med", "dose_unit",
-                  "bottle_size", "bottle_remain", "basis_time",
-                  "unit_cost_column",
-                  "cost_calculated_in", "strength_column")
+  names_check <- c("name_med", "dose_med", "bottle_size", "bottle_lasts",
+                   "timeperiod", "unit_cost_column",
+                   "cost_calculated_per", "strength_column")
   if (any(results != 0)) {
     indices <- which(results < 0)
-    stop(paste("Error - the variables can not be NULL or NA, check the
-               variable(s)",
-               names_check[indices]))
+    stop(paste("Error - the variables can not be NULL or NA,
+               check the variable(s)", names_check[indices]))
   }
-  if (is.null(equiv_dose)) {
-    equiv_dose_div <- 1
-  } else {
-    equiv_dose_div <- ind_part_data[[equiv_dose]]
-  }
-  # get colnames for name, form, dosage and unit
-  name_pattern <- c("name", "drug", "medication", "med")
-  bool_res <- unlist(lapply(name_pattern,
-                            IPDFileCheck::check_col_pattern_colname,
-                            colnames(unit_cost_data)))
-  if (any(bool_res)) {
-    name_ind <- which(bool_res == TRUE)
-  } else {
-    stop("Error- Name of the medication is not found. Please use name, drug,
-         medication, or med to indicate the medication")
-  }
-  name_col_no <- IPDFileCheck::get_colno_pattern_colname(name_pattern[name_ind],
-                                                  colnames(unit_cost_data))
-
-  form_pattern <- c("form", "drug form", "patch/tablet/liquid/injection",
-                    "type")
-  bool_res <- unlist(lapply(form_pattern,
-                            IPDFileCheck::check_col_pattern_colname,
-                            colnames(unit_cost_data)))
-  if (any(bool_res)) {
-    form_ind <- which(bool_res == TRUE)
-  } else {
-    stop("Error- Form of the medication is not found. Please use form,
-    drug form, patch/tablet/liquid, or type to indicate
-         the type of medication")
-  }
-  form_col_no <- IPDFileCheck::get_colno_pattern_colname(form_pattern[form_ind],
-                                                  colnames(unit_cost_data))
-
-  unit_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
-                                                     cost_calculated_in)
-  dosage_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
-                                                       strength_column)
-  size_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data, "size")
-
-  prepar_pattern <- c("preparation")
-  bool_res <- unlist(lapply(prepar_pattern,
-                            IPDFileCheck::check_col_pattern_colname,
-                            colnames(unit_cost_data)))
-  if (!is.null(preparation)) {
-    if (any(bool_res)) {
-      prepar_ind <- which(bool_res == TRUE)
-    }
-    prepar_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
-                                                prepar_pattern[prepar_ind])
-  }
-
-  # if the codes are being used for name, dosage, frequency an time period
-  if (!is.null(list_of_code_names)) {
-    name_and_code <- stats::setNames(as.list(list_of_code_names[[1]]),
-                                     list_of_code_names[[2]])
-    ipd_codes <- ind_part_data[[name_med]]
-    name_from_code <- name_and_code[ipd_codes]
-    index <- which(is.na(ipd_codes))
-    if (length(index) > 0)
-      name_from_code[index] <- NA
-
-  } else {
-    name_from_code <- ind_part_data[[name_med]]
-  }
-  if (is.null(unlist(name_from_code))) {
-    stop("Error - name_from_code can not be null - check the input for list
-         of names and codes")
-  }
-  if (!is.null(list_of_code_bottle_size)) {
-    size_and_code <- stats::setNames(as.list(list_of_code_bottle_size[[1]]),
-                                     list_of_code_bottle_size[[2]])
-    ipd_codes <- ind_part_data[[bottle_size]]
-    size_from_code <- size_and_code[ipd_codes]
-    index <- which(is.na(ipd_codes))
-    if (length(index) > 0)
-      size_from_code[index] <- NA
-  } else {
-    size_from_code <- ind_part_data[[bottle_size]]
-  }
-  if (is.null(unlist(size_from_code))) {
-    stop("Error - size_from_code can not be null - check the input for list
-         of size and codes")
-  }
-
-  if (!is.null(list_of_code_dose_unit)) {
-    unit_and_code <- stats::setNames(as.list(list_of_code_dose_unit[[1]]),
-                                     list_of_code_dose_unit[[2]])
-    ipd_codes <- ind_part_data[[dose_unit]]
-    unit_from_code <- unit_and_code[ipd_codes]
-    index <- which(is.na(ipd_codes))
-    if (length(index) > 0)
-      unit_from_code[index] <- NA
-  } else {
-    unit_from_code <- ind_part_data[[dose_unit]]
-  }
-
-  if (is.null(unlist(unit_from_code))) {
-    stop("Error - unit_from_code can not be null - check the input for list of
-         codes and names")
-  }
-  timepoint_details <- get_timepoint_details(ind_part_data)
-  if (is.null(list_period_timepoint)) {
-    period_desc_from_code <- ind_part_data[[timepoint_details$name]]
-  } else {
-    period_code <- stats::setNames(as.list(list_period_timepoint[[1]]),
-                                   list_period_timepoint[[2]])
-    timepoint_codes <- ind_part_data[[timepoint_details$name]]
-    period_desc_from_code <- period_code[timepoint_codes]
-    index <- which(is.na(timepoint_codes))
-    if (length(index) > 0)
-      period_desc_from_code[index] <- NA
-  }
-  if (is.null(unlist(period_desc_from_code))) {
-    stop("Error - period_desc_from_code can not be null - check the input for
-         list of period")
-  }
-  list_total_bottle_timeperiod <- list()
-  list_total_bottle_timeperiod_equiv_dose <- list()
-  list_total_cost_timeperiod <- list()
-  list_total_cost_timeperiod_equiv_dose <- list()
-  for (i in 1:nrow(ind_part_data)) {
-    name_medication <- name_from_code[i]
-    dose_medication <- ind_part_data[[dose_med]][i]
-    if (!is.null(dose_medication) & !is.na(dose_medication)) {
-      this_size <- size_from_code[i]
-      remain_time <- ind_part_data[[bottle_remain]][i]
-      subset1 <- unit_cost_data[toupper(unit_cost_data[[name_col_no]])
-                                == toupper(name_medication), ]
-      subset2 <- subset1[subset1[form_col_no] == "Liquid" |
-                           subset1[form_col_no] == "Liquids", ]
-      unit_used_costing <- unique(subset2[[unit_col_no]])
-      if (length(unit_used_costing) != 1) {
-        stop("unit used for costing tablets is not unique !!!")
-      }
-      if (!is.null(preparation)) {
-        this_preparation <- ind_part_data[[preparation]][i]
-      }
-      if (is.null(bottle_size_unit)) {
-        size_unit <- trimws(tm::removeNumbers(unlist(this_size)))
-        matches <- regmatches(this_size, gregexpr("[[:digit:]]+", this_size))
-        size_number <- as.numeric(unlist(matches))
-      } else {
-        size_unit <- ind_part_data[[bottle_size_unit]]
-        size_number <- this_size
-      }
-      size_multiplier <- convert_volume_basis(size_unit, unit_used_costing)
-      if (is.na(size_multiplier))
-        stop("The unit is not identifiable to convert that used for costing")
-
-      total_med_for_remain_time <- size_number * size_multiplier
-
-      if (any(subset2[[dosage_col_no]] == dose_medication)) {
-        if (!is.null(preparation)) {
-          unit_cost_med_prep <-
-            subset2[subset2[[dosage_col_no]] == dose_medication &
-            subset2[[prepar_col_no]] == this_preparation &
-            subset2[[size_col_no]] == size_number &
-            subset2[[unit_col_no]] == unit_used_costing, ][[unit_cost_column]]
-        } else {
-          unit_cost_med_prep <-
-            subset2[subset2[[dosage_col_no]] == dose_medication &
-            subset2[[size_col_no]] == size_number &
-            subset2[[unit_col_no]] == unit_used_costing, ][[unit_cost_column]]
-        }
-      } else {
-        stop("The used dosage is not in costing table")
-      }
-      if (unit_cost_med_prep <= 0 | is.null(unit_cost_med_prep) |
-          is.na(unit_cost_med_prep))
-        stop("Error - unit cost for the medicine is not valid")
-      cost_bottle <- unit_cost_med_prep
-      period_given_basis <-
-        convert_to_given_timeperiod(period_desc_from_code[i], basis_time)
-      bottle_used_time_given_basis <-
-        convert_to_given_timeperiod(remain_time, basis_time)
-      med_required_timeperiod <-
-        (total_med_for_remain_time / bottle_used_time_given_basis) *
-        period_given_basis
-      no_bottle_timeperiod <- ceiling(med_required_timeperiod / size_number)
-      # need to check if what it actually mean by equivalent dose
-      # 1mg/ml of liquid equivalent to mg of morphine ?
-      no_bottle_timeperiod_equiv_dose <-
-        no_bottle_timeperiod / equiv_dose_div[i]
-      total_cost_timeperiod <- no_bottle_timeperiod * cost_bottle
-      total_cost_timeperiod_equiv_dose <-
-        total_cost_timeperiod / equiv_dose_div[i]
+  # if null,keep proper strength unit and time unit
+  if (!is.null(basis_strength_unit)) {
+    if (is.na(basis_strength_unit)) {
+      basis_strength_unit <- "mg/ml"
+      basis_wt_unit <- "mg"
+      basis_vol_unit <- "ml"
     } else {
-      no_bottle_timeperiod <- NA
-      no_bottle_timeperiod_equiv_dose <- NA
-      total_cost_timeperiod <- NA
-      total_cost_timeperiod_equiv_dose <- NA
+      if (!(basis_strength_unit %in% wt_per_vol_units))
+        stop("Basis strength unit is not valid")
+      index <- stringr::str_locate(basis_strength_unit, "/")
+      basis_wt_unit <- stringr::str_sub(basis_strength_unit, 1, index[1] - 1)
+      basis_vol_unit <- stringr::str_sub(basis_strength_unit, index[2] + 1,
+                                         nchar(basis_strength_unit))
     }
-    list_total_bottle_timeperiod <-
-      append(list_total_bottle_timeperiod, no_bottle_timeperiod)
-    list_total_bottle_timeperiod_equiv_dose <-
-      append(list_total_bottle_timeperiod_equiv_dose,
-             no_bottle_timeperiod_equiv_dose)
-    list_total_cost_timeperiod <-
-      append(list_total_cost_timeperiod, total_cost_timeperiod)
-    list_total_cost_timeperiod_equiv_dose <-
-      append(list_total_cost_timeperiod_equiv_dose,
-             total_cost_timeperiod_equiv_dose)
+  } else {
+    basis_strength_unit <- "mg/ml"
+    basis_wt_unit <- "mg"
+    basis_vol_unit <- "ml"
   }
-  ind_part_data[["tot_timeperiod_bottle"]] <-
-    unlist(list_total_bottle_timeperiod)
-  ind_part_data[["tot_timeperiod_equiv_dose_bottle"]] <-
-    unlist(list_total_bottle_timeperiod_equiv_dose)
-  ind_part_data[["totcost_timeperiod_liquids"]] <-
-    unlist(list_total_cost_timeperiod)
-  ind_part_data[["totcost_timeperiod_equiv_dose_liquids"]] <-
-    unlist(list_total_cost_timeperiod_equiv_dose)
+  if (!is.null(basis_time)) {
+    if (is.na(basis_time))
+      basis_time <- "day"
+  } else {
+    basis_time <- "day"
+  }
+
+  if (!(basis_time %in% time_units)) {
+    stop("the basis time unit is not valid")
+  }
+
+  ## Check the columns in IPD and get the columns
+  brand_check <- return0_if_not_null_na(brand_med)
+  unit_med_check <-  return0_if_not_null_na(unit_med)
+  bottle_size_unit_check <- return0_if_not_null_na(bottle_size_unit)
+  bottle_lasts_unit_check <- return0_if_not_null_na(bottle_lasts_unit)
+  preparation_dose_check <- return0_if_not_null_na(preparation_dose)
+  preparation_unit_check <- return0_if_not_null_na(preparation_unit)
+
+  check_list <- c(unit_med_check, brand_check, bottle_size_unit_check,
+                  bottle_lasts_unit_check, preparation_dose_check,
+                  preparation_unit_check)
+  partial_list <- c(name_med, dose_med, bottle_size, bottle_lasts)
+  another_list <- list(unit_med, brand_med, bottle_size_unit, bottle_lasts_unit,
+                    preparation_dose, preparation_unit)
+  another_list[check_list == -1] <- -1
+  info_list <- unlist(append(partial_list, another_list))
+
+  ipd_cols_exists <- list()
+  for (i in seq_len(length(info_list))) {
+    if (info_list[i] != -1) {
+      check <- IPDFileCheck::check_column_exists(info_list[i], ind_part_data)
+      if (sum(check) != 0) {
+        res <- grep(info_list[i], colnames(ind_part_data))
+        if (length(res) == 0)
+          stop("Atleast one of the required columns not found")
+        ipd_cols_exists[length(ipd_cols_exists) + 1] <- list(res)
+      }
+    } else {
+      ipd_cols_exists[length(ipd_cols_exists) + 1] <- -1
+    }
+  }
+  names_med_ipd_cols <- unlist(ipd_cols_exists[1])
+  doses_med_ipd_cols <- unlist(ipd_cols_exists[2])
+  bottle_size_ipd_cols <- unlist(ipd_cols_exists[3])
+  bottle_lasts_ipd_cols <- unlist(ipd_cols_exists[4])
+  if (unit_med_check != -1)
+    unit_med_ipd_cols  <- unlist(ipd_cols_exists[5])
+  if (brand_check != -1)
+    brand_med_ipd_cols  <- unlist(ipd_cols_exists[6])
+  if (bottle_size_unit_check != -1)
+    bottle_size_unit_ipd_cols  <- unlist(ipd_cols_exists[7])
+  if (bottle_lasts_unit_check != -1)
+    bottle_lasts_unit_ipd_cols  <- unlist(ipd_cols_exists[8])
+  if (preparation_dose_check != -1)
+    preparation_dose_ipd_cols  <- unlist(ipd_cols_exists[9])
+  if (preparation_unit_check != -1)
+    preparation_unit_ipd_cols  <- unlist(ipd_cols_exists[10])
+
+  # check columns exist in unit cost  data
+  info_list <- c(unit_cost_column, cost_calculated_per, strength_column)
+  checks <- sapply(info_list, IPDFileCheck::check_column_exists, unit_cost_data)
+  if (sum(checks) != 0) {
+    stop("Atleast one of the required columns in unit cost data not found")
+  }
+
+  ## if the information is coded
+  names_from_ipd_code <- encode_codes_data(list_of_code_names,
+                                           names_med_ipd_cols, ind_part_data)
+  if (is.null(unlist(names_from_ipd_code)) |
+      sum(is.na(unlist(names_from_ipd_code))) ==
+      length(unlist(names_from_ipd_code))) {
+    stop("Error - name_from_code can not be null - check the input for
+         list of names and codes")
+  }
+
+  if (unit_med_check == -1) {
+    med_ipd_dose <- ind_part_data %>%
+      dplyr::select(dplyr::all_of(doses_med_ipd_cols))
+    med_dose_unlist <- unlist(med_ipd_dose)
+    unit_from_ipd_code <- gsub("[0-9\\.]", "", med_dose_unlist)
+    unit_from_ipd_code <- matrix(unit_from_ipd_code,
+                                 nrow = dim(med_ipd_dose)[1])
+    colnames(unit_from_ipd_code) <- colnames(med_ipd_dose)
+    unit_from_ipd_code <- as.data.frame(unit_from_ipd_code)
+  } else {
+    med_ipd_dose <- ind_part_data %>%
+      dplyr::select(dplyr::all_of(doses_med_ipd_cols))
+    med_ipd_dose <- as.data.frame(med_ipd_dose)
+    unit_from_ipd_code <- encode_codes_data(list_of_code_dose_unit,
+                                            unit_med_ipd_cols, ind_part_data)
+    if (is.null(unlist(unit_from_ipd_code)) |
+        sum(is.na(unlist(unit_from_ipd_code))) ==
+        length(unlist(unit_from_ipd_code))) {
+      stop("Error - unit_from_code can not be null - check the input for
+         list of units")
+    }
+  }
+
+  if (bottle_lasts_unit_check == -1) {
+    bottle_lasts_ipd <- ind_part_data %>%
+      dplyr::select(dplyr::all_of(bottle_lasts_ipd_cols))
+    bottle_lasts_unit_unlist <- unlist(bottle_lasts_ipd)
+    unit_from_lasts <- gsub("[0-9\\.]", "", bottle_lasts_unit_unlist)
+    unit_from_lasts <- matrix(unit_from_lasts,
+                              nrow = dim(bottle_lasts_ipd)[1])
+    colnames(unit_from_lasts) <- colnames(bottle_lasts_ipd)
+    bottle_lasts_unit_from_ipd_code <- as.data.frame(unit_from_lasts)
+  } else {
+    bottle_lasts_ipd <- ind_part_data %>%
+      dplyr::select(dplyr::all_of(bottle_lasts_ipd_cols))
+    bottle_lasts_unit_from_ipd_code <-
+      encode_codes_data(list_of_code_bottle_lasts_unit,
+                        bottle_lasts_unit_ipd_cols, ind_part_data)
+    if (is.null(unlist(bottle_lasts_unit_from_ipd_code)) |
+        sum(is.na(unlist(bottle_lasts_unit_from_ipd_code))) ==
+        length(unlist(bottle_lasts_unit_from_ipd_code))) {
+      stop("Error - size_unit_from_code can not be null - check the input for
+           bottle lasts unit code")
+    }
+  }
+
+  if (bottle_size_unit_check == -1) {
+    bottle_size_ipd <- ind_part_data %>%
+      dplyr::select(dplyr::all_of(bottle_size_ipd_cols))
+    bottle_size_unlist <- unlist(bottle_size_ipd)
+    unit_from_size <- gsub("[0-9]+", "", bottle_size_unlist)
+    unit_from_size <- matrix(unit_from_size,
+                             nrow = dim(bottle_size_ipd)[1])
+    colnames(unit_from_size) <- colnames(bottle_size_ipd)
+    bottle_size_unit_from_ipd_code <- as.data.frame(unit_from_size)
+  } else {
+    bottle_size_ipd <- ind_part_data %>%
+      dplyr::select(dplyr::all_of(bottle_size_ipd_cols))
+    bottle_size_unit_from_ipd_code <-
+      encode_codes_data(list_of_code_bottle_size_unit,
+                        bottle_size_unit_ipd_cols,
+                        ind_part_data)
+    if (is.null(unlist(bottle_size_unit_from_ipd_code)) |
+        sum(is.na(unlist(bottle_size_unit_from_ipd_code))) ==
+        length(unlist(bottle_size_unit_from_ipd_code))) {
+      stop("Error - size_unit_from_code can not be null - check the input for
+         bottel size unit code")
+    }
+  }
+
+  if (brand_check != -1) {
+    brand_from_ipd_code <- encode_codes_data(list_of_code_brand,
+                                             brand_med_ipd_cols, ind_part_data)
+    if (is.null(unlist(brand_from_ipd_code)) |
+        sum(is.na(unlist(brand_from_ipd_code))) ==
+        length(unlist(brand_from_ipd_code))) {
+      stop("Error - size_unit_from_code can not be null - check the input for
+         brand  code")
+    }
+  }
+
+  # dose is specified as 2mg/ml unit is not separate, no coding required
+  if (preparation_dose_check != -1 & preparation_unit_check == -1) {
+    preparation_ipd_dose <- ind_part_data %>%
+      dplyr::select(dplyr::all_of(preparation_dose_ipd_cols))
+    preparation_dose_unlist <- unlist(preparation_ipd_dose)
+    prepare_unit_from_ipd_code <- gsub("[0-9\\.]", "", preparation_dose_unlist)
+    prepare_unit_from_ipd_code <- matrix(prepare_unit_from_ipd_code,
+                                         nrow = dim(preparation_ipd_dose)[1])
+    colnames(prepare_unit_from_ipd_code) <- colnames(preparation_ipd_dose)
+    prepare_unit_from_ipd_code <- as.data.frame(prepare_unit_from_ipd_code)
+  }
+  if (preparation_dose_check != -1 & preparation_unit_check != -1) {
+    preparation_ipd_dose <- ind_part_data %>%
+      dplyr::select(dplyr::all_of(preparation_dose_ipd_cols))
+    preparation_ipd_dose <- as.data.frame(preparation_ipd_dose)
+    prepare_unit_from_ipd_code <- encode_codes_data(list_preparation_dose_unit,
+                                                    preparation_unit_ipd_cols, ind_part_data)
+  }
+
+  # get column names for name, form, dosage and unit from unit cost data
+  name_pattern <- c("name", "drug", "medication", "med", "patch")
+  form_pattern <- c("form", "drug form", "patch/tablet", "type")
+  size_pattern <- c("size", "packsize")
+  size_unit_pattern <- c("vol", "volume")
+  brand_pattern <- c("brand", "brand name", "trade", "trade name")
+  preparation_pattern <- c("preparation", "prepare", "make")
+
+  name_cost_col_no <- get_col_multiple_pattern(name_pattern, unit_cost_data)
+  form_cost_col_no <- get_col_multiple_pattern(form_pattern, unit_cost_data)
+  size_pack_cost_col_no <-
+    get_col_multiple_pattern(size_pattern, unit_cost_data)
+  size_unit_cost_col_no <-
+    get_col_multiple_pattern(size_unit_pattern, unit_cost_data)
+  unit_cost_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
+                                                          cost_calculated_per)
+  dosage_cost_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
+                                                            strength_column)
+  if (brand_check != -1) {
+    brand_cost_col_no <- get_col_multiple_pattern(brand_pattern,
+                                                   unit_cost_data)
+  }
+  if (preparation_dose_check != -1) {
+    preparation_cost_col_no <-  get_col_multiple_pattern(preparation_pattern,
+                                                          unit_cost_data)
+  }
+
+  ## information from equivalent dose tables
+
+  if (is.null(eqdose_covtab)) {
+    conversion_factor <- 1
+    eqdose_check <- -1
+  } else {
+    if (typeof(eqdose_covtab) != "closure" & typeof(eqdose_covtab) != "list") {
+      if (is.na(eqdose_covtab)) {
+        eqdose_check <- -1
+        conversion_factor <- 1
+      }
+    } else {
+      eqdose_check <- 0
+      name_pattern <- c("name", "drug", "medication", "med")
+      form_pattern <- c("form", "type")
+      dose_unit_pattern <- c("unit", "dose unit", "dose_unit", "unit of dose",
+                             "unit dose")
+      conv_factor_pattern <- c("conversion factor", "conversion_factor",
+                               "conv_factor", "factor conversion",
+                               "factor_conversion")
+
+      drug_col_conv_table <- get_col_multiple_pattern(name_pattern,
+                                                       eqdose_covtab)
+
+      form_col_conv_table <- get_col_multiple_pattern(form_pattern,
+                                                       eqdose_covtab)
+      dose_unit_col_conv_table <- get_col_multiple_pattern(dose_unit_pattern,
+                                                            eqdose_covtab)
+      conv_factor_col_conv_table <-
+        get_col_multiple_pattern(conv_factor_pattern, eqdose_covtab)
+
+    }
+  }
+  list_total_med_basis <- list()
+  list_total_med_equiv_basis <- list()
+  list_total_cost_basis <- list()
+  list_total_cost_per_equiv_basis <- list()
+  list_total_med_period <- list()
+  list_total_med_equiv_dose_period <- list()
+  list_total_cost_period <- list()
+  list_total_cost_per_equiv_period <- list()
+  for (i in 1:nrow(ind_part_data)) {
+    name_ipd <- names_from_ipd_code[i, ]
+    dose_ipd <- med_ipd_dose[i, ]
+    unit_dose_ipd <- unit_from_ipd_code[i, ]
+
+    bot_lasts_ipd <- bottle_lasts_ipd[i, ]
+    bot_lasts_unit_ipd <- bottle_lasts_unit_from_ipd_code[i, ]
+    bot_size_ipd <- bottle_size_ipd[i, ]
+    bot_size_unit_ipd <- bottle_size_unit_from_ipd_code[i, ]
+
+    if (brand_check != -1)
+      brand_ipd <- brand_from_ipd_code[i, ]
+    if (preparation_dose_check != -1)
+      prepare_dose_ipd <- preparation_ipd_dose[i, ]
+    if (preparation_unit_check != -1)
+      prepare_unit_ipd <- prepare_unit_from_ipd_code[i, ]
+    no_na_dose_ipd <- dose_ipd[!is.na(dose_ipd)]
+    no_na_name_ipd <- name_ipd[!is.na(name_ipd)]
+    if (length(no_na_name_ipd) != length(no_na_dose_ipd))
+      stop("number of doses and number of medications should be equal")
+    if (is.null(name_ipd)) {
+      med_valid_check <- -1
+    } else {
+      if (sum(is.na(unname(name_ipd))) >= length(name_ipd))
+        med_valid_check <- -1
+      else
+        med_valid_check <- 0
+    }
+    if (med_valid_check != -1) {
+      total_med_basis <- 0
+      total_med_equiv_dose_basis <-  0
+      total_cost_basis <-  0
+      total_cost_per_equiv_basis <-  0
+      total_med_period <-  0
+      total_med_equiv_dose_period <-  0
+      total_cost_period <-  0
+      total_cost_per_equiv_period <-  0
+      for (j in seq_len(length(name_ipd))) {
+        if (!is.null(name_ipd[j]) & !is.na(name_ipd[j])) {
+          #(name, form, brand, dose, preparation,and volume of bottle)
+          match_name <- return_equal_str_col(name_cost_col_no, unit_cost_data,
+                                             name_ipd[j])
+          match_form <- return_equal_liststring_col(form_cost_col_no,
+                                                    match_name, words)
+          if (brand_check != -1) {
+            match_form_brand <- return_equal_str_col(brand_cost_col_no,
+                                                     match_form, brand_ipd[j])
+            if (nrow(match_form_brand) < 1)
+              stop("Did not find matching brand name of medication")
+          } else {
+            match_form_brand <- match_form
+          }
+          # get the unit of doses from the ipd
+          if (unit_med_check == -1)
+            dose_num_val_ipd <-
+            as.numeric(stringr::str_extract(dose_ipd[j], "\\d+\\.*\\d*"))
+          else
+            dose_num_val_ipd <- as.numeric(dose_ipd[j])
+          dose_in_ipd <- paste(dose_num_val_ipd, unit_dose_ipd[j], sep = "")
+
+
+          strength_unit_cost <- trimws(gsub("[0-9\\.]", "",
+                                            match_form[[dosage_cost_col_no]]))
+          strength_val_cost <-
+            as.numeric(stringr::str_extract(match_form[[dosage_cost_col_no]],
+                                            "\\d+\\.*\\d*"))
+
+          # if the unit cost are listed for different unit of doses say
+          # mg/ml or g/ml
+          # choose the right one after finding the multiplier which is 1.
+
+          dose_in_cost_data <- paste(strength_val_cost, strength_unit_cost,
+                                     sep = "")
+
+          if (any(dose_in_cost_data == dose_in_ipd)) {
+            match_form_brand_unit <-
+              match_form_brand[dose_in_cost_data ==  dose_in_ipd, ]
+            if (nrow(match_form_brand_unit) != 1)
+              stop("Error - atleast one row should be existing ")
+
+          } else {
+            stop("The used dosage is not in costing table")
+          }
+          # get the unit of preparation from the ipd
+          if (preparation_dose_check != -1) {
+            if (preparation_unit_check == -1) {
+              ipd_preparation_dose <- prepare_dose_ipd[j]
+            } else {
+              prepare_dose_val <- (prepare_dose_ipd[j])
+              prepare_dose_unit_val <- prepare_unit_ipd[j]
+
+              index_slash <- stringr::str_locate(prepare_dose_val, "/")
+              first_dose <- stringr::str_sub(prepare_dose_val, 1,
+                                             index_slash[1] - 1)
+
+              second_dose <- stringr::str_sub(prepare_dose_val,
+                                              index_slash[2] + 1, nchar(prepare_dose_val))
+
+              index <- stringr::str_locate(prepare_dose_unit_val, "/")
+              wt_unit <- stringr::str_sub(prepare_dose_unit_val, 1,
+                                          index[1] - 1)
+
+              vol_unit <- stringr::str_sub(prepare_dose_unit_val,
+                                           index[2] + 1, nchar(prepare_dose_unit_val))
+
+              ipd_preparation_dose <- paste(first_dose, wt_unit,"/",
+                                            second_dose, vol_unit, sep = "")
+
+            }
+            match_form_brand_unit_prepare <-
+              match_form_brand_unit[match_form_brand_unit[preparation_cost_col_no] ==
+                                      ipd_preparation_dose, ]
+          } else {
+            match_form_brand_unit_prepare <- match_form_brand_unit
+          }
+          unit_used_costing <-
+            unique(match_form_brand_unit_prepare[[unit_cost_col_no]])
+          if (unit_used_costing == "per bottle") {
+            bottle_vol_cost <-
+              as.numeric(match_form_brand_unit_prepare[size_pack_cost_col_no])
+            bottle_vol_unit_cost <-
+              match_form_brand_unit_prepare[size_unit_cost_col_no]
+
+            bottle_volandunit_cost <- paste(bottle_vol_cost,
+                                            bottle_vol_unit_cost, sep = "")
+
+            if (bottle_size_unit_check == -1)
+              bottle_size_num_val_ipd <-
+              as.numeric(stringr::str_extract(bot_size_ipd[j], "\\d+\\.*\\d*"))
+            else
+              bottle_size_num_val_ipd <- as.numeric(bot_size_ipd[j])
+            bottle_size_in_ipd <- paste(bottle_size_num_val_ipd,
+                                        bot_size_unit_ipd[j], sep = "")
+
+            if (any(bottle_volandunit_cost == bottle_size_in_ipd)) {
+              match_form_brand_unit_prepare_size <-
+                match_form_brand_unit_prepare[bottle_volandunit_cost ==
+                                                bottle_size_in_ipd, ]
+              if (nrow(match_form_brand_unit_prepare_size) != 1)
+                stop("Error - atleast one row should be existing ")
+              uni_cost_per_bottle <-
+                match_form_brand_unit_prepare_size[[unit_cost_column]]
+            } else {
+              stop("The used dosage is not in costing table")
+            }
+          } else {
+            stop("Error- liquids needs to be costed per bottle")
+          }
+
+          if (eqdose_check != -1) {
+            temp <- return_equal_str_col(drug_col_conv_table, eqdose_covtab,
+                                         name_ipd[j])
+            tempa <- return_equal_liststring_listcol(form_col_conv_table, temp,
+                                                     words)
+            if (nrow(tempa) < 1)
+              stop("The liquid medication is not found")
+            unit_conv_table <- tempa[[dose_unit_col_conv_table]]
+            unit_converts <-
+              unlist(lapply(unit_conv_table, convert_wtpervoldiff_basis,
+                            unit_dose_ipd[j]))
+            temp2 <- tempa[which(unit_converts == 1), ]
+            if (nrow(temp2) < 1)
+              stop("The unit in the conversion table is not correct or
+                   can not be checked")
+            conver_factor <- temp2[[conv_factor_col_conv_table]]
+            if (!is.numeric(conver_factor)) {
+              if (conver_factor == "N/A" | is.na(conver_factor)) {
+                conversion_factor <- 1
+              } else {
+                check_num <- suppressWarnings(as.numeric(conver_factor))
+                if (is.na(check_num))
+                  conversion_factor <-
+                    as.numeric(stringr::str_extract(conver_factor,
+                                                    "\\d+\\.*\\d*"))
+                else
+                  conversion_factor <- as.numeric(conver_factor)
+              }
+            }
+          }
+          if (bottle_lasts_unit_check == -1)
+            bottle_lasts_num_val_ipd <-
+            as.numeric(stringr::str_extract(bot_lasts_ipd[j], "\\d+\\.*\\d*"))
+          else
+            bottle_lasts_num_val_ipd <- as.numeric(bot_lasts_ipd[j])
+          ipd_bottle_lasts <- paste(bottle_lasts_num_val_ipd,
+                                    bot_lasts_unit_ipd[j], sep = " ")
+          basis_time_multiply <- convert_to_given_timeperiod(ipd_bottle_lasts,
+                                                             basis_time)
+          if (basis_time_multiply > 1)
+            no_bottles_used_basis <- 1
+          else
+            no_bottles_used_basis <- ceiling(1 / basis_time_multiply)
+          if (bot_size_unit_ipd[j] != basis_vol_unit)
+            vol_unit_multiplier <- convert_volume_basis(bot_size_unit_ipd[j],
+                                                        basis_vol_unit)
+          else vol_unit_multiplier <- 1
+          index <- stringr::str_locate(unit_dose_ipd[j], "/")
+          this_wt_unit <- stringr::str_sub(unit_dose_ipd[j], 1, index[1] - 1)
+
+          if (this_wt_unit != basis_wt_unit)
+            wt_unit_multiplier <- convert_weight_diff_basis(this_wt_unit,
+                                                            basis_wt_unit)
+          else
+            wt_unit_multiplier <- 1
+          # no of bottle times the unit cost
+          cost_basis <- no_bottles_used_basis * uni_cost_per_bottle
+          # dose times the vol used per day
+          med_basis <- dose_num_val_ipd *
+            (bottle_size_num_val_ipd / basis_time_multiply)
+          med_basis_same_unit <- dose_num_val_ipd *  vol_unit_multiplier *
+            wt_unit_multiplier * (bottle_size_num_val_ipd / basis_time_multiply)
+
+          med_basis_equiv_basis <- med_basis * conversion_factor
+          cost_per_equiv_basis <- cost_basis / med_basis_equiv_basis
+
+          time_multiplier <- convert_to_given_timeperiod(timeperiod,
+                                                         basis_time)
+
+          no_bottles_taken_period <- ceiling(1 / basis_time_multiply *
+                                               time_multiplier)
+          cost_period <- no_bottles_taken_period * uni_cost_per_bottle
+
+          med_period <- med_basis * time_multiplier
+          med_period_same_unit <- med_basis_same_unit * time_multiplier
+          med_basis_equiv_period <- med_period * conversion_factor
+          cost_per_equiv_period <- cost_period / med_basis_equiv_period
+
+        } else {
+          cost_basis <- 0
+          med_basis <- 0
+          med_basis_same_unit <- 0
+          med_basis_equiv_basis <- 0
+          cost_per_equiv_basis <- 0
+          cost_period <- 0
+          med_period <- 0
+          med_period_same_unit <- 0
+          med_basis_equiv_period <- 0
+          cost_per_equiv_period <- 0
+
+        }
+        total_med_basis <- total_med_basis + med_basis
+        total_med_equiv_dose_basis <- total_med_equiv_dose_basis +
+          med_basis_equiv_basis
+
+        total_cost_basis <- total_cost_basis + cost_basis
+        total_cost_per_equiv_basis <- total_cost_per_equiv_basis +
+          cost_per_equiv_basis
+
+        total_med_period <- total_med_period + med_period_same_unit
+        total_med_equiv_dose_period <- total_med_equiv_dose_period +
+          med_basis_equiv_period
+        total_cost_period <- total_cost_period + cost_period
+        total_cost_per_equiv_period <- total_cost_per_equiv_period +
+          cost_per_equiv_period
+      }
+    } else {
+      total_med_basis <- NA
+      total_med_equiv_dose_basis <- NA
+      total_cost_basis <- NA
+      total_cost_per_equiv_basis <- NA
+      total_med_period <- NA
+      total_med_equiv_dose_period <- NA
+      total_cost_period <- NA
+      total_cost_per_equiv_period <- NA
+    }
+    keywd <- form
+    list_total_med_basis <- append(list_total_med_basis, total_med_basis)
+    list_total_med_equiv_basis <- append(list_total_med_equiv_basis,
+                                         total_med_equiv_dose_basis)
+    list_total_cost_basis <- append(list_total_cost_basis, total_cost_basis)
+    list_total_cost_per_equiv_basis <- append(list_total_cost_per_equiv_basis,
+                                              total_cost_per_equiv_basis)
+    list_total_med_period <- append(list_total_med_period, total_med_period)
+    list_total_med_equiv_dose_period <- append(list_total_med_equiv_dose_period,
+                                               total_med_equiv_dose_period)
+    list_total_cost_period <- append(list_total_cost_period,
+                                     total_cost_period)
+    list_total_cost_per_equiv_period <- append(list_total_cost_per_equiv_period,
+                                               total_cost_per_equiv_period)
+  }
+  this_name <- paste("totmed_basis_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_med_basis)
+  this_name <- paste("totmed_equiv_basis_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_med_equiv_basis)
+  this_name <- paste("totcost_basis_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_cost_basis)
+  this_name <- paste("totcost_per_equiv_basis_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_cost_per_equiv_basis)
+  this_name <- paste("totmed_period_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_med_period)
+  this_name <- paste("totmed_equiv_period_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_med_equiv_dose_period)
+  this_name <- paste("totcost_period_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_cost_period)
+  this_name <- paste("totcost_per_equiv_period_", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_cost_per_equiv_period)
   return(ind_part_data)
 }

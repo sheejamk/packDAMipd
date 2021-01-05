@@ -1,0 +1,6 @@
+Drug,Brand,Form,Strength,Preparation,UnitCost,Size,Basis
+Buprenorphine,Buprenorphine ,Tablet,2 mg,,0.88,7,per package
+Buprenorphine,Temgesic,Tablet,200 mcg,,5.04,50,per package
+Buprenorphine,BuTrans,Patch,5 mcg/hr,,17.6,4,per package
+Buprenorphine,Butec,Patch,10 mcg/hr,,31.55,4,per package
+Fentanyl,Fencino,Patch,12 picog/hr,,12.59,5,per package

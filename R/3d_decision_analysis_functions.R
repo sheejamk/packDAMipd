@@ -272,7 +272,8 @@ plot_ceac <- function(list_markov, threshold_values, comparator,
 }
 #######################################################################
 #' Plot efficiency frontier
-#' @param results_cea  results from cea (from calculate_icer_nmb method)
+#' @param results_calculate_icer_nmb  results from cea
+#' (from calculate_icer_nmb method)
 #' @param threshold  threshold value
 #' @return plot
 #' well <- health_state("well", cost = 0, utility = 1)
@@ -299,25 +300,54 @@ plot_ceac <- function(list_markov, threshold_values, comparator,
 #' results_cea <- calculate_icer_nmb(list_markov, 20000, comparator = "control")
 #' plot_efficiency_frontier(results_cea, c(1000, 2000))
 #' @export
-plot_efficiency_frontier <- function(results_cea, threshold) {
-  if (is.null(results_cea) | is.null(threshold))
+plot_efficiency_frontier <- function(results_calculate_icer_nmb, threshold) {
+  results_calculate_icer_nmb$Cost <- as.numeric(results_calculate_icer_nmb$Cost)
+  results_calculate_icer_nmb$Effect <- as.numeric(results_calculate_icer_nmb$Effect)
+  results_calculate_icer_nmb$Inc_Cost <-
+    as.numeric(results_calculate_icer_nmb$Inc_Cost)
+  results_calculate_icer_nmb$Inc_Effect <-
+    as.numeric(results_calculate_icer_nmb$Inc_Effect)
+  results_calculate_icer_nmb$NMB <-
+    as.numeric(results_calculate_icer_nmb$NMB)
+  results_calculate_icer_nmb$ICER <-
+    as.numeric(results_calculate_icer_nmb$ICER)
+
+  if (is.null(results_calculate_icer_nmb) | is.null(threshold))
     stop("Error- reultss or threshold can not be null")
   needed_colnames <- c("Cost", "Effect")
-  if (sum(colnames(results_cea) %in% needed_colnames) !=
+  if (sum(colnames(results_calculate_icer_nmb) %in% needed_colnames) !=
       length(needed_colnames))
     stop("Error - columns do not contain the cost and effect ")
-  if (nrow(results_cea) > 1) {
-    name_file_plot <- paste0("Efficiency frontier_", threshold,
+  if (nrow(results_calculate_icer_nmb) > 1) {
+    name_file_plot <- paste0("Efficiency frontier", threshold,
                              ".pdf", sep = "")
     grDevices::pdf(name_file_plot)
-    p <- ggplot2::ggplot(data = results_cea, ggplot2::aes(
-      x = results_cea$Effect, y = results_cea$Cost, group = 1)) +
-      ggplot2::geom_line(color = "red") +
-      ggplot2::geom_point() +
-      ggplot2::geom_text(ggplot2::aes(label = results_cea$Strategy),
-                         hjust = -0.1, vjust = -0.5) +
+    p <- ggplot2::ggplot(data = results_calculate_icer_nmb, ggplot2::aes(
+      x = results_calculate_icer_nmb$Effect,
+      y = results_calculate_icer_nmb$Cost)) +
+      ggplot2::geom_point(color = "red", size = 3) +
+      ggplot2::geom_text(ggplot2::aes(label = results_calculate_icer_nmb$Strategy),
+                          hjust = -0.1, vjust = -0.5) +
       ggplot2::labs(title = "Efficiency frontier", x = "Effect (QALYs)",
                     y = "Cost")
+    print(p)
+    grDevices::dev.off()
+
+    icer_result <- results_calculate_icer_nmb[!is.na(results_calculate_icer_nmb$ICER),]
+    name_file_plot <- paste0("Cost effectiveness plane",
+                             ".pdf", sep = "")
+    grDevices::pdf(name_file_plot)
+    p <- ggplot2::ggplot(icer_result, ggplot2::aes(
+      x = icer_result$Inc_Effect,
+      y = icer_result$Inc_Cost)) +
+      ggplot2::geom_abline(intercept = 0, slope = threshold, color = "red",
+                           size = 2) +
+      ggplot2::geom_point(color = "red", size = 3) +
+      ggplot2::geom_text(ggplot2::aes(label = icer_result$Strategy),
+                         hjust = -0.1, vjust = -0.5) +
+
+      ggplot2::labs(title = "Cost effectiveness plane", x = "Delta Effect (QALYs)",
+                    y = "Delta Cost")
     print(p)
     grDevices::dev.off()
   }

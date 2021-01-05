@@ -1,0 +1,25 @@
+Drug,Brand,Form,Strength,Preparation,Size,Basis
+Buprenorphine,,Tablet,0.2mg,,,per tablet
+Buprenorphine,,Tablet,0.4mg,,,per tablet
+Buprenorphine,,Tablet,2mg,,,per tablet
+Buprenorphine,,Tablet,200microgram,,,per tablet
+Buprenorphine,,Tablet,8mg,,,per tablet
+Fentanyl ,,Tablet,200mcg,,,per tablet
+Fentanyl ,,Tablet,400mcg,,,per tablet
+Fentanyl ,,Tablet,2mg,,,per tablet
+Buprenorphine,,Patch,5 mcg/hr,,,per patch
+Buprenorphine,,Patches,10microgram/hour,,,per patch
+Buprenorphine,,Patches,20microgram/hour,,,per patch
+Buprenorphine,,Patches,35microgram/hour,,,per patch
+Buprenorphine,,Patches,52.5microgram/hour,,,per patch
+Buprenorphine,,Patches,70microgram/hour,,,per patch
+Fentanyl ,,Patches,5microgram/hour,,,per patch
+Fentanyl ,,Patches,12microgram/hour,,,per patch
+Fentanyl ,,Patches,20microgram/hour,,,per patch
+Morphine,,Liquids,2mg/ml,10mg/5ml,100ml,per bottle
+Morphine,,Liquids,2mg/ml,10mg/5ml,300ml,per bottle
+Morphine,,Liquids,2mg/ml,10mg/5ml,500ml,per bottle
+Morphine,,Liquids,20mg/ml,20mg/ml,120ml,per bottle
+Fentanyl ,,Liquids,20mg/ml,10mg/5ml,2000ml,per bottle
+Fentanyl ,,Liquids,50mg/ml,10mg/5ml,100ml,per bottle
+Buprenorphine,,Liquids,20mg/ml,10mg/5ml,100ml,per bottle

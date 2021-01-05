@@ -1,11 +1,208 @@
+##############################################################################
+#' Function to get the subset of data compared to a string after
+#' trimming the white spaces
+#' @param col the form of medication either tablet or patch
+#' @param the_data the data to be get the subset from
+#' @param the_str the string to be compared
+#' @return the subset data
+#' @examples
+#' the_data <- as.data.frame(cbind(c("one", "two"), c("a", "b")))
+#' colnames(the_data) <- c("name", "brand")
+#' ans <- return_equal_str_col(2, the_data, "a")
+#' @export
+return_equal_str_col <- function(col, the_data, the_str) {
+  the_col <- trimws(toupper(the_data[[col]]))
+  compare <- trimws(toupper(the_str))
+  temp <- the_data[the_col == compare,]
+  return(temp)
+}
+##############################################################################
+#' Function to get the subset of data compared to a string after
+#' trimming the white spaces
+#' @param col the form of medication either tablet or patch
+#' @param the_data the data to be get the subset from
+#' @param list_str list of strings to be compared
+#' @return the subset data
+#' @examples
+#' the_data <- as.data.frame(cbind(c("one", "two"), c("a", "b")))
+#' colnames(the_data) <- c("name", "brand")
+#' ans <- return_equal_liststring_col(2, the_data, c("a", "cc"))
+#' @export
+return_equal_liststring_col <- function(col, the_data,list_str) {
+  the_col <- trimws(toupper(the_data[[col]]))
+  index <- which(the_col %in%  trimws(toupper(list_str)))
+  temp <- the_data[the_col == trimws(toupper(list_str[index])),]
+  return(temp)
+}
+##############################################################################
+#' Function to get the subset of data compared to a string after
+#' trimming the white spaces
+#' @param col the form of medication either tablet or patch
+#' @param the_data the data to be get the subset from
+#' @param list_str list of strings to be compared
+#' @return the subset data
+#' @examples
+#' the_data <- as.data.frame(cbind(c("one", "two"), c("tablet", "tablets"),
+#' c("aa", "bb")))
+#' colnames(the_data) <- c("name", "brand_a", "xx")
+#' ans <- return_equal_liststring_listcol(2, the_data, c("tablet", "tablets"))
+#' @export
+return_equal_liststring_listcol <- function(col, the_data, list_str) {
+  col_temp <- trimws(toupper(the_data[[col]]))
+  strings <- trimws(toupper(list_str))
+  i = 1
+  indices <- c()
+  tempa <- data.frame()
+  while (i <= length(col_temp)) {
+    index <- which(col_temp[i] == strings)
+    if (length(index) != 0) {
+      row <- the_data[which(col_temp == strings[index]),]
+      tempa <- rbind(row,tempa)
+      indices <- append(indices, index)
+    }
+    i = i + 1
+  }
+  if (length(indices) == 0) {
+    stop("Matching columns cant be found")
+  }
+  return(tempa)
+}
 
+##############################################################################
+#' Function to return 0 if the param is not null or NA
+#' trimming the white spaces
+#' @param param the form of medication either tablet or patch
+#' @return zero or -1
+#' @examples
+#' parame = NULL
+#' ans <- return0_if_not_null_na(parame)
+#' parame = 1
+#' ans <- return0_if_not_null_na(parame)
+#' @export
+return0_if_not_null_na <- function(param){
+  if (!is.null(param)) {
+    if (is.na(param)) val = -1
+    else val = 0
+  } else {
+    val = -1
+  }
+  return(val)
+}
+##############################################################################
+#' Function to get cols for the pattern given
+#' @param pattern the pattern to look for
+#' @param the_data data where to look at
+#' @return zero or -1
+#' @examples
+#' the_data <- as.data.frame(cbind(c("one", "two"), c("a", "b"), c("aa", "bb")))
+#' colnames(the_data) <- c("name", "brand_one", "two")
+#' get_col_multiple_pattern(c("brand", "trade"), the_data)
+#' @export
+get_col_multiple_pattern <- function(pattern, the_data) {
+  res <- unlist(lapply(pattern,
+              IPDFileCheck::get_colno_pattern_colname, colnames(the_data)))
+  if (length(res[which(res != -1)]) == 1) {
+    col_no <- res[which(res != -1)]
+  } else {
+    stop("Error- cols with pattern not found")
+  }
+  return(col_no)
+
+}
+#############################################################################
+#' Function to get the weight and time units
+#' @return weight and time units
+#' @examples
+#' generate_wt_time_units()
+#' @export
+generate_wt_time_units <- function(){
+  weight_units = c("mg", "milligram", "milli gram",
+                 "gm", "g", "gram", "microgm",
+                 "mcg", "micro gram", "microgram", "micro gm")
+  time_units = c("sec", "s", "second","seconds",
+               "minute", "min", "m", "minutes",
+               "hour", "hr", "h", "hours",
+               "d", "day", "days")
+  weight_per_times = list()
+
+  for (i in seq_len(length(weight_units))) {
+    for (j in seq_len(length(time_units))) {
+      this_one <- paste(weight_units[i], "/", time_units[j], sep = "")
+      weight_per_times = append(weight_per_times,this_one)
+    }
+  }
+  the_list <- structure(list
+    (weight_units = weight_units,
+      time_units = time_units,
+      weight_per_times = weight_per_times))
+  return(the_list)
+}
+#############################################################################
+#' Function to get the weight and volume units
+#' @return weight and vol units
+#' @example
+#' generate_wt_vol_units()
+#' @export
+generate_wt_vol_units <- function(){
+  weight_units = c("mg", "milligram", "milli gram",
+                   "gm", "g", "gram",
+                   "mcg", "micro gram", "microgram")
+  vol_units = c("ml", "milii liter", "l","liter",
+                 "milliliter", "litre", "milii litre", "millilitre")
+  weight_per_vol = list()
+
+  for (i in seq_len(length(weight_units))) {
+    for (j in seq_len(length(vol_units))) {
+      this_one <- paste(weight_units[i], "/", vol_units[j], sep = "")
+      weight_per_vol = append(weight_per_vol,this_one)
+    }
+  }
+  the_list <- structure(list
+                        (weight_units = weight_units,
+                          vol_units = vol_units,
+                          weight_per_vol = weight_per_vol))
+  return(the_list)
+}
+
+#############################################################################
+#' Function to get the codes and the corresponding entries
+#' @param list_code_values list of codes and values, given as list of lists
+#' @param data_column_nos the column numbers of data to look for the entries
+#' @param the_data the data where to look for
+#' @return weight and vol units
+#' @examples
+#' data_file <- system.file("extdata", "medication_liq_codes.xlsx",
+#' package = "packDAMipd")
+#' ind_part_data <- load_trial_data(data_file)
+#' data_column_nos = c(2,12)
+#' list_of_code_names = list(c("Morphine", "Oxycodone"), c(1, 2))
+#' encode_codes_data(list_of_code_names, data_column_nos, ind_part_data)
+#' @export
+encode_codes_data <- function(list_code_values, data_column_nos, the_data) {
+  if (!is.null(list_code_values) & sum(is.na(list_code_values)) == 0) {
+    values_and_code <- stats::setNames(as.list(list_code_values[[1]]),
+                                     list_code_values[[2]])
+    ipd_codes <- the_data %>% dplyr::select(dplyr::all_of(data_column_nos))
+    values_from_code <- values_and_code[unlist(ipd_codes)]
+    this_dim <- dim(ipd_codes)
+    values_from_code <- matrix(values_from_code, nrow = this_dim[1])
+    colnames(values_from_code) <- colnames(ipd_codes)
+    index <- which(is.na(ipd_codes))
+    if (length(index) > 0)
+      values_from_code[index] <- NA
+  } else {
+    values_from_code <- the_data %>% dplyr::select(dplyr::all_of(data_column_nos))
+    values_from_code <- as.data.frame(values_from_code)
+  }
+  return(values_from_code)
+}
 ##############################################################################
 #' Function to check the variable null or NA
 #' @param word word for the number
 #' @return return the number
 #' @details
 #' https://stackoverflow.com/questions/18332463/convert-written-number-to-number-in-r
-#' examples
+#' @examples
 #' answer <- word2num("one forty one")
 #' answer <- word2num("forty one and five hundred")
 #' answer <- word2num("five thousand two hundred and eight")
@@ -393,7 +590,8 @@ convert_weight_diff_basis <- function(given_unit, basis = "mg") {
   if (nospace_unit != "g" & nospace_unit != "gram"  &
       nospace_unit != "milligram" &
       nospace_unit != "gm"  & nospace_unit != "mg" &
-      nospace_unit != "microgram"  & nospace_unit != "microgm" &
+      nospace_unit != "microgram"  &
+      nospace_unit != "microgm" &
       nospace_unit != "mcg" &
       nospace_unit != "kilogram"  & nospace_unit != "kilo"  &
       nospace_unit != "kg") {
@@ -488,35 +686,51 @@ convert_volume_basis <- function(given_unit, basis = "ml") {
   unit_req_vol <- NA
   given_unit <- tolower(gsub("[[:space:]]", "", given_unit))
   basis <- tolower(gsub("[[:space:]]", "", basis))
-  if (given_unit != "liter"  & given_unit != "l" &
-      given_unit != "milliliter" &  given_unit != "microliter"
-      &  given_unit != "mcl"  & given_unit != "ml") {
+  if (given_unit != "liter"  & given_unit != "litre"  & given_unit != "l" &
+      given_unit != "milliliter" & given_unit != "milli liter" &
+      given_unit != "millilitre" & given_unit != "milli litre" &
+      given_unit != "ml" &
+      given_unit != "microliter" & given_unit != "micro liter" &
+      given_unit != "microlitre" & given_unit != "micro litre" &
+      given_unit != "mcl"   ) {
     stop("given unit is not of volume")
   }
     unit_req_vol <- 1
-    if (basis == "ml" | basis == "milliliter") {
-      if (given_unit == "microliter" | given_unit == "mcl") {
+    if (basis == "ml" | basis == "milliliter" |
+        basis == "milli liter" | basis == "milli litre" |
+        basis == "millilitre") {
+      if (given_unit == "microliter" | given_unit == "micro liter" |
+          given_unit == "micro litre" | given_unit == "microlitre" |
+          given_unit == "mcl") {
         unit_req_vol <- 1 / 1000
       }
-      if (given_unit == "l" | given_unit == "liter") {
+      if (given_unit == "l" | given_unit == "liter" | given_unit == "litre") {
         unit_req_vol <- 1000
       }
     }
-    if (basis == "microliter" | basis == "mcl") {
-      if (given_unit == "l" | given_unit == "liter") {
+    if (basis == "microliter" | basis == "micro liter" |
+        basis == "micro litre" | basis == "microlitre" |
+        basis == "mcl") {
+      if (given_unit == "l" | given_unit == "liter" | given_unit == "litre") {
         unit_req_vol <- 1e6
       }
-      if (given_unit == "ml" | given_unit == "milliliter") {
+      if (given_unit == "ml" | given_unit == "milliliter" |
+          given_unit == "milli liter" | given_unit == "milli litre" |
+          given_unit == "millilitre") {
         unit_req_vol <- 1000
       }
     }
-    if (basis == "l" | basis == "liter") {
+    if (basis == "l" | basis == "liter" | given_unit == "litre") {
       if (given_unit == "ml" |
-          given_unit == "milliliter") {
+          given_unit == "milliliter" | given_unit == "milli liter" |
+          given_unit == "milli litre" |
+          given_unit == "millilitre") {
         unit_req_vol <- 1 / 1000
       }
 
-      if (given_unit == "microliter" |  given_unit == "mcl") {
+      if (given_unit == "microliter" | given_unit == "micro liter" |
+          given_unit == "micro litre" | given_unit == "microlitre" |
+          given_unit == "mcl") {
         unit_req_vol <- 1 / 1e6
       }
     }
@@ -698,7 +912,7 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
     } else {
       out <- as.numeric(first_part)
     }
-    sec_part <- stringr::str_sub(given_time, index[2] + 1, nchar(given_time))
+    sec_part <- trimws(stringr::str_sub(given_time, index[2] + 1, nchar(given_time)))
     unit_req_time <- NULL
     if (basis_time == "day" | basis_time == "days") {
       if (sec_part == "day" | sec_part == "days") {
@@ -797,5 +1011,37 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
     }
     unit_req_basis <- out * unit_req_time
   }
+  return(unit_req_basis)
+}
+#############################################################################
+convert_wtpervoldiff_basis <- function(given_unit, basis = "mg/ml") {
+  unit_req_basis <- NA
+  if (is.null(given_unit) | is.null(basis))
+    stop("Error given unit/ basis is null")
+  given_unit <- trimws(tolower(given_unit))
+  if (rlang::is_empty(given_unit) | any(is.na(given_unit)) |
+      length(given_unit) == 0 |
+      identical(given_unit, "")
+      | any(given_unit == "null") | any(given_unit == "Null")) {
+    unit_req_basis <- NA
+  } else {
+    unit_req_basis <- NULL
+    index <- stringr::str_locate(given_unit, "/")
+    given_wt <- stringr::str_sub(given_unit, 1, index[1] - 1)
+    given_vol <- stringr::str_sub(given_unit, index[2] + 1,
+                                   nchar(given_unit))
+    basis_index <- stringr::str_locate(basis, "/")
+    basis_wt <- stringr::str_sub(basis, 1, basis_index[1] - 1)
+    basis_vol <- stringr::str_sub(basis, basis_index[2] + 1, nchar(basis))
+    basis_wt <- tolower(gsub("[[:space:]]", "", basis_wt))
+    basis_vol <- tolower(gsub("[[:space:]]", "", basis_vol))
+  }
+  multiply_wt <- convert_weight_diff_basis(given_wt,basis_wt)
+  multiply_vol <- convert_volume_basis(given_vol, basis_vol)
+
+  if (is.numeric(multiply_wt) & is.numeric(multiply_vol))
+    unit_req_basis <- multiply_wt / multiply_vol
+  else
+    stop("Error converting wt per vol unit")
   return(unit_req_basis)
 }

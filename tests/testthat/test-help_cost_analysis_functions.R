@@ -1,7 +1,78 @@
+###############################################################################
+context("testing to get the subset of data compared to a string")
+test_that("testing to get the subset of data compared to a string", {
+  the_data <- as.data.frame(cbind(c("one", "two"), c("a", "b")))
+  colnames(the_data) <- c("name", "brand")
+  ans <- return_equal_str_col(2, the_data, "a")
+  expect_equal(ans$brand, "a")
+})
+###############################################################################
+context("testing to get the subset of data compared to list of string")
+test_that("testing to get the subset of data compared to list of string", {
+   the_data <- as.data.frame(cbind(c("one", "two"), c("a", "b")))
+   colnames(the_data) <- c("name", "brand")
+   ans <- return_equal_liststring_col(2, the_data, c("a", "cc"))
+   expect_equal(ans$brand, "a")
+})
+###############################################################################
+context("testing to get the subset of data compared to list of string")
+test_that("testing to get the subset of data compared to list of string", {
+  the_data <- as.data.frame(cbind(c("one", "two"), c("tablet", "tablets"),
+                                  c("aa", "bb")))
+  colnames(the_data) <- c("name", "brand_a", "xx")
+  ans <- return_equal_liststring_listcol(2, the_data, c("tablet", "tablets"))
+  expect_equal(ans$xx, c("bb","aa"))
+})
+###############################################################################
+context("testing to return 0 if parameter is null or NA")
+test_that("testing to return 0 if parameter is null or NA", {
+  parame = NULL
+  ans <- return0_if_not_null_na(parame)
+  expect_equal(ans, -1)
+  parame = NA
+  ans <- return0_if_not_null_na(parame)
+  expect_equal(ans, -1)
+  parame = 1
+  ans <- return0_if_not_null_na(parame)
+  expect_equal(ans, 0)
+})
 
 ###############################################################################
-context("testing ocnverting from word to number")
-test_that("testing ocnverting from word to number", {
+context("testing to get col for multiple pattern")
+test_that("testing to get col for multiple pattern", {
+   the_data <- as.data.frame(cbind(c("one", "two"), c("a", "b"), c("aa", "bb")))
+   colnames(the_data) <- c("name", "brand_one", "two")
+   ans <- get_col_multiple_pattern(c("brand", "trade"), the_data)
+   expect_equal(ans, 2)
+})
+###############################################################################
+
+context("testing to generate weight per time units")
+test_that("testing to generate weight per time units", {
+  ans <- generate_wt_time_units()
+  expect_equal(ans$time_units[1], "sec")
+})
+###############################################################################
+context("testing to generate weight per vol units")
+test_that("testing to generate weight per vol units", {
+  ans <- generate_wt_vol_units()
+  expect_equal(ans$vol_units[1], "ml")
+})
+###############################################################################
+context("testing to generate weight per vol units")
+test_that("testing to generate weight per vol units", {
+  data_file <- system.file("extdata", "medication_liq_codes.xlsx",
+  package = "packDAMipd")
+  ind_part_data <- load_trial_data(data_file)
+  data_column_nos = c(2,12)
+  list_of_code_names = list(c("Morphine", "Oxycodone"), c(1, 2))
+  ans <- encode_codes_data(list_of_code_names, data_column_nos, ind_part_data)
+  expect_equal(unlist(ans[1]), "Morphine")
+})
+
+###############################################################################
+context("testing converting from word to number")
+test_that("testing converting from word to number", {
   expect_equal(as.numeric(unlist(word2num("ninety eight"))[2]), 98)
   expect_equal(as.numeric(unlist(word2num("one hundred and eight"))[2]), 108)
   expect_equal(as.numeric(unlist(word2num("hundred and eight"))[2]), 108)
