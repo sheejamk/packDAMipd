@@ -5,7 +5,6 @@
 \title{Function to estimate the cost of tablets and patches taken (from IPD)}
 \usage{
 microcosting_liquids_wide(
-  form = "liquid",
   ind_part_data,
   name_med,
   brand_med = NULL,
@@ -29,13 +28,10 @@ microcosting_liquids_wide(
   list_of_code_bottle_lasts_unit = NULL,
   list_preparation_dose_unit = NULL,
   eqdose_covtab = NULL,
-  basis_strength_unit = NULL,
-  basis_time = NULL
+  basis_strength_unit = NULL
 )
 }
 \arguments{
-\item{form}{the form of medication either tablet or patch}
-
 \item{ind_part_data}{IPD}
 
 \item{name_med}{name of medication}
@@ -88,8 +84,6 @@ doses, optional}
 
 \item{basis_strength_unit}{strength unit to be taken as basis
 required for total medication calculations}
-
-\item{basis_time}{basis for time}
 }
 \value{
 the calculated cost of tablets along with original data
@@ -104,19 +98,17 @@ data_file <- system.file("extdata", "medication_liq.xlsx",
 package = "packDAMipd")
 ind_part_data <- load_trial_data(data_file)
 med_costs <- load_trial_data(med_costs_file)
-conv_file <- system.file("extdata", "Med_calc.xlsx",
-package = "packDAMipd")
+conv_file <- system.file("extdata", "Med_calc.xlsx",package = "packDAMipd")
 table <- load_trial_data(conv_file)
-res <- microcosting_liquids_wide(form = "liquid",
-ind_part_data = ind_part_data, name_med = "liq_name",brand_med =  NULL,
-dose_med = "liq_strength", unit_med = NULL,bottle_size = "liq_bottle_size",
-bottle_size_unit = NULL, bottle_lasts = "liq_lasts",
-bottle_lasts_unit = NULL, preparation_dose = NULL,preparation_unit = NULL,
-timeperiod = "4 months", unit_cost_data = med_costs,
-unit_cost_column = "UnitCost", cost_calculated_per = "Basis",
-strength_column = "Strength",list_of_code_names = NULL,
-list_of_code_brand = NULL, list_of_code_dose_unit = NULL,
-list_of_code_bottle_size_unit = NULL,
+res <- microcosting_liquids_wide(
+ind_part_data = ind_part_data, name_med = "liq_name", brand_med =  NULL,
+dose_med = "liq_strength", unit_med = NULL, bottle_size = "liq_bottle_size",
+bottle_size_unit = NULL, bottle_lasts = "liq_lasts", bottle_lasts_unit = NULL,
+preparation_dose = NULL, preparation_unit = NULL, timeperiod = "4 months",
+unit_cost_data = med_costs, unit_cost_column = "UnitCost",
+cost_calculated_per = "Basis", strength_column = "Strength",
+list_of_code_names = NULL, list_of_code_brand = NULL,
+list_of_code_dose_unit = NULL, list_of_code_bottle_size_unit = NULL,
 list_of_code_bottle_lasts_unit = NULL,list_preparation_dose_unit = NULL,
-eqdose_covtab = table, basis_strength_unit = NULL, basis_time = NULL)
+eqdose_covtab = table, basis_strength_unit = NULL)
 }

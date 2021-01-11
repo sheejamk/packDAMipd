@@ -597,7 +597,7 @@ plot_survival_cox_covariates <- function(coxfit, dataset,
       } else {
         var <- covariates[j - 1]
         var2 <- var
-        fixed <- c(names(coxfit$coefficients)[1], covariates[- (j - 1)])
+        fixed <- c(names(coxfit$coefficients)[1], covariates[-(j - 1)])
       }
     }
     result <- suppressWarnings(as.numeric(levels(factor(dataset[[var2]]))))

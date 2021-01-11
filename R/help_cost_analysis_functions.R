@@ -13,7 +13,7 @@
 return_equal_str_col <- function(col, the_data, the_str) {
   the_col <- trimws(toupper(the_data[[col]]))
   compare <- trimws(toupper(the_str))
-  temp <- the_data[the_col == compare,]
+  temp <- the_data[the_col == compare, ]
   return(temp)
 }
 ##############################################################################
@@ -28,10 +28,10 @@ return_equal_str_col <- function(col, the_data, the_str) {
 #' colnames(the_data) <- c("name", "brand")
 #' ans <- return_equal_liststring_col(2, the_data, c("a", "cc"))
 #' @export
-return_equal_liststring_col <- function(col, the_data,list_str) {
+return_equal_liststring_col <- function(col, the_data, list_str) {
   the_col <- trimws(toupper(the_data[[col]]))
   index <- which(the_col %in%  trimws(toupper(list_str)))
-  temp <- the_data[the_col == trimws(toupper(list_str[index])),]
+  temp <- the_data[the_col == trimws(toupper(list_str[index])), ]
   return(temp)
 }
 ##############################################################################
@@ -50,17 +50,17 @@ return_equal_liststring_col <- function(col, the_data,list_str) {
 return_equal_liststring_listcol <- function(col, the_data, list_str) {
   col_temp <- trimws(toupper(the_data[[col]]))
   strings <- trimws(toupper(list_str))
-  i = 1
+  i <- 1
   indices <- c()
   tempa <- data.frame()
   while (i <= length(col_temp)) {
     index <- which(col_temp[i] == strings)
     if (length(index) != 0) {
-      row <- the_data[which(col_temp == strings[index]),]
-      tempa <- rbind(row,tempa)
+      row <- the_data[which(col_temp == strings[index]), ]
+      tempa <- rbind(row, tempa)
       indices <- append(indices, index)
     }
-    i = i + 1
+    i <- i + 1
   }
   if (length(indices) == 0) {
     stop("Matching columns cant be found")
@@ -79,12 +79,12 @@ return_equal_liststring_listcol <- function(col, the_data, list_str) {
 #' parame = 1
 #' ans <- return0_if_not_null_na(parame)
 #' @export
-return0_if_not_null_na <- function(param){
+return0_if_not_null_na <- function(param) {
   if (!is.null(param)) {
-    if (is.na(param)) val = -1
-    else val = 0
+    if (is.na(param)) val <- -1
+    else val <- 0
   } else {
-    val = -1
+    val <- -1
   }
   return(val)
 }
@@ -115,20 +115,20 @@ get_col_multiple_pattern <- function(pattern, the_data) {
 #' @examples
 #' ans <- generate_wt_time_units()
 #' @export
-generate_wt_time_units <- function(){
-  weight_units = c("mg", "milligram", "milli gram",
+generate_wt_time_units <- function() {
+  weight_units <- c("mg", "milligram", "milli gram",
                  "gm", "g", "gram", "microgm",
                  "mcg", "micro gram", "microgram", "micro gm")
-  time_units = c("sec", "s", "second","seconds",
+  time_units <- c("sec", "s", "second", "seconds",
                "minute", "min", "m", "minutes",
                "hour", "hr", "h", "hours",
                "d", "day", "days")
-  weight_per_times = list()
+  weight_per_times <- list()
 
   for (i in seq_len(length(weight_units))) {
     for (j in seq_len(length(time_units))) {
       this_one <- paste(weight_units[i], "/", time_units[j], sep = "")
-      weight_per_times = append(weight_per_times,this_one)
+      weight_per_times <- append(weight_per_times, this_one)
     }
   }
   the_list <- structure(list
@@ -143,18 +143,18 @@ generate_wt_time_units <- function(){
 #' @examples
 #' ans <- generate_wt_vol_units()
 #' @export
-generate_wt_vol_units <- function(){
-  weight_units = c("mg", "milligram", "milli gram",
+generate_wt_vol_units <- function() {
+  weight_units <- c("mg", "milligram", "milli gram",
                    "gm", "g", "gram",
                    "mcg", "micro gram", "microgram")
-  vol_units = c("ml", "milii liter", "l","liter",
+  vol_units <- c("ml", "milii liter", "l", "liter",
                  "milliliter", "litre", "milii litre", "millilitre")
-  weight_per_vol = list()
+  weight_per_vol <- list()
 
   for (i in seq_len(length(weight_units))) {
     for (j in seq_len(length(vol_units))) {
       this_one <- paste(weight_units[i], "/", vol_units[j], sep = "")
-      weight_per_vol = append(weight_per_vol,this_one)
+      weight_per_vol <- append(weight_per_vol, this_one)
     }
   }
   the_list <- structure(list
@@ -191,7 +191,8 @@ encode_codes_data <- function(list_code_values, data_column_nos, the_data) {
     if (length(index) > 0)
       values_from_code[index] <- NA
   } else {
-    values_from_code <- the_data %>% dplyr::select(dplyr::all_of(data_column_nos))
+    values_from_code <- the_data %>%
+      dplyr::select(dplyr::all_of(data_column_nos))
     values_from_code <- as.data.frame(values_from_code)
   }
   return(values_from_code)
@@ -276,7 +277,9 @@ convert_freq_diff_basis <- function(freq_given, basis = "day") {
     stop("Error given unit/ basis is null")
   freq_given <- trimws(tolower(freq_given))
   if (basis != "day" & basis != "hour" & basis != "week" &
-      basis != "month" & basis != "year")
+      basis != "month" & basis != "year" & basis != "hr" &
+      basis != "days" & basis != "months" & basis != "weeks" &
+      basis != "years")
     stop("Error - basis unit of time has to be hour, day, week,
          month or year")
   if (rlang::is_empty(freq_given) |
@@ -556,16 +559,17 @@ convert_freq_diff_basis <- function(freq_given, basis = "day") {
   basis <- tolower(basis)
   if (is.null(freq_req_basis))
     stop("Given frequency is not identifiable ")
-  if (basis == "hour" & !is.na(freq_req_basis)) {
+  if ((basis == "hour" | basis == "hr" | basis == "hours"  | basis == "hrs") &
+      !is.na(freq_req_basis)) {
     freq_req_basis <- freq_req_basis / 24
   }
-  if (basis == "week" & !is.na(freq_req_basis)) {
+  if ((basis == "week" | basis == "weeks") & !is.na(freq_req_basis)) {
     freq_req_basis <- freq_req_basis * 7
   }
-  if (basis == "month" & !is.na(freq_req_basis)) {
+  if ((basis == "month" | basis == "months") & !is.na(freq_req_basis)) {
     freq_req_basis <- freq_req_basis * 30
   }
-  if (basis == "year" & !is.na(freq_req_basis)) {
+  if ((basis == "year" | basis == "year") & !is.na(freq_req_basis)) {
     freq_req_basis <- freq_req_basis * 365
   }
   return(freq_req_basis)
@@ -692,7 +696,7 @@ convert_volume_basis <- function(given_unit, basis = "ml") {
       given_unit != "ml" &
       given_unit != "microliter" & given_unit != "micro liter" &
       given_unit != "microlitre" & given_unit != "micro litre" &
-      given_unit != "mcl"   ) {
+      given_unit != "mcl" ) {
     stop("given unit is not of volume")
   }
     unit_req_vol <- 1
@@ -912,7 +916,8 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
     } else {
       out <- as.numeric(first_part)
     }
-    sec_part <- trimws(stringr::str_sub(given_time, index[2] + 1, nchar(given_time)))
+    sec_part <- trimws(stringr::str_sub(given_time, index[2] + 1,
+                                        nchar(given_time)))
     unit_req_time <- NULL
     if (basis_time == "day" | basis_time == "days") {
       if (sec_part == "day" | sec_part == "days") {
@@ -1036,7 +1041,7 @@ convert_wtpervoldiff_basis <- function(given_unit, basis = "mg/ml") {
     basis_wt <- tolower(gsub("[[:space:]]", "", basis_wt))
     basis_vol <- tolower(gsub("[[:space:]]", "", basis_vol))
   }
-  multiply_wt <- convert_weight_diff_basis(given_wt,basis_wt)
+  multiply_wt <- convert_weight_diff_basis(given_wt, basis_wt)
   multiply_vol <- convert_volume_basis(given_vol, basis_vol)
 
   if (is.numeric(multiply_wt) & is.numeric(multiply_vol))

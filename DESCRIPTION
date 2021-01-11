@@ -41,7 +41,8 @@ Imports:
     tm,
     tidyverse,
     tibble,
-    dplyr
+    dplyr,
+    tidyr
 Suggests: 
     ISLR,
     foreign,

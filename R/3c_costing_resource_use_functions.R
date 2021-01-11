@@ -433,9 +433,10 @@ costing_inpatient_daycase_admission <- function(ind_part_data,
       unit_costs_hrg <- c()
       for (j in seq_len(length(hrg_codes))) {
         if (length(content) != length(hrg_codes))
-          stop("the number of elective/non elective should be equal to the number
-               of hrg codes")
-        if (content[j] == "EL" | content[j]  == "ELECTIVE" | content[j]  == "ELEC")
+          stop("the number of elective/non elective should be equal
+          to the number of hrg codes")
+        if (content[j] == "EL" | content[j]  == "ELECTIVE" |
+            content[j]  == "ELEC")
           unit_costs <- get_cost_ip_dc_hrg(hrg_codes[j],
                                    unit_cost_data, hrg_code_col,
                                    unit_cost_col, sheet = "EL")
@@ -477,8 +478,8 @@ costing_inpatient_daycase_admission <- function(ind_part_data,
       unit_costs_descriptions <- c()
       for (j in seq_len(length(descriptions))) {
         if (length(content) != length(descriptions))
-          stop("the number of elective/non elective should be equal to the number
-               of descriptions")
+          stop("the number of elective/non elective should be equal
+          to the number of descriptions")
         if (content[j] == "EL" | content[j]  == "ELECTIVE" |
             content[j]  == "ELEC")
           unit_costs <- get_cost_ip_dc_description(descriptions[j],
@@ -486,8 +487,8 @@ costing_inpatient_daycase_admission <- function(ind_part_data,
                                                unit_cost_col, sheet = "EL")
         else
           unit_costs <- get_cost_ip_dc_description(descriptions[j],
-                                                 unit_cost_data, description_col,
-                                                unit_cost_col, sheet = "NEL")
+                                          unit_cost_data, description_col,
+                                          unit_cost_col, sheet = "NEL")
         unit_costs_descriptions <- append(unit_costs_descriptions, unit_costs)
       }
       if (sum(use_col) == 0) {

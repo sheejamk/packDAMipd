@@ -630,26 +630,26 @@ test_that("testing costing inpatient admission", {
   ind_part_data <- packDAMipd::load_trial_data(datafile)
   expect_error(costing_inpatient_daycase_admission(ind_part_data,
                                                    hrg_code_ip_admi = NULL,
-                                                   descrip_ip_admi = "Description",
+                                              descrip_ip_admi = "Description",
                                                    number_use_ip_admi = NULL,
                                                    elective_col = "EL",
                                                    unit_cost_data,
-                                                   hrg_code_col = "Currency_Code",
-                                                   description_col = "Currency_Description",
+                                            hrg_code_col = "Currency_Code",
+                                      description_col = "Currency_Description",
                                                    unit_cost_col =
-                                                     "National_Average_Unit_Cost",
-                                                   cost_calculated_in = "admission"))
+                                              "National_Average_Unit_Cost",
+                                            cost_calculated_in = "admission"))
   expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                                   hrg_code_ip_admi = "HRGcode",
-                                                   descrip_ip_admi = "Description",
+                                            hrg_code_ip_admi = "HRGcode",
+                                            descrip_ip_admi = "Description",
                                                    number_use_ip_admi = NULL,
                                                    elective_col = "EL",
                                                    unit_cost_data,
-                                                   hrg_code_col = "Currency_Code",
+                                            hrg_code_col = "Currency_Code",
                                                    description_col = NULL,
                                                    unit_cost_col =
-                                                     "National_Average_Unit_Cost",
-                                                   cost_calculated_in = "admission"))
+                                              "National_Average_Unit_Cost",
+                                            cost_calculated_in = "admission"))
 
 
 })
@@ -755,7 +755,7 @@ test_that("testing extracting unit cost matching description", {
 
 
 })
-###############################################################################
+############################################################################
 
 context("testing extracting unit cost matching description")
 test_that("testing extracting unit cost matching description", {
@@ -776,7 +776,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = "Service_Code",
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                                unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance")
 
  expect_equal(result$totcost_AE_Admission[1], 672, tol = 1e-2)
@@ -799,7 +799,7 @@ test_that("testing extracting unit cost matching description", {
                                       code_col =  "Currency_Code",
                                       type_admit_col = "Service_Code",
                                       description_col = NULL,
-                                      unit_cost_col = "National_Average_Unit_Cost",
+                                unit_cost_col = "National_Average_Unit_Cost",
                                       cost_calculated_in = "attendance"))
 
  expect_error(costing_AandE_admission(ind_part_data = NULL,
@@ -810,7 +810,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = "Service_Code",
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                              unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance"))
 
  expect_error(costing_AandE_admission(ind_part_data = ind_part_data,
@@ -821,7 +821,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = "Service_Code",
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                            unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance"))
 
  result <- costing_AandE_admission(ind_part_data = ind_part_data,
@@ -832,7 +832,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = "Service_Code",
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                            unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance")
  expect_equal(result$totcost_AE_Admission[1], 672, tol = 1e-2)
  expect_error(costing_AandE_admission(ind_part_data = ind_part_data,
@@ -843,7 +843,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = "Service_Code",
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                            unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance"))
  expect_error(costing_AandE_admission(ind_part_data = ind_part_data,
                                    code_ae = "code", descrip_ae = NULL,
@@ -853,7 +853,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = "Service_Code",
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                              unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance"))
  expect_error(costing_AandE_admission(ind_part_data = ind_part_data,
                                    code_ae = "code", descrip_ae = NULL,
@@ -863,7 +863,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = NULL,
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                              unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance"))
  expect_error(costing_AandE_admission(ind_part_data = ind_part_data,
                                    code_ae = "code", descrip_ae = NULL,
@@ -873,7 +873,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = NULL,
                                    type_admit_col = "Service_Code",
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                            unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance"))
  expect_error(costing_AandE_admission(ind_part_data = ind_part_data,
                                    code_ae = "code", descrip_ae = NULL,
@@ -893,7 +893,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = "Service_Code",
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                              unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "ss"))
 
  result <- costing_AandE_admission(ind_part_data = ind_part_data,
@@ -904,7 +904,7 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = "Service_Code",
                                    description_col = "Currency_Description",
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                            unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance")
  expect_equal(result$totcost_AE_Admission[1], 754, tol = 1e-2)
 
@@ -970,13 +970,14 @@ test_that("testing extracting unit cost matching description", {
                                    code_col = "Currency_Code",
                                    type_admit_col = "Service_Code",
                                    description_col = NULL,
-                                   unit_cost_col = "National_Average_Unit_Cost",
+                              unit_cost_col = "National_Average_Unit_Cost",
                                    cost_calculated_in = "attendance"))
  costs_file <- system.file("extdata",
                            "National_schedule_of_NHS_costs_2019_AandE.csv",
                            package = "packDAMipd")
  unit_cost_data <- packDAMipd::load_trial_data(costs_file)
- datafile <- system.file("extdata", "resource_use_ae_ip_lengthtypecodediff.csv",
+ datafile <- system.file("extdata",
+                         "resource_use_ae_ip_lengthtypecodediff.csv",
                          package = "packDAMipd")
  ind_part_data <- packDAMipd::load_trial_data(datafile)
  expect_error(costing_AandE_admission(ind_part_data = ind_part_data,
@@ -996,8 +997,8 @@ test_that("testing extracting unit cost matching description", {
                                       unit_cost_data = unit_cost_data,
                                       code_col = "Currency_Code",
                                       type_admit_col = "Service_Code",
-                                      description_col = "Currency_Description",
-                                      unit_cost_col = "National_Average_Unit_Cost",
+                              description_col = "Currency_Description",
+                              unit_cost_col = "National_Average_Unit_Cost",
                                       cost_calculated_in = "attendance"))
 
  datafile <- system.file("extdata", "resource_use_ae_ip_extranumuse.csv",

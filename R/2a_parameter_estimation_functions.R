@@ -275,11 +275,11 @@ get_parameter_def_distribution <- function(parameter, paramfile,
       result <- grep("name", colnames_paramdistr[i])
       if (length(result) != 0) {
         name_col <- IPDFileCheck::get_columnno_fornames(dataset,
-                                                        colnames_paramdistr[i])
+                                                  colnames_paramdistr[i])
         param1 <-
          dataset[dataset[param_colno] == parameter, ][[name_col]]
         val_col <- IPDFileCheck::get_columnno_fornames(dataset,
-                                                       colnames_paramdistr[i + 1])
+                                                colnames_paramdistr[i + 1])
         param1_value <-
          dataset[dataset[param_colno] == parameter, ][[val_col]]
         if (!is.numeric(param1_value)) {
