@@ -292,228 +292,228 @@ test_that("testing extracting unit cost matching description", {
                                               "National_Average_Unit_Cost",
                                               "EL"))
 })
-###############################################################################
-context("testing costing inpatient admission")
-test_that("testing costing inpatient admission", {
-  costs_file <- system.file("extdata", "inpatient_adm.xlsx",
-                            package = "packDAMipd")
-  datafile <- system.file("extdata", "resource_use_hc_ip.csv",
-                          package = "packDAMipd")
-  ind_part_data <- packDAMipd::load_trial_data(datafile)
-  unit_cost_data <- packDAMipd::load_trial_data(costs_file)
-  result <- costing_inpatient_daycase_admission(ind_part_data,
-                                  hrg_code_ip_admi = "HRGcode",
-                                  descrip_ip_admi = NULL,
-                                  number_use_ip_admi = "number_use",
-                                  elective_col = "EL",
-                                  unit_cost_data,
-                                  hrg_code_col = "Currency_Code",
-                                  description_col = NULL,
-                                  unit_cost_col = "National_Average_Unit_Cost",
-                                  cost_calculated_in = "admission")
+# # ###############################################################################
+# context("testing costing inpatient admission")
+# test_that("testing costing inpatient admission", {
+#   costs_file <- system.file("extdata", "inpatient_adm.xlsx",
+#                             package = "packDAMipd")
+#   datafile <- system.file("extdata", "resource_use_hc_ip.csv",
+#                           package = "packDAMipd")
+#   # ind_part_data <- packDAMipd::load_trial_data(datafile)
+#   unit_cost_data <- packDAMipd::load_trial_data(costs_file)
+#   result <- costing_inpatient_daycase_admission(ind_part_data,
+#                                   hrg_code_ip_admi = "HRGcode",
+#                                   descrip_ip_admi = NULL,
+#                                   number_use_ip_admi = "number_use",
+#                                   elective_col = "EL",
+#                                   unit_cost_data,
+#                                   hrg_code_col = "Currency_Code",
+#                                   description_col = NULL,
+#                                   unit_cost_col = "National_Average_Unit_Cost",
+#                                   cost_calculated_in = "admission")
+#
+#   expect_equal(result$totcost_ip_admission[1], 6666, tol = 1e-2)
 
-  expect_equal(result$totcost_ip_admission[1], 6666, tol = 1e-2)
-
-  expect_error(costing_inpatient_daycase_admission(NULL,
-                                  hrg_code_ip_admi = "HRGcode",
-                                  descrip_ip_admi = NULL,
-                                  number_use_ip_admi = "number_use",
-                                  elective_col = "EL",
-                                  unit_cost_data,
-                                  hrg_code_col = "Currency_Code",
-                                  description_col = NULL,
-                                  unit_cost_col = "National_Average_Unit_Cost",
-                                  cost_calculated_in = "admission"))
-
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                      hrg_code_ip_admi = "HRGcode",
-                                      descrip_ip_admi = NULL,
-                                      number_use_ip_admi = "number_use",
-                                      elective_col = "EL",
-                                      unit_cost_data,
-                                      hrg_code_col = NULL,
-                                      description_col = NULL,
-                                      unit_cost_col =
-                                        "National_Average_Unit_Cost",
-                                      cost_calculated_in = "admission"))
-
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                 hrg_code_ip_admi = NULL,
-                                 descrip_ip_admi = NULL,
-                                 number_use_ip_admi = "number_use",
-                                 elective_col = "EL",
-                                 unit_cost_data,
-                                 hrg_code_col = "Currency_Code",
-                                 description_col = NULL,
-                                  unit_cost_col = "National_Average_Unit_Cost",
-                                  cost_calculated_in = "admission"))
-
-  result <- costing_inpatient_daycase_admission(ind_part_data,
-                                        hrg_code_ip_admi = "HRGcode",
-                                        descrip_ip_admi = NULL,
-                                        number_use_ip_admi = NULL,
-                                        elective_col = "EL",
-                                        unit_cost_data,
-                                        hrg_code_col = "Currency_Code",
-                                        description_col = NULL,
-                                        unit_cost_col =
-                                        "National_Average_Unit_Cost",
-                                        cost_calculated_in = "admission")
-  expect_equal(result$totcost_ip_admission[1], 6666, tol = 1e-2)
-
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                           hrg_code_ip_admi = "HRGcode",
-                                           descrip_ip_admi = NULL,
-                                           number_use_ip_admi = "number_use",
-                                           elective_col = "EL",
-                                           NULL,
-                                           hrg_code_col = "Currency_Code",
-                                           description_col = NULL,
-                                           unit_cost_col =
-                                             "National_Average_Unit_Cost",
-                                           cost_calculated_in = "admission"))
-
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                           hrg_code_ip_admi = "HRGcode",
-                                           descrip_ip_admi = NULL,
-                                           number_use_ip_admi = "number_use",
-                                           elective_col = NULL,
-                                           unit_cost_data,
-                                           hrg_code_col = "Currency_Code",
-                                           description_col = NULL,
-                                           unit_cost_col =
-                                             "National_Average_Unit_Cost",
-                                           cost_calculated_in = "admission"))
-
-
-  result <- costing_inpatient_daycase_admission(ind_part_data,
-                                        hrg_code_ip_admi = "HRGcode",
-                                        descrip_ip_admi = NULL,
-                                        number_use_ip_admi = "number_use",
-                                        elective_col = "EL",
-                                        unit_cost_data,
-                                        hrg_code_col = "Currency_Code",
-                                        description_col = NULL,
-                                        unit_cost_col =
-                                          "National_Average_Unit_Cost",
-                                        cost_calculated_in = "admission")
-  expect_equal(result$totcost_ip_admission[1], 6666, tol = 1e-2)
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                           hrg_code_ip_admi = "HRGcode",
-                                           descrip_ip_admi = NULL,
-                                           number_use_ip_admi = "number_use",
-                                           elective_col = "EL",
-                                           unit_cost_data,
-                                           hrg_code_col = "Currency_Code",
-                                           description_col = NULL,
-                                           unit_cost_col = NULL,
-                                           cost_calculated_in = "admission"))
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                           hrg_code_ip_admi = "HRGcode",
-                                           descrip_ip_admi = NULL,
-                                           number_use_ip_admi = "number_use",
-                                           elective_col = "EL",
-                                           unit_cost_data,
-                                           hrg_code_col = "Currency_Code",
-                                           description_col = NULL,
-                                           unit_cost_col =
-                                             "National_Average_Unit_Cost",
-                                           cost_calculated_in = NULL))
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                           hrg_code_ip_admi = "HRGcode",
-                                           descrip_ip_admi = NULL,
-                                           number_use_ip_admi = "number_use",
-                                           elective_col = "EL",
-                                           unit_cost_data,
-                                           hrg_code_col = "Currency_Code",
-                                           description_col = NULL,
-                                           unit_cost_col =
-                                             "National_Average_Unit_Cost",
-                                           cost_calculated_in = "ad"))
-  result <- costing_inpatient_daycase_admission(ind_part_data,
-                                        hrg_code_ip_admi = NULL,
-                                        descrip_ip_admi = "Description",
-                                        number_use_ip_admi = "number_use",
-                                        elective_col = "EL",
-                                        unit_cost_data,
-                                        hrg_code_col = NULL,
-                                        description_col =
-                                          "Currency_Description",
-                                        unit_cost_col =
-                                          "National_Average_Unit_Cost",
-                                        cost_calculated_in = "admission")
-  expect_equal(result$totcost_ip_admission[1], 4287, tol = 1e-2)
-  datafile <- system.file("extdata", "resource_use_hc_ip_nocol.csv",
-                          package = "packDAMipd")
-
-  ind_part_data <- packDAMipd::load_trial_data(datafile)
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                           hrg_code_ip_admi = NULL,
-                                           descrip_ip_admi = "Description",
-                                           number_use_ip_admi = "number_use",
-                                           elective_col = "EL",
-                                           unit_cost_data,
-                                           hrg_code_col = "Currency_Code",
-                                           description_col =
-                                             "Currency_Description",
-                                           unit_cost_col =
-                                             "National_Average_Unit_Cost",
-                                           cost_calculated_in = "admission"))
-  datafile <- system.file("extdata", "resource_use_hc_ip_nonumuse.csv",
-                          package = "packDAMipd")
-
-  ind_part_data <- packDAMipd::load_trial_data(datafile)
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                           hrg_code_ip_admi = NULL,
-                                           descrip_ip_admi = "Description",
-                                           number_use_ip_admi = "number_use",
-                                           elective_col = "EL",
-                                           unit_cost_data,
-                                           hrg_code_col = "Currency_Code",
-                                           description_col =
-                                             "Currency_Description",
-                                           unit_cost_col =
-                                             "National_Average_Unit_Cost",
-                                           cost_calculated_in = "admission"))
-
-  datafile <- system.file("extdata", "resource_use_hc_ip_nocols.csv",
-                          package = "packDAMipd")
-
-  ind_part_data <- packDAMipd::load_trial_data(datafile)
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                           hrg_code_ip_admi = NULL,
-                                           descrip_ip_admi = "Description",
-                                           number_use_ip_admi = "number_use",
-                                           elective_col = "EL",
-                                           unit_cost_data,
-                                           hrg_code_col = "Currency_Code",
-                                           description_col =
-                                             "Currency_Description",
-                                           unit_cost_col =
-                                             "National_Average_Unit_Cost",
-                                           cost_calculated_in = "admission"))
-
-  costs_file <- system.file("extdata",
-                            "National_schedule_of_NHS_costs_2019_error.xlsx",
-                            package = "packDAMipd")
-  datafile <- system.file("extdata", "resource_use_hc_ip.csv",
-                          package = "packDAMipd")
-
-  ind_part_data <- packDAMipd::load_trial_data(datafile)
-  unit_cost_data <- packDAMipd::load_trial_data(costs_file, sheet = "EL")
-  expect_error(costing_inpatient_daycase_admission(ind_part_data,
-                                           hrg_code_ip_admi = NULL,
-                                           descrip_ip_admi = "Description",
-                                           number_use_ip_admi = "number_use",
-                                           elective_col = "EL",
-                                           unit_cost_data,
-                                           hrg_code_col = "Currency_Code",
-                                           description_col =
-                                             "Currency_Description",
-                                           unit_cost_col =
-                                             "National_Average_Unit_Cost",
-                                           cost_calculated_in = "admission"))
-
+#   expect_error(costing_inpatient_daycase_admission(NULL,
+#                                   hrg_code_ip_admi = "HRGcode",
+#                                   descrip_ip_admi = NULL,
+#                                   number_use_ip_admi = "number_use",
+#                                   elective_col = "EL",
+#                                   unit_cost_data,
+#                                   hrg_code_col = "Currency_Code",
+#                                   description_col = NULL,
+#                                   unit_cost_col = "National_Average_Unit_Cost",
+#                                   cost_calculated_in = "admission"))
+#
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                       hrg_code_ip_admi = "HRGcode",
+#                                       descrip_ip_admi = NULL,
+#                                       number_use_ip_admi = "number_use",
+#                                       elective_col = "EL",
+#                                       unit_cost_data,
+#                                       hrg_code_col = NULL,
+#                                       description_col = NULL,
+#                                       unit_cost_col =
+#                                         "National_Average_Unit_Cost",
+#                                       cost_calculated_in = "admission"))
+#
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                  hrg_code_ip_admi = NULL,
+#                                  descrip_ip_admi = NULL,
+#                                  number_use_ip_admi = "number_use",
+#                                  elective_col = "EL",
+#                                  unit_cost_data,
+#                                  hrg_code_col = "Currency_Code",
+#                                  description_col = NULL,
+#                                   unit_cost_col = "National_Average_Unit_Cost",
+#                                   cost_calculated_in = "admission"))
+#
+#   result <- costing_inpatient_daycase_admission(ind_part_data,
+#                                         hrg_code_ip_admi = "HRGcode",
+#                                         descrip_ip_admi = NULL,
+#                                         number_use_ip_admi = NULL,
+#                                         elective_col = "EL",
+#                                         unit_cost_data,
+#                                         hrg_code_col = "Currency_Code",
+#                                         description_col = NULL,
+#                                         unit_cost_col =
+#                                         "National_Average_Unit_Cost",
+#                                         cost_calculated_in = "admission")
+#   expect_equal(result$totcost_ip_admission[1], 6666, tol = 1e-2)
+#
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                            hrg_code_ip_admi = "HRGcode",
+#                                            descrip_ip_admi = NULL,
+#                                            number_use_ip_admi = "number_use",
+#                                            elective_col = "EL",
+#                                            NULL,
+#                                            hrg_code_col = "Currency_Code",
+#                                            description_col = NULL,
+#                                            unit_cost_col =
+#                                              "National_Average_Unit_Cost",
+#                                            cost_calculated_in = "admission"))
+#
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                            hrg_code_ip_admi = "HRGcode",
+#                                            descrip_ip_admi = NULL,
+#                                            number_use_ip_admi = "number_use",
+#                                            elective_col = NULL,
+#                                            unit_cost_data,
+#                                            hrg_code_col = "Currency_Code",
+#                                            description_col = NULL,
+#                                            unit_cost_col =
+#                                              "National_Average_Unit_Cost",
+#                                            cost_calculated_in = "admission"))
+#
+#
+#   result <- costing_inpatient_daycase_admission(ind_part_data,
+#                                         hrg_code_ip_admi = "HRGcode",
+#                                         descrip_ip_admi = NULL,
+#                                         number_use_ip_admi = "number_use",
+#                                         elective_col = "EL",
+#                                         unit_cost_data,
+#                                         hrg_code_col = "Currency_Code",
+#                                         description_col = NULL,
+#                                         unit_cost_col =
+#                                           "National_Average_Unit_Cost",
+#                                         cost_calculated_in = "admission")
+#   expect_equal(result$totcost_ip_admission[1], 6666, tol = 1e-2)
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                            hrg_code_ip_admi = "HRGcode",
+#                                            descrip_ip_admi = NULL,
+#                                            number_use_ip_admi = "number_use",
+#                                            elective_col = "EL",
+#                                            unit_cost_data,
+#                                            hrg_code_col = "Currency_Code",
+#                                            description_col = NULL,
+#                                            unit_cost_col = NULL,
+#                                            cost_calculated_in = "admission"))
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                            hrg_code_ip_admi = "HRGcode",
+#                                            descrip_ip_admi = NULL,
+#                                            number_use_ip_admi = "number_use",
+#                                            elective_col = "EL",
+#                                            unit_cost_data,
+#                                            hrg_code_col = "Currency_Code",
+#                                            description_col = NULL,
+#                                            unit_cost_col =
+#                                              "National_Average_Unit_Cost",
+#                                            cost_calculated_in = NULL))
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                            hrg_code_ip_admi = "HRGcode",
+#                                            descrip_ip_admi = NULL,
+#                                            number_use_ip_admi = "number_use",
+#                                            elective_col = "EL",
+#                                            unit_cost_data,
+#                                            hrg_code_col = "Currency_Code",
+#                                            description_col = NULL,
+#                                            unit_cost_col =
+#                                              "National_Average_Unit_Cost",
+#                                            cost_calculated_in = "ad"))
+#   result <- costing_inpatient_daycase_admission(ind_part_data,
+#                                         hrg_code_ip_admi = NULL,
+#                                         descrip_ip_admi = "Description",
+#                                         number_use_ip_admi = "number_use",
+#                                         elective_col = "EL",
+#                                         unit_cost_data,
+#                                         hrg_code_col = NULL,
+#                                         description_col =
+#                                           "Currency_Description",
+#                                         unit_cost_col =
+#                                           "National_Average_Unit_Cost",
+#                                         cost_calculated_in = "admission")
+#   expect_equal(result$totcost_ip_admission[1], 4287, tol = 1e-2)
+#   datafile <- system.file("extdata", "resource_use_hc_ip_nocol.csv",
+#                           package = "packDAMipd")
+#
+#   ind_part_data <- packDAMipd::load_trial_data(datafile)
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                            hrg_code_ip_admi = NULL,
+#                                            descrip_ip_admi = "Description",
+#                                            number_use_ip_admi = "number_use",
+#                                            elective_col = "EL",
+#                                            unit_cost_data,
+#                                            hrg_code_col = "Currency_Code",
+#                                            description_col =
+#                                              "Currency_Description",
+#                                            unit_cost_col =
+#                                              "National_Average_Unit_Cost",
+#                                            cost_calculated_in = "admission"))
+#   datafile <- system.file("extdata", "resource_use_hc_ip_nonumuse.csv",
+#                           package = "packDAMipd")
+#
+#   ind_part_data <- packDAMipd::load_trial_data(datafile)
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                            hrg_code_ip_admi = NULL,
+#                                            descrip_ip_admi = "Description",
+#                                            number_use_ip_admi = "number_use",
+#                                            elective_col = "EL",
+#                                            unit_cost_data,
+#                                            hrg_code_col = "Currency_Code",
+#                                            description_col =
+#                                              "Currency_Description",
+#                                            unit_cost_col =
+#                                              "National_Average_Unit_Cost",
+#                                            cost_calculated_in = "admission"))
+#
+#   datafile <- system.file("extdata", "resource_use_hc_ip_nocols.csv",
+#                           package = "packDAMipd")
+#
+#   ind_part_data <- packDAMipd::load_trial_data(datafile)
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                            hrg_code_ip_admi = NULL,
+#                                            descrip_ip_admi = "Description",
+#                                            number_use_ip_admi = "number_use",
+#                                            elective_col = "EL",
+#                                            unit_cost_data,
+#                                            hrg_code_col = "Currency_Code",
+#                                            description_col =
+#                                              "Currency_Description",
+#                                            unit_cost_col =
+#                                              "National_Average_Unit_Cost",
+#                                            cost_calculated_in = "admission"))
+#
+#   costs_file <- system.file("extdata",
+#                             "National_schedule_of_NHS_costs_2019_error.xlsx",
+#                             package = "packDAMipd")
+#   datafile <- system.file("extdata", "resource_use_hc_ip.csv",
+#                           package = "packDAMipd")
+#
+#   ind_part_data <- packDAMipd::load_trial_data(datafile)
+#   unit_cost_data <- packDAMipd::load_trial_data(costs_file, sheet = "EL")
+#   expect_error(costing_inpatient_daycase_admission(ind_part_data,
+#                                            hrg_code_ip_admi = NULL,
+#                                            descrip_ip_admi = "Description",
+#                                            number_use_ip_admi = "number_use",
+#                                            elective_col = "EL",
+#                                            unit_cost_data,
+#                                            hrg_code_col = "Currency_Code",
+#                                            description_col =
+#                                              "Currency_Description",
+#                                            unit_cost_col =
+#                                              "National_Average_Unit_Cost",
+#                                            cost_calculated_in = "admission"))
+#
   costs_file <- system.file("extdata",
                             "National_schedule_of_NHS_costs_2019.csv",
                             package = "packDAMipd")
