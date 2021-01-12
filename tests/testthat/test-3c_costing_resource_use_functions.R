@@ -293,8 +293,8 @@ test_that("testing extracting unit cost matching description", {
                                               "EL"))
 })
 # # ###############################################################################
-# context("testing costing inpatient admission")
-# test_that("testing costing inpatient admission", {
+context("testing costing inpatient admission")
+test_that("testing costing inpatient admission", {
 #   costs_file <- system.file("extdata", "inpatient_adm.xlsx",
 #                             package = "packDAMipd")
 #   datafile <- system.file("extdata", "resource_use_hc_ip.csv",
