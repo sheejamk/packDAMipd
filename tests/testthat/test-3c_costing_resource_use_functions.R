@@ -705,7 +705,7 @@ test_that("testing extracting unit cost matching description", {
                                package = "packDAMipd")
   re <- get_cost_AandE_description("Emergency Medicine", "T01A",
                                   ref_cost_data_file,
-                                "Currency_Description" ,
+                                "Currency_Description",
                                 "National_Average_Unit_Cost", "Service_Code")
   expect_equal(re, 265.33, tol = 1e-2)
   ref_cost_data_file <- system.file("extdata",
@@ -713,13 +713,13 @@ test_that("testing extracting unit cost matching description", {
                                     package = "packDAMipd")
   re <- get_cost_AandE_description("Emergency Medicine", "T01A",
                             ref_cost_data_file,
-                            "Currency_Description" ,
+                            "Currency_Description",
                             "National_Average_Unit_Cost", "Service_Code",
                             sheet = "AE")
   expect_equal(re, 265.33, tol = 1e-2)
   expect_error(get_cost_AandE_description("Emergency Medicine", "T00A",
                              ref_cost_data_file,
-                             "Currency_Description" ,
+                             "Currency_Description",
                              "National_Average_Unit_Cost", "Service_Code",
                              sheet = "AE"))
   expect_error(get_cost_AandE_description(NULL, "T01A",

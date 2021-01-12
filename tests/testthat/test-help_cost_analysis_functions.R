@@ -21,18 +21,18 @@ test_that("testing to get the subset of data compared to list of string", {
                                   c("aa", "bb")))
   colnames(the_data) <- c("name", "brand_a", "xx")
   ans <- return_equal_liststring_listcol(2, the_data, c("tablet", "tablets"))
-  expect_equal(ans$xx, c("bb","aa"))
+  expect_equal(ans$xx, c("bb", "aa"))
 })
 ###############################################################################
 context("testing to return 0 if parameter is null or NA")
 test_that("testing to return 0 if parameter is null or NA", {
-  parame = NULL
+  parame <- NULL
   ans <- return0_if_not_null_na(parame)
   expect_equal(ans, -1)
-  parame = NA
+  parame <- NA
   ans <- return0_if_not_null_na(parame)
   expect_equal(ans, -1)
-  parame = 1
+  parame <- 1
   ans <- return0_if_not_null_na(parame)
   expect_equal(ans, 0)
 })
@@ -64,8 +64,8 @@ test_that("testing to generate weight per vol units", {
   data_file <- system.file("extdata", "medication_liq_codes.xlsx",
   package = "packDAMipd")
   ind_part_data <- load_trial_data(data_file)
-  data_column_nos = c(2,12)
-  list_of_code_names = list(c("Morphine", "Oxycodone"), c(1, 2))
+  data_column_nos <- c(2, 12)
+  list_of_code_names <- list(c("Morphine", "Oxycodone"), c(1, 2))
   ans <- encode_codes_data(list_of_code_names, data_column_nos, ind_part_data)
   expect_equal(unlist(ans[1]), "Morphine")
 })

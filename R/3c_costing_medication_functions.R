@@ -77,7 +77,7 @@ microcosting_liquids_wide <- function(ind_part_data,
                                       list_preparation_dose_unit = NULL,
                                       eqdose_covtab = NULL,
                                       basis_strength_unit = NULL) {
-  internal_basis_time = "day"
+  internal_basis_time <- "day"
   # check the form as liquids
   words <- c("liquid", "liq", "injection", "inject", "solution", "ampoule",
              "liquids", "injections", "solutions", "ampoules")
@@ -435,8 +435,9 @@ microcosting_liquids_wide <- function(ind_part_data,
             stop("The used dosage is not in costing table")
           }
 
-          basis_str_unit_multiply <- convert_wtpervoldiff_basis(unit_dose_ipd[j],
-                                                    basis_strength_unit)
+          basis_str_unit_multiply <-
+            convert_wtpervoldiff_basis(unit_dose_ipd[j],
+                                          basis_strength_unit)
           # get the unit of preparation from the ipd
           if (preparation_dose_check != -1) {
             if (preparation_unit_check == -1) {
@@ -537,8 +538,8 @@ microcosting_liquids_wide <- function(ind_part_data,
             bottle_lasts_num_val_ipd <- as.numeric(bot_lasts_ipd[j])
           ipd_bottle_lasts <- paste(bottle_lasts_num_val_ipd,
                                     bot_lasts_unit_ipd[j], sep = " ")
-          basis_time_multiply <- convert_to_given_timeperiod(ipd_bottle_lasts,
-                                                             internal_basis_time)
+          basis_time_multiply <-
+            convert_to_given_timeperiod(ipd_bottle_lasts,internal_basis_time)
           if (basis_time_multiply > 1)
             no_bottles_used_basis <- 1
           else
@@ -557,8 +558,9 @@ microcosting_liquids_wide <- function(ind_part_data,
 
           time_multiplier <- convert_to_given_timeperiod(timeperiod,
                                                          internal_basis_time)
-          actual_no_bottles_basis = 1 / basis_time_multiply
-          bottles_taken_period <- ceiling(actual_no_bottles_basis * time_multiplier)
+          actual_no_bottles_basis <- 1 / basis_time_multiply
+          bottles_taken_period <- ceiling(actual_no_bottles_basis *
+                                            time_multiplier)
 
           #2 mg/ml dose 10 bottles of certain volume med in strength unit
           med_str_period <-  dose_num_val_ipd * bottles_taken_period *
@@ -599,7 +601,7 @@ microcosting_liquids_wide <- function(ind_part_data,
     }
     keywd <- "liquid"
     list_total_cost_basis <- append(list_total_cost_basis, total_cost_basis)
-    list_total_med_period <- append(list_total_med_period,total_med_period)
+    list_total_med_period <- append(list_total_med_period, total_med_period)
     list_total_med_wt_period <- append(list_total_med_wt_period,
                                        total_med_wt_period)
     list_total_cost_period <- append(list_total_cost_period, total_cost_period)
@@ -1526,7 +1528,7 @@ microcosting_tablets_wide <- function(ind_part_data,
   return(ind_part_data)
 }
 
-#'###########################################################################
+#' #'###########################################################################
 #' #' Function to estimate the cost of tablets and patches taken (from IPD)
 #' #' using a IPD data of long format
 #' #' @param the_columns columns that are to be used to convert the data
@@ -1558,7 +1560,8 @@ microcosting_tablets_wide <- function(ind_part_data,
 #' #' required for total medication calculations
 #' #' @return the calculated cost of tablets along with original data
 #' #' @examples
-#' #' med_costs_file <- system.file("extdata", "average_unit_costs_med_brand.csv",
+#' #' med_costs_file <- system.file("extdata",
+#' #'  "average_unit_costs_med_brand.csv",
 #' #' package = "packDAMipd")
 #' #' data_file <- system.file("extdata", "medication.xlsx",
 #' #' package = "packDAMipd")
@@ -1566,8 +1569,9 @@ microcosting_tablets_wide <- function(ind_part_data,
 #' #' ind_part_data_long <- gather(ind_part_data, condition, measurement,
 #' #' patch_name_1:liq_lasts_3)
 #' #' med_costs <- load_trial_data(med_costs_file)
-#' #' conv_file <- system.file("extdata", "Med_calc.xlsx", package = "packDAMipd")
-#' #' table <- load_trial_data(conv_file)
+#' #' conv_file <- system.file("extdata", "Med_calc.xlsx",
+#' #'package = "packDAMipd")
+#' #'table <- load_trial_data(conv_file)
 #' #' res <- microcosting_patches_long(the_columns = patch_name_1:liq_lasts_3,
 #' #' ind_part_data = ind_part_data_long, name_med = "patch_name",
 #' #' brand_med = "patch_brand", dose_med = "patch_strength", unit_med = NULL,

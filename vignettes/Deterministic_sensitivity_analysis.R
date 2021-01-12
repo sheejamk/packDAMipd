@@ -175,7 +175,6 @@ plot_dsa(result_dsa_control,"ICER", type = "range",result_dsa_treat,
          threshold = 1000, comparator = "mono")
 
 ## -----------------------------------------------------------------------------
-debug(plot_dsa_difference)
 plot_dsa(result_dsa_control,"cost", type = "difference", result_dsa_treat, 
          threshold = 1000, comparator = "mono")
 
