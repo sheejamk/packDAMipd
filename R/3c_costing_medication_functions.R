@@ -1,6 +1,6 @@
 
 ##############################################################################
-#' Function to estimate the cost of tablets and patches taken (from IPD)
+#' Function to estimate the cost of liquids taken (from IPD)
 #' @param ind_part_data IPD
 #' @param name_med name of medication
 #' @param brand_med brand name of medication if revealed
@@ -43,14 +43,15 @@
 #' res <- microcosting_liquids_wide(
 #' ind_part_data = ind_part_data, name_med = "liq_name", brand_med =  NULL,
 #' dose_med = "liq_strength", unit_med = NULL, bottle_size = "liq_bottle_size",
-#' bottle_size_unit = NULL, bottle_lasts = "liq_lasts", bottle_lasts_unit = NULL,
-#' preparation_dose = NULL, preparation_unit = NULL, timeperiod = "4 months",
-#' unit_cost_data = med_costs, unit_cost_column = "UnitCost",
-#' cost_calculated_per = "Basis", strength_column = "Strength",
-#' list_of_code_names = NULL, list_of_code_brand = NULL,
-#' list_of_code_dose_unit = NULL, list_of_code_bottle_size_unit = NULL,
-#' list_of_code_bottle_lasts_unit = NULL,list_preparation_dose_unit = NULL,
-#' eqdose_covtab = table, basis_strength_unit = NULL)
+#' bottle_size_unit = NULL, bottle_lasts = "liq_lasts",
+#' bottle_lasts_unit = NULL, preparation_dose = NULL, preparation_unit = NULL,
+#' timeperiod = "4 months", unit_cost_data = med_costs,
+#' unit_cost_column = "UnitCost", cost_calculated_per = "Basis",
+#' strength_column = "Strength", list_of_code_names = NULL,
+#' list_of_code_brand = NULL, list_of_code_dose_unit = NULL,
+#' list_of_code_bottle_size_unit = NULL, list_of_code_bottle_lasts_unit = NULL,
+#' list_preparation_dose_unit = NULL, eqdose_covtab = table,
+#' basis_strength_unit = NULL)
 #' @export
 #' @importFrom dplyr %>%
 microcosting_liquids_wide <- function(ind_part_data,
@@ -539,7 +540,7 @@ microcosting_liquids_wide <- function(ind_part_data,
           ipd_bottle_lasts <- paste(bottle_lasts_num_val_ipd,
                                     bot_lasts_unit_ipd[j], sep = " ")
           basis_time_multiply <-
-            convert_to_given_timeperiod(ipd_bottle_lasts,internal_basis_time)
+            convert_to_given_timeperiod(ipd_bottle_lasts, internal_basis_time)
           if (basis_time_multiply > 1)
             no_bottles_used_basis <- 1
           else
@@ -1527,103 +1528,341 @@ microcosting_tablets_wide <- function(ind_part_data,
   ind_part_data[[this_name]] <- unlist(list_total_cost_per_equiv_period)
   return(ind_part_data)
 }
-
 #' #'###########################################################################
-#' #' Function to estimate the cost of tablets and patches taken (from IPD)
-#' #' using a IPD data of long format
-#' #' @param the_columns columns that are to be used to convert the data
-#' #' from long to wide
-#' #' @param ind_part_data IPD
-#' #' @param name_med name of medication
-#' #' @param brand_med brand name of medication if revealed
-#' #' @param dose_med dose of medication used
-#' #' @param unit_med unit of medication ; use null if its along with the dose
-#' #' @param no_taken how many taken
-#' #' @param freq_taken frequency of medication
-#' #' @param timeperiod time period for cost calculation
-#' #' @param unit_cost_data  unit costs data
-#' #' @param unit_cost_column column name of unit cost in unit_cost_data
-#' #' @param cost_calculated_per column name of unit in the cost is calculated
-#' #' @param strength_column column column name that contain strength of
-#' #' medication
-#' #' @param list_of_code_names if names is coded, give the code:name pairs,
-#' #' optional
-#' #' @param list_of_code_freq if frequency is coded, give the
-#' #' code:frequency pairs, optional
-#' #' @param list_of_code_dose_unit if unit is coded, give the code:unit pairs,
-#' #' optional
-#' #' @param list_of_code_brand if brand names  are coded, give the code:brand
-#' #' pairs, optional
-#' #' @param eqdose_cov_tab table to get the conversion factor for equivalent
-#' #' doses, optional
-#' #' @param basis_strength_unit strength unit to be taken as basis
-#' #' required for total medication calculations
-#' #' @return the calculated cost of tablets along with original data
-#' #' @examples
-#' #' med_costs_file <- system.file("extdata",
-#' #'  "average_unit_costs_med_brand.csv",
-#' #' package = "packDAMipd")
-#' #' data_file <- system.file("extdata", "medication.xlsx",
-#' #' package = "packDAMipd")
-#' #' ind_part_data <- load_trial_data(data_file)
-#' #' ind_part_data_long <- gather(ind_part_data, condition, measurement,
-#' #' patch_name_1:liq_lasts_3)
-#' #' med_costs <- load_trial_data(med_costs_file)
-#' #' conv_file <- system.file("extdata", "Med_calc.xlsx",
-#' #'package = "packDAMipd")
-#' #'table <- load_trial_data(conv_file)
-#' #' res <- microcosting_patches_long(the_columns = patch_name_1:liq_lasts_3,
-#' #' ind_part_data = ind_part_data_long, name_med = "patch_name",
-#' #' brand_med = "patch_brand", dose_med = "patch_strength", unit_med = NULL,
-#' #' no_taken = "patch_no_taken", freq_taken = "patch_frequency",
-#' #' timeperiod = "4 months", unit_cost_data = med_costs,
-#' #' unit_cost_column = "UnitCost", cost_calculated_per  = "Basis",
-#' #' strength_column = "Strength", list_of_code_names = NULL,
-#' #' list_of_code_freq = NULL, list_of_code_dose_unit = NULL,
-#' #' list_of_code_brand = NULL, eqdose_cov_tab = table,
-#' #' basis_strength_unit = "mcg/hr")
-#' #' @export
-#' #' @importFrom tidyr gather
-#' #' @importFrom tidyr spread_
-#' microcosting_patches_long <- function(the_columns, ind_part_data_long,
-#'                                               name_med,
-#'                                               brand_med = NULL,
-#'                                               dose_med,
-#'                                               unit_med = NULL,
-#'                                               no_taken, freq_taken,
-#'                                               timeperiod,
-#'                                               unit_cost_data,
-#'                                               unit_cost_column,
-#'                                               cost_calculated_per,
-#'                                               strength_column,
-#'                                               list_of_code_names = NULL,
-#'                                               list_of_code_freq = NULL,
-#'                                               list_of_code_dose_unit = NULL,
-#'                                               list_of_code_brand = NULL,
-#'                                               eqdose_cov_tab = NULL,
-#'                                               basis_strength_unit = NULL) {
-#'   #Error - data should not be NULL
-#'   if (is.null(ind_part_data_long) | is.null(unit_cost_data))
-#'     stop("data should not be NULL")
-#'
-#'   ind_part_data_wide <- tidyr::spread_(ind_part_data_long, the_columns[1],
-#'                                        the_columns[2])
-#'
-#'   result <- microcosting_patches_wide(ind_part_data_wide,
-#'                                     name_med,
-#'                                     brand_med = NULL,
-#'                                     dose_med,
-#'                                     unit_med = NULL,
-#'                                     no_taken, freq_taken,
-#'                                     timeperiod,
-#'                                     unit_cost_data,
-#'                                     unit_cost_column,
-#'                                     cost_calculated_per,
-#'                                     strength_column,
-#'                                     list_of_code_names = NULL,
-#'                                     list_of_code_freq = NULL,
-#'                                     list_of_code_dose_unit = NULL,
-#'                                     list_of_code_brand = NULL,
-#'                                     eqdose_cov_tab = NULL,
-#'                                     basis_strength_unit = NULL)
-#' }
+#' Function to estimate the cost of patches when IPD is in long format
+#' using a IPD data of long format
+#' @param the_columns columns that are to be used to convert the data
+#' from long to wide
+#' @param ind_part_data_long IPD
+#' @param name_med name of medication
+#' @param brand_med brand name of medication if revealed
+#' @param dose_med dose of medication used
+#' @param unit_med unit of medication ; use null if its along with the dose
+#' @param no_taken how many taken
+#' @param freq_taken frequency of medication
+#' @param timeperiod time period for cost calculation
+#' @param unit_cost_data  unit costs data
+#' @param unit_cost_column column name of unit cost in unit_cost_data
+#' @param cost_calculated_per column name of unit in the cost is calculated
+#' @param strength_column column column name that contain strength of
+#' medication
+#' @param list_of_code_names if names is coded, give the code:name pairs,
+#' optional
+#' @param list_of_code_freq if frequency is coded, give the
+#' code:frequency pairs, optional
+#' @param list_of_code_dose_unit if unit is coded, give the code:unit pairs,
+#' optional
+#' @param list_of_code_brand if brand names  are coded, give the code:brand
+#' pairs, optional
+#' @param eqdose_cov_tab table to get the conversion factor for equivalent
+#' doses, optional
+#' @param basis_strength_unit strength unit to be taken as basis
+#' required for total medication calculations
+#' @return the calculated cost of tablets along with original data
+#' @examples
+#' med_costs_file <- system.file("extdata", "average_unit_costs_med_brand.csv",
+#' package = "packDAMipd")
+#' data_file <- system.file("extdata", "medication.xlsx",
+#' package = "packDAMipd")
+#' ind_part_data <- load_trial_data(data_file)
+#' med_costs <- load_trial_data(med_costs_file)
+#' conv_file <- system.file("extdata", "Med_calc.xlsx",package = "packDAMipd")
+#' table <- load_trial_data(conv_file)
+#' names <- colnames(ind_part_data)
+#' ending <- length(names)
+#' ind_part_data_long <- tidyr::gather(ind_part_data, measurement, value,
+#' names[2]:names[ending], factor_key = TRUE)
+#' the_columns <- c("measurement", "value")
+#' res <- microcosting_patches_long(the_columns,
+#' ind_part_data_long = ind_part_data_long, name_med = "patch_name",
+#' brand_med = "patch_brand", dose_med = "patch_strength",unit_med = NULL,
+#' no_taken = "patch_no_taken", freq_taken = "patch_frequency",
+#' timeperiod = "4 months", unit_cost_data = med_costs,
+#' unit_cost_column = "UnitCost", cost_calculated_per  = "Basis",
+#' strength_column = "Strength", list_of_code_names = NULL,
+#' list_of_code_freq = NULL, list_of_code_dose_unit = NULL,
+#' list_of_code_brand = NULL, eqdose_cov_tab = table,
+#' basis_strength_unit = "mcg/hr")
+#' @export
+#' @importFrom tidyr gather
+#' @importFrom tidyr spread_
+microcosting_patches_long <- function(the_columns,
+                                      ind_part_data_long,
+                                              name_med,
+                                              brand_med = NULL,
+                                              dose_med,
+                                              unit_med = NULL,
+                                              no_taken, freq_taken,
+                                              timeperiod,
+                                              unit_cost_data,
+                                              unit_cost_column,
+                                              cost_calculated_per,
+                                              strength_column,
+                                              list_of_code_names = NULL,
+                                              list_of_code_freq = NULL,
+                                              list_of_code_dose_unit = NULL,
+                                              list_of_code_brand = NULL,
+                                              eqdose_cov_tab = NULL,
+                                              basis_strength_unit = NULL) {
+  #Error - data should not be NULL
+  if (is.null(ind_part_data_long) | is.null(unit_cost_data))
+    stop("data should not be NULL")
+
+  ind_part_data_wide <- tidyr::spread_(ind_part_data_long, the_columns[1],
+                                       the_columns[2])
+
+  result_wide <- microcosting_patches_wide(ind_part_data_wide,
+                                    name_med,
+                                    brand_med,
+                                    dose_med,
+                                    unit_med,
+                                    no_taken, freq_taken,
+                                    timeperiod,
+                                    unit_cost_data,
+                                    unit_cost_column,
+                                    cost_calculated_per,
+                                    strength_column,
+                                    list_of_code_names,
+                                    list_of_code_freq,
+                                    list_of_code_dose_unit,
+                                    list_of_code_brand,
+                                    eqdose_cov_tab,
+                                    basis_strength_unit)
+  result_wide <- as.data.frame(result_wide)
+  columns <- colnames(result_wide)
+  num <- length(columns)
+  result_long <- tidyr::gather(result_wide, measurment, value,
+                               columns[2]:columns[num], factor_key = TRUE)
+  return(result_long)
+
+}
+
+##############################################################################
+#' Function to estimate the cost of tablets when IPD is in long format
+#' @param the_columns columns that are to be used to convert the data
+#' from long to wide
+#' @param ind_part_data_long IPD
+#' @param name_med name of medication
+#' @param brand_med brand name of medication if revealed
+#' @param dose_med dose of medication used
+#' @param unit_med unit of medication ; use null if its along with the dose
+#' @param no_taken how many taken
+#' @param freq_taken frequency of medication
+#' @param timeperiod time period for cost calculation
+#' @param unit_cost_data  unit costs data
+#' @param unit_cost_column column name of unit cost in unit_cost_data
+#' @param cost_calculated_per column name of unit where the cost is calculated
+#' @param strength_column column column name that contain strength of
+#' medication
+#' @param list_of_code_names if names is coded, give the code:name pairs,
+#' optional
+#' @param list_of_code_freq if frequency is coded, give the
+#' code:frequency pairs, optional
+#' @param list_of_code_dose_unit if unit is coded, give the code:unit pairs,
+#' optional
+#' @param list_of_code_brand if brand names  are coded, give the code:brand
+#' pairs, optional
+#' @param eqdose_cov_tab table to get the conversion factor for equivalent
+#' doses, optional
+#' @param basis_strength_unit strength unit to be taken as basis
+#' required for total medication calculations
+#' @return the calculated cost of tablets along with original data
+#' @examples
+#' med_costs_file <- system.file("extdata", "average_unit_costs_med_brand.csv",
+#' package = "packDAMipd")
+#' data_file <- system.file("extdata", "medication_all.xlsx",
+#' package = "packDAMipd")
+#' ind_part_data <- load_trial_data(data_file)
+#' med_costs <- load_trial_data(med_costs_file)
+#' conv_file <- system.file("extdata", "Med_calc.xlsx", package = "packDAMipd")
+#' table <- load_trial_data(conv_file)
+#' names <- colnames(ind_part_data)
+#' ending <- length(names)
+#' ind_part_data_long <- tidyr::gather(ind_part_data, measurement, value,
+#' names[2]:names[ending], factor_key = TRUE)
+#' the_columns <- c("measurement", "value")
+#' res <- microcosting_tablets_long(the_columns,
+#' ind_part_data_long = ind_part_data_long, name_med = "tab_name",
+#' brand_med = "tab_brand", dose_med = "tab_strength",
+#' unit_med = "tab_str_unit",
+#' no_taken = "tab_no_taken", freq_taken = "tab_frequency",
+#' timeperiod = "2 months",unit_cost_data = med_costs,
+#' unit_cost_column = "UnitCost", cost_calculated_per  = "Basis",
+#' strength_column = "Strength", list_of_code_names = NULL,
+#' list_of_code_freq = NULL,list_of_code_dose_unit = NULL,
+#' eqdose_cov_tab = table, basis_strength_unit = "mg")
+microcosting_tablets_long <- function(the_columns,
+                                      ind_part_data_long,
+                                      name_med,
+                                      brand_med = NULL,
+                                      dose_med,
+                                      unit_med = NULL,
+                                      no_taken, freq_taken,
+                                      timeperiod,
+                                      unit_cost_data,
+                                      unit_cost_column,
+                                      cost_calculated_per,
+                                      strength_column,
+                                      list_of_code_names = NULL,
+                                      list_of_code_freq = NULL,
+                                      list_of_code_dose_unit = NULL,
+                                      list_of_code_brand = NULL,
+                                      eqdose_cov_tab = NULL,
+                                      basis_strength_unit = NULL) {
+
+  #Error - data should not be NULL
+  if (is.null(ind_part_data_long) | is.null(unit_cost_data))
+    stop("data should not be NULL")
+
+  ind_part_data_wide <- tidyr::spread_(ind_part_data_long, the_columns[1],
+                                       the_columns[2])
+
+  results_wide <- microcosting_tablets_wide(ind_part_data_wide,
+                                        name_med,
+                                        brand_med,
+                                        dose_med,
+                                        unit_med,
+                                        no_taken, freq_taken,
+                                        timeperiod,
+                                        unit_cost_data,
+                                        unit_cost_column,
+                                        cost_calculated_per,
+                                        strength_column,
+                                        list_of_code_names,
+                                        list_of_code_freq,
+                                        list_of_code_dose_unit,
+                                        list_of_code_brand,
+                                        eqdose_cov_tab,
+                                        basis_strength_unit)
+  results_wide <- as.data.frame(results_wide)
+  columns <- colnames(results_wide)
+  num <- length(columns)
+  result_long <- tidyr::gather(results_wide, measurment, value,
+                               columns[2]:columns[num], factor_key = TRUE)
+  return(result_long)
+}
+##############################################################################
+#' Function to estimate the cost of liquids when IPD is in long format
+#' @param the_columns columns that are to be used to convert the data
+#' from long to wide
+#' @param ind_part_data_long IPD
+#' @param name_med name of medication
+#' @param brand_med brand name of medication if revealed
+#' @param dose_med dose of medication used
+#' @param unit_med unit of medication ; use null if its along with the dose
+#' @param bottle_size size of the bottle used
+#' @param bottle_size_unit unit of bottle volume
+#' @param bottle_lasts how long the bottle lasted
+#' @param bottle_lasts_unit time unit of how long the bottle lasted
+#' @param preparation_dose dose if preparation is given
+#' @param preparation_unit unit of preparatio dose
+#' @param timeperiod time period for cost calculation
+#' @param unit_cost_data  unit costs data
+#' @param unit_cost_column column name of unit cost in unit_cost_data
+#' @param cost_calculated_per column name of unit where the cost is calculated
+#' @param strength_column column column name that has strength of medication
+#' @param list_of_code_names if names is coded, give the code:name pairs,
+#' optional
+#' @param list_of_code_brand if brand names  are coded, give the
+#' code:brand pairs, optional
+#' @param list_of_code_dose_unit if unit is coded, give the code:unit pairs,
+#' optional
+#' @param list_of_code_bottle_size_unit  list of bottle size units and codes
+#' @param list_of_code_bottle_lasts_unit list of time of bottle lasts and codes
+#' @param list_preparation_dose_unit list of preparation dose units and codes
+#' @param eqdose_covtab table to get the conversion factor for equivalent
+#' doses, optional
+#' @param basis_strength_unit strength unit to be taken as basis
+#' required for total medication calculations
+#' @return the calculated cost of tablets along with original data
+#' @examples
+#'med_costs_file <- system.file("extdata", "average_unit_costs_med_brand.csv",
+#'package = "packDAMipd")
+#'data_file <- system.file("extdata", "medication_liq.xlsx",
+#' package = "packDAMipd")
+#' ind_part_data <- load_trial_data(data_file)
+#' med_costs <- load_trial_data(med_costs_file)
+#' conv_file <- system.file("extdata", "Med_calc.xlsx",
+#' package = "packDAMipd")
+#' table <- load_trial_data(conv_file)
+#' names <- colnames(ind_part_data)
+#' ending <- length(names)
+#' ind_part_data_long <- tidyr::gather(ind_part_data, measurement, value,
+#' names[2]:names[ending], factor_key = TRUE)
+#' the_columns <- c("measurement", "value")
+#' res <- microcosting_liquids_long(the_columns,
+#' ind_part_data_long = ind_part_data_long,
+#' name_med = "liq_name", brand_med =  NULL, dose_med = "liq_strength",
+#' unit_med = NULL, bottle_size = "liq_bottle_size",bottle_size_unit = NULL,
+#' bottle_lasts = "liq_lasts",bottle_lasts_unit = NULL,preparation_dose = NULL,
+#' preparation_unit = NULL,timeperiod = "4 months",unit_cost_data = med_costs,
+#' unit_cost_column = "UnitCost",cost_calculated_per = "Basis",
+#' strength_column = "Strength",list_of_code_names = NULL,
+#' list_of_code_brand = NULL,list_of_code_dose_unit = NULL,
+#' list_of_code_bottle_size_unit = NULL,list_of_code_bottle_lasts_unit = NULL,
+#' list_preparation_dose_unit = NULL,eqdose_covtab = table,
+#' basis_strength_unit = NULL)
+#' @export
+microcosting_liquids_long <- function(the_columns,
+                                      ind_part_data_long,
+                                      name_med,
+                                      brand_med = NULL,
+                                      dose_med,
+                                      unit_med = NULL,
+                                      bottle_size,
+                                      bottle_size_unit = NULL,
+                                      bottle_lasts,
+                                      bottle_lasts_unit = NULL,
+                                      preparation_dose = NULL,
+                                      preparation_unit = NULL,
+                                      timeperiod,
+                                      unit_cost_data,
+                                      unit_cost_column,
+                                      cost_calculated_per,
+                                      strength_column,
+                                      list_of_code_names = NULL,
+                                      list_of_code_brand = NULL,
+                                      list_of_code_dose_unit = NULL,
+                                      list_of_code_bottle_size_unit = NULL,
+                                      list_of_code_bottle_lasts_unit = NULL,
+                                      list_preparation_dose_unit = NULL,
+                                      eqdose_covtab = NULL,
+                                      basis_strength_unit = NULL) {
+
+  #Error - data should not be NULL
+  if (is.null(ind_part_data_long) | is.null(unit_cost_data))
+    stop("data should not be NULL")
+
+  ind_part_data_wide <- tidyr::spread_(ind_part_data_long, the_columns[1],
+                                       the_columns[2])
+  results_wide <- microcosting_liquids_wide(ind_part_data_wide,
+                                        name_med,
+                                        brand_med,
+                                        dose_med,
+                                        unit_med,
+                                        bottle_size,
+                                        bottle_size_unit,
+                                        bottle_lasts,
+                                        bottle_lasts_unit,
+                                        preparation_dose,
+                                        preparation_unit,
+                                        timeperiod,
+                                        unit_cost_data,
+                                        unit_cost_column,
+                                        cost_calculated_per,
+                                        strength_column,
+                                        list_of_code_names,
+                                        list_of_code_brand,
+                                        list_of_code_dose_unit,
+                                        list_of_code_bottle_size_unit,
+                                        list_of_code_bottle_lasts_unit,
+                                        list_preparation_dose_unit,
+                                        eqdose_covtab,
+                                        basis_strength_unit)
+  results_wide <- as.data.frame(results_wide)
+  columns <- colnames(results_wide)
+  num <- length(columns)
+  result_long <- tidyr::gather(results_wide, measurment, value,
+                             columns[2]:columns[num], factor_key = TRUE)
+  return(result_long)
+}
