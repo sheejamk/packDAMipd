@@ -1691,6 +1691,9 @@ microcosting_patches_long <- function(the_columns,
 #' strength_column = "Strength", list_of_code_names = NULL,
 #' list_of_code_freq = NULL,list_of_code_dose_unit = NULL,
 #' eqdose_cov_tab = table, basis_strength_unit = "mg")
+#' @export
+#' @importFrom tidyr gather
+#' @importFrom tidyr spread_
 microcosting_tablets_long <- function(the_columns,
                                       ind_part_data_long,
                                       name_med,
@@ -1803,6 +1806,8 @@ microcosting_tablets_long <- function(the_columns,
 #' list_preparation_dose_unit = NULL,eqdose_covtab = table,
 #' basis_strength_unit = NULL)
 #' @export
+#' @importFrom tidyr gather
+#' @importFrom tidyr spread_
 microcosting_liquids_long <- function(the_columns,
                                       ind_part_data_long,
                                       name_med,
