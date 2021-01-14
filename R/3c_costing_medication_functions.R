@@ -1631,12 +1631,11 @@ microcosting_patches_long <- function(the_columns,
   result_wide <- as.data.frame(result_wide)
   columns <- colnames(result_wide)
   num <- length(columns)
-  result_long <- tidyr::gather(result_wide, measurment, value,
+  result_long <- tidyr::gather(result_wide, key = "measurment", value = "value",
                                columns[2]:columns[num], factor_key = TRUE)
   return(result_long)
 
 }
-
 ##############################################################################
 #' Function to estimate the cost of tablets when IPD is in long format
 #' @param the_columns columns that are to be used to convert the data
@@ -1740,7 +1739,7 @@ microcosting_tablets_long <- function(the_columns,
   results_wide <- as.data.frame(results_wide)
   columns <- colnames(results_wide)
   num <- length(columns)
-  result_long <- tidyr::gather(results_wide, measurment, value,
+  result_long <- tidyr::gather(results_wide, key = "measurment", value =  "value",
                                columns[2]:columns[num], factor_key = TRUE)
   return(result_long)
 }
@@ -1867,7 +1866,7 @@ microcosting_liquids_long <- function(the_columns,
   results_wide <- as.data.frame(results_wide)
   columns <- colnames(results_wide)
   num <- length(columns)
-  result_long <- tidyr::gather(results_wide, measurment, value,
+  result_long <- tidyr::gather(results_wide, key = "measurment", value = "value",
                              columns[2]:columns[num], factor_key = TRUE)
   return(result_long)
 }
