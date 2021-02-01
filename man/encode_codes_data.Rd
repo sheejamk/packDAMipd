@@ -24,6 +24,6 @@ data_file <- system.file("extdata", "medication_liq_codes.xlsx",
 package = "packDAMipd")
 ind_part_data <- load_trial_data(data_file)
 data_column_nos = c(2,12)
-list_of_code_names = list(c("Morphine", "Oxycodone"), c(1, 2))
+list_of_code_names = list(c(1, 2),c("Morphine", "Oxycodone"))
 encode_codes_data(list_of_code_names, data_column_nos, ind_part_data)
 }

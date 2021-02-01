@@ -42,7 +42,8 @@ Imports:
     tidyverse,
     tibble,
     dplyr,
-    tidyr
+    tidyr,
+    hash
 Suggests: 
     ISLR,
     foreign,

@@ -175,17 +175,39 @@ generate_wt_vol_units <- function() {
 #' package = "packDAMipd")
 #' ind_part_data <- load_trial_data(data_file)
 #' data_column_nos = c(2,12)
-#' list_of_code_names = list(c("Morphine", "Oxycodone"), c(1, 2))
+#' list_of_code_names = list(c(1, 2),c("Morphine", "Oxycodone"))
 #' encode_codes_data(list_of_code_names, data_column_nos, ind_part_data)
 #' @export
 encode_codes_data <- function(list_code_values, data_column_nos, the_data) {
   if (!is.null(list_code_values) & sum(is.na(list_code_values)) == 0) {
-    values_and_code <- stats::setNames(as.list(list_code_values[[1]]),
-                                     list_code_values[[2]])
-    ipd_codes <- the_data %>% dplyr::select(dplyr::all_of(data_column_nos))
-    values_from_code <- values_and_code[unlist(ipd_codes)]
+
+    h <- hash::hash(key = unlist(list_code_values[1]),
+                    values = unlist(list_code_values[2]) )
+    leys <- h$key
+    vals <- h$values
+    ipd_codes <- as.data.frame(the_data %>%
+                              dplyr::select(dplyr::all_of(data_column_nos)))
     this_dim <- dim(ipd_codes)
-    values_from_code <- matrix(values_from_code, nrow = this_dim[1])
+    values_from_code <- c()
+
+    for (i in 1:this_dim[1]) {
+      for (j in 1:this_dim[2]) {
+          if (!is.na(ipd_codes[i,j])) {
+            this_val <- vals[leys == ipd_codes[i,j]]
+          } else {
+            this_val <- NA
+          }
+          values_from_code <- append(values_from_code,this_val)
+      }
+    }
+
+    # values_and_code <- stats::setNames(as.list(list_code_values[[1]]),
+    #                                  list_code_values[[2]])
+    # ipd_codes <- the_data %>% dplyr::select(dplyr::all_of(data_column_nos))
+    # values_from_code <- values_and_code[unlist(ipd_codes)]
+
+    values_from_code <- matrix(values_from_code, nrow = this_dim[1],
+                               byrow = TRUE)
     colnames(values_from_code) <- colnames(ipd_codes)
     index <- which(is.na(ipd_codes))
     if (length(index) > 0)

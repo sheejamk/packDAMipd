@@ -575,13 +575,13 @@ test_that("testing microcosting patches", {
                                             cost_calculated_per  = "Basis",
                                             strength_column = "Strength",
                                             list_of_code_names =
-                              list(c("Buprenorphine", "Fentanyl"), c(1, 2)),
+                              list(c(1, 2), c("Buprenorphine", "Fentanyl")),
                                             list_of_code_freq =
-              list(c("once a day", "twice a day", "once a week"), c(1, 2, 3)),
+              list(c(1, 2, 3), c("once a day", "twice a day", "once a week")),
                                             list_of_code_dose_unit =
-              list(c("mcg/hr", "mcg/day"), c(1, 2)),
-              list_of_code_brand = list(c("BuTrans", "Fencino", "Butec"),
-                                        c(1, 2, 3)),
+              list(c(1, 2), c("mcg/hr", "mcg/day")),
+              list_of_code_brand = list( c(1, 2, 3),
+                                         c("BuTrans", "Fencino", "Butec")),
                                            eqdose_cov_tab = table,
                                             basis_strength_unit = "mcg/hr")
 
@@ -602,17 +602,18 @@ test_that("testing microcosting patches", {
                                            cost_calculated_per  = "Basis",
                                           strength_column = "Strength",
                                           list_of_code_names =
-                                          list(c("Buprenorphine", "Fentanyl"),
-                                               c(1, 2)),
+                                          list(c(1, 2),
+                                               c("Buprenorphine", "Fentanyl")),
                                            list_of_code_freq =
-                                            ist(c("once a day", "twice a day",
-                                                  "once a week"), c(1, 2, 3)),
+                                            list(c(1, 2, 3),
+                                                 c("once a day", "twice a day",
+                                                  "once a week")),
                                            list_of_code_dose_unit =
-                                             list(c("mcg/hr", "mcg/day"),
-                                                  c(1, 2)),
+                                             list(c(1, 2),
+                                                  c("mcg/hr", "mcg/day")),
                                            list_of_code_brand =
-                                             list(c("BuTrans", "Fencino",
-                                                    "Butec"), c(1, 2, 3)),
+                                             list( c(1, 2, 3),c("BuTrans", "Fencino",
+                                                    "Butec")),
                                            eqdose_cov_tab = table,
                                            basis_strength_unit = "mcg/hr"))
 
@@ -922,11 +923,6 @@ test_that("testing microcosting patches", {
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = "mg"))
 
-
-
-
-
-
    med_costs_file <- system.file("extdata", "average_unit_costs_med_brand.csv",
                                 package = "packDAMipd")
   data_file <- system.file("extdata", "medication.xlsx",
@@ -1053,7 +1049,7 @@ test_that("testing microcosting patches", {
                                      name_med = "tab_name",
                                      brand_med = "tab_brand",
                                      dose_med = "tab_strength",
-                                     unit_med = NUL,
+                                     unit_med = NULL,
                                      no_taken = "tab_no_taken",
                                      freq_taken = "tab_frequency",
                                      timeperiod = "2 months",
@@ -1212,14 +1208,14 @@ test_that("testing microcosting patches", {
                             cost_calculated_per  = "Basis",
                             strength_column = "Strength",
                             list_of_code_names =
-                              list(c("Buprenorphine", "Fentanyl"), c(1, 2)),
+                              list(c(1, 2), c("Buprenorphine", "Fentanyl")),
                             list_of_code_freq =
-                            list(c("once a day", "twice a day", "once a week"),
-                                 c(1, 2, 3)),
+                            list(c(1, 2, 3),
+                                 c("once a day", "twice a day", "once a week")),
                             list_of_code_dose_unit =
-                                list(c("mcg", "mg"), c(1, 2)),
-                            list_of_code_brand = list(c("Buprenorphine",
-                                                "Temgesic"), c(1, 2)),
+                                list(c(1, 2), c("mcg", "mg")),
+                            list_of_code_brand = list(c(1, 2), c("Buprenorphine",
+                                                                 "Temgesic")),
                             eqdose_cov_tab = table,
                             basis_strength_unit = "mg")
 
@@ -1239,16 +1235,14 @@ test_that("testing microcosting patches", {
                                    cost_calculated_per  = "Basis",
                                    strength_column = "Strength",
                                    list_of_code_names =
-                                     list(c("Buprenorphine", "Fentanyl"),
-                                          c(1, 2)),
+                                     list(c(1, 2),c("Buprenorphine", "Fentanyl")),
                                    list_of_code_freq =
-                                     list(c("once a day", "twice a day",
-                                            "once a week"),
-                                          c(1, 2, 3)),
+                                     list(c(1, 2, 3), c("once a day", "twice a day",
+                                                        "once a week")),
                                    list_of_code_dose_unit =
-                                     list(c("mcg", "mg"), c(1, 2)),
-                                   list_of_code_brand = list(c("Buprenorphine",
-                                                    "Temgesic"), c(1, 2)),
+                                     list(c(1, 2), c("mcg", "mg")),
+                                   list_of_code_brand = list(c(1, 2),
+                                                c("Buprenorphine","Temgesic")),
                                    eqdose_cov_tab = NULL,
                                    basis_strength_unit = "mg")
 
@@ -1265,24 +1259,19 @@ test_that("testing microcosting patches", {
                                    cost_calculated_per  = "Basis",
                                    strength_column = "Strength",
                                    list_of_code_names =
-                                     list(c("Buprenorphine", "Fentanyl"),
-                                          c(1, 2)),
+                                     list(c(1, 2),c("Buprenorphine", "Fentanyl")),
                                    list_of_code_freq =
-                                     list(c("once a day", "twice a day",
-                                            "once a week"),
-                                          c(1, 2, 3)),
+                                     list(c(1, 2, 3),
+                                   c("once a day", "twice a day","once a week"),
+                                          ),
                                    list_of_code_dose_unit =
-                                     list(c("mcg", "mg"), c(1, 2)),
-                                   list_of_code_brand = list(c("Buprenorphine",
-                                                      "Temgesic"), c(1, 2)),
+                                     list(c(1, 2),c("mcg", "mg")),
+                                   list_of_code_brand = list(c(1, 2),
+                                      c("Buprenorphine","Temgesic")),
                                    eqdose_cov_tab = NA,
                                    basis_strength_unit = "mg")
 
-
-
 })
-
-
 ###############################################################################
 ################################################################################
 med_costs_file <- system.file("extdata", "average_unit_costs_med_brand.csv",
@@ -1757,17 +1746,17 @@ res <- microcosting_liquids_wide(
                           cost_calculated_per = "Basis",
                           strength_column = "Strength",
                           list_of_code_names =
-                            list(c("Morphine", "Oxycodone"), c(1, 2)),
+                            list(c(1, 2), c("Morphine", "Oxycodone")),
                           list_of_code_brand =
-                            list(c("Oramorph", "Oxycodone"), c(1, 2)),
+                            list(c(1, 2), c("Oramorph", "Oxycodone")),
                           list_of_code_dose_unit =
-                            list(c("mg/ml", "g/ml"), c(1, 2)),
+                            list(c(1, 2), c("mg/ml", "g/ml")),
                           list_of_code_bottle_size_unit =
-                            list(c("ml", "l"), c(1, 2)),
+                            list(c(1, 2), c("ml", "l")),
                           list_of_code_bottle_lasts_unit =
-                            list(c("days", "weeks", "months"), c(1, 2, 3)),
+                            list(c(1, 2, 3), c("days", "weeks", "months")),
                           list_preparation_dose_unit =
-                            list(c("mg/ml", "g/ml"), c(1, 2)),
+                            list(c(1, 2), c("mg/ml", "g/ml")),
                           eqdose_covtab = NULL,
                           basis_strength_unit = "mg/ml")
 
@@ -1801,16 +1790,15 @@ res <- microcosting_liquids_wide(
                                  cost_calculated_per = "Basis",
                                  strength_column = "Strength",
                                  list_of_code_names =
-                                   list(c("Morphine", "Oxycodone"), c(1, 2)),
+                                   list(c(1, 2), c("Morphine", "Oxycodone")),
                                  list_of_code_brand =
-                                   list(c("Oramorph", "Oxycodone"), c(1, 2)),
+                                   list( c(1, 2), c("Oramorph", "Oxycodone")),
                                  list_of_code_dose_unit =
-                                   list(c("mg/ml", "g/ml"), c(1, 2)),
+                                   list(c(1, 2), c("mg/ml", "g/ml")),
                                  list_of_code_bottle_size_unit =
-                                   list(c("ml", "l"), c(1, 2)),
+                                   list(c(1, 2), c("ml", "l")),
                                  list_of_code_bottle_lasts_unit =
-                                   list(c("days", "weeks", "months"),
-                                        c(1, 2, 3)),
+                                   list(c(1, 2, 3),c("days", "weeks", "months")),
                                  list_preparation_dose_unit = NULL,
                                  eqdose_covtab = NULL,
                                  basis_strength_unit = "mg/ml")
@@ -1835,16 +1823,15 @@ res <- microcosting_liquids_wide(
                                  cost_calculated_per = "Basis",
                                  strength_column = "Strength",
                                  list_of_code_names =
-                                   list(c("Morphine", "Oxycodone"), c(1, 2)),
+                                   list(c(1, 2), c("Morphine", "Oxycodone")),
                                  list_of_code_brand =
-                                   list(c("Oramorph", "Oxycodone"), c(1, 2)),
+                                   list(c(1, 2),c("Oramorph", "Oxycodone")),
                                  list_of_code_dose_unit =
-                                   list(c("mg/ml", "g/ml"), c(1, 2)),
+                                   list(c(1, 2),c("mg/ml", "g/ml")),
                                  list_of_code_bottle_size_unit =
-                                   list(c("ml", "l"), c(1, 2)),
+                                   list(c(1, 2), c("ml", "l")),
                                  list_of_code_bottle_lasts_unit =
-                                   list(c("days", "weeks", "months"),
-                                        c(1, 2, 3)),
+                                   list(c(1, 2, 3), c("days", "weeks", "months")),
                                  list_preparation_dose_unit = NULL,
                                  eqdose_covtab = NA,
                                  basis_strength_unit = "mg/ml")
@@ -1875,18 +1862,17 @@ expect_error(microcosting_liquids_wide(
                                  cost_calculated_per = "Basis",
                                  strength_column = "Strength",
                                  list_of_code_names =
-                                   list(c("Morphine", "Oxycodone"), c(1, 2)),
+                                   list(c(1, 2),c("Morphine", "Oxycodone")),
                                  list_of_code_brand =
-                                   list(c("Oramorph", "Oxycodone"), c(1, 2)),
+                                   list(c(1, 2), c("Oramorph", "Oxycodone")),
                                  list_of_code_dose_unit =
-                                   list(c("mg/ml", "g/ml"), c(1, 2)),
+                                   list(c(1, 2), c("mg/ml", "g/ml")),
                                  list_of_code_bottle_size_unit =
-                                   list(c("ml", "l"), c(1, 2)),
+                                   list(c(1, 2), c("ml", "l")),
                                  list_of_code_bottle_lasts_unit =
-                                   list(c("days", "weeks", "months"),
-                                        c(1, 2, 3)),
+                                   list(c(1, 2, 3), c("days", "weeks", "months")),
                                  list_preparation_dose_unit =
-                                   list(c("mg/ml", "g/ml"), c(1, 2)),
+                                   list(c(1, 2), c("mg/ml", "g/ml")),
                                  eqdose_covtab = NA,
                                  basis_strength_unit = "mg/ml"))
 
@@ -2275,8 +2261,7 @@ test_that("testing microcosting patches when data being long format", {
   names <- colnames(ind_part_data)
   ending <- length(names)
   ind_part_data_long <- tidyr::gather(ind_part_data, measurement, value,
-                                      names[2]:names[ending], factor_key = TRUE)
-
+                          names[2]:names[ending], factor_key = TRUE)
 
   the_columns <- c("measurement", "value")
 
@@ -2466,6 +2451,4 @@ expect_error(microcosting_tablets_long(the_columns,
                                  list_of_code_dose_unit = NULL,
                                  eqdose_cov_tab = table,
                                  basis_strength_unit = "mg"))
-
-
 })
