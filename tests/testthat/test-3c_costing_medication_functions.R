@@ -1262,8 +1262,7 @@ test_that("testing microcosting patches", {
                                      list(c(1, 2),c("Buprenorphine", "Fentanyl")),
                                    list_of_code_freq =
                                      list(c(1, 2, 3),
-                                   c("once a day", "twice a day","once a week"),
-                                          ),
+                                   c("once a day", "twice a day","once a week")),
                                    list_of_code_dose_unit =
                                      list(c(1, 2),c("mcg", "mg")),
                                    list_of_code_brand = list(c(1, 2),
