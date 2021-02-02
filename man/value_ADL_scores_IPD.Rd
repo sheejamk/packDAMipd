@@ -4,7 +4,12 @@
 \alias{value_ADL_scores_IPD}
 \title{Function to convert ADL scores to a T score}
 \usage{
-value_ADL_scores_IPD(ind_part_data, adl_related_words, adl_scoring, adl_nrcode)
+value_ADL_scores_IPD(
+  ind_part_data,
+  adl_related_words,
+  adl_nrcode,
+  adl_scoring_table = NULL
+)
 }
 \arguments{
 \item{ind_part_data}{a data frame containing IPD data}
@@ -12,9 +17,10 @@ value_ADL_scores_IPD(ind_part_data, adl_related_words, adl_scoring, adl_nrcode)
 \item{adl_related_words}{related words to find out which columns
 contain adl data}
 
-\item{adl_scoring}{ADL scoring table}
-
 \item{adl_nrcode}{non response code for ADL}
+
+\item{adl_scoring_table}{ADL scoring table, if given as NULL use
+the default one}
 }
 \value{
 ADL scores converted to T score included modified data, if
@@ -26,5 +32,5 @@ Function to convert ADL scores to a T score
 \examples{
 datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
 trial_data <- load_trial_data(datafile)
-value_ADL_scores_IPD(trial_data,c("tpi"),adl_scoring,NA)
+value_ADL_scores_IPD(trial_data,c("tpi"), NA, adl_scoring_table = NULL)
 }

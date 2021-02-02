@@ -97,8 +97,8 @@ test_that("testing adding EQ5D5L values to the data", {
 })
 ##############################################################################
 
-context("testing conversion of ADL responses to scores ")
-test_that("testing adding EQ5D5L values to the data", {
+context("testing conversion of ADL responses to scores")
+test_that("testing conversion of ADL responses to scores", {
   trial_data <- data.frame(
     "tpi.q1" = c(1, 2), "tpi.q2" = c(1, 2), "tpi.q3" = c(1, 2),
     "tpi.q4" = c(1, 2),
@@ -106,7 +106,7 @@ test_that("testing adding EQ5D5L values to the data", {
     "tpi.q8" = c(1, 2)
   )
 
-  results <- value_ADL_scores_IPD(trial_data, c("tpi"), adl_scoring, NA)
+  results <- value_ADL_scores_IPD(trial_data, c("tpi"), NA, adl_scoring)
   expect_equal(results$ADLTscore, c(40.7, 55.8))
   this_data <- data.table::data.table("Age" = c("k", 15), "sex" = c("m", "f"))
   expect_error(value_ADL_scores_IPD(this_data, NA, NA, NA))
@@ -114,32 +114,31 @@ test_that("testing adding EQ5D5L values to the data", {
     "qol.MO" = c(1, 2), "qol.SC" = c(1, 8), "qol.UA" = c(1, 2),
     "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)
   )
-  expect_error(value_ADL_scores_IPD(trial_data, adl_scoring, NA, NA))
+  expect_error(value_ADL_scores_IPD(trial_data, NA, NA))
   #Error data should not be NULL
-  expect_error(value_ADL_scores_IPD(NULL, adl_scoring, NA, NA))
-  #Error adl scoring table
-  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"), NULL, NA))
+  expect_error(value_ADL_scores_IPD(NULL, c("tpi"), NA, adl_scoring))
 
   #Error no matching columns
-  expect_error(value_ADL_scores_IPD(trial_data, NULL, adl_scoring, NA))
+  expect_error(value_ADL_scores_IPD(trial_data, NULL, NA, adl_scoring))
 
   trialdatafile <- system.file("extdata", "trial_data_sampleEq5d.csv",
                                package = "packDAMipd")
   trial_data <- read.csv(trialdatafile)
-  results <- value_ADL_scores_IPD(trial_data, c("tpi"), adl_scoring, NA)
+
+  results <- value_ADL_scores_IPD(trial_data, c("tpi"), NA, NULL )
   expect_equal(results$ADLTscore[1], 60.2, tol = 1e-4)
 
   trialdatafile <- system.file("extdata", "trial_data_sample_notenoughcol.csv",
                                package = "packDAMipd")
   trial_data <- read.csv(trialdatafile)
   # Error - ADL should have  columns
-  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"), adl_scoring, NA))
+  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"),NA, adl_scoring))
 
   trialdatafile <- system.file("extdata", "trial_data_sample_error.csv",
                                package = "packDAMipd")
   trial_data <- read.csv(trialdatafile)
   # Error - ADL responses do not seem right
-  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"), adl_scoring, NA))
+  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"), NA, adl_scoring))
 
 })
 ###############################################################################

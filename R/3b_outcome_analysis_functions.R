@@ -222,23 +222,24 @@ map_eq5d5Lto3L_VanHout <- function(ind_part_data, eq5d_nrcode) {
 #' @param ind_part_data a data frame containing IPD data
 #' @param adl_related_words related words to find out which columns
 #' contain adl data
-#' @param adl_scoring ADL scoring table
 #' @param adl_nrcode non response code for ADL
+#' @param adl_scoring_table ADL scoring table, if given as NULL use
+#' the default one
 #' @return ADL scores converted to T score included modified data, if
 #' success -1, if failure
 #' @examples
 #' datafile <- system.file("extdata", "trial_data.csv", package = "packDAMipd")
 #' trial_data <- load_trial_data(datafile)
-#' value_ADL_scores_IPD(trial_data,c("tpi"),adl_scoring,NA)
+#' value_ADL_scores_IPD(trial_data,c("tpi"), NA, adl_scoring_table = NULL)
 #' @export
 value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
-                                 adl_scoring, adl_nrcode) {
+                                 adl_nrcode, adl_scoring_table = NULL) {
   #Error - data should not be NULL
   if (is.null(ind_part_data))
     stop("data should not be NULL")
   #Error - data should not be NULL
   if (is.null(adl_scoring))
-    stop("ADL scoring table should not be NULL")
+    adl_scoring = adl_scoring_table
 
   adl_scoring_data_columns <- colnames(adl_scoring)
   adl_details <- get_outcome_details(ind_part_data, "adl",
@@ -263,7 +264,7 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
     }
     # get ADL responses
     adl_responses <- ind_part_data[rows_needed, adl_columnnames]
-    # Check if the responses are 8 for anindividual
+    # Check if the responses are 8 for an individual
     if (length(adl_columnnames) != 8) {
       stop("error- ADL should have 8 columns")
     } else {
