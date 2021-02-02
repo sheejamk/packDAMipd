@@ -241,7 +241,7 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
   if (!is.null(adl_scoring_table))
     adl_scores = adl_scoring_table
   else
-    adl_scores = adl_scoring
+    adl_scores = packDAMipd::adl_scoring
 
   adl_scoring_data_columns <- colnames(adl_scores)
   adl_details <- get_outcome_details(ind_part_data, "adl",
@@ -277,6 +277,13 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
     if (any(results < 0)) {
       stop("ADL responses do not seem right")
     } else {
+      # remove those with non response codes, if missing data has been removed
+      # this will do no harm
+      if (is.na(adl_nrcode)) {
+        adl_responses <- stats::na.omit(adl_responses)
+      } else {
+        adl_responses <- adl_responses[adl_responses != adl_nrcode,]
+      }
       # Check if ADL scoring table has columns defined in the config file
       if (IPDFileCheck::test_columnnames(adl_scoring_data_columns,
                                          adl_scores) == 0) {
