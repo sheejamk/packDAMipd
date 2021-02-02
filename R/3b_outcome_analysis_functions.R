@@ -239,9 +239,11 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
     stop("data should not be NULL")
   #Error - data should not be NULL
   if (!is.null(adl_scoring_table))
-    adl_scoring = adl_scoring_table
+    adl_scores = adl_scoring_table
+  else
+    adl_scores = adl_scoring
 
-  adl_scoring_data_columns <- colnames(adl_scoring)
+  adl_scoring_data_columns <- colnames(adl_scores)
   adl_details <- get_outcome_details(ind_part_data, "adl",
                                      adl_related_words, multiple = TRUE)
   adl_columnnames <- adl_details$name
@@ -277,16 +279,16 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
     } else {
       # Check if ADL scoring table has columns defined in the config file
       if (IPDFileCheck::test_columnnames(adl_scoring_data_columns,
-                                         adl_scoring) == 0) {
+                                         adl_scores) == 0) {
         # Replace NA with 0
-        adl_scoring[is.na(adl_scoring)] <- 0
+        adl_scores[is.na(adl_scores)] <- 0
         # Find the sum of scores
         sumADL <- rowSums(adl_responses)
         TscoreADL <- rep(0, length(sumADL))
         for (i in seq_len(length(sumADL))) {
-          ithrow <- which(adl_scoring$Raw.score == sumADL[i])
+          ithrow <- which(adl_scores$Raw.score == sumADL[i])
           # Get the T score corresponding to raw sum
-          TscoreADL[i] <- adl_scoring$T.Score[ithrow]
+          TscoreADL[i] <- adl_scores$T.Score[ithrow]
         }
         # Add the T score to data , save and return
         new_colname <- paste("ADLTscore")
