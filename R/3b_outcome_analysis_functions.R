@@ -238,7 +238,7 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
   if (is.null(ind_part_data))
     stop("data should not be NULL")
   #Error - data should not be NULL
-  if (is.null(adl_scoring))
+  if (!is.null(adl_scoring_table))
     adl_scoring = adl_scoring_table
 
   adl_scoring_data_columns <- colnames(adl_scoring)
