@@ -152,6 +152,12 @@ test_that("loading a datafile", {
   expect_equal(df$Currency_Code[1], "AA22C")
 
   df <- load_trial_data(ref_cost_data_file)
+  df <- load_trial_data(system.file("extdata", "eq5d.rds",
+                                    package = "packDAMipd"))
+  expect_equal(length(df$ID), 13)
+  expect_error(load_trial_data(system.file("extdata", "eq5d.rda",
+                                    package = "packDAMipd")))
+
 })
 ###############################################################################
 test_that("making a string of covariates", {

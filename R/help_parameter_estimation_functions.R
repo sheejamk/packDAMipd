@@ -412,6 +412,17 @@ load_trial_data <- function(file = NULL, sheet = NULL) {
         else
           df_trial_data <- readxl::read_excel(file, sheet = sheet)
       }
+      if (get_extension_file(file) == "RDS" |
+            get_extension_file(file) == "Rds" |
+            get_extension_file(file) == "rds") {
+        df_trial_data <- readRDS(file)
+      }
+      if (get_extension_file(file) == "Rdata" |
+          get_extension_file(file) == "rdata" |
+          get_extension_file(file) == "RDATA" |
+          get_extension_file(file) == "rda" ) {
+        stop("Please use the data in the form rds, excel, txt, csv, or dta")
+      }
     } else {
       stop("Error in reading given file")
     }
