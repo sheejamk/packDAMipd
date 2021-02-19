@@ -150,7 +150,7 @@ test_that("loading a datafile", {
   df <- load_trial_data(ref_cost_data_file, "EL")
   expect_equal(df$Currency_Code[1], "AA22C")
 
-  file <- system.file("extdata", "eq5d.rds", package = "packDAMipd")
+  file <- system.file("extdata", "eq5d.RDS", package = "packDAMipd")
   df1 <- load_trial_data(file)
 
   expect_equal(length(df1$ID), 13)
