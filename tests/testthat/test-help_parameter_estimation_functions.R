@@ -144,19 +144,18 @@ test_that("loading a datafile", {
   df <- load_trial_data(NULL)
   expect_equal(mean(df$age), 57.5, tol = 1e-3)
 
-  ref_cost_data_file <- system.file("extdata",
-                                    "test.xlsx",
+  ref_cost_data_file <- system.file("extdata", "test.xlsx",
                                     package = "packDAMipd")
 
   df <- load_trial_data(ref_cost_data_file, "EL")
   expect_equal(df$Currency_Code[1], "AA22C")
 
-  df1 <- load_trial_data(system.file("extdata", "eq5d.rds",
-                                    package = "packDAMipd"))
+  file <- system.file("extdata", "eq5d.rds", package = "packDAMipd")
+  df1 <- load_trial_data(file)
+
   expect_equal(length(df1$ID), 13)
   expect_error(load_trial_data(system.file("extdata", "eq5d.rda",
                                     package = "packDAMipd")))
-
 })
 ###############################################################################
 test_that("making a string of covariates", {
