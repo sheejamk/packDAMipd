@@ -12,7 +12,7 @@
 ## Usage
 See the User Guide Vignette for examples on using the package. 
 
-For a simple toy model please see [`toy_model.R`](https://github.com/sheejamk/packDAMipd/blob/master/R/toy_model.R)
+For a simple toy model please see [`toy_model.R`] in the R directory of Github page
 
 ## Installation
 You can install the released version from CRAN with the command:
