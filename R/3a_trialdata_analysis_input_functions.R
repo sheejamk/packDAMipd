@@ -291,7 +291,7 @@ get_outcome_details <- function(trialdata, name, related_words,
 #' @export
 #' @details
 #' Specific to the EQ5D data - the column names are given as certain sets,
-#' Tried to give 12 sets as the column names
+#' Tried to give 15 sets as the column names
 get_eq5d_details <- function(trialdata) {
   #Error - no null trial data
   if (is.null(trialdata))
@@ -300,24 +300,36 @@ get_eq5d_details <- function(trialdata) {
   words_set <- structure(list(
     set1 = c(
       "mobility", "self care", "usual activity",
-      "pain depression", "anxiety"
+      "pain discomfort", "anxiety"
     ),
     set2 = c(
       "mobility", "self_care", "usual_activity",
-      "pain_depression", "anxiety"
+      "pain_discomfort", "anxiety"
     ),
     set3 = c(
       "mobility", "selfcare", "usualactivity",
-      "paindepression", "anxiety"
+      "paindiscomfort", "anxiety"
     ),
     set4 = c("qol"), set5 = c("eq5d"),
     set6 = c("MO", "SC", "UA", "PD", "AD"),
     set7 = c("mobility", "selfcare", "usualact", "pain", "anxiety"),
-    set8 = c("mobility", "selfcare", "usualact", "paindep", "anxiety"),
-    set9 = c("mob", "selfcare", "usualact", "paindep", "anxiety"),
+    set8 = c("mobility", "selfcare", "usualact", "paindis", "anxiety"),
+    set9 = c("mob", "selfcare", "usualact", "paindis", "anxiety"),
     set10 = c("mob", "selfcare", "usualact", "pain", "anxiety"),
-    set11 = c("mob", "selfcare", "usualact", "paindep", "anx"),
-    set12 = c("mob", "selfcare", "usualact", "pain", "anx")
+    set11 = c("mob", "selfcare", "usualact", "paindis", "anx"),
+    set12 = c("mob", "selfcare", "usualact", "pain", "anx"),
+    set13 = c(
+      "mobility", "self care", "usual activity",
+      "pain discomfort", "anxiety depression"
+    ),
+    set14 = c(
+      "mobility", "self_care", "usual_activity",
+      "pain_discomfort", "anxiety_depression"
+    ),
+    set15 = c(
+      "mobility", "selfcare", "usualactivity",
+      "paindiscomfort", "anxietydepression"
+    )
   ))
   i <- 1
   # try if the column names match with any of the set given above

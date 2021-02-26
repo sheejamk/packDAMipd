@@ -81,11 +81,11 @@ value_eq5d3L_IPD <- function(ind_part_data, eq5d_nrcode) {
       stop("eq5d responses do not seem right")
     } else {
       if (is.na(eq5d_nrcode)) {
-        ind <- Reduce(`|`,lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
+        ind <- Reduce(`|`, lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
         eq5d_responses <- stats::na.omit(eq5d_responses)
       } else {
-        ind <- Reduce(`|`,lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
-        eq5d_responses <- eq5d_responses[!ind,]
+        ind <- Reduce(`|`, lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
+        eq5d_responses <- eq5d_responses[!ind, ]
       }
       index3L <- rep(0, nrow(eq5d_responses))
       for (i in seq(nrow(eq5d_responses))) {
@@ -150,11 +150,11 @@ value_eq5d5L_IPD <- function(ind_part_data, eq5d_nrcode) {
       stop("eq5d responses do not seem right")
     } else {
       if (is.na(eq5d_nrcode)) {
-        ind <- Reduce(`|`,lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
+        ind <- Reduce(`|`, lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
         eq5d_responses <- stats::na.omit(eq5d_responses)
       } else {
-        ind <- Reduce(`|`,lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
-        eq5d_responses <- eq5d_responses[!ind,]
+        ind <- Reduce(`|`, lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
+        eq5d_responses <- eq5d_responses[!ind, ]
       }
       index5L <- rep(0, nrow(eq5d_responses))
       for (i in seq(nrow(eq5d_responses))) {
@@ -223,11 +223,11 @@ map_eq5d5Lto3L_VanHout <- function(ind_part_data, eq5d_nrcode) {
       # remove those with non response codes, if missing data has been removed
       # this will do no harm
       if (is.na(eq5d_nrcode)) {
-        ind <- Reduce(`|`,lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
+        ind <- Reduce(`|`, lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
         eq5d_responses <- stats::na.omit(eq5d_responses)
       } else {
-        ind <- Reduce(`|`,lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
-        eq5d_responses <- eq5d_responses[!ind,]
+        ind <- Reduce(`|`, lapply(eq5d_responses, function(x) x %in% eq5d_nrcode))
+        eq5d_responses <- eq5d_responses[!ind, ]
       }
       index5L <- rep(0, nrow(eq5d_responses))
       for (i in seq(nrow(eq5d_responses))) {
@@ -268,9 +268,9 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
     stop("data should not be NULL")
   #Error - data should not be NULL
   if (!is.null(adl_scoring_table))
-    adl_scores = adl_scoring_table
+    adl_scores <- adl_scoring_table
   else
-    adl_scores = packDAMipd::adl_scoring
+    adl_scores <- packDAMipd::adl_scoring
 
   adl_scoring_data_columns <- colnames(adl_scores)
   adl_details <- get_outcome_details(ind_part_data, "adl",
@@ -309,11 +309,11 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
       # remove those with non response codes, if missing data has been removed
       # this will do no harm
       if (is.na(adl_nrcode)) {
-        ind <- Reduce(`|`,lapply(adl_responses, function(x) x %in% adl_nrcode))
+        ind <- Reduce(`|`, lapply(adl_responses, function(x) x %in% adl_nrcode))
         adl_responses <- stats::na.omit(adl_responses)
       } else {
-        ind <- Reduce(`|`,lapply(adl_responses, function(x) x %in% adl_nrcode))
-        adl_responses <- adl_responses[!ind,]
+        ind <- Reduce(`|`, lapply(adl_responses, function(x) x %in% adl_nrcode))
+        adl_responses <- adl_responses[!ind, ]
       }
       # Check if ADL scoring table has columns defined in the config file
       if (IPDFileCheck::test_columnnames(adl_scoring_data_columns,
@@ -394,11 +394,11 @@ value_Shows_IPD <- function(ind_part_data, shows_related_words, shows_nrcode) {
       # remove those with non response codes, if missing data has been removed
       # this will do no harm
       if (is.na(shows_nrcode)) {
-        ind <- Reduce(`|`,lapply(shows_responses, function(x) x %in% shows_nrcode))
+        ind <- Reduce(`|`, lapply(shows_responses, function(x) x %in% shows_nrcode))
         shows_responses <- stats::na.omit(shows_responses)
       } else {
-        ind <- Reduce(`|`,lapply(shows_responses, function(x) x %in% shows_nrcode))
-        shows_responses <- shows_responses[!ind,]
+        ind <- Reduce(`|`, lapply(shows_responses, function(x) x %in% shows_nrcode))
+        shows_responses <- shows_responses[!ind, ]
       }
       # Check if shows scoring table has columns defined in the config file
       sumShows <- rowSums(shows_responses) - 10

@@ -182,7 +182,7 @@ encode_codes_data <- function(list_code_values, data_column_nos, the_data) {
   if (!is.null(list_code_values) & sum(is.na(list_code_values)) == 0) {
 
     h <- hash::hash(key = unlist(list_code_values[1]),
-                    values = unlist(list_code_values[2]) )
+                    values = unlist(list_code_values[2]))
     leys <- h$key
     vals <- h$values
     ipd_codes <- as.data.frame(the_data %>%
@@ -192,20 +192,14 @@ encode_codes_data <- function(list_code_values, data_column_nos, the_data) {
 
     for (i in 1:this_dim[1]) {
       for (j in 1:this_dim[2]) {
-          if (!is.na(ipd_codes[i,j])) {
-            this_val <- vals[leys == ipd_codes[i,j]]
+          if (!is.na(ipd_codes[i, j])) {
+            this_val <- vals[leys == ipd_codes[i, j]]
           } else {
             this_val <- NA
           }
-          values_from_code <- append(values_from_code,this_val)
+          values_from_code <- append(values_from_code, this_val)
       }
     }
-
-    # values_and_code <- stats::setNames(as.list(list_code_values[[1]]),
-    #                                  list_code_values[[2]])
-    # ipd_codes <- the_data %>% dplyr::select(dplyr::all_of(data_column_nos))
-    # values_from_code <- values_and_code[unlist(ipd_codes)]
-
     values_from_code <- matrix(values_from_code, nrow = this_dim[1],
                                byrow = TRUE)
     colnames(values_from_code) <- colnames(ipd_codes)
@@ -718,7 +712,7 @@ convert_volume_basis <- function(given_unit, basis = "ml") {
       given_unit != "ml" &
       given_unit != "microliter" & given_unit != "micro liter" &
       given_unit != "microlitre" & given_unit != "micro litre" &
-      given_unit != "mcl" ) {
+      given_unit != "mcl") {
     stop("given unit is not of volume")
   }
     unit_req_vol <- 1

@@ -137,6 +137,14 @@ test_that("testing getting the outcome details", {
 
   #Error - trial data should not be NULL
   expect_error(get_eq5d_details(NULL))
+
+  this_data <- data.table::data.table("Mobility" = c(1, 2),
+                         "SelfCare" = c(1, 2),
+                         "UsualActivity" = c(1, 2),
+                         "PainDepression" = c(1, 2),
+                         "Anxiety" = c(1, 2))
+  details <- get_eq5d_details(this_data)
+  expect_equal(details$codes, c(1, 2))
 })
 
 ###############################################################################

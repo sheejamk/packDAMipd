@@ -873,7 +873,7 @@ test_that("testing forming slope and for nested intercepts ", {
                                           intercept_vars_pairs =
                                             list(c("class", "school")),
                                           random_slope_intercept_pairs = NULL,
-                                          uncorrel_slope_intercept_pairs = NULL
+                                        uncorrel_slope_intercept_pairs = NULL
   ))
   expect_error(get_slope_intercept_nested(NA,
                                           random_intercept_vars =
@@ -881,7 +881,7 @@ test_that("testing forming slope and for nested intercepts ", {
                                           intercept_vars_pairs =
                                             list(c("class", "school")),
                                           random_slope_intercept_pairs = NULL,
-                                          uncorrel_slope_intercept_pairs = NULL
+                                        uncorrel_slope_intercept_pairs = NULL
   ))
   expect_error(get_slope_intercept_nested("extro ~ open +",
                                           random_intercept_vars = NULL,
@@ -996,7 +996,7 @@ test_that("testing forming slope and for nested intercepts ", {
                                         random_intercept_vars =
                                           c("class", "school", "town"),
                                         intercept_vars_pairs =
-                                          list(c("class", "school"), c("town")),
+                                       list(c("class", "school"), c("town")),
                                         random_slope_intercept_pairs = NULL,
                                         uncorrel_slope_intercept_pairs = NULL
   ))
@@ -1004,14 +1004,14 @@ test_that("testing forming slope and for nested intercepts ", {
                                         random_intercept_vars =
                                           c("class", "school", "town"),
                                         intercept_vars_pairs =
-                                          list(c("class", "school"), c("town")),
+                                       list(c("class", "school"), c("town")),
                                         random_slope_intercept_pairs =
                                           list(c("open", "school")),
                                         uncorrel_slope_intercept_pairs = NULL
   ))
   formula <- get_slope_intercept_nested("extro ~ open +",
                                         random_intercept_vars =
-                                          c("class", "school", "town", "state"),
+                                      c("class", "school", "town", "state"),
                                         intercept_vars_pairs =
                                           list(c("class", "school"),
                                                c("town", "state")),
@@ -1065,21 +1065,21 @@ test_that("testing forming slope and for cross intercepts ", {
                                           intercept_vars_pairs =
                                            list(c("class", "school")),
                                           random_slope_intercept_pairs = NULL,
-                                          uncorrel_slope_intercept_pairs = NULL
+                                      uncorrel_slope_intercept_pairs = NULL
   ))
   expect_error(get_slope_intercept_cross("extro ~ open +",
                                           random_intercept_vars =
                                            c("class", "school"),
                                           intercept_vars_pairs = NULL,
                                           random_slope_intercept_pairs = NULL,
-                                          uncorrel_slope_intercept_pairs = NULL
+                                      uncorrel_slope_intercept_pairs = NULL
   ))
   expect_error(get_slope_intercept_cross("extro ~ open +",
                                           random_intercept_vars =
                                            c("class", "school"),
                                           intercept_vars_pairs = NA,
                                           random_slope_intercept_pairs = NULL,
-                                          uncorrel_slope_intercept_pairs = NULL
+                                      uncorrel_slope_intercept_pairs = NULL
   ))
   expect_error(get_slope_intercept_cross("extro ~ open +",
                                          random_intercept_vars =
@@ -1105,12 +1105,12 @@ test_that("testing forming slope and for cross intercepts ", {
 
   formula <- get_slope_intercept_cross("extro ~ open +",
                                         random_intercept_vars =
-                                         c("class", "school", "town", "state"),
+                                      c("class", "school", "town", "state"),
                                         intercept_vars_pairs =
                                          list(c("class", "school"),
                                               c("town", "state")),
                                         random_slope_intercept_pairs = NULL,
-                                        uncorrel_slope_intercept_pairs = NULL
+                                      uncorrel_slope_intercept_pairs = NULL
   )
   this_formula <- "extro ~ open +  ( 1 | class ) +  ( 1 | school ) +  ( 1 | town ) +  ( 1 | state ) "
   expect_equal(this_formula, formula)

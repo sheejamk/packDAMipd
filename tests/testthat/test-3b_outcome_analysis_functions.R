@@ -133,7 +133,7 @@ test_that("testing adding EQ5D5L values to the data", {
     "qol.MO" = c(1, 2, -99), "qol.SC" = c(1, 2, 3), "qol.UA" = c(1, 2, 3),
     "qol.PD" = c(1, 2, 3), "qol.AD" = c(1, 2, 3)
   )
-  results <- map_eq5d5Lto3L_VanHout(trial_data,-99)
+  results <- map_eq5d5Lto3L_VanHout(trial_data, -99)
   expect_equal(results$EQ5D3L_from5L, c(1, 0.5919117, -99))
 })
 ##############################################################################
@@ -166,14 +166,14 @@ test_that("testing conversion of ADL responses to scores", {
                                package = "packDAMipd")
   trial_data <- read.csv(trialdatafile)
 
-  results <- value_ADL_scores_IPD(trial_data, c("tpi"), NA, NULL )
+  results <- value_ADL_scores_IPD(trial_data, c("tpi"), NA, NULL)
   expect_equal(results$ADLTscore[1], 60.2, tol = 1e-4)
 
   trialdatafile <- system.file("extdata", "trial_data_sample_notenoughcol.csv",
                                package = "packDAMipd")
   trial_data <- read.csv(trialdatafile)
   # Error - ADL should have  columns
-  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"),NA, adl_scoring))
+  expect_error(value_ADL_scores_IPD(trial_data, c("tpi"), NA, adl_scoring))
 
   trialdatafile <- system.file("extdata", "trial_data_sample_error.csv",
                                package = "packDAMipd")
@@ -182,8 +182,8 @@ test_that("testing conversion of ADL responses to scores", {
   expect_error(value_ADL_scores_IPD(trial_data, c("tpi"), NA, adl_scoring))
 
   trial_data <- data.frame(
-    "tpi.q1" = c(1, 2,3), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2, 3),
-    "tpi.q4" = c(1, 2,3),
+    "tpi.q1" = c(1, 2, 3), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2, 3),
+    "tpi.q4" = c(1, 2, 3),
     "tpi.q5" = c(1, 2, 3), "tpi.q6" = c(1, 2, NA), "tpi.q7" = c(1, 2, 3),
     "tpi.q8" = c(1, 2, NA)
   )
@@ -249,7 +249,7 @@ test_that("testing adding EQ5D5L values to the data", {
   # Error - shows responses do not seem right
   expect_error(value_Shows_IPD(trial_data, c("qsy"), NA))
   trial_data <- data.frame(
-    "shows.q1" = c(1, 2,3), "shows.q2" = c(1, 2, NA), "shows.q3" = c(1, 2, 3),
+    "shows.q1" = c(1, 2, 3), "shows.q2" = c(1, 2, NA), "shows.q3" = c(1, 2, 3),
     "shows.q4" = c(1, 2, 3), "shows.q5" = c(1, 2, 3), "shows.q6" = c(1, 2, 3),
     "shows.q7" = c(1, 2, 3), "shows.q8" = c(1, 2, 3), "shows.q9" = c(1, 2, 3),
     "shows.q10" = c(1, 2, 3)
@@ -258,7 +258,7 @@ test_that("testing adding EQ5D5L values to the data", {
   expect_equal(results$ShOWSscore, c(0, 10, NA))
 
   trial_data <- data.frame(
-    "shows.q1" = c(1, 2,3), "shows.q2" = c(1, 2, -99), "shows.q3" = c(1, 2, 3),
+    "shows.q1" = c(1, 2, 3), "shows.q2" = c(1, 2, -99), "shows.q3" = c(1, 2, 3),
     "shows.q4" = c(1, 2, 3), "shows.q5" = c(1, 2, 3), "shows.q6" = c(1, 2, 3),
     "shows.q7" = c(1, 2, 3), "shows.q8" = c(1, 2, 3), "shows.q9" = c(1, 2, 3),
     "shows.q10" = c(1, 2, 3)

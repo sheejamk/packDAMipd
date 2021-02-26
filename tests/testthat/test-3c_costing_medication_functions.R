@@ -580,7 +580,7 @@ test_that("testing microcosting patches", {
               list(c(1, 2, 3), c("once a day", "twice a day", "once a week")),
                                             list_of_code_dose_unit =
               list(c(1, 2), c("mcg/hr", "mcg/day")),
-              list_of_code_brand = list( c(1, 2, 3),
+              list_of_code_brand = list(c(1, 2, 3),
                                          c("BuTrans", "Fencino", "Butec")),
                                            eqdose_cov_tab = table,
                                             basis_strength_unit = "mcg/hr")
@@ -612,8 +612,8 @@ test_that("testing microcosting patches", {
                                              list(c(1, 2),
                                                   c("mcg/hr", "mcg/day")),
                                            list_of_code_brand =
-                                             list( c(1, 2, 3),c("BuTrans", "Fencino",
-                                                    "Butec")),
+                                             list(c(1, 2, 3), c("BuTrans",
+                                            "Fencino", "Butec")),
                                            eqdose_cov_tab = table,
                                            basis_strength_unit = "mcg/hr"))
 
@@ -709,7 +709,8 @@ test_that("testing microcosting patches", {
                                     eqdose_cov_tab = table,
                                     basis_strength_unit = "mcg/hr"))
 
-   med_costs_file <- system.file("extdata", "average_unit_costs_med_brand_nounitcostcol.csv",
+   med_costs_file <- system.file("extdata",
+            "average_unit_costs_med_brand_nounitcostcol.csv",
                                  package = "packDAMipd")
    data_file <- system.file("extdata", "medication.xlsx",
                             package = "packDAMipd")
@@ -1235,14 +1236,15 @@ test_that("testing microcosting patches", {
                                    cost_calculated_per  = "Basis",
                                    strength_column = "Strength",
                                    list_of_code_names =
-                                     list(c(1, 2),c("Buprenorphine", "Fentanyl")),
+                                     list(c(1, 2), c("Buprenorphine", "Fentanyl")),
                                    list_of_code_freq =
-                                     list(c(1, 2, 3), c("once a day", "twice a day",
+                                     list(c(1, 2, 3),
+                                          c("once a day", "twice a day",
                                                         "once a week")),
                                    list_of_code_dose_unit =
                                      list(c(1, 2), c("mcg", "mg")),
                                    list_of_code_brand = list(c(1, 2),
-                                                c("Buprenorphine","Temgesic")),
+                                                c("Buprenorphine", "Temgesic")),
                                    eqdose_cov_tab = NULL,
                                    basis_strength_unit = "mg")
 
@@ -1259,14 +1261,14 @@ test_that("testing microcosting patches", {
                                    cost_calculated_per  = "Basis",
                                    strength_column = "Strength",
                                    list_of_code_names =
-                                     list(c(1, 2),c("Buprenorphine", "Fentanyl")),
+                                     list(c(1, 2), c("Buprenorphine", "Fentanyl")),
                                    list_of_code_freq =
                                      list(c(1, 2, 3),
-                                   c("once a day", "twice a day","once a week")),
+                              c("once a day", "twice a day", "once a week")),
                                    list_of_code_dose_unit =
-                                     list(c(1, 2),c("mcg", "mg")),
+                                     list(c(1, 2), c("mcg", "mg")),
                                    list_of_code_brand = list(c(1, 2),
-                                      c("Buprenorphine","Temgesic")),
+                                      c("Buprenorphine", "Temgesic")),
                                    eqdose_cov_tab = NA,
                                    basis_strength_unit = "mg")
 
@@ -1791,13 +1793,13 @@ res <- microcosting_liquids_wide(
                                  list_of_code_names =
                                    list(c(1, 2), c("Morphine", "Oxycodone")),
                                  list_of_code_brand =
-                                   list( c(1, 2), c("Oramorph", "Oxycodone")),
+                                   list(c(1, 2), c("Oramorph", "Oxycodone")),
                                  list_of_code_dose_unit =
                                    list(c(1, 2), c("mg/ml", "g/ml")),
                                  list_of_code_bottle_size_unit =
                                    list(c(1, 2), c("ml", "l")),
                                  list_of_code_bottle_lasts_unit =
-                                   list(c(1, 2, 3),c("days", "weeks", "months")),
+                                   list(c(1, 2, 3), c("days", "weeks", "months")),
                                  list_preparation_dose_unit = NULL,
                                  eqdose_covtab = NULL,
                                  basis_strength_unit = "mg/ml")
@@ -1824,9 +1826,9 @@ res <- microcosting_liquids_wide(
                                  list_of_code_names =
                                    list(c(1, 2), c("Morphine", "Oxycodone")),
                                  list_of_code_brand =
-                                   list(c(1, 2),c("Oramorph", "Oxycodone")),
+                                   list(c(1, 2), c("Oramorph", "Oxycodone")),
                                  list_of_code_dose_unit =
-                                   list(c(1, 2),c("mg/ml", "g/ml")),
+                                   list(c(1, 2), c("mg/ml", "g/ml")),
                                  list_of_code_bottle_size_unit =
                                    list(c(1, 2), c("ml", "l")),
                                  list_of_code_bottle_lasts_unit =
@@ -1861,7 +1863,7 @@ expect_error(microcosting_liquids_wide(
                                  cost_calculated_per = "Basis",
                                  strength_column = "Strength",
                                  list_of_code_names =
-                                   list(c(1, 2),c("Morphine", "Oxycodone")),
+                                   list(c(1, 2), c("Morphine", "Oxycodone")),
                                  list_of_code_brand =
                                    list(c(1, 2), c("Oramorph", "Oxycodone")),
                                  list_of_code_dose_unit =
@@ -2025,7 +2027,8 @@ expect_error(microcosting_liquids_wide(
   eqdose_covtab = table,
   basis_strength_unit = NULL))
 
-med_costs_file <- system.file("extdata", "average_unit_costs_med_brand_nomatchingdose.csv",
+med_costs_file <- system.file("extdata",
+                  "average_unit_costs_med_brand_nomatchingdose.csv",
                               package = "packDAMipd")
 data_file <- system.file("extdata", "medication_liq.xlsx",
                          package = "packDAMipd")
@@ -2063,7 +2066,8 @@ expect_error(microcosting_liquids_wide(
 
 
 
-med_costs_file <- system.file("extdata", "average_unit_costs_med_brand_bottlevol_notmatching.csv",
+med_costs_file <- system.file("extdata",
+                "average_unit_costs_med_brand_bottlevol_notmatching.csv",
                               package = "packDAMipd")
 data_file <- system.file("extdata", "medication_liq.xlsx",
                          package = "packDAMipd")
@@ -2099,7 +2103,8 @@ expect_error(microcosting_liquids_wide(
   eqdose_covtab = table,
   basis_strength_unit = NULL))
 
-med_costs_file <- system.file("extdata", "average_unit_costs_med_brand_notcostedperbottle.csv",
+med_costs_file <- system.file("extdata",
+                  "average_unit_costs_med_brand_notcostedperbottle.csv",
                               package = "packDAMipd")
 data_file <- system.file("extdata", "medication_liq.xlsx",
                          package = "packDAMipd")
@@ -2285,9 +2290,9 @@ test_that("testing microcosting patches when data being long format", {
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = "mcg/hr")
 
-  index =  which(res$measurment == "totmed_period_patches")[1]
+  index <-  which(res$measurment == "totmed_period_patches")[1]
 
-  expect_equal(as.numeric(res$value[index]), 1285.714,tolerance = 1e-3)
+  expect_equal(as.numeric(res$value[index]), 1285.714, tolerance = 1e-3)
 
   expect_error(microcosting_patches_long(the_columns,
                             ind_part_data_long = NULL,
@@ -2357,9 +2362,9 @@ test_that("testing microcosting liquids when data being long format", {
     eqdose_covtab = table,
     basis_strength_unit = NULL)
 
-  index =  which(res$measurment == "totmed_period_liquid")[1]
+  index <- which(res$measurment == "totmed_period_liquid")[1]
 
-  expect_equal(as.numeric(res$value[index]), 22,tolerance = 1e-3)
+  expect_equal(as.numeric(res$value[index]), 22, tolerance = 1e-3)
 
 
   expect_error(microcosting_liquids_long(the_columns,
@@ -2428,9 +2433,9 @@ res <- microcosting_tablets_long(the_columns,
                                  eqdose_cov_tab = table,
                                  basis_strength_unit = "mg")
 
-index =  which(res$measurment == "totmed_period_tablets")[1]
+index <-  which(res$measurment == "totmed_period_tablets")[1]
 
-expect_equal(as.numeric(res$value[index]), 608.57,tolerance = 1e-3)
+expect_equal(as.numeric(res$value[index]), 608.57, tolerance = 1e-3)
 
 expect_error(microcosting_tablets_long(the_columns,
                                  ind_part_data_long = NULL,

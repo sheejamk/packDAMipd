@@ -18,7 +18,7 @@ Function to get the details of the EQ5D column
 }
 \details{
 Specific to the EQ5D data - the column names are given as certain sets,
-Tried to give 12 sets as the column names
+Tried to give 15 sets as the column names
 }
 \examples{
 get_eq5d_details(data.frame(

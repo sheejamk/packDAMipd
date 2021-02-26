@@ -129,7 +129,7 @@ plot_prediction_parametric_survival <- function(param_to_be_estimated,
       other_fixed <- covariates
     }else{
       var <- covariates[i - 1]
-      other_fixed <- c(indep_var, covariates[-(i - 1)])
+      other_fixed <- c(indep_var, covariates[- (i - 1)])
     }
     categorical <- list()
     if (sum(!is.na(other_fixed)) == length(other_fixed)) {
@@ -597,7 +597,7 @@ plot_survival_cox_covariates <- function(coxfit, dataset,
       } else {
         var <- covariates[j - 1]
         var2 <- var
-        fixed <- c(names(coxfit$coefficients)[1], covariates[-(j - 1)])
+        fixed <- c(names(coxfit$coefficients)[1], covariates[- (j - 1)])
       }
     }
     result <- suppressWarnings(as.numeric(levels(factor(dataset[[var2]]))))

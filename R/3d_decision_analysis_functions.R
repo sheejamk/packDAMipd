@@ -333,7 +333,7 @@ plot_efficiency_frontier <- function(results_calculate_icer_nmb, threshold) {
     print(p)
     grDevices::dev.off()
 
-    icer_result <- results_calculate_icer_nmb[!is.na(results_calculate_icer_nmb$ICER),]
+    icer_result <- results_calculate_icer_nmb[!is.na(results_calculate_icer_nmb$ICER), ]
     name_file_plot <- paste0("Cost effectiveness plane",
                              ".pdf", sep = "")
     grDevices::pdf(name_file_plot)

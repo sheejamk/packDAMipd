@@ -406,7 +406,7 @@ load_trial_data <- function(file = NULL, sheet = NULL) {
         df_trial_data <- foreign::read.dta(file = file)
       }
       if (get_extension_file(file) == "xls" |
-          get_extension_file(file) == "xlsx" ) {
+          get_extension_file(file) == "xlsx") {
         if (is.null(sheet))
           df_trial_data <- readxl::read_excel(file)
         else
@@ -420,7 +420,7 @@ load_trial_data <- function(file = NULL, sheet = NULL) {
       if (get_extension_file(file) == "Rdata" |
           get_extension_file(file) == "rdata" |
           get_extension_file(file) == "RDATA" |
-          get_extension_file(file) == "rda" ) {
+          get_extension_file(file) == "rda") {
         stop("Please use the data in the form rds, excel, txt, csv, or dta")
       }
     } else {

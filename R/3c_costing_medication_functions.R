@@ -84,7 +84,7 @@ microcosting_liquids_wide <- function(ind_part_data,
              "liquids", "injections", "solutions", "ampoules")
   generated_list <- generate_wt_vol_units()
   wt_per_vol_units <- generated_list$weight_per_vol
-  time_units <-  generate_wt_time_units()$time_units
+  #time_units <-  generate_wt_time_units()$time_units
 
   #Error - data should not be NULL
   if (is.null(ind_part_data) | is.null(unit_cost_data))
