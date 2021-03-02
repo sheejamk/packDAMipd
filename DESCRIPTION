@@ -44,10 +44,10 @@ Imports:
     tibble,
     dplyr,
     tidyr,
-    hash
+    hash,
+    haven
 Suggests: 
     ISLR,
-    foreign,
     knitr,
     rmarkdown,
     covr,

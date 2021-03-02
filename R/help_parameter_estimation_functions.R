@@ -403,7 +403,7 @@ load_trial_data <- function(file = NULL, sheet = NULL) {
                                   fileEncoding = "latin1")
       }
       if (get_extension_file(file) == "dta") {
-        df_trial_data <- foreign::read.dta(file = file)
+        df_trial_data <- haven::read_dta(file = file)
       }
       if (get_extension_file(file) == "xls" |
           get_extension_file(file) == "xlsx") {
