@@ -1080,3 +1080,4 @@ test_that("testing extracting unit cost matching description", {
                          cost_calculated_in = "attendance")
  expect_equal(res$totcost_AE_Admission[1], 754, tol = 1e-2)
 })
+

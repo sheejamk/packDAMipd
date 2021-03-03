@@ -145,10 +145,12 @@ microcosting_liquids_wide <- function(ind_part_data,
   for (i in seq_len(length(info_list))) {
     if (info_list[i] != -1) {
       check <- IPDFileCheck::check_column_exists(info_list[i], ind_part_data)
+      res <- grep(info_list[i], colnames(ind_part_data))
       if (sum(check) != 0) {
-        res <- grep(info_list[i], colnames(ind_part_data))
         if (length(res) == 0)
           stop("Atleast one of the required columns not found")
+        ipd_cols_exists[length(ipd_cols_exists) + 1] <- list(res)
+      } else {
         ipd_cols_exists[length(ipd_cols_exists) + 1] <- list(res)
       }
     } else {
@@ -412,7 +414,7 @@ microcosting_liquids_wide <- function(ind_part_data,
             as.numeric(stringr::str_extract(dose_ipd[j], "\\d+\\.*\\d*"))
           else
             dose_num_val_ipd <- as.numeric(dose_ipd[j])
-          dose_in_ipd <- paste(dose_num_val_ipd, unit_dose_ipd[j], sep = "")
+          dose_in_ipd <- paste(dose_num_val_ipd, unit_dose_ipd[j], sep = " ")
 
 
           strength_unit_cost <- trimws(gsub("[0-9\\.]", "",
@@ -426,7 +428,7 @@ microcosting_liquids_wide <- function(ind_part_data,
           # choose the right one after finding the multiplier which is 1.
 
           dose_in_cost_data <- paste(strength_val_cost, strength_unit_cost,
-                                     sep = "")
+                                     sep = " ")
 
           if (any(dose_in_cost_data == dose_in_ipd)) {
             match_form_brand_unit <-
@@ -472,7 +474,7 @@ microcosting_liquids_wide <- function(ind_part_data,
             match_form_brand_unit_prepare <- match_form_brand_unit
           }
           unit_used_costing <-
-            unique(match_form_brand_unit_prepare[[unit_cost_col_no]])
+            tolower(unique(match_form_brand_unit_prepare[[unit_cost_col_no]]))
           if (unit_used_costing == "per bottle") {
             bottle_vol_cost <-
               as.numeric(match_form_brand_unit_prepare[size_pack_cost_col_no])
@@ -480,7 +482,7 @@ microcosting_liquids_wide <- function(ind_part_data,
               match_form_brand_unit_prepare[size_unit_cost_col_no]
 
             bottle_volandunit_cost <- paste(bottle_vol_cost,
-                                            bottle_vol_unit_cost, sep = "")
+                                            bottle_vol_unit_cost, sep = " ")
 
             if (bottle_size_unit_check == -1)
               bottle_size_num_val_ipd <-
@@ -488,7 +490,7 @@ microcosting_liquids_wide <- function(ind_part_data,
             else
               bottle_size_num_val_ipd <- as.numeric(bot_size_ipd[j])
             bottle_size_in_ipd <- paste(bottle_size_num_val_ipd,
-                                        bot_size_unit_ipd[j], sep = "")
+                                        bot_size_unit_ipd[j], sep = " ")
 
             if (any(bottle_volandunit_cost == bottle_size_in_ipd)) {
               match_form_brand_unit_prepare_size <-
@@ -615,7 +617,7 @@ microcosting_liquids_wide <- function(ind_part_data,
   ind_part_data[[this_name]] <- unlist(list_total_cost_basis)
   this_name <- paste("totmed_period_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_period)
-  this_name <- paste("totmed_wt_period_", keywd, sep = "")
+  this_name <- paste("totmed_wt_period_", keywd, "_", basis_wt_unit,sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_wt_period)
   this_name <- paste("totcost_period_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_period)
@@ -759,10 +761,12 @@ microcosting_patches_wide <- function(ind_part_data,
   for (i in seq_len(length(info_list))) {
     if (info_list[i] != -1) {
       check <- IPDFileCheck::check_column_exists(info_list[i], ind_part_data)
+      res <- grep(info_list[i], colnames(ind_part_data))
       if (sum(check) != 0) {
-        res <- grep(info_list[i], colnames(ind_part_data))
         if (length(res) == 0)
           stop("Atleast one of the required columns not found")
+        ipd_cols_exists[length(ipd_cols_exists) + 1] <- list(res)
+      } else {
         ipd_cols_exists[length(ipd_cols_exists) + 1] <- list(res)
       }
     } else {
@@ -981,7 +985,7 @@ microcosting_patches_wide <- function(ind_part_data,
             as.numeric(stringr::str_extract(subset2[[dosage_col_no]],
                                             "\\d+\\.*\\d*"))
 
-          dose_in_ipd <- paste(dose_num_val, this_unit[j], sep = "")
+          dose_in_ipd <- paste(dose_num_val, this_unit[j], sep = " ")
           strength_unit_multiplier <- c()
 
           basis_str_unit_multiply <- convert_wtpertimediff_basis(this_unit[j],
@@ -997,7 +1001,7 @@ microcosting_patches_wide <- function(ind_part_data,
            strength_unit_cost[which(strength_unit_multiplier == 1)] <-
             this_unit[j]
           dose_in_cost_data <- paste(strength_val_cost,
-                                     strength_unit_cost, sep = "")
+                                     strength_unit_cost, sep = " ")
           if (any(dose_in_cost_data == dose_in_ipd)) {
             subset3 <- subset2[dose_in_cost_data ==  dose_in_ipd, ]
             unit_cost_med_prep <- subset3[[unit_cost_column]]
@@ -1006,7 +1010,7 @@ microcosting_patches_wide <- function(ind_part_data,
           }
           strength_unit_multip <- strength_unit_multiplier[dose_in_cost_data ==
                                                              dose_in_ipd]
-          unit_used_costing <- unique(subset3[[unit_col_no]])
+          unit_used_costing <- tolower(unique(subset3[[unit_col_no]]))
           if (brand_check != -1) {
             if (unit_used_costing == "per pack" |
                 unit_used_costing == "per package" |
@@ -1076,9 +1080,9 @@ microcosting_patches_wide <- function(ind_part_data,
                                                total_cost_per_equiv_period)
   }
 
-  this_name <- paste("totmed_period_", keywd, sep = "")
+  this_name <- paste("totmed_period_", keywd,sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_str_period)
-  this_name <- paste("totmed_wt_period_", keywd, sep = "")
+  this_name <- paste("totmed_wt_period_", keywd, "_", basis_wt_unit,sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_wt_period)
   this_name <- paste("totmed_equiv_period_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_equiv_dose_period)
@@ -1208,10 +1212,12 @@ microcosting_tablets_wide <- function(ind_part_data,
   for (i in seq_len(length(info_list))) {
     if (info_list[i] != -1) {
       check <- IPDFileCheck::check_column_exists(info_list[i], ind_part_data)
+      res <- grep(info_list[i], colnames(ind_part_data))
       if (sum(check) != 0) {
-        res <- grep(info_list[i], colnames(ind_part_data))
         if (length(res) == 0)
           stop("Atleast one of the required columns not found")
+        ipd_cols_exists[length(ipd_cols_exists) + 1] <- list(res)
+      } else {
         ipd_cols_exists[length(ipd_cols_exists) + 1] <- list(res)
       }
     } else {
@@ -1391,35 +1397,39 @@ microcosting_tablets_wide <- function(ind_part_data,
           if (eqdose_check != -1) {
             temp <- return_equal_str_col(drug_col_conv_table, eqdose_cov_tab,
                                          name_medication[j])
-            words <- c("tablet", "tablets")
-            tempa <- return_equal_liststring_listcol(form_col_conv_table, temp,
-                                                     words)
+            if (nrow(temp) != 0) {
+              words <- c("tablet", "tablets")
+              tempa <- return_equal_liststring_listcol(form_col_conv_table, temp,
+                                                       words)
 
-            unit_conv_table <- tempa[[dose_unit_col_conv_table]]
-            unit_converts <-
-              unlist(lapply(unit_conv_table, convert_weight_diff_basis,
-                            this_unit[j]))
+              unit_conv_table <- tempa[[dose_unit_col_conv_table]]
+              unit_converts <-
+                unlist(lapply(unit_conv_table, convert_weight_diff_basis,
+                              this_unit[j]))
 
-            unit_same <- which(unit_converts == 1)
-            temp2 <- tempa[unit_same, ]
-            if (nrow(temp2) < 1)
-              stop("The unit in the conversion table is not correct or
+              unit_same <- which(unit_converts == 1)
+              temp2 <- tempa[unit_same, ]
+              if (nrow(temp2) < 1)
+                stop("The unit in the conversion table is not correct or
                    can not be checked")
-            conver_factor <- temp2[[conv_factor_col]]
-            if (!is.numeric(conver_factor)) {
-              if (conver_factor == "N/A" | is.na(conver_factor)) {
-                conversion_factor <- 1
+              conver_factor <- temp2[[conv_factor_col]]
+              if (!is.numeric(conver_factor)) {
+                if (conver_factor == "N/A" | is.na(conver_factor)) {
+                  conversion_factor <- 1
+                } else {
+                  check_num <- suppressWarnings(as.numeric(conver_factor))
+                  if (is.na(check_num))
+                    conversion_factor <-
+                      as.numeric(stringr::str_extract(conver_factor,
+                                                      "\\d+\\.*\\d*"))
+                  else
+                    conversion_factor <- as.numeric(conver_factor)
+                }
               } else {
-                check_num <- suppressWarnings(as.numeric(conver_factor))
-                if (is.na(check_num))
-                  conversion_factor <-
-                    as.numeric(stringr::str_extract(conver_factor,
-                                                    "\\d+\\.*\\d*"))
-                else
-                  conversion_factor <- as.numeric(conver_factor)
+                conversion_factor <- as.numeric(conver_factor)
               }
             } else {
-              conversion_factor <- as.numeric(conver_factor)
+              conversion_factor = 1
             }
           }
           strength_unit_cost <- trimws(gsub("[0-9\\.]", "",
@@ -1428,7 +1438,7 @@ microcosting_tablets_wide <- function(ind_part_data,
             as.numeric(stringr::str_extract(subset2[[dosage_col_no]],
                                             "\\d+\\.*\\d*"))
 
-          dose_in_ipd <- paste(dose_num_val, this_unit[j], sep = "")
+          dose_in_ipd <- paste(dose_num_val, this_unit[j], sep = " ")
           strength_unit_multiplier <- c()
 
           basis_str_unit_multiply <- convert_weight_diff_basis(this_unit[j],
@@ -1445,18 +1455,18 @@ microcosting_tablets_wide <- function(ind_part_data,
           strength_unit_cost[which(strength_unit_multiplier == 1)] <-
             this_unit[j]
           dose_in_cost_data <- paste(strength_val_cost,
-                                     strength_unit_cost, sep = "")
+                                     strength_unit_cost, sep = " ")
           if (any(dose_in_cost_data == dose_in_ipd)) {
             subset3 <- subset2[dose_in_cost_data ==  dose_in_ipd, ]
             if (nrow(subset3) != 1)
-              stop("Error - atleast one row should be existing ")
+              stop("Error - There should be only one row ")
             unit_cost_med_prep <- subset3[[unit_cost_column]]
           } else {
             stop("The used dosage is not in costing table")
           }
           strength_unit_multip <- strength_unit_multiplier[dose_in_cost_data ==
                                                              dose_in_ipd]
-          unit_used_costing <- unique(subset3[[unit_col_no]])
+          unit_used_costing <- tolower(unique(subset3[[unit_col_no]]))
           if (brand_check != -1) {
             if (unit_used_costing == "per pack" |
                 unit_used_costing == "per package" |
@@ -1515,7 +1525,7 @@ microcosting_tablets_wide <- function(ind_part_data,
                                                total_cost_per_equiv_period)
   }
 
-  this_name <- paste("totmed_period_", keywd, sep = "")
+  this_name <- paste("totmed_period_", keywd, "_", basis_strength_unit, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_str_period)
 
   this_name <- paste("totmed_equiv_period_", keywd, sep = "")

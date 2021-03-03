@@ -857,7 +857,7 @@ test_that("testing microcosting patches", {
                                             list_of_code_dose_unit = NULL,
                                             eqdose_cov_tab = table,
                                             basis_strength_unit = "mg")
-  expect_equal(res$totmed_period_tablets, c(608.5714, 0), tolerance = 1e-3)
+  expect_equal(res$totmed_period_tablets_mg, c(608.5714, 0), tolerance = 1e-3)
 
   expect_error(microcosting_tablets_wide(ind_part_data = NULL,
                                    name_med = "tab_name",
@@ -952,7 +952,7 @@ test_that("testing microcosting patches", {
                                             eqdose_cov_tab = table,
                                             basis_strength_unit = "mg")
 
-  expect_equal(res$totmed_period_tablets, c(608.5714, 48), tolerance = 1e-3)
+  expect_equal(res$totmed_period_tablets_mg, c(608.5714, 48), tolerance = 1e-3)
 
   res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
                                             name_med = "tab_name",
@@ -971,7 +971,7 @@ test_that("testing microcosting patches", {
                                             list_of_code_dose_unit = NULL,
                                             eqdose_cov_tab = table,
                                             basis_strength_unit = NULL)
-  expect_equal(res$totmed_period_tablets, c(608.5714, 48), tolerance = 1e-3)
+  expect_equal(res$totmed_period_tablets_mg, c(608.5714, 48), tolerance = 1e-3)
 
   res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
                                             name_med = "tab_name",
@@ -990,7 +990,7 @@ test_that("testing microcosting patches", {
                                             list_of_code_dose_unit = NULL,
                                             eqdose_cov_tab = table,
                                             basis_strength_unit = NA)
-  expect_equal(res$totmed_period_tablets, c(608.5714, 48), tolerance = 1e-3)
+  expect_equal(res$totmed_period_tablets_mg, c(608.5714, 48), tolerance = 1e-3)
 
 
   expect_error(microcosting_tablets_wide(ind_part_data = ind_part_data,
@@ -1084,7 +1084,7 @@ test_that("testing microcosting patches", {
                                             list_of_code_dose_unit = NULL,
                                             eqdose_cov_tab = table,
                                             basis_strength_unit = "mg")
-  expect_equal(res$totmed_period_tablets, c(608.5714, 48), tolerance = 1e-3)
+  expect_equal(res$totmed_period_tablets_mg, c(608.5714, 48), tolerance = 1e-3)
 
 
 
@@ -1221,7 +1221,7 @@ test_that("testing microcosting patches", {
                             basis_strength_unit = "mg")
 
 
-  expect_equal(res$totmed_period_tablets, c(1217, 96), tolerance = 1e-1)
+  expect_equal(res$totmed_period_tablets_mg, c(1217, 96), tolerance = 1e-1)
 
   res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
                                    name_med = "tab_name",
@@ -2433,7 +2433,7 @@ res <- microcosting_tablets_long(the_columns,
                                  eqdose_cov_tab = table,
                                  basis_strength_unit = "mg")
 
-index <-  which(res$measurment == "totmed_period_tablets")[1]
+index <-  which(res$measurment == "totmed_period_tablets_mg")[1]
 
 expect_equal(as.numeric(res$value[index]), 608.57, tolerance = 1e-3)
 
