@@ -42,7 +42,7 @@ context("testing to get col for multiple pattern")
 test_that("testing to get col for multiple pattern", {
    the_data <- as.data.frame(cbind(c("one", "two"), c("a", "b"), c("aa", "bb")))
    colnames(the_data) <- c("name", "brand_one", "two")
-   ans <- get_col_multiple_pattern(c("brand", "trade"), the_data)
+   ans <- get_single_col_multiple_pattern(c("brand", "trade"), the_data)
    expect_equal(ans, 2)
 })
 ###############################################################################

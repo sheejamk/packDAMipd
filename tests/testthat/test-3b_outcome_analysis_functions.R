@@ -267,3 +267,4 @@ test_that("testing adding EQ5D5L values to the data", {
   expect_equal(results$ShOWSscore, c(0, 10, -99))
 
 })
+

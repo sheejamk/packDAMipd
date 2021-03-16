@@ -734,3 +734,4 @@ test_that("Bivaraite regression for correlated values", {
     interaction2 = FALSE
   ))
 })
+

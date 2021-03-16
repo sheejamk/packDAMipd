@@ -13,7 +13,7 @@
 return_equal_str_col <- function(col, the_data, the_str) {
   the_col <- trimws(toupper(the_data[[col]]))
   compare <- trimws(toupper(the_str))
-  temp <- the_data[the_col == compare, ]
+  temp <- the_data[the_col == compare & !is.na(the_col), ]
   return(temp)
 }
 ##############################################################################
@@ -29,10 +29,16 @@ return_equal_str_col <- function(col, the_data, the_str) {
 #' ans <- return_equal_liststring_col(2, the_data, c("a", "cc"))
 #' @export
 return_equal_liststring_col <- function(col, the_data, list_str) {
-  the_col <- trimws(toupper(the_data[[col]]))
-  index <- which(the_col %in%  trimws(toupper(list_str)))
-  temp <- the_data[the_col == trimws(toupper(list_str[index])), ]
-  return(temp)
+  the_col <- unique(trimws(toupper(the_data[[col]])))
+  return_data <- c()
+  for (i in seq_len(length(the_col))) {
+     index <- which(the_col[i] %in%  trimws(toupper(list_str)))
+     if (length(index) >= 1) {
+        temp <- the_data[trimws(toupper(the_data[[col]])) == the_col[i], ]
+        return_data <- rbind(return_data, temp)
+     }
+  }
+  return(return_data)
 }
 ##############################################################################
 #' Function to get the subset of data compared to a string after
@@ -96,9 +102,9 @@ return0_if_not_null_na <- function(param) {
 #' @examples
 #' the_data <- as.data.frame(cbind(c("one", "two"), c("a", "b"), c("aa", "bb")))
 #' colnames(the_data) <- c("name", "brand_one", "two")
-#' get_col_multiple_pattern(c("brand", "trade"), the_data)
+#' get_single_col_multiple_pattern(c("brand", "trade"), the_data)
 #' @export
-get_col_multiple_pattern <- function(pattern, the_data) {
+get_single_col_multiple_pattern <- function(pattern, the_data) {
   res <- unlist(lapply(pattern,
               IPDFileCheck::get_colno_pattern_colname, colnames(the_data)))
   if (length(res[which(res != -1)]) == 1) {
@@ -107,7 +113,6 @@ get_col_multiple_pattern <- function(pattern, the_data) {
     stop("Error- cols with pattern not found")
   }
   return(col_no)
-
 }
 #############################################################################
 #' Function to get the weight and time units
@@ -779,10 +784,16 @@ convert_wtpertimediff_basis <- function(given_unit, basis = "mcg/hour") {
   } else {
         unit_req_basis <- NULL
         index <- stringr::str_locate(given_unit, "/")
+        if (sum(is.na(index)) != 0) {
+          stop("given unit should be in the form wt/time")
+        }
         given_wt <- stringr::str_sub(given_unit, 1, index[1] - 1)
         given_time <- stringr::str_sub(given_unit, index[2] + 1,
                                          nchar(given_unit))
         basis_index <- stringr::str_locate(basis, "/")
+        if (sum(is.na(basis_index)) != 0) {
+          stop("basis unit should be in the form wt/time")
+        }
         basis_wt <- stringr::str_sub(basis, 1, basis_index[1] - 1)
         basis_time <- stringr::str_sub(basis, basis_index[2] + 1, nchar(basis))
         basis_wt <- tolower(gsub("[[:space:]]", "", basis_wt))

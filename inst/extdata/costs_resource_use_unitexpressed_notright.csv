@@ -1,5 +1,5 @@
 Resource,UnitCost,UnitUsed
-Inpatient hospital admissions,20,seen
+Inpatient hospital admissions,20,xx
 Day care admission,45,visit
 GP surgery visit,39.23,per visit
 GP home visit,127.2726,per visit
