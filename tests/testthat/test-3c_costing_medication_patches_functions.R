@@ -513,7 +513,7 @@ test_that("testing microcosting patches", {
                                    list_of_code_dose_unit = NULL,
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = NULL)
-  expect_equal(res$totmed_period_patches, c(1304.571,2922.240),
+  expect_equal(res$totmed_period_patches, c(1304.571, 2922.240),
                tolerance = 1e-3)
 
   res <- microcosting_patches_wide(ind_part_data = ind_part_data,

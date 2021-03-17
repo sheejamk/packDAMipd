@@ -258,7 +258,7 @@ microcosting_tablets_wide <- function(ind_part_data,
       form_col_conv_table <- get_single_col_multiple_pattern(form_pattern,
                                                       eqdose_cov_tab)
 
-      dose_unit_pattern <- c( "unit")
+      dose_unit_pattern <- c("unit")
       dose_unit_col_conv_table <- get_single_col_multiple_pattern(dose_unit_pattern,
                                                            eqdose_cov_tab)
 

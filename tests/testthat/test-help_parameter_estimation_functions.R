@@ -1115,4 +1115,3 @@ test_that("testing forming slope and for cross intercepts ", {
   this_formula <- "extro ~ open +  ( 1 | class ) +  ( 1 | school ) +  ( 1 | town ) +  ( 1 | state ) "
   expect_equal(this_formula, formula)
 })
-

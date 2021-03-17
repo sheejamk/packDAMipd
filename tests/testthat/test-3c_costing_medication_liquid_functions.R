@@ -36,7 +36,7 @@ test_that("testing microcosting liquids", {
                                    basis_strength_unit = NULL)
 
 
-expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857), tolerance = 1e-3)
 
 med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
                               package = "packDAMipd")
@@ -75,7 +75,7 @@ res <- microcosting_liquids_wide(ind_part_data = ind_part_data,
                                  basis_strength_unit = NULL)
 
 
-expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857), tolerance = 1e-3)
 
 
 expect_error(microcosting_liquids_wide(
@@ -401,7 +401,7 @@ res <- microcosting_liquids_wide(
                           eqdose_covtab = NULL,
                           basis_strength_unit = NULL
                           )
-expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857), tolerance = 1e-3)
 
 
 
@@ -429,7 +429,7 @@ res <- microcosting_liquids_wide(ind_part_data = ind_part_data,
                                        list_preparation_dose_unit = NULL,
                                        eqdose_covtab = NULL,
                                        basis_strength_unit = NA)
-expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857), tolerance = 1e-3)
 res <- microcosting_liquids_wide(
                                  ind_part_data = ind_part_data,
                                  name_med = "liq_name",
@@ -455,7 +455,7 @@ res <- microcosting_liquids_wide(
                                  list_preparation_dose_unit = NULL,
                                  eqdose_covtab = NULL,
                                  basis_strength_unit = "mg/ml")
-expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857), tolerance = 1e-3)
 expect_error(microcosting_liquids_wide(
                                  ind_part_data = ind_part_data,
                                  name_med = "liq_name",
@@ -523,7 +523,7 @@ res <- microcosting_liquids_wide(
                           eqdose_covtab = NULL,
                           basis_strength_unit = "mg/ml")
 
-expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857), tolerance = 1e-3)
 
 
 med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
@@ -566,7 +566,7 @@ res <- microcosting_liquids_wide(
                                  eqdose_covtab = NULL,
                                  basis_strength_unit = "mg/ml")
 
-expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857), tolerance = 1e-3)
 
 res <- microcosting_liquids_wide(
                                  ind_part_data = ind_part_data,
@@ -599,7 +599,7 @@ res <- microcosting_liquids_wide(
                                  eqdose_covtab = NA,
                                  basis_strength_unit = "mg/ml")
 
-expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857), tolerance = 1e-3)
 
 
 data_file <- system.file("extdata",
@@ -714,7 +714,7 @@ res <- microcosting_liquids_wide(
                                        eqdose_covtab = table,
                                        basis_strength_unit = NULL)
 
-expect_equal(res$totmed_wt_period_liquid_mg, c( 1204.106,  17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(1204.106,  17.857),tolerance = 1e-3)
 
 
 med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
@@ -1010,7 +1010,7 @@ res <- microcosting_liquids_wide(
   list_preparation_dose_unit = NULL,
   eqdose_covtab = table,
   basis_strength_unit = NULL)
-expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, NA),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, NA), tolerance = 1e-3)
 
 
 })
@@ -1061,7 +1061,7 @@ test_that("testing microcosting liquids when data being long format", {
 
   index <- which(res$measurement == "totmed_wt_period_liquid_mg")[1]
 
-  expect_equal(as.numeric(res$value[index]), 54.106,tolerance = 1e-3)
+  expect_equal(as.numeric(res$value[index]), 54.106, tolerance = 1e-3)
 
 
   expect_error(microcosting_liquids_long(the_columns,

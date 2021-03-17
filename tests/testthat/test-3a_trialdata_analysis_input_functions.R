@@ -168,4 +168,3 @@ test_that("testing check treatment arm", {
   expect_error(check_treatment_arm("inter"))
   expect_error(check_treatment_arm("cntrl"))
 })
-

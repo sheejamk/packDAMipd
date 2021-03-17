@@ -82,7 +82,7 @@ microcosting_liquids_wide <- function(ind_part_data,
                                       basis_strength_unit = NULL) {
   internal_basis_time <- "day"
   # check the form as liquids
-  words <- c("liquid", "liq", "solution","liquids", "solutions")
+  words <- c("liquid", "liq", "solution", "liquids", "solutions")
   generated_list <- generate_wt_vol_units()
   wt_per_vol_units <- generated_list$weight_per_vol
   #time_units <-  generate_wt_time_units()$time_units
@@ -623,7 +623,7 @@ microcosting_liquids_wide <- function(ind_part_data,
     list_total_cost_per_equiv_period <- append(list_total_cost_per_equiv_period,
                                                total_cost_per_equiv_period)
   }
-  this_name <- paste("totmed_wt_period_", keywd, "_", basis_wt_unit,sep = "")
+  this_name <- paste("totmed_wt_period_", keywd, "_", basis_wt_unit, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_wt_period)
   this_name <- paste("totcost_period_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_period)
