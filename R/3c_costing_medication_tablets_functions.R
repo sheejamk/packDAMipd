@@ -577,7 +577,7 @@ microcosting_tablets_long <- function(the_columns,
   results_wide <- as.data.frame(results_wide)
   columns <- colnames(results_wide)
   num <- length(columns)
-  result_long <- tidyr::gather(results_wide, key = "measurment", value =  "value",
+  result_long <- tidyr::gather(results_wide, key = "measurement", value =  "value",
                                columns[2]:columns[num], factor_key = TRUE)
   return(result_long)
 }

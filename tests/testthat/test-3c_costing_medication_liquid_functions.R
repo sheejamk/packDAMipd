@@ -21,7 +21,7 @@ test_that("testing microcosting liquids", {
                                    bottle_lasts_unit = NULL,
                                    preparation_dose = NULL,
                                    preparation_unit = NULL,
-                                   timeperiod = "4 months",
+                                   timeperiod = "1 day",
                                    unit_cost_data = med_costs,
                                    unit_cost_column = "UnitCost",
                                    cost_calculated_per = "Basis",
@@ -35,7 +35,8 @@ test_that("testing microcosting liquids", {
                                    eqdose_covtab = table,
                                    basis_strength_unit = NULL)
 
-expect_equal(res$totmed_period_liquid, c(22, 9),tolerance = 1e-3)
+
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
 
 med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
                               package = "packDAMipd")
@@ -59,7 +60,7 @@ res <- microcosting_liquids_wide(ind_part_data = ind_part_data,
                                  bottle_lasts_unit = NULL,
                                  preparation_dose = NULL,
                                  preparation_unit = NULL,
-                                 timeperiod = "4 months",
+                                 timeperiod = "1 day",
                                  unit_cost_data = med_costs,
                                  unit_cost_column = "UnitCost",
                                  cost_calculated_per = "Basis",
@@ -73,8 +74,8 @@ res <- microcosting_liquids_wide(ind_part_data = ind_part_data,
                                  eqdose_covtab = table,
                                  basis_strength_unit = NULL)
 
-expect_equal(res$totmed_period_liquid, c(22, 9),tolerance = 1e-3)
 
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
 
 
 expect_error(microcosting_liquids_wide(
@@ -89,7 +90,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -116,7 +117,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -143,7 +144,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -170,7 +171,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -197,7 +198,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -224,7 +225,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -278,7 +279,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = NULL,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -305,7 +306,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = NULL,
                           cost_calculated_per = "Basis",
@@ -332,7 +333,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = NULL,
@@ -359,7 +360,7 @@ expect_error(microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -386,7 +387,7 @@ res <- microcosting_liquids_wide(
                           bottle_lasts_unit = NULL,
                           preparation_dose = NULL,
                           preparation_unit = NULL,
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -400,7 +401,7 @@ res <- microcosting_liquids_wide(
                           eqdose_covtab = NULL,
                           basis_strength_unit = NULL
                           )
-expect_equal(res$totmed_period_liquid, c(22, 9), tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
 
 
 
@@ -415,7 +416,7 @@ res <- microcosting_liquids_wide(ind_part_data = ind_part_data,
                                        bottle_lasts_unit = NULL,
                                        preparation_dose = NULL,
                                        preparation_unit = NULL,
-                                       timeperiod = "4 months",
+                                       timeperiod = "1 day",
                                        unit_cost_data = med_costs,
                                        unit_cost_column = "UnitCost",
                                        cost_calculated_per = "Basis",
@@ -428,7 +429,7 @@ res <- microcosting_liquids_wide(ind_part_data = ind_part_data,
                                        list_preparation_dose_unit = NULL,
                                        eqdose_covtab = NULL,
                                        basis_strength_unit = NA)
-expect_equal(res$totmed_period_liquid, c(22, 9), tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
 res <- microcosting_liquids_wide(
                                  ind_part_data = ind_part_data,
                                  name_med = "liq_name",
@@ -441,7 +442,7 @@ res <- microcosting_liquids_wide(
                                  bottle_lasts_unit = NULL,
                                  preparation_dose = NULL,
                                  preparation_unit = NULL,
-                                 timeperiod = "4 months",
+                                 timeperiod = "1 day",
                                  unit_cost_data = med_costs,
                                  unit_cost_column = "UnitCost",
                                  cost_calculated_per = "Basis",
@@ -454,7 +455,7 @@ res <- microcosting_liquids_wide(
                                  list_preparation_dose_unit = NULL,
                                  eqdose_covtab = NULL,
                                  basis_strength_unit = "mg/ml")
-expect_equal(res$totmed_period_liquid, c(22, 9), tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
 expect_error(microcosting_liquids_wide(
                                  ind_part_data = ind_part_data,
                                  name_med = "liq_name",
@@ -467,7 +468,7 @@ expect_error(microcosting_liquids_wide(
                                  bottle_lasts_unit = NULL,
                                  preparation_dose = NULL,
                                  preparation_unit = NULL,
-                                 timeperiod = "4 months",
+                                 timeperiod = "1 day",
                                  unit_cost_data = med_costs,
                                  unit_cost_column = "UnitCost",
                                  cost_calculated_per = "Basis",
@@ -502,7 +503,7 @@ res <- microcosting_liquids_wide(
                           bottle_lasts_unit = "lasts_unit",
                           preparation_dose = "liq_pre",
                           preparation_unit = "pre_unit",
-                          timeperiod = "4 months",
+                          timeperiod = "1 day",
                           unit_cost_data = med_costs,
                           unit_cost_column = "UnitCost",
                           cost_calculated_per = "Basis",
@@ -522,7 +523,7 @@ res <- microcosting_liquids_wide(
                           eqdose_covtab = NULL,
                           basis_strength_unit = "mg/ml")
 
-expect_equal(res$totmed_period_liquid, c(22, 9), tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
 
 
 med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
@@ -546,7 +547,7 @@ res <- microcosting_liquids_wide(
                                  bottle_lasts_unit = "lasts_unit",
                                  preparation_dose = "liq_pre",
                                  preparation_unit = NULL,
-                                 timeperiod = "4 months",
+                                 timeperiod = "1 day",
                                  unit_cost_data = med_costs,
                                  unit_cost_column = "UnitCost",
                                  cost_calculated_per = "Basis",
@@ -565,7 +566,7 @@ res <- microcosting_liquids_wide(
                                  eqdose_covtab = NULL,
                                  basis_strength_unit = "mg/ml")
 
-expect_equal(res$totmed_period_liquid, c(22, 9), tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
 
 res <- microcosting_liquids_wide(
                                  ind_part_data = ind_part_data,
@@ -579,7 +580,7 @@ res <- microcosting_liquids_wide(
                                  bottle_lasts_unit = "lasts_unit",
                                  preparation_dose = "liq_pre",
                                  preparation_unit = NULL,
-                                 timeperiod = "4 months",
+                                 timeperiod = "1 day",
                                  unit_cost_data = med_costs,
                                  unit_cost_column = "UnitCost",
                                  cost_calculated_per = "Basis",
@@ -598,7 +599,7 @@ res <- microcosting_liquids_wide(
                                  eqdose_covtab = NA,
                                  basis_strength_unit = "mg/ml")
 
-expect_equal(res$totmed_period_liquid, c(22, 9), tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, 17.857),tolerance = 1e-3)
 
 
 data_file <- system.file("extdata",
@@ -618,7 +619,7 @@ expect_error(microcosting_liquids_wide(
                                  bottle_lasts_unit = "lasts_unit",
                                  preparation_dose = "liq_pre",
                                  preparation_unit = "pre_unit",
-                                 timeperiod = "4 months",
+                                 timeperiod = "1 day",
                                  unit_cost_data = med_costs,
                                  unit_cost_column = "UnitCost",
                                  cost_calculated_per = "Basis",
@@ -661,7 +662,7 @@ expect_error(microcosting_liquids_wide(
                                  bottle_lasts_unit = NULL,
                                  preparation_dose = NULL,
                                  preparation_unit = NULL,
-                                 timeperiod = "4 months",
+                                 timeperiod = "1 day",
                                  unit_cost_data = med_costs,
                                  unit_cost_column = "UnitCost",
                                  cost_calculated_per = "Basis",
@@ -699,7 +700,7 @@ res <- microcosting_liquids_wide(
                                        bottle_lasts_unit = NULL,
                                        preparation_dose = NULL,
                                        preparation_unit = NULL,
-                                       timeperiod = "4 months",
+                                       timeperiod = "1 day",
                                        unit_cost_data = med_costs,
                                        unit_cost_column = "UnitCost",
                                        cost_calculated_per = "Basis",
@@ -711,9 +712,9 @@ res <- microcosting_liquids_wide(
                                        list_of_code_bottle_lasts_unit = NULL,
                                        list_preparation_dose_unit = NULL,
                                        eqdose_covtab = table,
-                                       basis_strength_unit = NULL
-                                       )
-expect_equal(res$totmed_period_liquid, c(482, 9), tolerance = 1e-3)
+                                       basis_strength_unit = NULL)
+
+expect_equal(res$totmed_wt_period_liquid_mg, c( 1204.106,  17.857),tolerance = 1e-3)
 
 
 med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
@@ -738,7 +739,7 @@ expect_error(microcosting_liquids_wide(
   bottle_lasts_unit = NULL,
   preparation_dose = NULL,
   preparation_unit = NULL,
-  timeperiod = "4 months",
+  timeperiod = "1 day",
   unit_cost_data = med_costs,
   unit_cost_column = "UnitCost",
   cost_calculated_per = "Basis",
@@ -775,7 +776,7 @@ expect_error(microcosting_liquids_wide(
   bottle_lasts_unit = NULL,
   preparation_dose = NULL,
   preparation_unit = NULL,
-  timeperiod = "4 months",
+  timeperiod = "1 day",
   unit_cost_data = med_costs,
   unit_cost_column = "UnitCost",
   cost_calculated_per = "Basis",
@@ -812,7 +813,7 @@ expect_error(microcosting_liquids_wide(
   bottle_lasts_unit = NULL,
   preparation_dose = NULL,
   preparation_unit = NULL,
-  timeperiod = "4 months",
+  timeperiod = "1 day",
   unit_cost_data = med_costs,
   unit_cost_column = "UnitCost",
   cost_calculated_per = "Basis",
@@ -851,7 +852,7 @@ expect_error(microcosting_liquids_wide(
   bottle_lasts_unit = NULL,
   preparation_dose = NULL,
   preparation_unit = NULL,
-  timeperiod = "4 months",
+  timeperiod = "1 day",
   unit_cost_data = med_costs,
   unit_cost_column = "UnitCost",
   cost_calculated_per = "Basis",
@@ -888,7 +889,7 @@ expect_error(microcosting_liquids_wide(
   bottle_lasts_unit = NULL,
   preparation_dose = NULL,
   preparation_unit = NULL,
-  timeperiod = "4 months",
+  timeperiod = "1 day",
   unit_cost_data = med_costs,
   unit_cost_column = "UnitCost",
   cost_calculated_per = "Basis",
@@ -924,7 +925,7 @@ expect_error(microcosting_liquids_wide(
   bottle_lasts_unit = NULL,
   preparation_dose = NULL,
   preparation_unit = NULL,
-  timeperiod = "4 months",
+  timeperiod = "1 day",
   unit_cost_data = med_costs,
   unit_cost_column = "UnitCost",
   cost_calculated_per = "Basis",
@@ -959,7 +960,7 @@ expect_error(microcosting_liquids_wide(
   bottle_lasts_unit = NULL,
   preparation_dose = NULL,
   preparation_unit = NULL,
-  timeperiod = "4 months",
+  timeperiod = "1 day",
   unit_cost_data = med_costs,
   unit_cost_column = "UnitCost",
   cost_calculated_per = "Basis",
@@ -996,7 +997,7 @@ res <- microcosting_liquids_wide(
   bottle_lasts_unit = NULL,
   preparation_dose = NULL,
   preparation_unit = NULL,
-  timeperiod = "4 months",
+  timeperiod = "1 day",
   unit_cost_data = med_costs,
   unit_cost_column = "UnitCost",
   cost_calculated_per = "Basis",
@@ -1009,7 +1010,9 @@ res <- microcosting_liquids_wide(
   list_preparation_dose_unit = NULL,
   eqdose_covtab = table,
   basis_strength_unit = NULL)
-expect_equal(res$totmed_period_liquid, c(22, NA), tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(54.106, NA),tolerance = 1e-3)
+
+
 })
 ###############################################################################
 
@@ -1042,7 +1045,7 @@ test_that("testing microcosting liquids when data being long format", {
     bottle_lasts_unit = NULL,
     preparation_dose = NULL,
     preparation_unit = NULL,
-    timeperiod = "4 months",
+    timeperiod = "1 day",
     unit_cost_data = med_costs,
     unit_cost_column = "UnitCost",
     cost_calculated_per = "Basis",
@@ -1056,9 +1059,9 @@ test_that("testing microcosting liquids when data being long format", {
     eqdose_covtab = table,
     basis_strength_unit = NULL)
 
-  index <- which(res$measurment == "totmed_period_liquid")[1]
+  index <- which(res$measurement == "totmed_wt_period_liquid_mg")[1]
 
-  expect_equal(as.numeric(res$value[index]), 22, tolerance = 1e-3)
+  expect_equal(as.numeric(res$value[index]), 54.106,tolerance = 1e-3)
 
 
   expect_error(microcosting_liquids_long(the_columns,
@@ -1073,7 +1076,7 @@ test_that("testing microcosting liquids when data being long format", {
                             bottle_lasts_unit = NULL,
                             preparation_dose = NULL,
                             preparation_unit = NULL,
-                            timeperiod = "4 months",
+                            timeperiod = "1 day",
                             unit_cost_data = med_costs,
                             unit_cost_column = "UnitCost",
                             cost_calculated_per = "Basis",

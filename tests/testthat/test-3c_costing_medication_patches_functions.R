@@ -30,7 +30,9 @@ test_that("testing microcosting patches", {
                                    list_of_code_brand = NULL,
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = "mcg/hr")
-  expect_equal(res$totmed_period_patches, c(1285.714, 2880), tolerance = 1e-3)
+
+  expect_equal(res$totmed_period_patches, c(1304.571, 2922.240),
+               tolerance = 1e-3)
 
 
   med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
@@ -62,12 +64,8 @@ test_that("testing microcosting patches", {
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = "mcg/hr")
 
-
-  expect_equal(res$totmed_period_patches, c(1285.714, 2880), tolerance = 1e-3)
-  expect_equal(res$totcost_period_patches, c(1056.73, 604.32), tolerance = 1e-3)
-
-
-
+  expect_equal(res$totmed_period_patches, c(1304.571, 2922.240),
+               tolerance = 1e-3)
 
 
   expect_error(microcosting_patches_wide(ind_part_data = ind_part_data,
@@ -127,8 +125,8 @@ test_that("testing microcosting patches", {
                                    eqdose_cov_tab = NULL,
                                    basis_strength_unit = "mcg/hr")
 
-  expect_equal(res$totmed_period_patches, c(1285.714, 2880), tolerance = 1e-3)
-
+  expect_equal(res$totmed_period_patches, c(1304.571, 2922.240),
+               tolerance = 1e-3)
   res <- microcosting_patches_wide(ind_part_data = ind_part_data,
                                    name_med = "patch_name",
                                    brand_med = "patch_brand",
@@ -148,8 +146,8 @@ test_that("testing microcosting patches", {
                                    eqdose_cov_tab = NA,
                                    basis_strength_unit = "mcg/hr")
 
-  expect_equal(res$totmed_period_patches, c(1285.714, 2880), tolerance = 1e-3)
-
+  expect_equal(res$totmed_period_patches, c(1304.571, 2922.240),
+               tolerance = 1e-3)
 
   # no cols with drug names
   conv_file <- system.file("extdata", "Med_calc_nodrugcol.xlsx",
@@ -267,8 +265,8 @@ test_that("testing microcosting patches", {
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = "mcg/hr")
 
-  expect_equal(res$totmed_period_patches, c(1285.714, 2880), tolerance = 1e-3)
-
+  expect_equal(res$totmed_period_patches, c(1304.571, 2922.240),
+               tolerance = 1e-3)
   expect_error(microcosting_patches_wide(ind_part_data = ind_part_data,
                                          name_med = "patch_name",
                                          brand_med = "patch_brand",
@@ -496,8 +494,8 @@ test_that("testing microcosting patches", {
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = NULL)
 
-  expect_equal(res$totmed_period_patches, c(1285.714, 2880), tolerance = 1e-3)
-
+  expect_equal(res$totmed_period_patches, c(1304.571, 2922.240),
+               tolerance = 1e-3)
   res <- microcosting_patches_wide(ind_part_data = ind_part_data,
                                    name_med = "patch_name",
                                    brand_med = NA,
@@ -515,8 +513,8 @@ test_that("testing microcosting patches", {
                                    list_of_code_dose_unit = NULL,
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = NULL)
-  expect_equal(res$totmed_period_patches, c(1285.714, 2880), tolerance = 1e-3)
-
+  expect_equal(res$totmed_period_patches, c(1304.571,2922.240),
+               tolerance = 1e-3)
 
   res <- microcosting_patches_wide(ind_part_data = ind_part_data,
                                    name_med = "patch_name",
@@ -535,9 +533,8 @@ test_that("testing microcosting patches", {
                                    list_of_code_dose_unit = NULL,
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = NA)
-  expect_equal(res$totmed_period_patches, c(1285.714, 2880), tolerance = 1e-3)
-
-
+  expect_equal(res$totmed_period_patches, c(1304.571, 2922.240),
+               tolerance = 1e-3)
 
   expect_error(microcosting_patches_wide(ind_part_data = ind_part_data,
                                          name_med = "patch_name",
@@ -682,8 +679,8 @@ test_that("testing microcosting patches", {
                                    basis_strength_unit = "mcg/hr")
 
 
-  expect_equal(res$totmed_period_patches, c(1285.714, 2880), tolerance = 1e-3)
-
+  expect_equal(res$totmed_period_patches, c(1304.571, 2922.240),
+               tolerance = 1e-3)
   expect_error(microcosting_patches_wide(
     ind_part_data = ind_part_data,
     name_med = "patch_name",
@@ -921,7 +918,8 @@ test_that("testing microcosting patches", {
                                    list_of_code_brand = NULL,
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = "mcg/hr")
-  expect_equal(res$totmed_period_patches, c(1286, NA), tolerance = 1e-3)
+  expect_equal(res$totmed_period_patches, c(1304.571, NA),
+               tolerance = 1e-3)
 })
   ###############################################################################
 ###############################################################################
@@ -965,10 +963,10 @@ test_that("testing microcosting patches when data being long format", {
                                    eqdose_cov_tab = table,
                                    basis_strength_unit = "mcg/hr")
 
-  index <-  which(res$measurment == "totmed_period_patches")[1]
+  index <-  which(res$measurement == "totmed_period_patches")[1]
 
-  expect_equal(as.numeric(res$value[index]), 1285.714, tolerance = 1e-3)
-
+  expect_equal(as.numeric(res$value[index]), 1304.571,
+               tolerance = 1e-3)
   expect_error(microcosting_patches_long(the_columns,
                                          ind_part_data_long = NULL,
                                          name_med = "patch_name",
@@ -988,7 +986,5 @@ test_that("testing microcosting patches when data being long format", {
                                          list_of_code_brand = NULL,
                                          eqdose_cov_tab = table,
                                          basis_strength_unit = "mcg/hr"))
-
-
 })
 ###############################################################################

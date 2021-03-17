@@ -607,7 +607,7 @@ microcosting_patches_long <- function(the_columns,
   result_wide <- as.data.frame(result_wide)
   columns <- colnames(result_wide)
   num <- length(columns)
-  result_long <- tidyr::gather(result_wide, key = "measurment", value = "value",
+  result_long <- tidyr::gather(result_wide, key = "measurement", value = "value",
                                columns[2]:columns[num], factor_key = TRUE)
   return(result_long)
 

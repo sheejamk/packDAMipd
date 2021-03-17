@@ -132,10 +132,10 @@ test_that("testing converting frequency to different basis", {
   expect_error(convert_freq_diff_basis(NULL, "day"))
   expect_equal(convert_freq_diff_basis(NA, "day"), NA)
   expect_equal(convert_freq_diff_basis("every 12 hours", "hour"), 1 / 12)
-  expect_equal(convert_freq_diff_basis("every week", "month"), 4.2857,
-               tol = 1e-4)
+  expect_equal(convert_freq_diff_basis("every week", "month"), 4.35,
+               tol = 1e-2)
   expect_equal(convert_freq_diff_basis("once a day", "week"), 7)
-  expect_equal(convert_freq_diff_basis("once a day", "year"), 365)
+  expect_equal(convert_freq_diff_basis("once a day", "year"), 365.25)
 })
 
 ###############################################################################
@@ -224,10 +224,10 @@ test_that("testing converting weight per time to different basis", {
 context("testing converting to different time period")
 test_that("testing converting to given time period", {
   expect_equal(convert_to_given_timeperiod("4 weeks"), 28)
-  expect_equal(convert_to_given_timeperiod("2 months"), 60)
-  expect_equal(convert_to_given_timeperiod("1 year", "day"), 365)
+  expect_equal(convert_to_given_timeperiod("2 months"), 60.9, tolerance = 1e-2)
+  expect_equal(convert_to_given_timeperiod("1 year", "day"), 365.25)
   expect_error(convert_to_given_timeperiod("mg"))
-  expect_equal(convert_to_given_timeperiod("an year"), 365)
+  expect_equal(convert_to_given_timeperiod("an year"), 365.25)
   expect_error(convert_to_given_timeperiod("an year", NULL))
   expect_error(convert_to_given_timeperiod(NULL))
   expect_equal(convert_to_given_timeperiod(""), NA)
@@ -237,17 +237,17 @@ test_that("testing converting to given time period", {
   expect_equal(convert_to_given_timeperiod("an hour"), 1 / 24)
   expect_equal(convert_to_given_timeperiod("one second"), 1 / (24 * 60 * 60))
   expect_equal(convert_to_given_timeperiod("ten minutes"), 10 / (24 * 60))
-  expect_equal(convert_to_given_timeperiod("ten months"), 300)
+  expect_equal(convert_to_given_timeperiod("ten months"), 304.4)
   expect_equal(convert_to_given_timeperiod("an year", "month"), 12)
   expect_equal(convert_to_given_timeperiod("ten months", "month"), 10)
   expect_equal(convert_to_given_timeperiod("ten weeks", "month"), 10 / 4)
-  expect_equal(convert_to_given_timeperiod("ten days", "month"), 10 / 30)
+  expect_equal(convert_to_given_timeperiod("ten days", "month"), 10 / 30.44)
   expect_equal(convert_to_given_timeperiod("ten hours", "month"),
-               10 / (30 * 24))
+               10 / (30.44 * 24))
   expect_equal(convert_to_given_timeperiod("five minute", "month"),
-               5 / (30 * 24 * 60))
+               5 / (30.44 * 24 * 60))
   expect_equal(convert_to_given_timeperiod("five seconds", "month"),
-               5 / (30 * 24 * 3600))
+               5 / (30.44 * 24 * 3600))
   expect_equal(convert_to_given_timeperiod("five weeks", "week"), 5)
   expect_equal(convert_to_given_timeperiod("five months", "week"), 5 * 4)
   expect_equal(convert_to_given_timeperiod("five days", "week"), 5 / 7)
@@ -261,14 +261,11 @@ test_that("testing converting to given time period", {
                5 / (7 * 24))
   expect_equal(convert_to_given_timeperiod("eight hours", "hour"), 8)
   expect_equal(convert_to_given_timeperiod("eight months", "hour"),
-               8 * 24 * 30)
+               8 * 24 * 30.44)
   expect_equal(convert_to_given_timeperiod("eight days", "hour"), 8 * 24)
   expect_equal(convert_to_given_timeperiod("eight years", "hour"),
-               8 * 24 * 365)
+               8 * 24 * 365.25)
   expect_equal(convert_to_given_timeperiod("eight weeks", "hour"), 8 * 24 * 7)
   expect_equal(convert_to_given_timeperiod("eight minutes", "hour"), 8 / 60)
   expect_equal(convert_to_given_timeperiod("eight second", "hour"), 8 / 3600)
-
-
-
 })

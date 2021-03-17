@@ -588,10 +588,10 @@ convert_freq_diff_basis <- function(freq_given, basis = "day") {
     freq_req_basis <- freq_req_basis * 7
   }
   if ((basis == "month" | basis == "months") & !is.na(freq_req_basis)) {
-    freq_req_basis <- freq_req_basis * 30
+    freq_req_basis <- freq_req_basis * 30.44
   }
   if ((basis == "year" | basis == "year") & !is.na(freq_req_basis)) {
-    freq_req_basis <- freq_req_basis * 365
+    freq_req_basis <- freq_req_basis * 365.25
   }
   return(freq_req_basis)
 }
@@ -954,10 +954,10 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
         unit_req_time <- 7
       }
       if (sec_part == "month" | sec_part == "months") {
-        unit_req_time <- 30
+        unit_req_time <- 30.44
       }
       if (sec_part == "year" | sec_part == "years") {
-        unit_req_time <- 365
+        unit_req_time <- 365.25
       }
       if (sec_part == "hour" | sec_part == "hr" | sec_part == "hours") {
         unit_req_time <- 1 / 24
@@ -977,19 +977,19 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
         unit_req_time <- 1 / 4
       }
       if (sec_part == "day" | sec_part == "days") {
-        unit_req_time <- 1 / 30
+        unit_req_time <- 1 / 30.44
       }
       if (sec_part == "year" | sec_part == "years") {
         unit_req_time <- 12
       }
       if (sec_part == "hour" | sec_part == "hr" | sec_part == "hours") {
-        unit_req_time <- 1 / (30 * 24)
+        unit_req_time <- 1 / (30.44 * 24)
       }
       if (sec_part == "minute" | sec_part == "min" | sec_part == "minutes") {
-        unit_req_time <- 1 / (30 * 24 * 60)
+        unit_req_time <- 1 / (30.44 * 24 * 60)
       }
       if (sec_part == "sec" | sec_part == "second" | sec_part == "seconds") {
-        unit_req_time <- 1 / (30 * 24 * 60 * 60)
+        unit_req_time <- 1 / (30.44 * 24 * 60 * 60)
       }
     }
     if (basis_time == "week" | basis_time == "weeks") {
@@ -1020,13 +1020,13 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
         unit_req_time <- 1
       }
       if (sec_part == "month" | sec_part == "months") {
-        unit_req_time <- 24 * 30
+        unit_req_time <- 24 * 30.44
       }
       if (sec_part == "day" | sec_part == "days") {
         unit_req_time <- 24
       }
       if (sec_part == "year" | sec_part == "years") {
-        unit_req_time <- 24 * 365
+        unit_req_time <- 24 * 365.25
       }
       if (sec_part == "week" | sec_part == "weeks") {
         unit_req_time <- 7 * 24

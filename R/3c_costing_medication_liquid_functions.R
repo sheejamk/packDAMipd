@@ -356,8 +356,6 @@ microcosting_liquids_wide <- function(ind_part_data,
     }
   }
 
-  list_total_cost_basis <- list()
-  list_total_med_period <- list()
   list_total_med_wt_period <- list()
   list_total_cost_period <- list()
   list_total_med_equiv_dose_period <- list()
@@ -391,8 +389,6 @@ microcosting_liquids_wide <- function(ind_part_data,
         med_valid_check <- 0
     }
     if (med_valid_check != -1) {
-      total_cost_basis <- 0
-      total_med_period <- 0
       total_med_wt_period <- 0
       total_cost_period <- 0
       total_med_equiv_dose_period <- 0
@@ -564,10 +560,7 @@ microcosting_liquids_wide <- function(ind_part_data,
                                     bot_lasts_unit_ipd[j], sep = " ")
           basis_time_multiply <-
             convert_to_given_timeperiod(ipd_bottle_lasts, internal_basis_time)
-          if (basis_time_multiply > 1)
-            no_bottles_used_basis <- 1
-          else
-            no_bottles_used_basis <- ceiling(1 / basis_time_multiply)
+          no_bottles_used_basis <- (1 / basis_time_multiply)
 
           vol_unit_multiplier <- convert_volume_basis(bot_size_unit_ipd[j],
                                                       basis_vol_unit)
@@ -578,54 +571,50 @@ microcosting_liquids_wide <- function(ind_part_data,
                                                           basis_wt_unit)
 
           # no of bottle times the unit cost
-          cost_basis <- no_bottles_used_basis * uni_cost_per_bottle
+          cost_basis <- ceiling(no_bottles_used_basis) * uni_cost_per_bottle
 
           time_multiplier <- convert_to_given_timeperiod(timeperiod,
                                                          internal_basis_time)
-          actual_no_bottles_basis <- 1 / basis_time_multiply
-          bottles_taken_period <- ceiling(actual_no_bottles_basis *
-                                            time_multiplier)
 
-          #2 mg/ml dose 10 bottles of certain volume med in strength unit
-          med_str_period <-  dose_num_val_ipd * bottles_taken_period *
-            basis_str_unit_multiply
+          no_bottles_period <- no_bottles_used_basis * time_multiplier
+          bottles_taken_period_costing <- ceiling(no_bottles_period)
 
-          med_wt_period <- med_str_period * bottle_size_num_val_ipd *
-            vol_unit_multiplier * wt_unit_multiplier
+          #converting to correct strength unit
+          med_str_correct_unit <-  dose_num_val_ipd  * basis_str_unit_multiply
 
-          cost_period <- bottles_taken_period * uni_cost_per_bottle
-          med_str_equiv_period <- med_str_period * conversion_factor
-          cost_per_equiv_period  <- cost_period / med_str_equiv_period
+          bottle_size_correct_unit <- bottle_size_num_val_ipd *
+            vol_unit_multiplier
+
+          # 2mg/ml * 500ml in 40 days - calculating for a day
+          # 2 mg/ml * (500ml/40 days) = 25 mg per day
+          med_wt_period <- med_str_correct_unit * wt_unit_multiplier *
+            bottle_size_correct_unit * no_bottles_period * time_multiplier
+
+          cost_period <- bottles_taken_period_costing * uni_cost_per_bottle
+          med_wt_equiv_period <- med_wt_period * conversion_factor
+          cost_per_equiv_period  <- cost_period / med_wt_equiv_period
 
         } else {
-          cost_basis <- 0
-          med_str_period <- 0
           med_wt_period <- 0
           cost_period <- 0
-          med_str_equiv_period <- 0
+          med_wt_equiv_period <- 0
           cost_per_equiv_period <- 0
 
         }
-        total_cost_basis <- total_cost_basis + cost_basis
-        total_med_period <- total_med_period + med_str_period
         total_med_wt_period <- total_med_wt_period + med_wt_period
         total_cost_period <- total_cost_period + cost_period
         total_med_equiv_dose_period <- total_med_equiv_dose_period +
-          med_str_equiv_period
+          med_wt_equiv_period
         total_cost_per_equiv_period <- total_cost_per_equiv_period +
           cost_per_equiv_period
       }
     } else {
-      total_cost_basis <- NA
-      total_med_period <- NA
       total_med_wt_period <- NA
       total_cost_period <- NA
       total_med_equiv_dose_period <- NA
       total_cost_per_equiv_period <- NA
     }
     keywd <- "liquid"
-    list_total_cost_basis <- append(list_total_cost_basis, total_cost_basis)
-    list_total_med_period <- append(list_total_med_period, total_med_period)
     list_total_med_wt_period <- append(list_total_med_wt_period,
                                        total_med_wt_period)
     list_total_cost_period <- append(list_total_cost_period, total_cost_period)
@@ -634,10 +623,6 @@ microcosting_liquids_wide <- function(ind_part_data,
     list_total_cost_per_equiv_period <- append(list_total_cost_per_equiv_period,
                                                total_cost_per_equiv_period)
   }
-  this_name <- paste("totcost_basis_", keywd, sep = "")
-  ind_part_data[[this_name]] <- unlist(list_total_cost_basis)
-  this_name <- paste("totmed_period_", keywd, sep = "")
-  ind_part_data[[this_name]] <- unlist(list_total_med_period)
   this_name <- paste("totmed_wt_period_", keywd, "_", basis_wt_unit,sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_wt_period)
   this_name <- paste("totcost_period_", keywd, sep = "")
@@ -771,7 +756,7 @@ microcosting_liquids_long <- function(the_columns,
   results_wide <- as.data.frame(results_wide)
   columns <- colnames(results_wide)
   num <- length(columns)
-  result_long <- tidyr::gather(results_wide, key = "measurment", value = "value",
+  result_long <- tidyr::gather(results_wide, key = "measurement", value = "value",
                                columns[2]:columns[num], factor_key = TRUE)
   return(result_long)
 }
