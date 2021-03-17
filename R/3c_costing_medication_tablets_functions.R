@@ -343,6 +343,7 @@ microcosting_tablets_wide <- function(ind_part_data,
                 unlist(lapply(unit_conv_table, convert_weight_diff_basis,
                               this_unit[j]))
 
+
               unit_same <- which(unit_converts == 1)
               temp2 <- tempa[unit_same, ]
               if (nrow(temp2) < 1)
