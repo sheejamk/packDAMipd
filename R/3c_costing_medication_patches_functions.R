@@ -374,12 +374,26 @@ microcosting_patches_wide <- function(ind_part_data,
                     conversion_factor <- 1
                   } else {
                     check_num <- suppressWarnings(as.numeric(conver_factor))
-                    if (is.na(check_num))
+                    if (is.na(check_num)) {
                       conversion_factor <-
                         as.numeric(stringr::str_extract(conver_factor,
                                                         "\\d+\\.*\\d*"))
-                    else
+                     unit_in_conversion_factor <-
+                                              gsub("[0-9].", "", conver_factor)
+                     if (unit_in_conversion_factor == "mg/day" |
+                        unit_in_conversion_factor == "mg/d" |
+                        unit_in_conversion_factor == "milligrams/day" |
+                        unit_in_conversion_factor == "milligrams/d" |
+                        unit_in_conversion_factor == "milli grams/day" |
+                          unit_in_conversion_factor == "milli grams/d") {
+
+                     } else {
+                        stop("expecting the conversion factor in the units of
+                             mg/day")
+                     }
+                    }else{
                       conversion_factor <- as.numeric(conver_factor)
+                    }
                   }
                 } else {
                   conversion_factor <- as.numeric(conver_factor)
@@ -433,34 +447,57 @@ microcosting_patches_wide <- function(ind_part_data,
           } else {
             pack_size <- 1
           }
-          # number of patches taken for the base unit of time internally
-          # it is a day
-          no_taken_basis <- how_many_taken[j] * freq_multiplier_basis[j]
-          #5 patch once a week- 4months=4*30days=120/7 weeks = (120/7)*5 =
-          # 85.7 patches =22 packs
 
+          # number of patches used for a day (as day is internal basis)
+          # 2 patches taken once a week = 2/7 patches a day
+          no_taken_basis <- how_many_taken[j] * freq_multiplier_basis[j]
+
+          # convert internal basis time to period, ie a day to given time
+          # period, if its 4 weeks, the time_multipler = 28
           time_multiplier <- convert_to_given_timeperiod(timeperiod,
                                                          internal_basis_time)
+          # no taken basis multiplied by the time multiplier will give the
+          # number taken during time period = ie 2/7 patches a day* 28 day
+          # 56/7 patches in 28 days
+
           number_taken_period <- no_taken_basis * time_multiplier
+          # if there are p number is one pack, calculate pack size for costing
+          # if the unit is based on numbers pack size is 1
           packs_taken_period <- ceiling(number_taken_period / pack_size)
 
-          #85.71429 patches 1mg/hr for 120 days
-          med_str_period <-  dose_num_val * number_taken_period *
-            basis_str_unit_multiply
-          #10 patches 2 mg/hr * 2 * 48hours (2 days)
+
+          # medication in strength unit after converting to basis strength unit
+          # given if not the default mcg/hr
+          med_str_period <-  dose_num_val * basis_str_unit_multiply *
+                                              number_taken_period
+
+          #convert basis time to the time period ie in this case hr is the
+          #basis time unit, so hr converted to 2 weeks. 28*24 hr/ 28 d
           time_multi <- convert_to_given_timeperiod(timeperiod, basis_time_unit)
-          med_wt_period <- dose_num_val * number_taken_period * time_multi
+
+          index <- stringr::str_locate(this_unit[j], "/")
+          this_wt_unit <- stringr::str_sub(this_unit[j], 1, index[1] - 1)
+
+          # convert the wt to the basis weight unit
+          wt_unit_multiplier <- convert_weight_diff_basis(this_wt_unit,
+                                                          basis_wt_unit)
+
+          # medication in wt units 2 mcg/hr * 56/7 patches * (1/1000) mg/mcg
+          #               * 28*24 hr
+          med_wt_period <- dose_num_val * number_taken_period *
+                                          wt_unit_multiplier * time_multi
 
           cost_period <- packs_taken_period * unit_cost_med_prep
-          med_str_equiv_period <- med_str_period * conversion_factor
+          med_str_equiv_period <- dose_num_val * basis_str_unit_multiply *
+                                    conversion_factor * number_taken_period
           cost_per_equiv_period  <- cost_period / med_str_equiv_period
 
         } else {
+          med_wt_period <- 0
           med_str_period <- 0
           cost_period <- 0
           med_str_equiv_period <- 0
           cost_per_equiv_period <- 0
-
         }
         total_med_str_period <- total_med_str_period + med_str_period
         total_med_wt_period <- total_med_wt_period + med_wt_period
