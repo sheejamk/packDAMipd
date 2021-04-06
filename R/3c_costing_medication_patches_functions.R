@@ -286,7 +286,8 @@ microcosting_patches_wide <- function(ind_part_data,
   }
   list_total_med_str_period <- list()
   list_total_med_wt_period <- list()
-  list_total_med_equiv_dose_period <- list()
+  list_total_med_equiv_dose_period_iwotch <- list()
+  list_total_med_equiv_dose_period_actual <- list()
   list_total_cost_period <- list()
   list_total_cost_per_equiv_period <- list()
   for (i in 1:nrow(ind_part_data)) {
@@ -313,7 +314,8 @@ microcosting_patches_wide <- function(ind_part_data,
       this_unit <- this_unit[!is.na(this_unit)]
       total_med_str_period <- 0
       total_med_wt_period <- 0
-      total_med_equiv_dose_period <-  0
+      total_med_equiv_dose_period_iwotch <-  0
+      total_med_equiv_dose_period_actual <-  0
       total_cost_period <-  0
       total_cost_per_equiv_period <-  0
       for (j in seq_len(length(name_medication))) {
@@ -452,14 +454,13 @@ microcosting_patches_wide <- function(ind_part_data,
           # 2 patches taken once a week = 2/7 patches a day
           no_taken_basis <- how_many_taken[j] * freq_multiplier_basis[j]
 
-          # convert internal basis time to period, ie a day to given time
-          # period, if its 4 weeks, the time_multipler = 28
+          # convert internal basis time to period, i.e. a day to given time
+          # period, if its 4 weeks, the time_multiplier = 28
           time_multiplier <- convert_to_given_timeperiod(timeperiod,
                                                          internal_basis_time)
           # no taken basis multiplied by the time multiplier will give the
           # number taken during time period = ie 2/7 patches a day* 28 day
           # 56/7 patches in 28 days
-
           number_taken_period <- no_taken_basis * time_multiplier
           # if there are p number is one pack, calculate pack size for costing
           # if the unit is based on numbers pack size is 1
@@ -471,7 +472,7 @@ microcosting_patches_wide <- function(ind_part_data,
           med_str_period <-  dose_num_val * basis_str_unit_multiply *
                                               number_taken_period
 
-          #convert basis time to the time period ie in this case hr is the
+          #convert basis time to the time period i.e in this case hr is the
           #basis time unit, so hr converted to 2 weeks. 28*24 hr/ 28 d
           time_multi <- convert_to_given_timeperiod(timeperiod, basis_time_unit)
 
@@ -488,8 +489,11 @@ microcosting_patches_wide <- function(ind_part_data,
                                           wt_unit_multiplier * time_multi
 
           cost_period <- packs_taken_period * unit_cost_med_prep
+          # IWOTCH project assumption
           med_str_equiv_period <- dose_num_val * basis_str_unit_multiply *
-                                    conversion_factor * number_taken_period
+                                    conversion_factor * how_many_taken[j]
+          med_str_equiv_period_actual <- dose_num_val * basis_str_unit_multiply *
+            conversion_factor * number_taken_period
           cost_per_equiv_period  <- cost_period / med_str_equiv_period
 
         } else {
@@ -497,19 +501,23 @@ microcosting_patches_wide <- function(ind_part_data,
           med_str_period <- 0
           cost_period <- 0
           med_str_equiv_period <- 0
+          med_str_equiv_period_actual <- 0
           cost_per_equiv_period <- 0
         }
         total_med_str_period <- total_med_str_period + med_str_period
         total_med_wt_period <- total_med_wt_period + med_wt_period
-        total_med_equiv_dose_period <- total_med_equiv_dose_period +
+        total_med_equiv_dose_period_iwotch <- total_med_equiv_dose_period_iwotch +
           med_str_equiv_period
+        total_med_equiv_dose_period_actual <- total_med_equiv_dose_period_actual +
+          med_str_equiv_period_actual
         total_cost_period <- total_cost_period + cost_period
         total_cost_per_equiv_period <- total_cost_per_equiv_period +
           cost_per_equiv_period
       }
     } else {
       total_med_str_period <- NA
-      total_med_equiv_dose_period <- NA
+      total_med_equiv_dose_period_iwotch <- NA
+      total_med_equiv_dose_period_actual <- NA
       total_med_wt_period <- NA
       total_cost_period <- NA
       total_cost_per_equiv_period <- NA
@@ -519,8 +527,10 @@ microcosting_patches_wide <- function(ind_part_data,
                                         total_med_str_period)
     list_total_med_wt_period <- append(list_total_med_wt_period,
                                        total_med_wt_period)
-    list_total_med_equiv_dose_period <- append(list_total_med_equiv_dose_period,
-                                               total_med_equiv_dose_period)
+    list_total_med_equiv_dose_period_iwotch <- append(list_total_med_equiv_dose_period_iwotch,
+                                               total_med_equiv_dose_period_iwotch)
+    list_total_med_equiv_dose_period_actual <- append(list_total_med_equiv_dose_period_actual,
+                                               total_med_equiv_dose_period_actual)
     list_total_cost_period <- append(list_total_cost_period,
                                      total_cost_period)
     list_total_cost_per_equiv_period <- append(list_total_cost_per_equiv_period,
@@ -531,8 +541,10 @@ microcosting_patches_wide <- function(ind_part_data,
   ind_part_data[[this_name]] <- unlist(list_total_med_str_period)
   this_name <- paste("totmed_wt_period_", keywd, "_", basis_wt_unit, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_wt_period)
-  this_name <- paste("totmed_equiv_period_", keywd, sep = "")
-  ind_part_data[[this_name]] <- unlist(list_total_med_equiv_dose_period)
+  this_name <- paste("totmed_equiv_period_iwotch", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_med_equiv_dose_period_iwotch)
+  this_name <- paste("totmed_equiv_period_actual", keywd, sep = "")
+  ind_part_data[[this_name]] <- unlist(list_total_med_equiv_dose_period_actual)
 
   this_name <- paste("totcost_period_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_period)
