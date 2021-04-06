@@ -81,17 +81,24 @@ value_eq5d3L_IPD <- function(ind_part_data, eq5d_nrcode) {
       stop("eq5d responses do not seem right")
     } else {
       if (is.na(eq5d_nrcode)) {
+        original_ind <- c()
         ind <- c()
         for (i in 1:ncol(eq5d_responses)) {
-          ind <- append(ind, which(is.na(eq5d_responses[[i]])))
+          which_one <-  which(is.na(eq5d_responses[[i]]))
+          original_ind <- append(original_ind, rows_needed[which_one])
+          ind <- append(ind, which_one)
         }
       } else {
         ind <- c()
+        original_ind <- c()
         for (i in 1:ncol(eq5d_responses)) {
-          ind <- append(ind, which(eq5d_responses[[i]] == eq5d_nrcode))
+          which_one <- which(eq5d_responses[[i]] == eq5d_nrcode)
+          original_ind <- append(original_ind, rows_needed[which_one])
+          ind <- append(ind, which_one)
         }
       }
       ind <- sort(unique(ind))
+      original_ind <-  sort(unique(original_ind))
       if (length(ind > 0))
         eq5d_responses <- eq5d_responses[-ind, ]
       index3L <- rep(0, nrow(eq5d_responses))
@@ -106,8 +113,8 @@ value_eq5d3L_IPD <- function(ind_part_data, eq5d_nrcode) {
       if (length(ind > 0))
         rows_needed <- rows_needed[-ind]
       ind_part_data[rows_needed, new_colname] <- index3L
-      if (length(ind > 0))
-          ind_part_data[ind, new_colname] <- eq5d_nrcode
+      if (length(original_ind > 0))
+        ind_part_data[original_ind, new_colname] <- eq5d_nrcode
     }
   }
   return(ind_part_data)
@@ -159,17 +166,24 @@ value_eq5d5L_IPD <- function(ind_part_data, eq5d_nrcode) {
       stop("eq5d responses do not seem right")
     } else {
       if (is.na(eq5d_nrcode)) {
+        original_ind <- c()
         ind <- c()
         for (i in 1:ncol(eq5d_responses)) {
-          ind <- append(ind, which(is.na(eq5d_responses[[i]])))
+          which_one <-  which(is.na(eq5d_responses[[i]]))
+          original_ind <- append(original_ind, rows_needed[which_one])
+          ind <- append(ind, which_one)
         }
       } else {
         ind <- c()
+        original_ind <- c()
         for (i in 1:ncol(eq5d_responses)) {
-          ind <- append(ind, which(eq5d_responses[[i]] == eq5d_nrcode))
+          which_one <- which(eq5d_responses[[i]] == eq5d_nrcode)
+          original_ind <- append(original_ind, rows_needed[which_one])
+          ind <- append(ind, which_one)
         }
       }
       ind <- sort(unique(ind))
+      original_ind <-  sort(unique(original_ind))
       if (length(ind > 0))
           eq5d_responses <- eq5d_responses[-ind, ]
       index5L <- rep(0, nrow(eq5d_responses))
@@ -184,8 +198,8 @@ value_eq5d5L_IPD <- function(ind_part_data, eq5d_nrcode) {
       if (length(ind > 0))
           rows_needed <- rows_needed[-ind]
       ind_part_data[rows_needed, new_colname] <- index5L
-      if (length(ind > 0))
-          ind_part_data[ind, new_colname] <- eq5d_nrcode
+      if (length(original_ind > 0))
+        ind_part_data[original_ind, new_colname] <- eq5d_nrcode
     }
   }
   return(ind_part_data)
@@ -241,17 +255,24 @@ map_eq5d5Lto3L_VanHout <- function(ind_part_data, eq5d_nrcode) {
       # remove those with non response codes, if missing data has been removed
       # this will do no harm
       if (is.na(eq5d_nrcode)) {
+        original_ind <- c()
         ind <- c()
         for (i in 1:ncol(eq5d_responses)) {
-          ind <- append(ind, which(is.na(eq5d_responses[[i]])))
+          which_one <-  which(is.na(eq5d_responses[[i]]))
+          original_ind <- append(original_ind, rows_needed[which_one])
+          ind <- append(ind, which_one)
         }
       } else {
         ind <- c()
+        original_ind <- c()
         for (i in 1:ncol(eq5d_responses)) {
-          ind <- append(ind, which(eq5d_responses[[i]] == eq5d_nrcode))
+          which_one <- which(eq5d_responses[[i]] == eq5d_nrcode)
+          original_ind <- append(original_ind, rows_needed[which_one])
+          ind <- append(ind, which_one)
         }
       }
       ind <- sort(unique(ind))
+      original_ind <-  sort(unique(original_ind))
       if (length(ind > 0))
           eq5d_responses <- eq5d_responses[-ind, ]
       index5L <- rep(0, nrow(eq5d_responses))
@@ -267,8 +288,8 @@ map_eq5d5Lto3L_VanHout <- function(ind_part_data, eq5d_nrcode) {
       if (length(ind > 0))
           rows_needed <- rows_needed[-ind]
       ind_part_data[rows_needed, new_colname] <- index5L
-      if (length(ind > 0))
-          ind_part_data[ind, new_colname] <- eq5d_nrcode
+      if (length(original_ind > 0))
+          ind_part_data[original_ind, new_colname] <- eq5d_nrcode
     }
   }
   return(ind_part_data)
@@ -325,17 +346,24 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
     # remove those with non response codes, if missing data has been removed
     # this will do no harm
     if (is.na(adl_nrcode)) {
+      original_ind <- c()
       ind <- c()
       for (i in 1:ncol(adl_responses)) {
-        ind <- append(ind, which(is.na(adl_responses[[i]])))
+        which_one <-  which(is.na(adl_responses[[i]]))
+        original_ind <- append(original_ind, rows_needed[which_one])
+        ind <- append(ind, which_one)
       }
     } else {
       ind <- c()
+      original_ind <- c()
       for (i in 1:ncol(adl_responses)) {
-        ind <- append(ind, which(adl_responses[[i]] == adl_nrcode))
+        which_one <- which(adl_responses[[i]] == adl_nrcode)
+        original_ind <- append(original_ind, rows_needed[which_one])
+        ind <- append(ind, which_one)
       }
     }
     ind <- sort(unique(ind))
+    original_ind <-  sort(unique(original_ind))
     if (length(ind > 0))
       adl_responses <- adl_responses[-ind, ]
     # Check if the responses are 8 for an individual
@@ -368,8 +396,8 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
         if (length(ind > 0))
           rows_needed <- rows_needed[-ind]
         ind_part_data[rows_needed, new_colname] <- TscoreADL
-        if (length(ind > 0))
-          ind_part_data[ind, new_colname] <- adl_nrcode
+        if (length(original_ind > 0))
+          ind_part_data[original_ind, new_colname] <- adl_nrcode
       } else {
         stop("Error ADL scoring column names are not equal to what specified
              in configuration file")
@@ -431,17 +459,24 @@ value_Shows_IPD <- function(ind_part_data, shows_related_words, shows_nrcode) {
       # remove those with non response codes, if missing data has been removed
       # this will do no harm
       if (is.na(shows_nrcode)) {
+        original_ind <- c()
         ind <- c()
         for (i in 1:ncol(shows_responses)) {
-          ind <- append(ind, which(is.na(shows_responses[[i]])))
+          which_one <-  which(is.na(shows_responses[[i]]))
+          original_ind <- append(original_ind, rows_needed[which_one])
+          ind <- append(ind, which_one)
         }
       } else {
         ind <- c()
+        original_ind <- c()
         for (i in 1:ncol(shows_responses)) {
-          ind <- append(ind, which(shows_responses[[i]] == shows_nrcode))
+          which_one <- which(shows_responses[[i]] == shows_nrcode)
+          original_ind <- append(original_ind, rows_needed[which_one])
+          ind <- append(ind, which_one)
         }
       }
       ind <- sort(unique(ind))
+      original_ind <-  sort(unique(original_ind))
       if (length(ind > 0))
           shows_responses <- shows_responses[-ind, ]
       # Check if shows scoring table has columns defined in the config file
@@ -451,8 +486,8 @@ value_Shows_IPD <- function(ind_part_data, shows_related_words, shows_nrcode) {
       if (length(ind > 0))
           rows_needed <- rows_needed[-ind]
       ind_part_data[rows_needed, new_colname] <- sumShows
-      if (length(ind > 0))
-          ind_part_data[ind, new_colname] <- shows_nrcode
+      if (length(original_ind > 0))
+      ind_part_data[original_ind, new_colname] <- shows_nrcode
     }
   }
   return(ind_part_data)
