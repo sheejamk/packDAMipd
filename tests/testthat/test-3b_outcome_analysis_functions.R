@@ -149,6 +149,25 @@ test_that("testing conversion of ADL responses to scores", {
 
   results <- value_ADL_scores_IPD(trial_data, c("tpi"), NA, adl_scoring)
   expect_equal(results$ADLTscore, c(40.7, 55.8))
+
+  trial_data <- data.frame(
+    "tpi.q1" = c(1, 2, NA), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2,3),
+    "tpi.q4" = c(1, 2, 3),
+    "tpi.q5" = c(1, 2, 3), "tpi.q6" = c(1, 2, 3), "tpi.q7" = c(1, 2, 3),
+    "tpi.q8" = c(1, 2, 3)
+  )
+  results <- value_ADL_scores_IPD(trial_data, c("tpi"), NA, adl_scoring)
+  expect_equal(results$ADLTscore, c(40.7, 55.8, NA))
+
+  trial_data <- data.frame(
+    "tpi.q1" = c(1, 2, 99), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2,3),
+    "tpi.q4" = c(1, 2, 3),
+    "tpi.q5" = c(1, 2, 3), "tpi.q6" = c(1, 2, 3), "tpi.q7" = c(1, 2, 3),
+    "tpi.q8" = c(1, 2, 3)
+  )
+  results <- value_ADL_scores_IPD(trial_data, c("tpi"), 99, adl_scoring)
+  expect_equal(results$ADLTscore, c(40.7, 55.8, 99))
+
   this_data <- data.table::data.table("Age" = c("k", 15), "sex" = c("m", "f"))
   expect_error(value_ADL_scores_IPD(this_data, NA, NA, NA))
   trial_data <- data.frame(
@@ -196,7 +215,7 @@ test_that("testing conversion of ADL responses to scores", {
     "tpi.q5" = c(1, 2, 3, 4), "tpi.q6" = c(1, 2, NA, 4), "tpi.q7" = c(1, 2, 3, 4),
     "tpi.q8" = c(1, 2, 3, 4)
   )
-  results <- value_ADL_scores_IPD(trial_data, c("tpi"), NA, NULL)
+   results <- value_ADL_scores_IPD(trial_data, c("tpi"), NA, NULL)
   expect_equal(results$ADLTscore, c(40.7, NA, NA, 66.9))
 
 
@@ -265,5 +284,57 @@ test_that("testing adding EQ5D5L values to the data", {
   )
   results <- value_Shows_IPD(trial_data, c("shows"), -99)
   expect_equal(results$ShOWSscore, c(0, 10, -99))
+
+})
+#####################################################
+context("testing conversion of promis3a responses to scores")
+test_that("testing conversion of promis3a responses to scores", {
+  trial_data <- data.frame(
+    "tpi.q1" = c(1, 2), "tpi.q2" = c(1, 2), "tpi.q3" = c(1, 2)
+  )
+  results <- value_promis3a_scores_IPD(trial_data, c("tpi"), NA, NULL)
+  expect_equal(results$promis3aTscore , c(36.3, 51.4))
+  this_data <- data.table::data.table("Age" = c("k", 15),
+                                      "sex" = c("m", "f"))
+  expect_error(value_promis3a_scores_IPD(this_data, NA, NA, NA))
+  trial_data <- data.frame(
+    "qol.MO" = c(1, 2), "qol.SC" = c(1, 8), "qol.UA" = c(1, 2),
+    "qol.PD" = c(1, 2), "qol.AD" = c(1, 2)
+  )
+  expect_error(value_promis3a_scores_IPD(trial_data, NA, NA))
+  #Error data should not be NULL
+  expect_error(value_promis3a_scores_IPD(NULL, c("tpi"), NA, NULL))
+
+  #Error no matching columns
+  expect_error(value_promis3a_scores_IPD(trial_data, NULL, NA, NULL))
+
+  trial_data <- data.frame(
+    "tpi.q1" = c(1, 2, NA), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2, 2)
+  )
+  results <- value_promis3a_scores_IPD(trial_data, c("tpi"), NA, NULL)
+  expect_equal(results$promis3aTscore , c(36.3, 51.4, NA))
+
+  trial_data <- data.frame(
+    "tpi.q1" = c(1, 2, 99), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2, 2)
+  )
+  results <- value_promis3a_scores_IPD(trial_data, c("tpi"), 99, NULL)
+  expect_equal(results$promis3aTscore , c(36.3, 51.4, 99))
+
+  trial_data <- data.frame(
+    "tpi.q1" = c(1, 2), "tpi.q2" = c(1, 2), "tpi.q3" = c(1, 9)
+  )
+  expect_error(value_promis3a_scores_IPD(trial_data, c("tpi"), NA, NULL))
+  trial_data <- data.frame(
+    "tpi.q1" = c(1, 2), "tpi.q2" = c(1, 2),
+    "tpi.q3" = c(1, 3), "tpi.q3" = c(1, 3)
+  )
+  expect_error(value_promis3a_scores_IPD(trial_data, c("tpi"), NA, NULL))
+
+  trial_data <- data.frame(
+    timepoint = c(1, 1, 2, 2), "tpi.q1" = c(1, 2, 2, 99),
+    "tpi.q2" = c(1, 2, 2, 3), "tpi.q3" = c(1, 2, 2, 3)
+  )
+  results <- value_promis3a_scores_IPD(trial_data, c("tpi"), 99, NULL)
+  expect_equal(results$promis3aTscore , c(36.3, 51.4, 51.4, 99))
 
 })

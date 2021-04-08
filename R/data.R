@@ -49,6 +49,11 @@
 #' @source  created on Jan 15, 2020
 "adl_scoring"
 
+#' promis 3a scoring table
+#' @format A 14 by 3 dataframe
+#' @source  created on April 08, 2021
+"promis3a_scoring"
+
 #' Parameter table created
 #' @format A 2 column 1 observation
 #' @source  created on September 5, 2020

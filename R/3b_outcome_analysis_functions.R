@@ -398,6 +398,12 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
         ind_part_data[rows_needed, new_colname] <- TscoreADL
         if (length(original_ind > 0))
           ind_part_data[original_ind, new_colname] <- adl_nrcode
+
+        # Add the total raw score to data , save and return
+        new_colname <- paste("ADLtotalrawscore")
+        ind_part_data[rows_needed, new_colname] <- sumADL
+        if (length(original_ind > 0))
+          ind_part_data[original_ind, new_colname] <- adl_nrcode
       } else {
         stop("Error ADL scoring column names are not equal to what specified
              in configuration file")
@@ -408,8 +414,8 @@ value_ADL_scores_IPD <- function(ind_part_data, adl_related_words,
 }
 ##############################################################################
 #' Function to estimate the cost of tablets taken (from IPD)
-#' @param ind_part_data a dataframe containing IPD
-#' @param shows_related_words a dataframe containing IPD
+#' @param ind_part_data a data frame containing IPD
+#' @param shows_related_words a data frame containing IPD
 #' @param shows_nrcode non response code for ADL, default is NA
 #' @return sum of scores, if success -1, if failure
 #' @examples
@@ -484,10 +490,129 @@ value_Shows_IPD <- function(ind_part_data, shows_related_words, shows_nrcode) {
       # Add the score to data , save and return
       new_colname <- paste("ShOWSscore")
       if (length(ind > 0))
-          rows_needed <- rows_needed[-ind]
+        rows_needed <- rows_needed[-ind]
       ind_part_data[rows_needed, new_colname] <- sumShows
       if (length(original_ind > 0))
-      ind_part_data[original_ind, new_colname] <- shows_nrcode
+          ind_part_data[original_ind, new_colname] <- shows_nrcode
+    }
+  }
+  return(ind_part_data)
+}
+
+##############################################################################
+#' Function to convert promis3a scores to a T score
+#' @param ind_part_data a data frame containing IPD data
+#' @param promis3a_related_words related words to find out which columns
+#' contain promis3a data
+#' @param promis3a_nrcode non response code for promis3a
+#' @param promis3a_scoring_table promis3a scoring table, if given as NULL use
+#' the default one
+#' @return promis3a scores converted to T score included modified data, if
+#' success -1, if failure
+#' @examples
+#' trial_data <- data.frame("tpi.q1" = c(1, 2),
+#' "tpi.q2" = c(1, 2), "tpi.q3" = c(1, 2))
+#' results <- value_promis3a_scores_IPD(trial_data, c("tpi"), NA, NULL)
+#' @export
+value_promis3a_scores_IPD <- function(ind_part_data, promis3a_related_words,
+                                 promis3a_nrcode, promis3a_scoring_table = NULL) {
+  #Error - data should not be NULL
+  if (is.null(ind_part_data))
+    stop("data should not be NULL")
+  #Error - data should not be NULL
+  if (!is.null(promis3a_scoring_table))
+    promis3a_scores <- promis3a_scoring_table
+  else
+    promis3a_scores <- packDAMipd::promis3a_scoring
+
+  promis3a_scoring_data_columns <- colnames(promis3a_scores)
+  promis3a_details <- get_outcome_details(ind_part_data, "promis3a",
+                                     promis3a_related_words, multiple = TRUE)
+  promis3a_columnnames <- promis3a_details$name
+  ind_part_data <- data.frame(ind_part_data)
+  timepoint_details <- get_timepoint_details(ind_part_data)
+  if (sum(is.na(timepoint_details)) == 0) {
+    timepointscol <- timepoint_details$name
+    timepoints <- unique(ind_part_data[[timepointscol]])
+    nooftimepoints <- length(timepoints)
+  } else {
+    timepointscol <- NA
+    timepoints <- NA
+    nooftimepoints <- 1
+  }
+  for (j in 1:nooftimepoints) {
+    if (is.na(timepointscol) | timepointscol == "NA") {
+      rows_needed <- seq(1:nrow(ind_part_data))
+    } else {
+      rows_needed <- which(ind_part_data[[timepointscol]] == timepoints[j])
+    }
+    # get promis3a responses
+    promis3a_responses <- ind_part_data[rows_needed, promis3a_columnnames]
+    # remove those with non response codes, if missing data has been removed
+    # this will do no harm
+    if (is.na(promis3a_nrcode)) {
+      original_ind <- c()
+      ind <- c()
+      for (i in 1:ncol(promis3a_responses)) {
+        which_one <-  which(is.na(promis3a_responses[[i]]))
+        original_ind <- append(original_ind, rows_needed[which_one])
+        ind <- append(ind, which_one)
+      }
+    } else {
+      ind <- c()
+      original_ind <- c()
+      for (i in 1:ncol(promis3a_responses)) {
+        which_one <- which(promis3a_responses[[i]] == promis3a_nrcode)
+        original_ind <- append(original_ind, rows_needed[which_one])
+        ind <- append(ind, which_one)
+      }
+    }
+    ind <- sort(unique(ind))
+    original_ind <-  sort(unique(original_ind))
+    if (length(ind > 0))
+      promis3a_responses <- promis3a_responses[-ind, ]
+    # Check if the responses are 8 for an individual
+    if (length(promis3a_columnnames) != 3) {
+      stop("error- promis3a should have 3 columns")
+    } else {
+      # Check if the responses are numeric with range 1 to 5
+      results <- sapply(promis3a_columnnames, IPDFileCheck::test_data_numeric,
+                        promis3a_responses, promis3a_nrcode, 1, 5)
+    }
+    if (any(results < 0)) {
+      stop("promis3a responses do not seem right")
+    } else {
+
+      # Check if promis3a scoring table has columns defined in the config file
+      if (IPDFileCheck::test_columnnames(promis3a_scoring_data_columns,
+                                         promis3a_scores) == 0) {
+        # Replace NA with 0
+        promis3a_scores[is.na(promis3a_scores)] <- 0
+        # Find the sum of scores
+        sumpromis3a <- rowSums(promis3a_responses)
+        Tscorepromis3a <- rep(0, length(sumpromis3a))
+        for (i in seq_len(length(sumpromis3a))) {
+          ithrow <- which(promis3a_scores$Raw.score == sumpromis3a[i])
+          # Get the T score corresponding to raw sum
+          Tscorepromis3a[i] <- promis3a_scores$T.Score[ithrow]
+        }
+        # Add the T score to data , save and return
+        new_colname <- paste("promis3aTscore")
+        if (length(ind > 0))
+          rows_needed <- rows_needed[-ind]
+        ind_part_data[rows_needed, new_colname] <- Tscorepromis3a
+        if (length(original_ind > 0))
+          ind_part_data[original_ind, new_colname] <- promis3a_nrcode
+
+        # Add the total raw score to data , save and return
+        new_colname <- paste("promis3a_rawscore")
+        ind_part_data[rows_needed, new_colname] <- sumpromis3a
+        if (length(original_ind > 0))
+          ind_part_data[original_ind, new_colname] <- promis3a_nrcode
+      } else {
+        stop("Error promis3a scoring column names are not equal to what specified
+             in configuration file")
+      }
     }
   }
   return(ind_part_data)

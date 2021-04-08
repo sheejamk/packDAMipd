@@ -7,9 +7,9 @@
 value_Shows_IPD(ind_part_data, shows_related_words, shows_nrcode)
 }
 \arguments{
-\item{ind_part_data}{a dataframe containing IPD}
+\item{ind_part_data}{a data frame containing IPD}
 
-\item{shows_related_words}{a dataframe containing IPD}
+\item{shows_related_words}{a data frame containing IPD}
 
 \item{shows_nrcode}{non response code for ADL, default is NA}
 }
