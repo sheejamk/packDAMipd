@@ -293,6 +293,7 @@ microcosting_tablets_wide <- function(ind_part_data,
       for (j in seq_len(length(name_medication))) {
         if (!is.null(name_medication[j]) & !is.na(name_medication[j])) {
           index <- gregexpr(pattern = "/", name_medication[j])[[1]][1]
+          index_bracket <- gregexpr(pattern = "\\(", name_medication[j])[[1]][1]
           strength_term <- NULL
           this_med_name <- name_medication[j]
           if (index != -1) {
@@ -407,7 +408,9 @@ microcosting_tablets_wide <- function(ind_part_data,
           # unit is given separate, but dose with no "/" e.g 2
           if (unit_med_check != -1 & index_slash == -1) {
             if (is.null(actual_dose_from_name)) {
-              if (this_med_name %in% c("Co-codamol", "Co-dydramol"))
+              if (this_med_name %in% c("Co-codamol", "Co-dydramol",
+                                       "co-codamol", "co-dydramol",
+                                       "CO-CODAMOL", "CO-DYDRAMOL"))
                 stop("Error - dose should be revealed from name or dose ")
               dose_num_val <- as.numeric(dose_medication[j])
               strength_val <- this_unit[j]
