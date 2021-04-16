@@ -714,7 +714,7 @@ res <- microcosting_liquids_wide(
                                        eqdose_covtab = table,
                                        basis_strength_unit = NULL)
 
-expect_equal(res$totmed_wt_period_liquid_mg, c(1204.106,  17.857),tolerance = 1e-3)
+expect_equal(res$totmed_wt_period_liquid_mg, c(1204.106,  17.857), tolerance = 1e-3)
 
 
 med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",

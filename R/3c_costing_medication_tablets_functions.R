@@ -169,11 +169,6 @@ microcosting_tablets_wide <- function(ind_part_data,
   if (brand_check != -1) {
     brand_and_code <- encode_codes_data(list_of_code_brand, brand_med_cols,
                                         ind_part_data)
-    if (is.null(unlist(brand_and_code)) | sum(is.na(unlist(brand_and_code))) ==
-        length(unlist(brand_and_code))) {
-      stop("Error - brand_and_code can not be null - check the input for
-         brand  code")
-    }
   }
   if (unit_med_check == -1) {
     med_dose <- ind_part_data %>% dplyr::select(dplyr::all_of(doses_med_cols))
@@ -276,12 +271,10 @@ microcosting_tablets_wide <- function(ind_part_data,
     if (brand_check != -1)
       brand_medication <- brand_and_code[i, ]
     dose_medication <- med_dose[i, ]
-    if (length(dose_medication) != length(name_medication))
-      stop("number of doses and number of medications should be equal")
     if (is.null(name_medication)) {
       medication_valid_check <- -1
     } else {
-      if (sum(is.na(unname(name_medication))) >= length(name_medication))
+      if (sum(is.na(unname(name_medication))) == length(name_medication))
         medication_valid_check <- -1
       else
         medication_valid_check <- 0
@@ -299,8 +292,28 @@ microcosting_tablets_wide <- function(ind_part_data,
       total_cost_per_equiv_period <-  0
       for (j in seq_len(length(name_medication))) {
         if (!is.null(name_medication[j]) & !is.na(name_medication[j])) {
+          index <- gregexpr(pattern = "/", name_medication[j])[[1]][1]
+          strength_term <- NULL
+          this_med_name <- name_medication[j]
+          if (index != -1) {
+              index_lastspace <- gregexpr(pattern = " ", name_medication[j])[[1]][1]
+              if (index_lastspace != -1) {
+                   strength_term <- substr(name_medication[j], index_lastspace + 1,
+                                    nchar(name_medication[j]))
+                   this_med_name <- trimws(substr(name_medication[j], 1, index_lastspace))
+
+              }
+          } else {
+            index_bracket <- gregexpr(pattern = "\\(", name_medication[j])[[1]][1]
+            if (index_bracket != -1) {
+              index_lastbracket <- gregexpr(pattern = "\\)", name_medication[j])[[1]][1]
+              strength_term <- substr(name_medication[j], index_bracket + 1,
+                                      index_lastbracket - 1)
+              this_med_name <- trimws(substr(name_medication[j], 1, index_bracket - 1))
+            }
+          }
           subset1 <- return_equal_str_col(name_col_no,
-                                          unit_cost_data, name_medication[j])
+                                          unit_cost_data, this_med_name)
           subset2 <- subset1[subset1[form_col_no] == "Tablet" |
                                subset1[form_col_no] == "Tablets" |
                                subset1[form_col_no] == "tablet" |
@@ -312,7 +325,8 @@ microcosting_tablets_wide <- function(ind_part_data,
                 if (is.na(brand_medication[j])) {
                   subset2 <- subset2
                 } else {
-                  if (brand_medication[j] == "" | brand_medication[j]  == " ") {
+                  if (brand_medication[j] == "" | brand_medication[j]  == " "
+                      | brand_medication[j]  == "NA") {
                     subset2 <- subset2
                   } else {
                     subset2 <- return_equal_str_col(brand_col_no,
@@ -323,27 +337,162 @@ microcosting_tablets_wide <- function(ind_part_data,
                 }
               }
           }
-          if (unit_med_check == -1)
-            dose_num_val <-
-            as.numeric(stringr::str_extract(dose_medication[j],
-                                            "\\d+\\.*\\d*"))
-          else
-            dose_num_val <- as.numeric(dose_medication[j])
+          actual_dose_from_name <- NULL
+          # name of the medication has 8mg/500mg information
+          if (!is.null(strength_term)) {
+            if (index != -1) {
+              indices1 <- unlist(stringr::str_locate_all(strength_term, "/"))
+              first_dose <- substr(strength_term, 1, indices1[1] - 1)
+              sec_dose <- substr(strength_term, indices1[1] + 1, nchar(strength_term))
+              first_dose_srength  <- gsub("[[:digit:]]+", "", first_dose)
+              sec_dose_srength  <- gsub("[[:digit:]]+", "", sec_dose)
+              first_dose_num <- gsub("[^0-9.-]", "", first_dose)
+              sec_dose_num <- gsub("[^0-9.-]", "", sec_dose)
+              dose_num_val_name <- paste(first_dose_num, "/",
+                                         sec_dose_num, sep = "")
+              strength_val_name <- paste(first_dose_srength, "/",
+                                         sec_dose_srength, sep = "")
+
+              actual_dose_from_name <- paste(first_dose_num, first_dose_srength, "/",
+                                             sec_dose_num, sec_dose_srength, sep = "")
+            } else {
+              if (index_bracket != -1) {
+                dose_num_val_name <- NA
+                strength_val_name <- NA
+              }
+            }
+
+          }
+          #if the dosage is given with two weights units
+          # if dose value is given as 8/500 or 8mg/500mg
+          index_slash <- gregexpr(pattern = "/", dose_medication[j])[[1]][1]
+          index_slash_unit <- gregexpr(pattern = "/",  this_unit[j])[[1]][1]
+          #now will check if the units are given separate or along with dosage
+
+          # unit is not given separate, but dose with no "/" eg. 2mg
+          # so need to extract the numerical value
+          if (unit_med_check == -1 & index_slash == -1) {
+            if (!is.null(actual_dose_from_name)) {
+              dose_num_val <- dose_num_val_name
+              if (index_slash_unit == -1) {
+                strength_val <- paste(this_unit[j], "/", this_unit[j], sep = "")
+              } else {
+                strength_val <- strength_val_name
+              }
+            } else {
+              dose_num_val <-
+                as.numeric(stringr::str_extract(dose_medication[j],
+                                                "\\d+\\.*\\d*"))
+              strength_val <- this_unit[j]
+            }
+          }
+
+          # unit is not given separate, but dose with "/" e.g 2mg/500mg
+          if (unit_med_check == -1 & index_slash != -1) {
+             indices1 <- unlist(stringr::str_locate_all(dose_medication[j], "/"))
+             first_dose <- substr(dose_medication[j], 1, indices1[1] - 1)
+             sec_dose <- substr(dose_medication[j], indices1[1] + 1,
+                                nchar(dose_medication[j]))
+             first_dose_srength  <- gsub("[[:digit:]]+", "", first_dose)
+             sec_dose_srength  <- gsub("[[:digit:]]+", "", sec_dose)
+             first_dose_num <- gsub("[^0-9.-]", "", first_dose)
+             sec_dose_num <- gsub("[^0-9.-]", "", sec_dose)
+             dose_num_val <- paste(first_dose_num, "/",
+                                   sec_dose_num, sep = "")
+             strength_val <- paste(first_dose_srength, "/",
+                                  sec_dose_srength, sep = "")
+
+          }
+
+          # unit is given separate, but dose with no "/" e.g 2
+          if (unit_med_check != -1 & index_slash == -1) {
+            if (is.null(actual_dose_from_name)) {
+              if (this_med_name %in% c("Co-codamol", "Co-dydramol"))
+                stop("Error - dose should be revealed from name or dose ")
+              dose_num_val <- as.numeric(dose_medication[j])
+              strength_val <- this_unit[j]
+            } else {
+              dose_num_val <- dose_num_val_name
+              if (index_slash_unit == -1) {
+                strength_val <- paste(this_unit[j], "/", this_unit[j], sep = "")
+              }
+            }
+          }
+          # unit is given separate, but dose with "/" e.g 2/50
+          if (unit_med_check != -1 & index_slash != -1) {
+            dose_num_val <- (dose_medication[j])
+            if (index_slash_unit != -1) {
+              strength_val <- this_unit[j]
+            } else {
+              if (!is.null(actual_dose_from_name)) {
+                strength_val <- strength_val_name
+              } else {
+                strength_val <- NULL
+                stop("unit of medication had to be wt/wt")
+              }
+            }
+          }
+          if (index_slash != -1) {
+            find1 <- unlist(stringr::str_locate_all(dose_num_val, "/"))
+            first_dos <- substr(dose_num_val, 1, find1[1] - 1)
+            sec_dos <- substr(dose_num_val, find1[1] + 1,
+                            nchar(dose_num_val))
+            find2 <- unlist(stringr::str_locate_all(strength_val, "/"))
+            first_stre <- substr(strength_val, 1, find2[1] - 1)
+            sec_stre <- substr(strength_val, find2[1] + 1,
+                             nchar(strength_val))
+            actual_dose_ipd <- paste(first_dos, first_stre, "/", sec_dos,
+                               sec_stre, sep = "")
+          } else {
+            if (index_bracket != -1)
+              actual_dose_ipd <- NA
+            else
+              actual_dose_ipd <- paste(dose_num_val, strength_val, sep = "")
+          }
+          if (index_slash == -1 &
+              !is.null(actual_dose_from_name) & index_slash_unit == -1) {
+            find1 <- unlist(stringr::str_locate_all(dose_num_val, "/"))
+            first_dos <- substr(dose_num_val, 1, find1[1] - 1)
+            sec_dos <- substr(dose_num_val, find1[1] + 1,
+                              nchar(dose_num_val))
+            find2 <- unlist(stringr::str_locate_all(strength_val, "/"))
+            first_stre <- substr(strength_val, 1, find2[1] - 1)
+            sec_stre <- substr(strength_val, find2[1] + 1,
+                               nchar(strength_val))
+            actual_dose_ipd <- paste(first_dos, first_stre, "/", sec_dos,
+                                     sec_stre, sep = "")
+          }
 
           if (eqdose_check != -1) {
             temp <- return_equal_str_col(drug_col_conv_table, eqdose_cov_tab,
-                                         name_medication[j])
+                                         this_med_name)
             if (nrow(temp) != 0) {
               words <- c("tablet", "tablets")
               tempa <- return_equal_liststring_listcol(form_col_conv_table, temp,
                                                        words)
-
               unit_conv_table <- tempa[[dose_unit_col_conv_table]]
-              unit_converts <-
-                unlist(lapply(unit_conv_table, convert_weight_diff_basis,
-                              this_unit[j]))
+              unit_conv_table <- stringr::str_replace_all(unit_conv_table,
+                                                  stringr::fixed(" "), "")
 
+              if (index_slash == -1 & !is.na(actual_dose_ipd)) {
+                if (is.null(actual_dose_from_name) & index_slash_unit == -1) {
+                  unit_converts <-
+                    unlist(lapply(unit_conv_table, convert_weight_diff_basis,
+                                  basis_strength_unit))
 
+                } else {
+                  unit_converts <- (unit_conv_table == actual_dose_ipd)
+                  unit_converts[(unit_converts)] <- 1
+                }
+              } else {
+                if (is.na(actual_dose_ipd)) {
+                  unit_converts <- unit_conv_table == "N/A"
+                  unit_converts[(unit_converts)] <- 1
+                } else {
+                  unit_converts <- (unit_conv_table == actual_dose_ipd)
+                  unit_converts[(unit_converts)] <- 1
+                }
+              }
               unit_same <- which(unit_converts == 1)
               temp2 <- tempa[unit_same, ]
               if (nrow(temp2) < 1)
@@ -369,39 +518,65 @@ microcosting_tablets_wide <- function(ind_part_data,
               conversion_factor <- 0
             }
           }
-          strength_unit_cost <- trimws(gsub("[0-9\\.]", "",
-                                            subset2[[dosage_col_no]]))
-          strength_val_cost <-
-            as.numeric(stringr::str_extract(subset2[[dosage_col_no]],
-                                            "\\d+\\.*\\d*"))
+          if (index_slash == -1 & !is.na(actual_dose_ipd)) {
+            if (is.null(actual_dose_from_name) & index_slash_unit == -1) {
+                strength_unit_cost <- trimws(gsub("[0-9\\.]", "",
+                                                  subset2[[dosage_col_no]]))
+                strength_val_cost <-
+                  as.numeric(stringr::str_extract(subset2[[dosage_col_no]],
+                                                  "\\d+\\.*\\d*"))
 
-          dose_in_ipd <- paste(dose_num_val, this_unit[j], sep = " ")
-          strength_unit_multiplier <- c()
-
-          basis_str_unit_multiply <- convert_weight_diff_basis(this_unit[j],
+                strength_unit_multiplier <- c()
+                basis_str_unit_multiply <- convert_weight_diff_basis(this_unit[j],
                                                       basis_strength_unit)
-          for (i in seq_len(length(strength_unit_cost))) {
-            unit_multiply <- convert_weight_diff_basis(this_unit[j],
-                                                       strength_unit_cost[i])
-            strength_unit_multiplier <- append(strength_unit_multiplier,
-                                               unit_multiply)
+                for (ii in seq_len(length(strength_unit_cost))) {
+                  unit_multiply <- convert_weight_diff_basis(this_unit[j],
+                                                             strength_unit_cost[ii])
+                  strength_unit_multiplier <- append(strength_unit_multiplier,
+                                                     unit_multiply)
+                }
+                if (sum(is.na(strength_unit_multiplier)) != 0)
+                  stop("The unit is not identifiable to convert for costing")
+                strength_unit_cost[which(strength_unit_multiplier == 1)] <-
+                  this_unit[j]
+                dose_in_cost_data <- paste(strength_val_cost,
+                                           strength_unit_cost, sep = "")
+            } else {
+              basis_str_unit_multiply <- 1
+              dose_in_cost_data <- subset2[[dosage_col_no]]
+              strength_unit_multiplier <- rep(1, length(subset2[[dosage_col_no]]))
+            }
+          } else {
+            basis_str_unit_multiply <- 1
+            dose_in_cost_data <- subset2[[dosage_col_no]]
+            strength_unit_multiplier <- rep(1, length(subset2[[dosage_col_no]]))
           }
-
-          if (sum(is.na(strength_unit_multiplier)) != 0)
-            stop("The unit is not identifiable to convert for costing")
-          strength_unit_cost[which(strength_unit_multiplier == 1)] <-
-            this_unit[j]
-          dose_in_cost_data <- paste(strength_val_cost,
-                                     strength_unit_cost, sep = " ")
-          if (any(dose_in_cost_data == dose_in_ipd)) {
-            subset3 <- subset2[dose_in_cost_data ==  dose_in_ipd, ]
+          if (is.na(actual_dose_ipd)) {
+            subset3 <- subset2
             unit_cost_med_prep <- sum(subset3[[unit_cost_column]] /
                                         nrow(subset3))
+            dosage_unit_cost <- subset3[[dosage_col_no]]
+            num_valu_dose <- c()
+            for (m in 1:length(dosage_unit_cost)) {
+              inds1 <- unlist(stringr::str_locate_all(dosage_unit_cost[m], "/"))
+              first_dose <- substr(dosage_unit_cost[m], 1, inds1[1] - 1)
+              first_dose_num <- gsub("[^0-9.-]", "", first_dose)
+              num_valu_dose <- append(num_valu_dose, first_dose_num)
+            }
+            strength_unit_multip <- 1
+            dose_num_val <- sum(as.numeric(num_valu_dose)) / length(dosage_unit_cost)
           } else {
-            stop("The used dosage is not in costing table")
+             if (any(dose_in_cost_data == actual_dose_ipd)) {
+                subset3 <- subset2[dose_in_cost_data ==  actual_dose_ipd, ]
+                unit_cost_med_prep <- sum(subset3[[unit_cost_column]] /
+                                        nrow(subset3))
+                strength_unit_multip <- strength_unit_multiplier[dose_in_cost_data ==
+                                                                   actual_dose_ipd]
+
+            } else {
+               stop("The used dosage is not in costing table")
+            }
           }
-          strength_unit_multip <- strength_unit_multiplier[dose_in_cost_data ==
-                                                             dose_in_ipd]
           unit_used_costing <- tolower(unique(subset3[[unit_col_no]]))
           if (brand_check != -1) {
             if (unit_used_costing == "per pack" |
@@ -422,10 +597,27 @@ microcosting_tablets_wide <- function(ind_part_data,
           time_multiplier <- convert_to_given_timeperiod(timeperiod,
                                                          internal_basis_time)
           number_taken_period <- no_taken_basis * time_multiplier
-          packs_taken_period <- ceiling(number_taken_period / pack_size)
-
-          med_str_period <-  dose_num_val * number_taken_period *
-            basis_str_unit_multiply
+          if (unit_used_costing == "per pack" |
+              unit_used_costing == "per package" |
+              unit_used_costing == "pack" |
+              unit_used_costing == "package") {
+            pack_size <- as.numeric(subset3[size_pack_col_no])
+            packs_taken_period <- ceiling(number_taken_period / pack_size)
+          } else {
+            pack_size <- 1
+            packs_taken_period <- number_taken_period
+          }
+          if (index_slash == -1) {
+            if (is.null(actual_dose_from_name) & index_slash_unit == -1)
+                med_str_period <-  dose_num_val * number_taken_period *
+                      basis_str_unit_multiply
+            else
+              med_str_period <-  as.numeric(first_dos) * number_taken_period *
+                basis_str_unit_multiply
+          } else {
+            med_str_period <-  as.numeric(first_dos) * number_taken_period *
+              basis_str_unit_multiply
+          }
           cost_period <- packs_taken_period * unit_cost_med_prep
           med_str_equiv_period <- med_str_period * conversion_factor
           cost_per_equiv_period  <- cost_period / med_str_equiv_period

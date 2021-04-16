@@ -1,6 +1,180 @@
 #######################################################################
 context("testing microcosting tablets")
 test_that("testing microcosting tablets", {
+
+  med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
+                                package = "packDAMipd")
+  data_file <- system.file("extdata", "medication_all_brandNull.xlsx",
+                           package = "packDAMipd")
+  ind_part_data <- load_trial_data(data_file)
+  med_costs <- load_trial_data(med_costs_file)
+  conv_file <- system.file("extdata", "Med_calc.xlsx",
+                           package = "packDAMipd")
+  table <- load_trial_data(conv_file)
+  res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
+                                   name_med = "tab_name",
+                                   brand_med = "tab_brand",
+                                   dose_med = "tab_str",
+                                   unit_med = "tab_unit",
+                                   no_taken = "tab_no_taken",
+                                   freq_taken = "tab_frequency",
+                                   timeperiod = "one day",
+                                   unit_cost_data = med_costs,
+                                   unit_cost_column = "UnitCost",
+                                   cost_calculated_per  = "Basis",
+                                   strength_column = "Strength",
+                                   list_of_code_names = NULL,
+                                   list_of_code_freq = NULL,
+                                   list_of_code_dose_unit = NULL,
+                                   eqdose_cov_tab = table,
+                                   basis_strength_unit = "mg")
+  expect_equal(res$totmed_period_tablets_mg, c(10.1, 0), tolerance = 1e-2)
+
+  med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
+                                package = "packDAMipd")
+  data_file <- system.file("extdata", "medication_all_strengthnotgiven.xlsx",
+                           package = "packDAMipd")
+  ind_part_data <- load_trial_data(data_file)
+  med_costs <- load_trial_data(med_costs_file)
+  conv_file <- system.file("extdata", "Med_calc.xlsx",
+                           package = "packDAMipd")
+  table <- load_trial_data(conv_file)
+  res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
+                                   name_med = "tab_name",
+                                   brand_med = "tab_brand",
+                                   dose_med = "tab_str",
+                                   unit_med = NULL,
+                                   no_taken = "tab_no_taken",
+                                   freq_taken = "tab_frequency",
+                                   timeperiod = "one day",
+                                   unit_cost_data = med_costs,
+                                   unit_cost_column = "UnitCost",
+                                   cost_calculated_per  = "Basis",
+                                   strength_column = "Strength",
+                                   list_of_code_names = NULL,
+                                   list_of_code_freq = NULL,
+                                   list_of_code_dose_unit = NULL,
+                                   eqdose_cov_tab = table,
+                                   basis_strength_unit = "mg")
+  expect_equal(res$totmed_period_tablets_mg, c(110, 8), tolerance = 1e-2)
+
+  med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
+                                package = "packDAMipd")
+  data_file <- system.file("extdata", "medication_all_test.xlsx",
+                           package = "packDAMipd")
+  ind_part_data <- load_trial_data(data_file)
+  med_costs <- load_trial_data(med_costs_file)
+  conv_file <- system.file("extdata", "Med_calc.xlsx",
+                           package = "packDAMipd")
+  table <- load_trial_data(conv_file)
+  res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
+                                   name_med = "tab_name",
+                                   brand_med = "tab_brand",
+                                   dose_med = "tab_strength",
+                                   unit_med = "tab_str_unit",
+                                   no_taken = "tab_no_taken",
+                                   freq_taken = "tab_frequency",
+                                   timeperiod = "one day",
+                                   unit_cost_data = med_costs,
+                                   unit_cost_column = "UnitCost",
+                                   cost_calculated_per  = "Basis",
+                                   strength_column = "Strength",
+                                   list_of_code_names = NULL,
+                                   list_of_code_freq = NULL,
+                                   list_of_code_dose_unit = NULL,
+                                   eqdose_cov_tab = table,
+                                   basis_strength_unit = "mg")
+expect_equal(res$totmed_period_tablets_mg, c(40.1, 8), tolerance = 1e-2)
+
+
+
+med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
+                              package = "packDAMipd")
+data_file <- system.file("extdata", "medication_all_unitnotseparate.xlsx",
+                         package = "packDAMipd")
+ind_part_data <- load_trial_data(data_file)
+med_costs <- load_trial_data(med_costs_file)
+conv_file <- system.file("extdata", "Med_calc.xlsx",
+                         package = "packDAMipd")
+table <- load_trial_data(conv_file)
+res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
+                                 name_med = "tab_name",
+                                 brand_med = "tab_brand",
+                                 dose_med = "tab_strength",
+                                 unit_med = NULL,
+                                 no_taken = "tab_no_taken",
+                                 freq_taken = "tab_frequency",
+                                 timeperiod = "one day",
+                                 unit_cost_data = med_costs,
+                                 unit_cost_column = "UnitCost",
+                                 cost_calculated_per  = "Basis",
+                                 strength_column = "Strength",
+                                 list_of_code_names = NULL,
+                                 list_of_code_freq = NULL,
+                                 list_of_code_dose_unit = NULL,
+                                 eqdose_cov_tab = table,
+                                 basis_strength_unit = "mg")
+
+expect_equal(res$totmed_period_tablets_mg, c(40.1, 8), tolerance = 1e-2)
+
+
+med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
+                              package = "packDAMipd")
+data_file <- system.file("extdata", "medication_all_test_error.xlsx",
+                         package = "packDAMipd")
+ind_part_data <- load_trial_data(data_file)
+med_costs <- load_trial_data(med_costs_file)
+conv_file <- system.file("extdata", "Med_calc.xlsx",
+                         package = "packDAMipd")
+table <- load_trial_data(conv_file)
+expect_error(microcosting_tablets_wide(ind_part_data = ind_part_data,
+                                 name_med = "tab_name",
+                                 brand_med = "tab_brand",
+                                 dose_med = "tab_strength",
+                                 unit_med = "tab_str_unit",
+                                 no_taken = "tab_no_taken",
+                                 freq_taken = "tab_frequency",
+                                 timeperiod = "one day",
+                                 unit_cost_data = med_costs,
+                                 unit_cost_column = "UnitCost",
+                                 cost_calculated_per  = "Basis",
+                                 strength_column = "Strength",
+                                 list_of_code_names = NULL,
+                                 list_of_code_freq = NULL,
+                                 list_of_code_dose_unit = NULL,
+                                 eqdose_cov_tab = table,
+                                 basis_strength_unit = "mg"))
+
+
+med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
+                              package = "packDAMipd")
+data_file <- system.file("extdata", "medication_all_2.xlsx",
+                         package = "packDAMipd")
+ind_part_data <- load_trial_data(data_file)
+med_costs <- load_trial_data(med_costs_file)
+conv_file <- system.file("extdata", "Med_calc.xlsx",
+                         package = "packDAMipd")
+table <- load_trial_data(conv_file)
+res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
+                                 name_med = "tab_name",
+                                 brand_med = "tab_brand",
+                                 dose_med = "tab_strength",
+                                 unit_med = NULL,
+                                 no_taken = "tab_no_taken",
+                                 freq_taken = "tab_frequency",
+                                 timeperiod = "one day",
+                                 unit_cost_data = med_costs,
+                                 unit_cost_column = "UnitCost",
+                                 cost_calculated_per  = "Basis",
+                                 strength_column = "Strength",
+                                 list_of_code_names = NULL,
+                                 list_of_code_freq = NULL,
+                                 list_of_code_dose_unit = NULL,
+                                 eqdose_cov_tab = table,
+                                 basis_strength_unit = "mg")
+
+expect_equal(res$totmed_period_tablets_mg, c(10.14, 0), tolerance = 1e-2)
+
 med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
                               package = "packDAMipd")
 data_file <- system.file("extdata", "medication_all.xlsx",
@@ -29,7 +203,7 @@ res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
                                  list_of_code_dose_unit = NULL,
                                  eqdose_cov_tab = table,
                                  basis_strength_unit = "mg")
-expect_equal(res$totmed_period_tablets_mg, c(617.50, 0), tolerance = 1e-3)
+expect_equal(res$totmed_period_tablets_mg, c(617.50, 0), tolerance = 1e-2)
 
 expect_error(microcosting_tablets_wide(ind_part_data = NULL,
                                        name_med = "tab_name",

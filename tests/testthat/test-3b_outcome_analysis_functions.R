@@ -151,7 +151,7 @@ test_that("testing conversion of ADL responses to scores", {
   expect_equal(results$ADLTscore, c(40.7, 55.8))
 
   trial_data <- data.frame(
-    "tpi.q1" = c(1, 2, NA), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2,3),
+    "tpi.q1" = c(1, 2, NA), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2, 3),
     "tpi.q4" = c(1, 2, 3),
     "tpi.q5" = c(1, 2, 3), "tpi.q6" = c(1, 2, 3), "tpi.q7" = c(1, 2, 3),
     "tpi.q8" = c(1, 2, 3)
@@ -160,7 +160,7 @@ test_that("testing conversion of ADL responses to scores", {
   expect_equal(results$ADLTscore, c(40.7, 55.8, NA))
 
   trial_data <- data.frame(
-    "tpi.q1" = c(1, 2, 99), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2,3),
+    "tpi.q1" = c(1, 2, 99), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2, 3),
     "tpi.q4" = c(1, 2, 3),
     "tpi.q5" = c(1, 2, 3), "tpi.q6" = c(1, 2, 3), "tpi.q7" = c(1, 2, 3),
     "tpi.q8" = c(1, 2, 3)
@@ -293,7 +293,7 @@ test_that("testing conversion of promis3a responses to scores", {
     "tpi.q1" = c(1, 2), "tpi.q2" = c(1, 2), "tpi.q3" = c(1, 2)
   )
   results <- value_promis3a_scores_IPD(trial_data, c("tpi"), NA, NULL)
-  expect_equal(results$promis3aTscore , c(36.3, 51.4))
+  expect_equal(results$promis3aTscore, c(36.3, 51.4))
   this_data <- data.table::data.table("Age" = c("k", 15),
                                       "sex" = c("m", "f"))
   expect_error(value_promis3a_scores_IPD(this_data, NA, NA, NA))
@@ -312,13 +312,13 @@ test_that("testing conversion of promis3a responses to scores", {
     "tpi.q1" = c(1, 2, NA), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2, 2)
   )
   results <- value_promis3a_scores_IPD(trial_data, c("tpi"), NA, NULL)
-  expect_equal(results$promis3aTscore , c(36.3, 51.4, NA))
+  expect_equal(results$promis3aTscore, c(36.3, 51.4, NA))
 
   trial_data <- data.frame(
     "tpi.q1" = c(1, 2, 99), "tpi.q2" = c(1, 2, 3), "tpi.q3" = c(1, 2, 2)
   )
   results <- value_promis3a_scores_IPD(trial_data, c("tpi"), 99, NULL)
-  expect_equal(results$promis3aTscore , c(36.3, 51.4, 99))
+  expect_equal(results$promis3aTscore, c(36.3, 51.4, 99))
 
   trial_data <- data.frame(
     "tpi.q1" = c(1, 2), "tpi.q2" = c(1, 2), "tpi.q3" = c(1, 9)
@@ -335,6 +335,6 @@ test_that("testing conversion of promis3a responses to scores", {
     "tpi.q2" = c(1, 2, 2, 3), "tpi.q3" = c(1, 2, 2, 3)
   )
   results <- value_promis3a_scores_IPD(trial_data, c("tpi"), 99, NULL)
-  expect_equal(results$promis3aTscore , c(36.3, 51.4, 51.4, 99))
+  expect_equal(results$promis3aTscore, c(36.3, 51.4, 51.4, 99))
 
 })

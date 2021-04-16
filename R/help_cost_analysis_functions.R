@@ -54,16 +54,16 @@ return_equal_liststring_col <- function(col, the_data, list_str) {
 #' ans <- return_equal_liststring_listcol(2, the_data, c("tablet", "tablets"))
 #' @export
 return_equal_liststring_listcol <- function(col, the_data, list_str) {
-  col_temp <- trimws(toupper(the_data[[col]]))
+  col_temp <- unique(trimws(toupper(the_data[[col]])))
   strings <- trimws(toupper(list_str))
   i <- 1
   indices <- c()
-  tempa <- data.frame()
+  temp_a <- data.frame()
   while (i <= length(col_temp)) {
     index <- which(col_temp[i] == strings)
     if (length(index) != 0) {
-      row <- the_data[which(col_temp == strings[index]), ]
-      tempa <- rbind(row, tempa)
+      row <- the_data[which(trimws(toupper(the_data[[col]])) == strings[index]), ]
+      temp_a <- rbind(row, temp_a)
       indices <- append(indices, index)
     }
     i <- i + 1
@@ -71,7 +71,7 @@ return_equal_liststring_listcol <- function(col, the_data, list_str) {
   if (length(indices) == 0) {
     stop("Matching columns cant be found")
   }
-  return(tempa)
+  return(temp_a)
 }
 
 ##############################################################################
