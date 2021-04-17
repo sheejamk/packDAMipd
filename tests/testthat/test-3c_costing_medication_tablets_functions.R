@@ -11,6 +11,7 @@ test_that("testing microcosting tablets", {
   conv_file <- system.file("extdata", "Med_calc.xlsx",
                            package = "packDAMipd")
   table <- load_trial_data(conv_file)
+
   res <- microcosting_tablets_wide(ind_part_data = ind_part_data,
                                    name_med = "tab_name",
                                    brand_med = "tab_brand",
