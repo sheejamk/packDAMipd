@@ -317,11 +317,15 @@ microcosting_tablets_wide <- function(ind_part_data,
                                           unit_cost_data, this_med_name)
           tablet_words <- c("TABLET", "TABLETS", "CAPSULE", "CAPSULES",
                            "EFFERVESCENT TABLETS", "EFFERVESCENT TABLET",
-                           "MODIFIED RELEASE CAPSULES", "MODIFIED RELEASE CAPSULE",
-                           "MODIFIED RELEASE TABLETs", "MODIFIED RELEASE TABLET",
+                           "MODIFIED RELEASE CAPSULES",
+                           "MODIFIED RELEASE CAPSULE",
+                           "MODIFIED RELEASE TABLETs",
+                           "MODIFIED RELEASE TABLET",
                            "SUGAR FREE TABLETS", "SUGAR FREE TABLET",
                            "SUGAR FREE CAPSULES",
-                           "SUGAR FREE CAPSULE")
+                           "SUGAR FREE CAPSULE",
+                           "ORODISPERSIBLE TABLETS",
+                           "ORODISPERSIBLE TABLET")
           indices_form <- which(toupper(subset1[[form_col_no]]) %in% tablet_words)
           subset2 <- subset1[indices_form,]
           if (brand_check != -1) {
