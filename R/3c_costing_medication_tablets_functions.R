@@ -315,11 +315,12 @@ microcosting_tablets_wide <- function(ind_part_data,
           }
           subset1 <- return_equal_str_col(name_col_no,
                                           unit_cost_data, this_med_name)
-          tablet_words = c("TABLET", "TABLETS", "CAPSULE", "CAPSULES",
+          tablet_words <- c("TABLET", "TABLETS", "CAPSULE", "CAPSULES",
                            "EFFERVESCENT TABLETS", "EFFERVESCENT TABLET",
                            "MODIFIED RELEASE CAPSULES", "MODIFIED RELEASE CAPSULE",
                            "MODIFIED RELEASE TABLETs", "MODIFIED RELEASE TABLET",
-                           "SUGAR FREE TABLETS", "SUGAR FREE TABLET", "SUGAR FREE CAPSULES",
+                           "SUGAR FREE TABLETS", "SUGAR FREE TABLET",
+                           "SUGAR FREE CAPSULES",
                            "SUGAR FREE CAPSULE")
           indices_form <- which(toupper(subset1[[form_col_no]]) %in% tablet_words)
           subset2 <- subset1[indices_form,]
