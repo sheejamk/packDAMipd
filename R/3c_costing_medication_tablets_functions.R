@@ -590,8 +590,8 @@ microcosting_tablets_wide <- function(ind_part_data,
             }
           }
           unit_used_costing <- tolower(unique(subset3[[unit_col_no]]))
+          costing_package = c("per pack", "per package", "pack", "package")
           if (brand_check != -1) {
-            costing_package = c("per pack", "per package", "pack", "package")
             if (sum(unit_used_costing %in% costing_package) >= 1) {
               pack_size <- sum(as.numeric(subset3[size_pack_col_no])) /
                                           nrow(subset3)
@@ -608,10 +608,7 @@ microcosting_tablets_wide <- function(ind_part_data,
           time_multiplier <- convert_to_given_timeperiod(timeperiod,
                                                          internal_basis_time)
           number_taken_period <- no_taken_basis * time_multiplier
-          if (unit_used_costing == "per pack" |
-              unit_used_costing == "per package" |
-              unit_used_costing == "pack" |
-              unit_used_costing == "package") {
+          if (sum(unit_used_costing %in% costing_package) >= 1) {
             pack_size <- as.numeric(subset3[size_pack_col_no])
             packs_taken_period <- ceiling(number_taken_period / pack_size)
           } else {
