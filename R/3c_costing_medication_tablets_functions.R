@@ -591,10 +591,8 @@ microcosting_tablets_wide <- function(ind_part_data,
           }
           unit_used_costing <- tolower(unique(subset3[[unit_col_no]]))
           if (brand_check != -1) {
-            if (unit_used_costing == "per pack" |
-                unit_used_costing == "per package" |
-                unit_used_costing == "pack" |
-                unit_used_costing == "package") {
+            costing_package = c("per pack", "per package", "pack", "package")
+            if (unit_used_costing %in% costing_package) {
               pack_size <- as.numeric(subset3[size_pack_col_no])
             } else {
               pack_size <- 1
