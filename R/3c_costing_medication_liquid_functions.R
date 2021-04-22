@@ -366,7 +366,7 @@ microcosting_liquids_wide <- function(ind_part_data,
     bot_lasts_ipd <- bottle_lasts_ipd[i, ]
     bot_lasts_unit_ipd <- bottle_lasts_unit_from_ipd_code[i, ]
     bot_size_ipd <- bottle_size_ipd[i, ]
-    bot_size_unit_ipd <- bottle_size_unit_from_ipd_code[i, ]
+    bot_size_unit_ipd <- trimws(bottle_size_unit_from_ipd_code[i, ])
 
     if (brand_check != -1)
       brand_ipd <- brand_from_ipd_code[i, ]
@@ -424,7 +424,7 @@ microcosting_liquids_wide <- function(ind_part_data,
             as.numeric(stringr::str_extract(dose_ipd[j], "\\d+\\.*\\d*"))
           else
             dose_num_val_ipd <- as.numeric(dose_ipd[j])
-          dose_in_ipd <- paste(dose_num_val_ipd, unit_dose_ipd[j], sep = " ")
+          dose_in_ipd <- paste(dose_num_val_ipd, unit_dose_ipd[j], sep = "")
 
 
           strength_unit_cost <- trimws(gsub("[0-9\\.]", "",
@@ -438,7 +438,7 @@ microcosting_liquids_wide <- function(ind_part_data,
           # choose the right one after finding the multiplier which is 1.
 
           dose_in_cost_data <- paste(strength_val_cost, strength_unit_cost,
-                                     sep = " ")
+                                     sep = "")
 
           if (any(dose_in_cost_data == dose_in_ipd)) {
             match_form_brand_unit <-
@@ -455,6 +455,19 @@ microcosting_liquids_wide <- function(ind_part_data,
           if (preparation_dose_check != -1) {
             if (preparation_unit_check == -1) {
               ipd_preparation_dose <- prepare_dose_ipd[j]
+              index_slash <- stringr::str_locate(ipd_preparation_dose, "/")
+              first_dose_withstr <- stringr::str_sub(ipd_preparation_dose, 1,
+                                             index_slash[1] - 1)
+              second_dose_withstr <- stringr::str_sub(ipd_preparation_dose,
+                          index_slash[2] + 1, nchar(ipd_preparation_dose))
+              strength_val_seconddose <-
+                as.numeric(stringr::str_extract(second_dose_withstr,
+                                                "\\d+\\.*\\d*"))
+              vol_unit <- trimws(gsub("[0-9\\.]", "", second_dose_withstr))
+              if (strength_val_seconddose == 1)
+                ipd_preparation_dose = paste(first_dose_withstr, "/",
+                                             vol_unit, sep = "")
+
             } else {
               prepare_dose_val <- (prepare_dose_ipd[j])
               prepare_dose_unit_val <- prepare_unit_ipd[j]
@@ -472,27 +485,34 @@ microcosting_liquids_wide <- function(ind_part_data,
 
               vol_unit <- stringr::str_sub(prepare_dose_unit_val,
                                            index[2] + 1, nchar(prepare_dose_unit_val))
-
-              ipd_preparation_dose <- paste(first_dose, wt_unit, "/",
-                                            second_dose, vol_unit, sep = "")
+              if (as.numeric(second_dose) == 1) {
+                ipd_preparation_dose <- paste(first_dose, wt_unit, "/",
+                                              vol_unit, sep = "")
+              } else {
+                ipd_preparation_dose <- paste(first_dose, wt_unit, "/",
+                                              second_dose, vol_unit, sep = "")
+              }
 
             }
             match_form_brand_unit_prepare <-
               match_form_brand_unit[match_form_brand_unit[[preparation_cost_col_no]] ==
                                       ipd_preparation_dose, ]
+            if (nrow(match_form_brand_unit_prepare) == 0) {
+              match_form_brand_unit_prepare <- match_form_brand_unit
+            }
           } else {
             match_form_brand_unit_prepare <- match_form_brand_unit
           }
           unit_used_costing <-
             tolower(unique(match_form_brand_unit_prepare[[unit_cost_col_no]]))
-          if (unit_used_costing == "per bottle") {
+          if (sum(unit_used_costing %in% "per bottle") >= 1) {
             bottle_vol_cost <-
               as.numeric(unlist(match_form_brand_unit_prepare[size_pack_cost_col_no]))
             bottle_vol_unit_cost <-
               unlist(match_form_brand_unit_prepare[size_unit_cost_col_no])
 
             bottle_volandunit_cost <- paste(bottle_vol_cost,
-                                            bottle_vol_unit_cost, sep = " ")
+                                            bottle_vol_unit_cost, sep = "")
 
             if (bottle_size_unit_check == -1)
               bottle_size_num_val_ipd <-
@@ -500,7 +520,7 @@ microcosting_liquids_wide <- function(ind_part_data,
             else
               bottle_size_num_val_ipd <- as.numeric(bot_size_ipd[j])
             bottle_size_in_ipd <- paste(bottle_size_num_val_ipd,
-                                        bot_size_unit_ipd[j], sep = " ")
+                                        bot_size_unit_ipd[j], sep = "")
 
             if (any(bottle_volandunit_cost == bottle_size_in_ipd)) {
               match_form_brand_unit_prepare_size <-
