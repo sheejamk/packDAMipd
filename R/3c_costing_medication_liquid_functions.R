@@ -396,8 +396,18 @@ microcosting_liquids_wide <- function(ind_part_data,
           #(name, form, brand, dose, preparation,and volume of bottle)
           match_name <- return_equal_str_col(name_cost_col_no, unit_cost_data,
                                              name_ipd[j])
-          match_form <- return_equal_liststring_col(form_cost_col_no,
-                                                    match_name, words)
+
+          indices_form1 <- which(stringr::str_detect(toupper(match_name[[form_cost_col_no]]),"LIQUID"))
+          indices_form2 <- which(stringr::str_detect(toupper(match_name[[form_cost_col_no]]),"SOLUTION"))
+          indices_form3 <- which(stringr::str_detect(toupper(match_name[[form_cost_col_no]]),"DROP"))
+          indices_form4 <- which(stringr::str_detect(toupper(match_name[[form_cost_col_no]]),"AMPOULE"))
+          indices_form5 <- which(stringr::str_detect(toupper(match_name[[form_cost_col_no]]),"SUSPENSION"))
+          indices_form6 <- which(stringr::str_detect(toupper(match_name[[form_cost_col_no]]),"VIAL"))
+          indices_form <- unique(c(indices_form1, indices_form2, indices_form3, indices_form4,
+                                   indices_form5, indices_form6))
+          match_form <- match_name[indices_form,]
+
+          #match_form <- return_equal_liststring_col(form_cost_col_no, match_name, words)
           if (brand_check != -1) {
             if (is.null(brand_ipd[j])) {
               match_form_brand <- match_form

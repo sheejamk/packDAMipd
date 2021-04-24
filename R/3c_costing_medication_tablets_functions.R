@@ -315,18 +315,23 @@ microcosting_tablets_wide <- function(ind_part_data,
           }
           subset1 <- return_equal_str_col(name_col_no,
                                           unit_cost_data, this_med_name)
-          tablet_words <- c("TABLET", "TABLETS", "CAPSULE", "CAPSULES",
-                           "EFFERVESCENT TABLETS", "EFFERVESCENT TABLET",
-                           "MODIFIED RELEASE CAPSULES",
-                           "MODIFIED RELEASE CAPSULE",
-                           "MODIFIED RELEASE TABLETs",
-                           "MODIFIED RELEASE TABLET",
-                           "SUGAR FREE TABLETS", "SUGAR FREE TABLET",
-                           "SUGAR FREE CAPSULES",
-                           "SUGAR FREE CAPSULE",
-                           "ORODISPERSIBLE TABLETS",
-                           "ORODISPERSIBLE TABLET")
-          indices_form <- which(toupper(subset1[[form_col_no]]) %in% tablet_words)
+          # tablet_words <- c("TABLET", "TABLETS", "CAPSULE", "CAPSULES",
+          #                  "EFFERVESCENT TABLETS", "EFFERVESCENT TABLET",
+          #                  "MODIFIED RELEASE CAPSULES",
+          #                  "MODIFIED RELEASE CAPSULE",
+          #                  "MODIFIED RELEASE TABLETs",
+          #                  "MODIFIED RELEASE TABLET",
+          #                  "SUGAR FREE TABLETS", "SUGAR FREE TABLET",
+          #                  "SUGAR FREE CAPSULES",
+          #                  "SUGAR FREE CAPSULE",
+          #                  "ORODISPERSIBLE TABLETS",
+          #                  "ORODISPERSIBLE TABLET")
+          #indices_form <- which(toupper(subset1[[form_col_no]]) %in% tablet_words)
+          indices_form1 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]),"TABLET"))
+          indices_form2 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]),"CAPSULE"))
+          indices_form3 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]),"SACHET"))
+
+          indices_form <- unique(c(indices_form1, indices_form2, indices_form3 ))
           subset2 <- subset1[indices_form,]
           if (brand_check != -1) {
               if (is.null(brand_medication[j])) {

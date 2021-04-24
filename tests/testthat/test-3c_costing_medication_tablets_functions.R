@@ -1,7 +1,6 @@
 #######################################################################
 context("testing microcosting tablets")
 test_that("testing microcosting tablets", {
-
   med_costs_file <- system.file("extdata", "medicaton_costs_all.xlsx",
                                 package = "packDAMipd")
   data_file <- system.file("extdata", "medication_all_brandNull.xlsx",
