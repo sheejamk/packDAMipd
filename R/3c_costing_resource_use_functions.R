@@ -596,7 +596,7 @@ get_cost_AandE_description <- function(description, type_admit,
                                        ref_cost_data_file,
                                        col_name_description,
                                        unit_cost_col, type_admit_col,
-                                       sheet = NULL){
+                                       sheet = NULL) {
 
   check_list <- list(description, col_name_description, unit_cost_col,
                      type_admit, type_admit_col)

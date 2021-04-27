@@ -327,12 +327,12 @@ microcosting_tablets_wide <- function(ind_part_data,
           #                  "ORODISPERSIBLE TABLETS",
           #                  "ORODISPERSIBLE TABLET")
           #indices_form <- which(toupper(subset1[[form_col_no]]) %in% tablet_words)
-          indices_form1 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]),"TABLET"))
-          indices_form2 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]),"CAPSULE"))
-          indices_form3 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]),"SACHET"))
+          indices_form1 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]), "TABLET"))
+          indices_form2 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]), "CAPSULE"))
+          indices_form3 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]), "SACHET"))
 
-          indices_form <- unique(c(indices_form1, indices_form2, indices_form3 ))
-          subset2 <- subset1[indices_form,]
+          indices_form <- unique(c(indices_form1, indices_form2, indices_form3))
+          subset2 <- subset1[indices_form, ]
           if (brand_check != -1) {
               if (is.null(brand_medication[j])) {
                 subset2 <- subset2
@@ -595,7 +595,7 @@ microcosting_tablets_wide <- function(ind_part_data,
             }
           }
           unit_used_costing <- tolower(unique(subset3[[unit_col_no]]))
-          costing_package = c("per pack", "per package", "pack", "package")
+          costing_package <- c("per pack", "per package", "pack", "package")
           if (brand_check != -1) {
             if (sum(unit_used_costing %in% costing_package) >= 1) {
               pack_size <- sum(as.numeric(subset3[size_pack_col_no])) /
