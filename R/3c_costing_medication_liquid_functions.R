@@ -289,9 +289,11 @@ microcosting_liquids_wide <- function(ind_part_data,
 
   # get column names for name, form, dosage and unit from unit cost data
   name_pattern <- c("name", "drug", "med", "patch", "tablet", "liquid", "injection")
-  form_pattern <- c("form", "patch/tablet", "type")
-  size_pattern <- c("size", "number")
-  size_unit_pattern <- c("vol", "measurement")
+  form_pattern <- c("form", "patch/tablet")
+  size_pattern <- c("size")
+  size_unit_pattern <- c("type")
+  vol_pattern <- c("volume")
+  vol_unit_pattern <- c("measured")
   brand_pattern <- c("brand", "trade")
   preparation_pattern <- c("preparation", "prepare", "make")
 
@@ -301,6 +303,11 @@ microcosting_liquids_wide <- function(ind_part_data,
     get_single_col_multiple_pattern(size_pattern, unit_cost_data)
   size_unit_cost_col_no <-
     get_single_col_multiple_pattern(size_unit_pattern, unit_cost_data)
+  vol_cost_col_no <-
+    get_single_col_multiple_pattern(vol_pattern, unit_cost_data)
+  vol_unit_cost_col_no <-
+    get_single_col_multiple_pattern(vol_unit_pattern, unit_cost_data)
+
   unit_cost_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
                                                           cost_calculated_per)
   dosage_cost_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
@@ -337,7 +344,7 @@ microcosting_liquids_wide <- function(ind_part_data,
     } else {
       eqdose_check <- 0
       name_pattern <- c("name", "drug", "medication")
-      form_pattern <- c("form", "type")
+      form_pattern <- c("form")
       dose_unit_pattern <- c("unit")
       conv_factor_pattern <- c("conversion", "factor")
 
@@ -517,9 +524,9 @@ microcosting_liquids_wide <- function(ind_part_data,
             tolower(unique(match_form_brand_unit_prepare[[unit_cost_col_no]]))
           if (sum(unit_used_costing %in% "per bottle") >= 1) {
             bottle_vol_cost <-
-              as.numeric(unlist(match_form_brand_unit_prepare[size_pack_cost_col_no]))
+              as.numeric(unlist(match_form_brand_unit_prepare[vol_cost_col_no]))
             bottle_vol_unit_cost <-
-              unlist(match_form_brand_unit_prepare[size_unit_cost_col_no])
+              unlist(match_form_brand_unit_prepare[vol_unit_cost_col_no])
 
             bottle_volandunit_cost <- paste(bottle_vol_cost,
                                             bottle_vol_unit_cost, sep = "")

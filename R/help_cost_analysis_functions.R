@@ -658,7 +658,7 @@ convert_weight_diff_basis <- function(given_unit, basis = "mg") {
         unit_req_basis <- 0.001
       }
     }
-  if (basis == "gram" | basis == "gm") {
+  if (basis == "gram" | basis == "gm" | basis == "g") {
       if (nospace_unit == "mg" | nospace_unit == "milligram") {
         unit_req_basis <- 1e-3
       }
@@ -676,7 +676,7 @@ convert_weight_diff_basis <- function(given_unit, basis = "mg") {
       }
     }
   if (basis == "kg" | basis == "kilo"
-        | basis == "kiloram") {
+        | basis == "kilogram") {
       if (nospace_unit == "mg" | nospace_unit == "milligram") {
         unit_req_basis <- 1e-6
       }

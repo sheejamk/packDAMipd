@@ -200,7 +200,7 @@ microcosting_tablets_wide <- function(ind_part_data,
   name_pattern <- c("name", "drug", "medication", "med", "patch")
   name_col_no <- get_single_col_multiple_pattern(name_pattern, unit_cost_data)
 
-  form_pattern <- c("form", "type")
+  form_pattern <- c("form")
   form_col_no <- get_single_col_multiple_pattern(form_pattern, unit_cost_data)
 
   unit_col_no <- IPDFileCheck::get_columnno_fornames(unit_cost_data,
