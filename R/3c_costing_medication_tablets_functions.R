@@ -315,18 +315,6 @@ microcosting_tablets_wide <- function(ind_part_data,
           }
           subset1 <- return_equal_str_col(name_col_no,
                                           unit_cost_data, this_med_name)
-          # tablet_words <- c("TABLET", "TABLETS", "CAPSULE", "CAPSULES",
-          #                  "EFFERVESCENT TABLETS", "EFFERVESCENT TABLET",
-          #                  "MODIFIED RELEASE CAPSULES",
-          #                  "MODIFIED RELEASE CAPSULE",
-          #                  "MODIFIED RELEASE TABLETs",
-          #                  "MODIFIED RELEASE TABLET",
-          #                  "SUGAR FREE TABLETS", "SUGAR FREE TABLET",
-          #                  "SUGAR FREE CAPSULES",
-          #                  "SUGAR FREE CAPSULE",
-          #                  "ORODISPERSIBLE TABLETS",
-          #                  "ORODISPERSIBLE TABLET")
-          #indices_form <- which(toupper(subset1[[form_col_no]]) %in% tablet_words)
           indices_form1 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]), "TABLET"))
           indices_form2 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]), "CAPSULE"))
           indices_form3 <- which(stringr::str_detect(toupper(subset1[[form_col_no]]), "SACHET"))
@@ -418,14 +406,12 @@ microcosting_tablets_wide <- function(ind_part_data,
                                   sec_dose_srength, sep = "")
 
           }
-
           # unit is given separate, but dose with no "/" e.g 2
           if (unit_med_check != -1 & index_slash == -1) {
             if (is.null(actual_dose_from_name)) {
-              if (this_med_name %in% c("Co-codamol", "Co-dydramol",
-                                       "co-codamol", "co-dydramol",
-                                       "CO-CODAMOL", "CO-DYDRAMOL"))
-                stop("Error - dose should be revealed from name or dose ")
+              upper_comb_meds <- c("CO-CODAMOL", "CO-DYDRAMOL")
+              if (toupper(this_med_name) %in% upper_comb_meds)
+                stop("Error - dose should be revealed from name or dose")
               dose_num_val <- as.numeric(dose_medication[j])
               strength_val <- this_unit[j]
             } else {
