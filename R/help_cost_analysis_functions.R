@@ -1045,7 +1045,14 @@ convert_to_given_timeperiod <- function(given_time, basis_time = "day") {
   }
   return(unit_req_basis)
 }
-#############################################################################
+########################################################################
+#' Convert wt per unit volume  to given basis
+#' @param given_unit given unit
+#' @param basis given basis, default is "mg/ml"
+#' @return converted unit
+#' @examples
+#' convert_wtpervoldiff_basis("g/ml")
+#' @export
 convert_wtpervoldiff_basis <- function(given_unit, basis = "mg/ml") {
   unit_req_basis <- NA
   if (is.null(given_unit) | is.null(basis))
@@ -1076,4 +1083,58 @@ convert_wtpervoldiff_basis <- function(given_unit, basis = "mg/ml") {
   else
     stop("Error converting wt per vol unit")
   return(unit_req_basis)
+}
+########################################################################
+#' Convert the combined dose to its individual component numerical value
+#' and units
+#' @param the_string given combined unit
+#' @param separator given character for separation , default is "/"
+#' @return separated numerical value and its units
+#' @examples
+#' get_doses_combination_units("10g/2ml")
+#' @export
+get_doses_combination_units <- function(the_string, separator = "/"){
+  whole_res <- c()
+  for (i in 1:length(the_string)) {
+    mix1 <- unlist(stringr::str_locate_all(the_string[i], separator))
+    if (length(mix1) != 0) {
+      firstdos <- substr(the_string[i], 1, mix1[1] - 1)
+      secdos <- substr(the_string[i], mix1[1] + 1,
+                       nchar(the_string[i]))
+      firstdos_num <- gsub("[^0-9.-]", "", firstdos)
+      seconddos_num <- gsub("[^0-9.-]", "", secdos)
+      unit1 <- trimws(gsub("[0-9\\.]", "", firstdos))
+      unit2 <- trimws(gsub("[0-9\\.]", "", secdos))
+    }
+    this_doses <- c(firstdos_num, unit1, seconddos_num, unit2)
+    whole_res <- append(whole_res, this_doses)
+  }
+  whole_res <- as.data.frame(matrix(whole_res, ncol = 4, byrow = T))
+  colnames(whole_res) <- c("num1", "unit1", "num2", "unit2")
+  return(whole_res)
+}
+########################################################################
+#' Convert the combined dose to its individual component numerical value
+#' or can be unit/unit
+#' @param the_string given combined unit
+#' @param separator given character for separation , default is "/"
+#' @return separated texts
+#' @examples
+#' get_doses_combination("g/ml")
+#' @export
+get_doses_combination <- function(the_string, separator = "/"){
+  whole_res <- c()
+  for (i in 1:length(the_string)) {
+    mix1 <- unlist(stringr::str_locate_all(the_string[i], separator))
+    if (length(mix1) != 0) {
+      firstdos <- substr(the_string[i], 1, mix1[1] - 1)
+      secdos <- substr(the_string[i], mix1[1] + 1,
+                       nchar(the_string[i]))
+    }
+    this_doses <- c(firstdos, secdos)
+    whole_res <- append(whole_res, this_doses)
+  }
+  whole_res <- as.data.frame(matrix(whole_res, ncol = 2, byrow = T))
+  colnames(whole_res) <- c("first", "second")
+  return(whole_res)
 }

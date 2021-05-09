@@ -39,7 +39,7 @@
 #' med_costs <- load_trial_data(med_costs_file)
 #' conv_file <- system.file("extdata", "Med_calc.xlsx", package = "packDAMipd")
 #' table <- load_trial_data(conv_file)
-#' res <- microcosting_patches_wide(
+#' res <- costing_opioid_patches_averageMED_wide(
 #' ind_part_data = ind_part_data, name_med = "patch_name",
 #' brand_med = "patch_brand", dose_med = "patch_strength", unit_med = NULL,
 #' no_taken = "patch_no_taken", freq_taken = "patch_frequency",
@@ -59,15 +59,7 @@
 #' (in which name, forms, size, size unit, and preparation  are not passed on)
 #'  @importFrom dplyr %>%
 
-#'  a patient use 1 mg/hr patches 5 patches once a week
-#'  that patch comes in a pack of 4 with cost £2.50
-#'  we want to estimate the cost for 3 months
-#'  that means amount of medication
-#'  3 months = 21 weeks
-#'  number of patches taken = 21*5 = 105 patches
-#'  packs = (105/4) almost 27 packs
-#'  cost = 27*2.50
-microcosting_patches_wide <- function(ind_part_data,
+costing_opioid_patches_averageMED_wide <- function(ind_part_data,
                                       name_med,
                                       brand_med = NULL,
                                       dose_med,
@@ -283,10 +275,7 @@ microcosting_patches_wide <- function(ind_part_data,
                                                          eqdose_cov_tab)
     }
   }
-  list_total_med_str_period <- list()
-  list_total_med_wt_period <- list()
   list_total_med_equiv_dose_period <- list()
-  list_total_cost_period <- list()
   list_total_cost_per_equiv_period <- list()
   for (i in 1:nrow(ind_part_data)) {
     name_medication <- names_from_code[i, ]
@@ -310,20 +299,15 @@ microcosting_patches_wide <- function(ind_part_data,
         freq_multiplier_basis[!is.na(freq_multiplier_basis)]
       this_unit <- unit_from_code[i, ]
       this_unit <- this_unit[!is.na(this_unit)]
-      total_med_str_period <- 0
-      total_med_wt_period <- 0
       total_med_equiv_dose_period <-  0
-      total_cost_period <-  0
       total_cost_per_equiv_period <-  0
       for (j in seq_len(length(name_medication))) {
         if (!is.null(name_medication[j]) & !is.na(name_medication[j])) {
           subset1 <- return_equal_str_col(name_col_no,
                                           unit_cost_data, name_medication[j])
-          subset2 <- subset1[subset1[form_col_no] == "Patch" |
-                               subset1[form_col_no] == "Patches" |
-                               subset1[form_col_no] == "patch" |
-                               subset1[form_col_no] == "patches", ]
-
+          indices_form <- which(stringr::str_detect(toupper(
+                                      subset1[[form_col_no]]), "PATCH"))
+          subset2 <- subset1[indices_form, ]
           if (brand_check != -1) {
             if (is.null(brand_medication[j])) {
               subset2 <- subset2
@@ -348,7 +332,6 @@ microcosting_patches_wide <- function(ind_part_data,
                                             "\\d+\\.*\\d*"))
           else
             dose_num_val <- as.numeric(dose_medication[j])
-
           if (eqdose_check != -1) {
             temp <- return_equal_str_col(drug_col_conv_table, eqdose_cov_tab,
                                          name_medication[j])
@@ -407,45 +390,26 @@ microcosting_patches_wide <- function(ind_part_data,
             as.numeric(stringr::str_extract(subset2[[dosage_col_no]],
                                             "\\d+\\.*\\d*"))
 
-          dose_in_ipd <- paste(dose_num_val, this_unit[j], sep = " ")
           strength_unit_multiplier <- c()
-
           basis_str_unit_multiply <- convert_wtpertimediff_basis(this_unit[j],
-                                                                 basis_strength_unit)
-
-          for (i in seq_len(length(strength_unit_cost))) {
-            unit_multiply <- convert_wtpertimediff_basis(this_unit[j],
-                                                         strength_unit_cost[i])
-            strength_unit_multiplier <- append(strength_unit_multiplier,
-                                               unit_multiply)
-          }
+                                                basis_strength_unit)
 
           strength_unit_cost[which(strength_unit_multiplier == 1)] <-
             this_unit[j]
-          dose_in_cost_data <- paste(strength_val_cost,
-                                     strength_unit_cost, sep = " ")
-          if (any(dose_in_cost_data == dose_in_ipd)) {
-            subset3 <- subset2[dose_in_cost_data ==  dose_in_ipd, ]
-            unit_cost_med_prep <- sum(subset3[[unit_cost_column]] /
-                                        nrow(subset3))
-          } else {
-            stop("The used dosage is not in costing table")
-          }
-          strength_unit_multip <- strength_unit_multiplier[dose_in_cost_data ==
-                                                             dose_in_ipd]
+          subset3 <- subset2
+          unit_costs <- subset3[[unit_cost_column]]
           unit_used_costing <- tolower(unique(subset3[[unit_col_no]]))
-          if (brand_check != -1) {
-            if (unit_used_costing == "per pack" |
-                unit_used_costing == "per package" |
-                unit_used_costing == "pack" |
-                unit_used_costing == "package") {
-              pack_size <- as.numeric(subset3[size_pack_col_no])
-            } else {
-              pack_size <- 1
-            }
+          costing_package <- c("per pack", "per package", "pack", "package")
+          if (sum(unit_used_costing %in% costing_package) >= 1) {
+              pack_size <- as.numeric(unlist(subset3[size_pack_col_no]))
           } else {
-            pack_size <- 1
+              pack_size <- 1
           }
+          equivalent_dose <- conversion_factor * strength_val_cost
+          MED_eachpack <- pack_size * equivalent_dose
+          # average cost per pack per med
+          cost_permed <- unit_costs / MED_eachpack
+          average_cost_permed <- sum(cost_permed) / length(cost_permed)
 
           # number of patches used for a day (as day is internal basis)
           # 2 patches taken once a week = 2/7 patches a day
@@ -459,15 +423,11 @@ microcosting_patches_wide <- function(ind_part_data,
           # number taken during time period = ie 2/7 patches a day* 28 day
           # 56/7 patches in 28 days
           number_taken_period <- no_taken_basis * time_multiplier
-          # if there are p number is one pack, calculate pack size for costing
-          # if the unit is based on numbers pack size is 1
-          packs_taken_period <- ceiling(number_taken_period / pack_size)
-
 
           # medication in strength unit after converting to basis strength unit
           # given if not the default mcg/hr
           med_str_period <-  dose_num_val * basis_str_unit_multiply *
-                                              number_taken_period
+                                  number_taken_period
 
           #convert basis time to the time period i.e in this case hr is the
           #basis time unit, so hr converted to 2 weeks. 28*24 hr/ 28 d
@@ -483,58 +443,33 @@ microcosting_patches_wide <- function(ind_part_data,
           # medication in wt units 2 mcg/hr * 56/7 patches * (1/1000) mg/mcg
           #               * 28*24 hr
           med_wt_period <- dose_num_val * number_taken_period *
-                                          wt_unit_multiplier * time_multi
-
-          cost_period <- packs_taken_period * unit_cost_med_prep
+                                      wt_unit_multiplier * time_multi
           med_str_equiv_period <- dose_num_val * basis_str_unit_multiply *
-                                    conversion_factor * how_many_taken[j]
-          cost_per_equiv_period  <- cost_period / med_str_equiv_period
+            conversion_factor * how_many_taken[j]
+
+          cost_per_equiv_period  <- average_cost_permed * med_str_equiv_period
 
         } else {
-          med_wt_period <- 0
-          med_str_period <- 0
-          cost_period <- 0
           med_str_equiv_period <- 0
           cost_per_equiv_period <- 0
         }
-        total_med_str_period <- total_med_str_period + med_str_period
-        total_med_wt_period <- total_med_wt_period + med_wt_period
         total_med_equiv_dose_period <- total_med_equiv_dose_period +
           med_str_equiv_period
-        total_cost_period <- total_cost_period + cost_period
         total_cost_per_equiv_period <- total_cost_per_equiv_period +
           cost_per_equiv_period
       }
     } else {
-      total_med_str_period <- NA
-      total_med_equiv_dose_period_actual <- NA
-      total_med_wt_period <- NA
-      total_cost_period <- NA
-      total_cost_per_equiv_period <- NA
+       total_med_equiv_dose_period <- NA
+       total_cost_per_equiv_period <- NA
     }
     keywd <- "patches"
-    list_total_med_str_period <- append(list_total_med_str_period,
-                                        total_med_str_period)
-    list_total_med_wt_period <- append(list_total_med_wt_period,
-                                       total_med_wt_period)
     list_total_med_equiv_dose_period <- append(list_total_med_equiv_dose_period,
                                                total_med_equiv_dose_period)
-    list_total_cost_period <- append(list_total_cost_period,
-                                     total_cost_period)
     list_total_cost_per_equiv_period <- append(list_total_cost_per_equiv_period,
                                                total_cost_per_equiv_period)
   }
-
-  this_name <- paste("totmed_period_", keywd, sep = "")
-  ind_part_data[[this_name]] <- unlist(list_total_med_str_period)
-  this_name <- paste("totmed_wt_period_", keywd, "_", basis_wt_unit, sep = "")
-  ind_part_data[[this_name]] <- unlist(list_total_med_wt_period)
-  this_name <- paste("totmed_equiv_period", keywd, sep = "")
+  this_name <- paste("totalmed_equiv_dose_period_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_med_equiv_dose_period)
-
-  this_name <- paste("totcost_period_", keywd, sep = "")
-  ind_part_data[[this_name]] <- unlist(list_total_cost_period)
-
   this_name <- paste("totcost_per_equiv_period_", keywd, sep = "")
   ind_part_data[[this_name]] <- unlist(list_total_cost_per_equiv_period)
   return(ind_part_data)
@@ -584,7 +519,7 @@ microcosting_patches_wide <- function(ind_part_data,
 #' ind_part_data_long <- tidyr::gather(ind_part_data, measurement, value,
 #' names[2]:names[ending], factor_key = TRUE)
 #' the_columns <- c("measurement", "value")
-#' res <- microcosting_patches_long(the_columns,
+#' res <- costing_opioid_patches_averageMED_long(the_columns,
 #' ind_part_data_long = ind_part_data_long, name_med = "patch_name",
 #' brand_med = "patch_brand", dose_med = "patch_strength",unit_med = NULL,
 #' no_taken = "patch_no_taken", freq_taken = "patch_frequency",
@@ -597,7 +532,7 @@ microcosting_patches_wide <- function(ind_part_data,
 #' @export
 #' @importFrom tidyr gather
 #' @importFrom tidyr spread_
-microcosting_patches_long <- function(the_columns,
+costing_opioid_patches_averageMED_long <- function(the_columns,
                                       ind_part_data_long,
                                       name_med,
                                       brand_med = NULL,
@@ -622,7 +557,7 @@ microcosting_patches_long <- function(the_columns,
   ind_part_data_wide <- tidyr::spread_(ind_part_data_long, the_columns[1],
                                        the_columns[2])
 
-  result_wide <- microcosting_patches_wide(ind_part_data_wide,
+  result_wide <- costing_opioid_patches_averageMED_wide(ind_part_data_wide,
                                            name_med,
                                            brand_med,
                                            dose_med,
