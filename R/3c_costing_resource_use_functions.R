@@ -47,7 +47,7 @@
 #' @export
 costing_resource_use <- function(ind_part_data,
                                  name_use_col,
-                                 each_length_num_use,
+                                 each_length_num_use = NULL,
                                  each_use_provider_indicator = NULL,
                                  unit_length_use = "day",
                                  unit_cost_data,
@@ -112,7 +112,7 @@ costing_resource_use <- function(ind_part_data,
     IPDFileCheck::get_colno_pattern_colname(name_pattern[name_ind],
                                             colnames(unit_cost_data))
 
-  # initialising the result columns
+  # initializing the result columns
   column_names <- colnames(ind_part_data)
   new_col <- paste("totcost_", name_use_col, sep = "")
   if (is.na(match(new_col, column_names))) {
@@ -129,8 +129,9 @@ costing_resource_use <- function(ind_part_data,
       subset1 <- unit_cost_data[toupper(unit_cost_data[[name_col_no]]) ==
                                   toupper(name_use_unit_cost), ]
     } else {
-      subset1 <- unit_cost_data[toupper(unit_cost_data[[name_col_no]]) ==
-                                  toupper(ind_part_data[[name_use_col]][i]), ]
+      service_cost_data <- trimws(toupper(unit_cost_data[[name_col_no]]))
+      service_from_ipd <- toupper(use_ind_from_code[i])
+      subset1 <- unit_cost_data[ service_cost_data == service_from_ipd, ]
     }
     # if no matching rows found, throw error
     if (nrow(subset1) < 1) {
@@ -158,7 +159,7 @@ costing_resource_use <- function(ind_part_data,
       # each_length_num_use is the column names where it is given the
       # length of use
       if (is.null(each_length_num_use))
-        stop("Length or number of use should be given in columns")
+        total_length_num = 1
       for (m in seq_len(length(each_length_num_use))) {
         # check each column exists
         if (IPDFileCheck::check_column_exists(each_length_num_use[m],
@@ -192,11 +193,15 @@ costing_resource_use <- function(ind_part_data,
               use_desc_from_code <- "YES"
             }
           }
+          if (!is.na(use_desc_from_code)) {
           # for multiple uses of resource, add the numbers together
-          if (use_desc_from_code == "YES" | use_desc_from_code == "TRUE") {
-            this_column_name <- unlist(each_length_num_use[m])
-            total_length_num <-
-              total_length_num + ind_part_data[[this_column_name]][i]
+            if (use_desc_from_code == "YES" | use_desc_from_code == "TRUE") {
+              this_column_name <- unlist(each_length_num_use[m])
+              total_length_num <-
+                total_length_num + ind_part_data[[this_column_name]][i]
+            }
+          } else {
+            total_length_num = NA
           }
         }
       }
@@ -204,9 +209,13 @@ costing_resource_use <- function(ind_part_data,
       cost_calculatedin <- subset1[[cost_calculated_in]]
       if (cost_calculatedin == uni_expr |
           cost_calculatedin == paste("per", uni_expr)) {
-        total_cost <- total_length_num * unit_cost
+          total_cost <- total_length_num * unit_cost
       } else {
-        stop("units of resource use expressed and calculated are different")
+        if (cost_calculatedin == "per admission" |
+            cost_calculatedin == "admission")
+          total_cost <- 1 * unit_cost
+        else
+          stop("units of resource use expressed and calculated are different")
       }
       ind_part_data[[new_col]][i] <- total_cost
     }

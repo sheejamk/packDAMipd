@@ -7,7 +7,7 @@
 costing_resource_use(
   ind_part_data,
   name_use_col,
-  each_length_num_use,
+  each_length_num_use = NULL,
   each_use_provider_indicator = NULL,
   unit_length_use = "day",
   unit_cost_data,
