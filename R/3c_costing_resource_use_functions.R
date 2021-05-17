@@ -130,7 +130,7 @@ costing_resource_use <- function(ind_part_data,
                                   toupper(name_use_unit_cost), ]
     } else {
       service_cost_data <- trimws(toupper(unit_cost_data[[name_col_no]]))
-      service_from_ipd <- toupper(use_ind_from_code[i])
+      service_from_ipd <- trimws(toupper(use_ind_from_code[i]))
       subset1 <- unit_cost_data[ service_cost_data == service_from_ipd, ]
     }
     # if no matching rows found, throw error
