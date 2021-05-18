@@ -14,6 +14,7 @@ test_that("testing costing resource use", {
   # then 2 days another time- so total 4 times -£80
 
   part_data <-  ind_part_data[1, ]
+
   res <- costing_resource_use(part_data, "hospital_admission_1",
                               list("length_1", "length_2"),
                               list("nhs_1", "nhs_2"), "day", unit_cost_data,
@@ -1080,3 +1081,4 @@ test_that("testing extracting unit cost matching description", {
                          cost_calculated_in = "attendance")
  expect_equal(res$totcost_AE_Admission[1], 754, tol = 1e-2)
 })
+

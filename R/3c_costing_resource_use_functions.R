@@ -118,6 +118,41 @@ costing_resource_use <- function(ind_part_data,
   if (is.na(match(new_col, column_names))) {
     ind_part_data[[new_col]] <- NA
   }
+  use_desc_from_code <- c()
+  if (!is.null(each_use_provider_indicator)) {
+    for (kk in 1:length(each_use_provider_indicator)) {
+      if (IPDFileCheck::check_column_exists(each_use_provider_indicator[kk],
+                                            ind_part_data) == 0) {
+        # if the use corresponding to the provider is coded,
+        # then use the code
+        this_column_name <- unlist(each_use_provider_indicator[kk])
+        if (is.null(list_code_provider_indicator[kk])) {
+          this_use_desc_from_code <- toupper(ind_part_data[[this_column_name]])
+        } else {
+          # else read it from ind data
+          use_code <- stats::setNames(as.list(list_code_provider_indicator[[1]]),
+                                      list_code_provider_indicator[[2]])
+          use_from_data <- ind_part_data[[this_column_name]]
+          this_use_desc_from_code <- toupper(use_code[use_from_data])
+          index <- which(is.na(use_from_data))
+          if (length(index) > 0)
+            this_use_desc_from_code[index] <- NA
+        }
+      } else {
+        if (!is.null(list_code_provider_indicator))
+          stop("Error - column do not exist and given codes for provider
+                   indicator")
+        else
+          this_use_desc_from_code <- rep("YES",nrow(ind_part_data))
+      }
+      use_desc_from_code <- cbind(use_desc_from_code, this_use_desc_from_code)
+    }
+    use_desc_from_code <- as.data.frame(use_desc_from_code)
+  } else {
+    this_use_desc_from_code <- rep("YES",nrow(ind_part_data))
+    use_desc_from_code <- cbind(use_desc_from_code, this_use_desc_from_code)
+    use_desc_from_code <- as.data.frame(use_desc_from_code)
+  }
   # if the name of the resource use in unit cost is not null, find the subset of
   # data with that resource use
   # or get the column name with the resource use given at the ith row of the ind
@@ -139,12 +174,18 @@ costing_resource_use <- function(ind_part_data,
     }
     # get the unit cost of that resource use
     unit_cost <- subset1[[unit_cost_column]]
+    cost_calculatedin <- subset1[[cost_calculated_in]]
+    if (cost_calculatedin == "per admission" |
+        cost_calculatedin == "admission")
+      peradmission_cost = TRUE
+    else peradmission_cost = FALSE
 
-    # if they need to indicate that use is to be accounted e.g NHS hospital
+    # if they need to indicate that use is to be accounted admitted or not
     if (!is.null(name_use_unit_cost)) {
       # identify, yes or true as indicator for use
       ind <- match(toupper(use_ind_from_code[i]), c("YES", "TRUE"))
     } else {
+      # else assume all are to be included
       ind <- 1
     }
     # get the unit expressed
@@ -158,64 +199,50 @@ costing_resource_use <- function(ind_part_data,
       total_length_num <- 0
       # each_length_num_use is the column names where it is given the
       # length of use
-      if (is.null(each_length_num_use))
-        total_length_num = 1
-      for (m in seq_len(length(each_length_num_use))) {
-        # check each column exists
-        if (IPDFileCheck::check_column_exists(each_length_num_use[m],
-                                              ind_part_data) == 0) {
-          # check use corresponding to the provider is indicated
-          if (IPDFileCheck::check_column_exists(each_use_provider_indicator[m],
-                                                ind_part_data) == 0) {
-            # if the use corresponding to the provider is coded,
-            # then use the code
-            if (is.null(list_code_provider_indicator)) {
-              this_column_name <- unlist(each_use_provider_indicator[m])
-              use_desc_from_code <-
-                toupper(ind_part_data[[this_column_name]][i])
-            } else {
-              # else read it from ind data
-              use_code <-
-                stats::setNames(as.list(list_code_provider_indicator[[1]]),
-                                list_code_provider_indicator[[2]])
-              this_column_name <- unlist(each_use_provider_indicator[m])
-              use_from_data <- ind_part_data[[this_column_name]][i]
-              use_desc_from_code <- toupper(use_code[use_from_data])
-              index <- which(is.na(use_from_data))
-              if (length(index) > 0)
-                use_desc_from_code[index] <- NA
-            }
+      if (is.null(each_length_num_use) | peradmission_cost) {
+        if (is.na(use_desc_from_code[i, ])) {
+          total_length_num <- 0
+        } else{
+          if (use_desc_from_code[i,] == "YES" | use_desc_from_code[i, ] == "TRUE") {
+            total_length_num <- 1
           } else {
-            if (!is.null(list_code_provider_indicator)) {
-              stop("Error - column do not exist and given codes for provider
-                   indicator")
-            } else {
-              use_desc_from_code <- "YES"
-            }
+            total_length_num <- 0
           }
-          if (!is.na(use_desc_from_code)) {
-          # for multiple uses of resource, add the numbers together
-            if (use_desc_from_code == "YES" | use_desc_from_code == "TRUE") {
-              this_column_name <- unlist(each_length_num_use[m])
-              total_length_num <-
-                total_length_num + ind_part_data[[this_column_name]][i]
+        }
+      } else {
+        for (m in seq_len(length(each_length_num_use))) {
+          # check each column exists
+          if (IPDFileCheck::check_column_exists(each_length_num_use[m],
+                                                ind_part_data) == 0) {
+            if (!is.na(use_desc_from_code[i, m])) {
+              # for multiple uses of resource, add the numbers together
+              if (use_desc_from_code[i,m] == "YES" |
+                  use_desc_from_code[i,m] == "TRUE") {
+                this_column_name <- unlist(each_length_num_use[m])
+                total_length_num <-
+                  total_length_num + ind_part_data[[this_column_name]][i]
+              } else {
+                total_length_num = total_length_num + 0
+              }
+            } else {
+              total_length_num <-  total_length_num + 0
             }
           } else {
-            total_length_num = NA
+            stop("Error - length or number of use havent indicated")
           }
         }
       }
       # find the cost calculated subset
-      cost_calculatedin <- subset1[[cost_calculated_in]]
+
       if (cost_calculatedin == uni_expr |
           cost_calculatedin == paste("per", uni_expr)) {
-          total_cost <- total_length_num * unit_cost
-      } else {
         if (cost_calculatedin == "per admission" |
             cost_calculatedin == "admission")
-          total_cost <- 1 * unit_cost
+          total_cost <- total_length_num * unit_cost
         else
-          stop("units of resource use expressed and calculated are different")
+          total_cost <- total_length_num * unit_cost
+      } else {
+        stop("units of resource use expressed and calculated are different")
       }
       ind_part_data[[new_col]][i] <- total_cost
     }
