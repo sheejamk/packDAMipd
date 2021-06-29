@@ -586,12 +586,10 @@ costing_opioid_tablets_averageMED_wide <- function(ind_part_data,
           }
           med_str_equiv_period <- med_str_period * conversion_factor
           cost_equiv_period  <- average_cost_permed * med_str_equiv_period
-
         } else {
           med_str_period <- 0
           med_str_equiv_period <- 0
           cost_equiv_period <- 0
-
         }
         total_med_str_period <- total_med_str_period + med_str_period
         total_med_equiv_dose_period <- total_med_equiv_dose_period +

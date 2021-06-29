@@ -45,7 +45,8 @@ Imports:
     dplyr,
     tidyr,
     hash,
-    haven
+    haven,
+    aod
 Suggests: 
     ISLR,
     knitr,

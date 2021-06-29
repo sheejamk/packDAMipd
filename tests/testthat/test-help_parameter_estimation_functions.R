@@ -220,7 +220,7 @@ test_that("testing  getting family of distribution for glm", {
   # Error the parameter can not be null
   expect_error(find_glm_distribution(NULL))
   expect_error(find_glm_distribution(NA))
-  expect_equal(find_glm_distribution("gamma"), "gamma")
+  expect_equal(find_glm_distribution("gamma"), "Gamma")
   expect_equal(find_glm_distribution("inverse gaussian"), "inverse.gaussian")
   expect_equal(find_glm_distribution("quasi binomial"), "quasibinomial")
   expect_equal(find_glm_distribution("quasi poisson"), "quasipoisson")
@@ -243,11 +243,13 @@ test_that("testing  getting link function for distribution for glm", {
   expect_error(check_link_glm(NA, "identity"))
   # Error the parameter can not be Na or NULL
   expect_error(check_link_glm("gaussian", NA))
-  expect_equal(check_link_glm("gamma", "identity"), "identity")
+
+  expect_equal(check_link_glm("Gamma", "identity"), "identity")
   expect_equal(check_link_glm("inverse.gaussian", "identity"), "identity")
   expect_equal(check_link_glm("quasi", "identity"), "identity")
   expect_equal(check_link_glm("quasibinomial", "logit"), "logit")
   expect_equal(check_link_glm("quasipoisson", "logit"), "logit")
+
 })
 
 ###############################################################################

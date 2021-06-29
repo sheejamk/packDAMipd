@@ -183,69 +183,83 @@ costing_resource_use <- function(ind_part_data,
     # if they need to indicate that use is to be accounted admitted or not
     if (!is.null(name_use_unit_cost)) {
       # identify, yes or true as indicator for use
-      ind <- match(toupper(use_ind_from_code[i]), c("YES", "TRUE"))
+      ind_yes <- match(toupper(use_ind_from_code[i]), c("YES", "TRUE"))
+      ind_no <- match(toupper(use_ind_from_code[i]), c("NO", "FALSE"))
     } else {
       # else assume all are to be included
-      ind <- 1
+      ind_yes <- 1
+      ind_no <- 0
     }
-    # get the unit expressed
-    if (!is.na(ind) & ind > 0) {
-      if (IPDFileCheck::check_column_exists(unit_length_use,
-                                            ind_part_data) != 0) {
-        uni_expr <- unit_length_use
-      } else {
-        uni_expr <- ind_part_data[[unit_length_use]][i]
-      }
-      total_length_num <- 0
-      # each_length_num_use is the column names where it is given the
-      # length of use
-      if (is.null(each_length_num_use) | peradmission_cost) {
-        if (is.na(use_desc_from_code[i, ])) {
-          total_length_num <- 0
-        } else{
-          if (use_desc_from_code[i,] == "YES" | use_desc_from_code[i, ] == "TRUE") {
-            total_length_num <- 1
-          } else {
-            total_length_num <- 0
-          }
+    if (!is.na(ind_no) & is.na(ind_yes)) {
+      ind_part_data[[new_col]][i] <- 0
+    } else {
+      if (!is.na(ind_yes) & ind_yes > 0) {
+        if (IPDFileCheck::check_column_exists(unit_length_use,
+                                              ind_part_data) != 0) {
+          uni_expr <- unit_length_use
+        } else {
+          uni_expr <- ind_part_data[[unit_length_use]][i]
         }
-      } else {
-        for (m in seq_len(length(each_length_num_use))) {
-          # check each column exists
-          if (IPDFileCheck::check_column_exists(each_length_num_use[m],
-                                                ind_part_data) == 0) {
-            if (!is.na(use_desc_from_code[i, m])) {
-              # for multiple uses of resource, add the numbers together
-              if (use_desc_from_code[i,m] == "YES" |
-                  use_desc_from_code[i,m] == "TRUE") {
-                this_column_name <- unlist(each_length_num_use[m])
-                total_length_num <-
-                  total_length_num + ind_part_data[[this_column_name]][i]
+        total_length_num <- 0
+        # each_length_num_use is the column names where it is given the
+        # length of use
+        if (is.null(each_length_num_use) | peradmission_cost) {
+          if (is.na(use_desc_from_code[i, ])) {
+            total_length_num <- 0
+          } else{
+            if (use_desc_from_code[i,] == "YES" | use_desc_from_code[i, ] == "TRUE") {
+              total_length_num <- 1
+            } else {
+              total_length_num <- 0
+            }
+          }
+        } else {
+          for (m in seq_len(length(each_length_num_use))) {
+            # check each column exists
+            if (IPDFileCheck::check_column_exists(each_length_num_use[m],
+                                                  ind_part_data) == 0) {
+              if (!is.na(use_desc_from_code[i, m])) {
+                # for multiple uses of resource, add the numbers together
+                if (use_desc_from_code[i,m] == "YES" |
+                    use_desc_from_code[i,m] == "TRUE") {
+                  this_column_name <- unlist(each_length_num_use[m])
+                  total_length_num <-
+                    total_length_num +
+                        as.numeric(ind_part_data[[this_column_name]][i])
+                } else {
+                  total_length_num = total_length_num + 0
+                }
               } else {
-                total_length_num = total_length_num + 0
+                if (total_length_num == 0) {
+                  total_length_num <-  total_length_num + NA
+                } else {
+                  total_length_num <-  total_length_num + 0
+                }
               }
             } else {
-              total_length_num <-  total_length_num + 0
+              stop("Error - length or number of use havent indicated")
             }
-          } else {
-            stop("Error - length or number of use havent indicated")
           }
         }
-      }
-      # find the cost calculated subset
+        # find the cost calculated subset
 
-      if (cost_calculatedin == uni_expr |
-          cost_calculatedin == paste("per", uni_expr)) {
-        if (cost_calculatedin == "per admission" |
-            cost_calculatedin == "admission")
-          total_cost <- total_length_num * unit_cost
-        else
-          total_cost <- total_length_num * unit_cost
+        if (cost_calculatedin == uni_expr |
+            cost_calculatedin == paste("per", uni_expr)) {
+          if (cost_calculatedin == "per admission" |
+              cost_calculatedin == "admission")
+            total_cost <- total_length_num * unit_cost
+          else
+            total_cost <- total_length_num * unit_cost
+        } else {
+          stop("units of resource use expressed and calculated are different")
+        }
+        ind_part_data[[new_col]][i] <- total_cost
       } else {
-        stop("units of resource use expressed and calculated are different")
+        ind_part_data[[new_col]][i] <- NA
       }
-      ind_part_data[[new_col]][i] <- total_cost
     }
+    # get the unit expressed
+
   }
   return(ind_part_data)
 }

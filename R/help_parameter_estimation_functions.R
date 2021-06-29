@@ -543,7 +543,7 @@ find_glm_distribution <- function(text) {
     keyword <- "gaussian"
   }
   if (text == "GAMMA") {
-    keyword <- "gamma"
+    keyword <- "Gamma"
   }
   if (text == "INVERSE.GAUSSIAN" | text == "INVERSE GAUSSIAN" |
       text == "INVERSE_GAUSSIAN") {
@@ -592,6 +592,7 @@ check_link_glm <- function(family, link) {
   }
   family <- tolower(trimws(toupper(family)))
   link <- tolower(trimws(toupper(link)))
+  link_accept = NULL
   if (family == "gaussian") {
     link_accept <- c("identity", "log", "inverse")
   }
@@ -618,6 +619,9 @@ check_link_glm <- function(family, link) {
   if (family == "quasipoisson") {
     link_accept <- c("logit", "probit", "cloglog", "identity", "inverse",
                      "log", "1/mu^2", "sqrt")
+  }
+  if (is.null(link_accept)) {
+    stop("Error - link is not found")
   }
   matching <- match(link, link_accept)
   #if not matching throw error or return the link
@@ -731,6 +735,11 @@ do_diagnostic_glm <- function(method = "glm", fit, expression_recreated,
   grDevices::pdf(name_file_plot)
   plot_diagnostics <- graphics::plot(fit)
   grDevices::dev.off()
+  # wald_test_results <- c()
+  # for (i in 1:length(coef(fit))) {
+  #   this_res <- aod::wald.test(b = coef(fit), Sigma = vcov(fit), Terms = coef(fit)[i])
+  #   wald_test_results <- append(wald_test_results, this_res)
+  # }
 
   results <- list(
     autocorr_error_test = autocorr_error_test,
