@@ -46,7 +46,11 @@ Imports:
     tidyr,
     hash,
     haven,
-    aod
+    aod,
+    flextable,
+    huxtable,
+    ggpubr,
+    labelled
 Suggests: 
     ISLR,
     knitr,
