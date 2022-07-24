@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Sheeja Manchira Krishnan" />
+
+<meta name="date" content="2022-07-23" />
+
+<title>Cycle dependent</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Cycle dependent</h1>
+<h4 class="author">Sheeja Manchira Krishnan</h4>
+<h4 class="date">2022-07-23</h4>
+
+
+
+<p>In this example we will model the cost effectiveness of
+lamivudine/zidovudine combination therapy in HIV infection ([Chancellor,
+1997] (<a href="https://pubmed.ncbi.nlm.nih.gov/10169387/" class="uri">https://pubmed.ncbi.nlm.nih.gov/10169387/</a>))) and also
+described in Decision Modelling for Health Economic Evaluation, page 32
+(Example 2.5). The solution can be downloaded from <a href="https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation" class="uri">https://www.herc.ox.ac.uk/downloads/decision-modelling-for-health-economic-evaluation</a>.
+We have implemented the scenario in which the effect of combination
+therapy of lamivudine/zidovudine (as the probability of moving to worse
+health states and having to accrue more cost) is only seen in first 2
+years. This means that the transition probability and costs are
+dependent on first two cycles (As the cycle length is years).</p>
+<p>This model aims to compare costs and utilities of two treatment
+strategies, mono therapy and combined therapy.</p>
+<p>Four states are described, from best to worst health-wise:</p>
+<p>A: CD4 cells &gt; 200 and &lt; 500 cells/mm3; B: CD4 &lt; 200
+cells/mm3, non-AIDS; C: AIDS; D: Death.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(packDAMipd)</span></code></pre></div>
+<p>Define health states for mono therapy - now the costs are just
+defined, but not defined any value.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">health_state</span>(<span class="st">&quot;A&quot;</span>, <span class="at">cost =</span> <span class="st">&quot;cost_health_A + cost_drug &quot;</span>,<span class="at">utility =</span> <span class="dv">1</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">health_state</span>(<span class="st">&quot;B&quot;</span>, <span class="at">cost =</span> <span class="st">&quot;cost_health_B + cost_drug&quot;</span>,<span class="at">utility =</span> <span class="dv">1</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> <span class="fu">health_state</span>(<span class="st">&quot;C&quot;</span>, <span class="at">cost =</span> <span class="st">&quot;cost_health_C + cost_drug&quot;</span>,<span class="at">utility =</span> <span class="dv">1</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">health_state</span>(<span class="st">&quot;D&quot;</span>, <span class="at">cost =</span> <span class="dv">0</span>, <span class="at">utility =</span> <span class="dv">0</span>)</span></code></pre></div>
+<p>Define allowed transition probabilities and number them. The below
+matrix is numbered so that the maximum entry in the matrix gives the
+total number of allowed transitions. Column names and row names are just
+the names of the health states.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>tmat <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>), <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>),<span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">8</span>,<span class="dv">9</span>), <span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">10</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tmat) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(tmat) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span> ,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>)</span></code></pre></div>
+<p>Define transition matrix now, but parameters are fine now</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>tm <span class="ot">&lt;-</span> <span class="fu">populate_transition_matrix</span>(<span class="dv">4</span>, tmat, <span class="fu">c</span>(<span class="st">&quot;tpAtoA&quot;</span>, <span class="st">&quot;tpAtoB&quot;</span>, <span class="st">&quot;tpAtoC&quot;</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                                            <span class="st">&quot;tpAtoD&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;tpBtoB&quot;</span>, <span class="st">&quot;tpBtoC&quot;</span>, <span class="st">&quot;tpBtoD&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;tpCtoC&quot;</span>,<span class="st">&quot;tpCtoD&quot;</span>,<span class="st">&quot;tpDtoD&quot;</span> ))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="st">&quot;The transition matrix as explained&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>     transition number probability name from from state to to state</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">1</span><span class="sc">:</span>                 <span class="dv">1</span>      prob_A_to_A    <span class="dv">1</span>          A  <span class="dv">1</span>        A</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">2</span><span class="sc">:</span>                 <span class="dv">2</span>      prob_A_to_B    <span class="dv">1</span>          A  <span class="dv">2</span>        B</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">3</span><span class="sc">:</span>                 <span class="dv">3</span>      prob_A_to_C    <span class="dv">1</span>          A  <span class="dv">3</span>        C</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">4</span><span class="sc">:</span>                 <span class="dv">4</span>      prob_A_to_D    <span class="dv">1</span>          A  <span class="dv">4</span>        D</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">5</span><span class="sc">:</span>                 <span class="dv">5</span>      prob_B_to_B    <span class="dv">2</span>          B  <span class="dv">2</span>        B</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">6</span><span class="sc">:</span>                 <span class="dv">6</span>      prob_B_to_C    <span class="dv">2</span>          B  <span class="dv">3</span>        C</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">7</span><span class="sc">:</span>                 <span class="dv">7</span>      prob_B_to_D    <span class="dv">2</span>          B  <span class="dv">4</span>        D</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">8</span><span class="sc">:</span>                 <span class="dv">8</span>      prob_C_to_C    <span class="dv">3</span>          C  <span class="dv">3</span>        C</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">9</span><span class="sc">:</span>                 <span class="dv">9</span>      prob_C_to_D    <span class="dv">3</span>          C  <span class="dv">4</span>        D</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">10</span><span class="sc">:</span>                <span class="dv">10</span>      prob_D_to_D    <span class="dv">4</span>          D  <span class="dv">4</span>        D</span></code></pre></div>
+<p>Combine the health states and define the strategy. The current
+strategy ie. control or intervention - here it is mono therapy</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>health_states <span class="ot">&lt;-</span> <span class="fu">combine_state</span>(A,B,C,D)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>mono_strategy <span class="ot">&lt;-</span> <span class="fu">strategy</span>(tm, health_states, <span class="st">&quot;mono&quot;</span>)</span></code></pre></div>
+<p>Before we run the model, we need to give values to parameters, thus
+we define the parameter list. We need to make sure that the parameters
+with numerical values are given first and derived parameters later in
+the list. The parameters are assigned sequentially as given in the
+parameter list. So if there is any calculations needed (or using
+functions), they are defined earlier.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mono_params <span class="ot">=</span> <span class="fu">define_parameters</span>(<span class="at">cost_zido =</span> <span class="dv">2278</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">cost_direct_med_A =</span> <span class="dv">1701</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">cost_comm_care_A =</span> <span class="dv">1055</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at">cost_direct_med_B =</span> <span class="dv">1774</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="at">cost_comm_care_B =</span> <span class="dv">1278</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="at">cost_direct_med_C =</span> <span class="dv">6948</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="at">cost_comm_care_C =</span> <span class="dv">2059</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="at">tpAtoA =</span> <span class="dv">1251</span><span class="sc">/</span>(<span class="dv">1251</span> <span class="sc">+</span> <span class="dv">483</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="at">tpAtoB =</span> <span class="dv">350</span><span class="sc">/</span>(<span class="dv">350</span> <span class="sc">+</span> <span class="dv">1384</span>),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="at">tpAtoC =</span> <span class="dv">116</span><span class="sc">/</span>(<span class="dv">116</span> <span class="sc">+</span> <span class="dv">1618</span>),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="at">tpAtoD =</span> <span class="dv">17</span><span class="sc">/</span>(<span class="dv">17</span> <span class="sc">+</span> <span class="dv">1717</span>),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="at">tpBtoB =</span> <span class="dv">731</span><span class="sc">/</span>(<span class="dv">731</span> <span class="sc">+</span> <span class="dv">527</span>),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="at">tpBtoC =</span> <span class="dv">512</span><span class="sc">/</span>(<span class="dv">512</span> <span class="sc">+</span> <span class="dv">746</span>),</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="at">tpBtoD =</span> <span class="dv">15</span><span class="sc">/</span>(<span class="dv">15</span> <span class="sc">+</span> <span class="dv">1243</span>),</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="at">tpCtoC =</span> <span class="dv">1312</span><span class="sc">/</span>(<span class="dv">1312</span> <span class="sc">+</span> <span class="dv">437</span>),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="at">tpCtoD =</span> <span class="dv">437</span><span class="sc">/</span>(<span class="dv">437</span> <span class="sc">+</span> <span class="dv">1312</span>),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="at">tpDtoD =</span> <span class="dv">1</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="at">cost_health_A =</span> <span class="st">&quot;cost_direct_med_A+ cost_comm_care_A&quot;</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="at">cost_health_B =</span> <span class="st">&quot;cost_direct_med_B+ cost_comm_care_B&quot;</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="at">cost_health_C =</span> <span class="st">&quot;cost_direct_med_C+ cost_comm_care_C&quot;</span>,</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="at">cost_drug =</span> <span class="st">&quot;cost_zido&quot;</span>)</span></code></pre></div>
+<p>We run the model with strategy mono_strategy for 20 cycles with
+initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and
+qualys are discounted following the values given in discount. Parameter
+values will have any parameter defined as health state values or
+transition probabilities, but not their values were assigned</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mono_markov <span class="ot">&lt;-</span> <span class="fu">markov_model</span>(mono_strategy, <span class="dv">20</span>, <span class="at">initial_state =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">discount =</span> <span class="fu">c</span>(<span class="fl">0.06</span>,<span class="dv">0</span>), mono_params, <span class="cn">FALSE</span>, <span class="cn">FALSE</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">method =</span> <span class="st">&quot;half cycle correction&quot;</span>)</span></code></pre></div>
+<p>Now for combination therapy, the transition probabilities and cost
+are dependent on the years or the cycle number. Thus we need to define
+functions that given the correct output to calculate the probabilities
+and costs as a function of cycle</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a> <span class="co">#Define function to set the cost to be different for first two cycles</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>define_comb_cost <span class="ot">=</span> <span class="cf">function</span>(cycle, cost_lami) {</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (cycle <span class="sc">==</span> <span class="dv">0</span>  <span class="sc">||</span> cycle <span class="sc">==</span> <span class="dv">1</span> <span class="sc">||</span> cycle <span class="sc">==</span> <span class="dv">2</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(cost_lami)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="dv">0</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a> <span class="co">#Define function to set the risk ratio to be different for first two cycles</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>define_rr <span class="ot">=</span> <span class="cf">function</span>(cycle,rr) {</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (cycle <span class="sc">==</span> <span class="dv">1</span> <span class="sc">||</span> cycle <span class="sc">==</span> <span class="dv">2</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(rr)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="dv">1</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Define health states - now the costs are just defined, but not
+defined any value.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span>  <span class="fu">health_state</span>(<span class="st">&quot;A&quot;</span>, <span class="at">cost =</span> <span class="st">&quot;cost_health_A + cost_drug&quot;</span>,<span class="at">utility =</span> <span class="dv">1</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">health_state</span>(<span class="st">&quot;B&quot;</span>, <span class="at">cost =</span> <span class="st">&quot;cost_health_B + cost_drug&quot;</span>,<span class="at">utility =</span> <span class="dv">1</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> <span class="fu">health_state</span>(<span class="st">&quot;C&quot;</span>, <span class="at">cost =</span> <span class="st">&quot;cost_health_C + cost_drug&quot;</span>,<span class="at">utility =</span> <span class="dv">1</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">health_state</span>(<span class="st">&quot;D&quot;</span>, <span class="at">cost =</span> <span class="dv">0</span>, <span class="at">utility =</span> <span class="dv">0</span>)</span></code></pre></div>
+<p>Define allowed transition probabilities and number them. The below
+matrix is numbered so that the maximum entry in the matrix gives the
+total number of allowed transitions. Column names and row names are just
+the names of the health states.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>tmat <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>), <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>),<span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">8</span>,<span class="dv">9</span>), <span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">10</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tmat) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(tmat) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span> ,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>)</span></code></pre></div>
+<p>Define transition matrix now, but parameters are changed to indicate
+that they are dependent on value of “rr”</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tm <span class="ot">&lt;-</span> <span class="fu">populate_transition_matrix</span>(<span class="dv">4</span>, tmat, <span class="fu">c</span>(<span class="st">&quot;tpAtoA_rr&quot;</span>,<span class="st">&quot;tpAtoB_rr&quot;</span>,<span class="st">&quot;tpAtoC_rr&quot;</span>,<span class="st">&quot;tpAtoD_rr&quot;</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;tpBtoB_rr&quot;</span>, <span class="st">&quot;tpBtoC_rr&quot;</span>, <span class="st">&quot;tpBtoD_rr&quot;</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="st">&quot;tpCtoC_rr&quot;</span>,<span class="st">&quot;tpCtoD_rr&quot;</span>,<span class="st">&quot;tpDtoD_rr&quot;</span> ), <span class="fu">colnames</span>(tmat) )</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="st">&quot;The transition matrix as explained&quot;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>     transition number probability name from from state to to state</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">1</span><span class="sc">:</span>                 <span class="dv">1</span>      prob_A_to_A    <span class="dv">1</span>          A  <span class="dv">1</span>        A</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">2</span><span class="sc">:</span>                 <span class="dv">2</span>      prob_A_to_B    <span class="dv">1</span>          A  <span class="dv">2</span>        B</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">3</span><span class="sc">:</span>                 <span class="dv">3</span>      prob_A_to_C    <span class="dv">1</span>          A  <span class="dv">3</span>        C</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">4</span><span class="sc">:</span>                 <span class="dv">4</span>      prob_A_to_D    <span class="dv">1</span>          A  <span class="dv">4</span>        D</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">5</span><span class="sc">:</span>                 <span class="dv">5</span>      prob_B_to_B    <span class="dv">2</span>          B  <span class="dv">2</span>        B</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">6</span><span class="sc">:</span>                 <span class="dv">6</span>      prob_B_to_C    <span class="dv">2</span>          B  <span class="dv">3</span>        C</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">7</span><span class="sc">:</span>                 <span class="dv">7</span>      prob_B_to_D    <span class="dv">2</span>          B  <span class="dv">4</span>        D</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">8</span><span class="sc">:</span>                 <span class="dv">8</span>      prob_C_to_C    <span class="dv">3</span>          C  <span class="dv">3</span>        C</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>  <span class="dv">9</span><span class="sc">:</span>                 <span class="dv">9</span>      prob_C_to_D    <span class="dv">3</span>          C  <span class="dv">4</span>        D</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">10</span><span class="sc">:</span>                <span class="dv">10</span>      prob_D_to_D    <span class="dv">4</span>          D  <span class="dv">4</span>        D</span></code></pre></div>
+<p>Before we run the model, we need to give values to parameters, thus
+we define the parameter list.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>comb_params <span class="ot">&lt;-</span> <span class="fu">define_parameters</span>(<span class="at">cost_zido =</span> <span class="dv">2278</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_direct_med_A =</span> <span class="dv">1701</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_comm_care_A =</span> <span class="dv">1055</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_direct_med_B =</span> <span class="dv">1774</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_comm_care_B =</span> <span class="dv">1278</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_direct_med_C =</span> <span class="dv">6948</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_comm_care_C =</span> <span class="dv">2059</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpAtoA =</span> <span class="dv">1251</span><span class="sc">/</span>(<span class="dv">1251</span> <span class="sc">+</span> <span class="dv">483</span>),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpAtoB =</span> <span class="dv">350</span><span class="sc">/</span>(<span class="dv">350</span> <span class="sc">+</span> <span class="dv">1384</span>),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpAtoC =</span> <span class="dv">116</span><span class="sc">/</span>(<span class="dv">116</span> <span class="sc">+</span> <span class="dv">1618</span>),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpAtoD =</span> <span class="dv">17</span><span class="sc">/</span>(<span class="dv">17</span> <span class="sc">+</span> <span class="dv">1717</span>),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpBtoB =</span> <span class="dv">731</span><span class="sc">/</span>(<span class="dv">731</span> <span class="sc">+</span> <span class="dv">527</span>),</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpBtoC =</span> <span class="dv">512</span><span class="sc">/</span>(<span class="dv">512</span> <span class="sc">+</span> <span class="dv">746</span>),</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpBtoD =</span> <span class="dv">15</span><span class="sc">/</span>(<span class="dv">15</span> <span class="sc">+</span> <span class="dv">1243</span>),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpCtoC =</span> <span class="dv">1312</span><span class="sc">/</span>(<span class="dv">1312</span> <span class="sc">+</span> <span class="dv">437</span>),</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpCtoD =</span> <span class="dv">437</span><span class="sc">/</span>(<span class="dv">437</span> <span class="sc">+</span> <span class="dv">1312</span>),</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpDtoD =</span> <span class="dv">1</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>                     <span class="at">rr =</span> <span class="fl">0.509</span>,</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_lami =</span> <span class="fl">2086.50</span>,</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>                     <span class="at">rr_cycle =</span> <span class="st">&quot;define_rr(markov_cycle,rr)&quot;</span>,</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpAtoA_rr =</span> <span class="st">&quot;1-tpAtoB*rr_cycle-tpAtoC*rr_cycle-tpAtoD*rr_cycle&quot;</span>,</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpAtoB_rr =</span> <span class="st">&quot;tpAtoB*rr_cycle&quot;</span>,</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpAtoC_rr =</span> <span class="st">&quot;tpAtoC*rr_cycle&quot;</span>,</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpAtoD_rr =</span> <span class="st">&quot;tpAtoD*rr_cycle&quot;</span>,</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpBtoB_rr =</span> <span class="st">&quot;1-tpBtoC*rr_cycle-tpBtoD*rr_cycle&quot;</span>,</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpBtoC_rr =</span> <span class="st">&quot;tpBtoC*rr_cycle&quot;</span>,</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpBtoD_rr =</span> <span class="st">&quot;tpBtoD*rr_cycle&quot;</span>,</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpCtoC_rr =</span> <span class="st">&quot;1-tpCtoD*rr_cycle&quot;</span>,</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpCtoD_rr =</span> <span class="st">&quot;tpCtoD*rr_cycle&quot;</span>,</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tpDtoD_rr =</span> <span class="dv">1</span>,</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_health_A =</span> <span class="st">&quot;cost_direct_med_A + cost_comm_care_A&quot;</span>,</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_health_B =</span> <span class="st">&quot;cost_direct_med_B + cost_comm_care_B&quot;</span>,</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_health_C =</span> <span class="st">&quot;cost_direct_med_C + cost_comm_care_C&quot;</span>,</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_lami_cycle =</span> <span class="st">&quot;define_comb_cost(markov_cycle,cost_lami)&quot;</span>,</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cost_drug =</span> <span class="st">&quot;cost_zido + cost_lami_cycle&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the health states</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>health_states <span class="ot">&lt;-</span> <span class="fu">combine_state</span>(A,B,C,D)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#The current strategy i.e. control or intervention - here it is combination </span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#therapy</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>comb_strategy <span class="ot">&lt;-</span> <span class="fu">strategy</span>(tm, health_states, <span class="st">&quot;comb&quot;</span>)</span></code></pre></div>
+<p>We run the model with strategy mono_strategy for 20 cycles with
+initial state values 1,0,0,0 corresponding to A,B, C and D. Costs and
+qualys are discounted following the values given in discount. Parameter
+values will have any parameter defined as health state values or
+transition probabilities, but not their values were assigned</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>comb_markov <span class="ot">&lt;-</span> <span class="fu">markov_model</span>(comb_strategy, <span class="dv">20</span>, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="at">discount =</span> <span class="fu">c</span>(<span class="fl">0.06</span>,<span class="fl">0.0</span>),comb_params,<span class="cn">FALSE</span>,<span class="cn">FALSE</span>)</span></code></pre></div>
+<p>Now we combine the Markov models given by and and Estimate ICER and
+NMB for the list of Markov models given by lost_Markov using the
+comparator “mono” and threshold values as 1000 GBP. We also plot cost
+effectiveness acceptability curve using plot_nmb_lambda method. The
+published report suggests that for mono therapy the accumulated cost is
+£44,663 while that for the combination therapy is £50,602. The utility
+values for mono therapy and combination therapy are 7.99 and 8.94
+respectively. This provides the ICER value of £6,276.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>list_markov <span class="ot">&lt;-</span> <span class="fu">combine_markov</span>(mono_markov, comb_markov)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>icer_nmb <span class="ot">&lt;-</span> <span class="fu">calculate_icer_nmb</span>(list_markov,<span class="dv">20000</span>,<span class="st">&quot;mono&quot;</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>icer_nmb</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>    Strategy             Cost           Effect              NMB         Inc_Cost</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">1</span><span class="sc">:</span>     mono <span class="fl">49697.4535636967</span> <span class="fl">8.99120664584089</span> <span class="fl">130126.679353121</span>             <span class="sc">&lt;</span><span class="cn">NA</span><span class="sc">&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="dv">2</span><span class="sc">:</span>     comb <span class="fl">57722.1513312037</span> <span class="fl">9.93738889164347</span> <span class="fl">141025.626501666</span> <span class="fl">8024.69776750702</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>           Inc_Effect            ICER</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">1</span><span class="sc">:</span>              <span class="er">&lt;</span><span class="cn">NA</span><span class="sc">&gt;</span>            <span class="er">&lt;</span><span class="cn">NA</span><span class="sc">&gt;</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="dv">2</span><span class="sc">:</span> <span class="fl">0.946182245802582</span> <span class="fl">8481.1333156016</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>nmb_all <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>prob_ce <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">40</span>) {</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  threshold <span class="ot">=</span> i<span class="sc">*</span><span class="dv">1000</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  nmb <span class="ot">&lt;-</span> <span class="fu">calculate_icer_nmb</span>(list_markov,threshold, <span class="st">&quot;mono&quot;</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (nmb[<span class="dv">2</span>,<span class="st">&quot;NMB&quot;</span>] <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>      prob <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  }<span class="cf">else</span>{</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>     prob <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  prob_ce <span class="ot">&lt;-</span> <span class="fu">append</span>(prob_ce,prob)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  nmb_all <span class="ot">&lt;-</span> <span class="fu">append</span>(nmb_all, nmb)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>threshold_values <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1000</span>,<span class="dv">40000</span>,<span class="dv">1000</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_nmb_lambda</span>(list_markov,threshold_values,<span class="st">&quot;mono&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
