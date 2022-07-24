@@ -1,0 +1,17 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^_travis.yml$
+^cran-comments.md$
+^data-raw$
+^doc$
+^docs$
+^Meta$
+^results$
+^Rplots\.pdf$
+^.*\.pdf$
+^refs$
+^\.httr-oauth$
+^.*\.pdf$
+^[.].*$
+^.*/[.].*$
+^codecov\.yml$
