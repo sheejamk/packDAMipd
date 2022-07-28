@@ -51,7 +51,8 @@ Imports:
     huxtable,
     ggpubr,
     labelled,
-     ISLR
+     ISLR,
+     purrr
 Suggests: 
     knitr,
     rmarkdown,

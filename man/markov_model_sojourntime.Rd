@@ -21,6 +21,8 @@ markov_model_sojourntime(
 \arguments{
 \item{current_strategy}{strategy object}
 
+\item{nCycles}{no of cycles}
+
 \item{initial_state}{value of states initially}
 
 \item{discount}{rate of discount for costs and qalys}
@@ -45,8 +47,6 @@ those that transitioned new.}
 \item{startup_cost}{cost of states initially}
 
 \item{startup_util}{utility of states initially if any}
-
-\item{cycles}{no of cycles}
 }
 \value{
 Markov trace

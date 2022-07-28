@@ -2,7 +2,7 @@
 # D2.Markov model and trace
 #' Definition of Markov model and trace
 #' @param current_strategy  strategy object
-#' @param cycles no of cycles
+#' @param nCycles no of cycles
 #' @param initial_state value of states initially
 #' @param discount rate of discount for costs and qalys
 #' @param half_cycle_correction boolean to indicate half cycle correction
