@@ -678,7 +678,7 @@ costing_opioid_tablets_averageMED_wide <- function(ind_part_data,
 #' eqdose_cov_tab = table, basis_strength_unit = "mg")
 #' @export
 #' @importFrom tidyr gather
-#' @importFrom tidyr spread_
+#' @importFrom tidyr spread
 costing_opioid_tablets_averageMED_long <- function(the_columns,
                                       ind_part_data_long,
                                       name_med,
@@ -702,7 +702,7 @@ costing_opioid_tablets_averageMED_long <- function(the_columns,
   if (is.null(ind_part_data_long) | is.null(unit_cost_data))
     stop("data should not be NULL")
 
-  ind_part_data_wide <- tidyr::spread_(ind_part_data_long, the_columns[1],
+  ind_part_data_wide <- tidyr::spread(ind_part_data_long, the_columns[1],
                                        the_columns[2])
 
   results_wide <- costing_opioid_tablets_averageMED_wide(ind_part_data_wide,

@@ -351,6 +351,7 @@ get_parameter_def_distribution <- function(parameter, paramfile,
 #' @param package_mixed_model package to be used for mixed model
 #' ie nlme or lme4
 #' @return results the results of the regression analysis
+#' @import ISLR
 #' @examples
 #'\donttest{
 #' result <- get_parameter_estimated_regression(
@@ -671,6 +672,7 @@ use_linear_regression <- function(param_to_be_estimated, dataset, indep_var,
 #' @param naaction action to be taken with the missing values
 #' @param link link function if not the default for each family
 #' @return the results of the regression analysis
+#' @import ISLR
 #' @examples
 #' \donttest{
 #' gm_result <- use_generalised_linear_model(
@@ -1017,7 +1019,7 @@ use_linear_mixed_model <- function(param_to_be_estimated, dataset,
         this_plot <- ggplot2::ggplot(dataset, ggplot2::aes(x = xvar,
                                               y = yvar, colour = group)) +
           ggplot2::geom_point(size = 3) +
-          ggplot2::geom_line(ggplot2::aes(y = predicted), size = 2) +
+          ggplot2::geom_line(ggplot2::aes(y = predicted), linewidth = 2) +
           ggplot2::labs(color = random_intercept_vars[j]) +
           ggplot2::xlab(fix_eff[i]) +
           ggplot2::ylab(param_to_be_estimated)
@@ -1278,7 +1280,7 @@ use_generalised_linear_mixed_model <- function(param_to_be_estimated, dataset,
           this_plot <- ggplot2::ggplot(dataset, ggplot2::aes(x = xvar,
                                                 y = yvar, colour = group)) +
             ggplot2::geom_point(size = 3) +
-            ggplot2::geom_line(ggplot2::aes(y = predicted), size = 2) +
+            ggplot2::geom_line(ggplot2::aes(y = predicted), linewidth = 2) +
             ggplot2::labs(color = random_intercept_vars[j]) +
             ggplot2::xlab(fix_eff[i]) +
             ggplot2::ylab(param_to_be_estimated)

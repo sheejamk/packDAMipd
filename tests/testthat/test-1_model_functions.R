@@ -439,8 +439,9 @@ test_that("testing combining markov states", {
   this_strategy <- strategy(tm, health_states, "control")
   mm2 <- markov_model(this_strategy, 10, c(1, 0), c(0, 0))
   list1 <- combine_markov(mm1, mm2)
-  list2 <- combine_markov(list(mm1, mm2))
-  expect_equal(list1[1, ]$method, list2[1, ]$method)
+
+  expect_error(combine_markov(list(mm1, mm2)))
+
   expect_error(combine_markov(list(a, mm2)))
   expect_error(combine_markov(a, mm2))
 })

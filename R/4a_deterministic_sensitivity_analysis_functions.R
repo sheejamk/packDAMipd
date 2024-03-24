@@ -1,4 +1,5 @@
 #######################################################################
+#'ISLR flextable huxtable nlme tm
 #' Define parameter lists for deterministic sensitivity analysis
 #' @param param_list  list of parameters that used to define Markov model
 #' @param low_values list of lower values of those parameters for whom the
@@ -115,12 +116,13 @@ define_parameters_sens_anal <- function(param_list, low_values, upp_values) {
 #' result <- do_sensitivity_analysis(mono_markov, param_table)
 #' }
 #' @export
+#' @importFrom methods is
 do_sensitivity_analysis <- function(this_markov, param_table) {
   #checking for null error
   if (is.null(this_markov) | is.null(param_table)) {
     stop("Error - markov model or parameter table can not be null")
   }
-  if (class(this_markov) != "markov_model") {
+  if (is(this_markov) != "markov_model") {
     stop("Error - the model should be of class markov_model")
   }
   check <- sum(names(param_table) %in%
@@ -733,6 +735,7 @@ plot_dsa_nmb_range <- function(ob_results, plot_var) {
   results_parameters[["upper"]] <- as.numeric(results[results$value_limit
                                                       == "upper", ]$NMB)
 
+
   if (length(unique(results_icer_nmb$Strategy)) == 2) {
     results_treat <- results_icer_nmb[results_icer_nmb$Strategy
                                    == strategy_names[2], ]
@@ -747,30 +750,32 @@ plot_dsa_nmb_range <- function(ob_results, plot_var) {
   }
   name_file_plot <- paste0("Deterministic sensitivity analysis NMB.pdf",
                            sep = "")
+  lower = upper = parameters = base =NULL
+
   grDevices::pdf(name_file_plot)
   p <- ggplot2::ggplot(results_parameters) +
-    ggplot2::geom_segment(ggplot2::aes_(
-      x = ~lower,
-      xend = ~upper,
-      y = ~parameters,
-      yend = ~parameters
+    ggplot2::geom_segment(ggplot2::aes(
+      x = lower,
+      xend = upper,
+      y = parameters,
+      yend = parameters
     ),
     size = 3, color = "orange"
     ) +
-    ggplot2::geom_point(ggplot2::aes_(
-      x = ~base,
-      y = ~parameters, color = "base value"
+    ggplot2::geom_point(ggplot2::aes(
+      x = base,
+      y = parameters, color = "base value"
     ),
     size = 4
     ) +
-    ggplot2::geom_point(ggplot2::aes_(
-      x = ~lower,
-      y = ~parameters,
+    ggplot2::geom_point(ggplot2::aes(
+      x = lower,
+      y = parameters,
       color = "lower"
     ), size = 4, shape = 15) +
-    ggplot2::geom_point(ggplot2::aes_(
-      x = ~upper,
-      y = ~parameters,
+    ggplot2::geom_point(ggplot2::aes(
+      x = upper,
+      y = parameters,
       color = "upper"
     ), size = 4, shape = 15) +
     ggplot2::labs(colour = "", y = "Parameters") +
@@ -795,30 +800,31 @@ plot_dsa_others_range <- function(ob_results, plot_var) {
   results_parameters <- ob_results$results
   name_file_plot <- paste0("Deterministic sensitivity analysis.pdf", sep = "")
   grDevices::pdf(name_file_plot)
+  lower = upper = parameter =base = NULL
 
   p <- ggplot2::ggplot(results_parameters) +
-    ggplot2::geom_segment(ggplot2::aes_(
-      x = ~lower,
-      xend = ~upper,
-      y = ~parameter,
-      yend = ~parameter
+    ggplot2::geom_segment(ggplot2::aes(
+      x = lower,
+      xend = upper,
+      y = parameter,
+      yend = parameter
     ),
     size = 3, color = "orange"
     ) +
-    ggplot2::geom_point(ggplot2::aes_(
-      x = ~base,
-      y = ~parameter, color = "base value"
+    ggplot2::geom_point(ggplot2::aes(
+      x = base,
+      y = parameter, color = "base value"
     ),
     size = 4
     ) +
-    ggplot2::geom_point(ggplot2::aes_(
-      x = ~lower,
-      y = ~parameter,
+    ggplot2::geom_point(ggplot2::aes(
+      x = lower,
+      y = parameter,
       color = "lower"
     ), size = 4, shape = 15) +
-    ggplot2::geom_point(ggplot2::aes_(
-      x = ~upper,
-      y = ~parameter,
+    ggplot2::geom_point(ggplot2::aes(
+      x = upper,
+      y = parameter,
       color = "upper"
     ), size = 4, shape = 15) +
     ggplot2::labs(colour = "", y = "Parameters") +
@@ -853,15 +859,15 @@ plot_dsa_difference <- function(ob_results, plotfor, plot_var) {
     results_parameters[["upper"]] <- as.numeric(results[results$value_limit
                                                         == "upper", ]$NMB)
 
-      results_treat <- results_icer_nmb[results_icer_nmb$Strategy
+    results_treat <- results_icer_nmb[results_icer_nmb$Strategy
                                         == strategy_names[2], ]
 
-      results_parameters_treat <- as.data.frame(parameter)
-      results_parameters_treat[["lower"]] <-
+    results_parameters_treat <- as.data.frame(parameter)
+    results_parameters_treat[["lower"]] <-
         as.numeric(results_treat[results_treat$value_limit == "lower", ]$NMB)
-      results_parameters_treat[["base"]] <-
+    results_parameters_treat[["base"]] <-
         as.numeric(results_treat[results_treat$value_limit == "base", ]$NMB)
-      results_parameters_treat[["upper"]] <-
+    results_parameters_treat[["upper"]] <-
         as.numeric(results_treat[results_treat$value_limit == "upper", ]$NMB)
 
   } else {
@@ -875,29 +881,30 @@ plot_dsa_difference <- function(ob_results, plotfor, plot_var) {
   upp_diff <- results_parameters_treat$upper - results_parameters$upper
   name_file_plot <- paste0("Deterministic sensitivity analysis (diff).pdf",
                            sep = "")
+
   grDevices::pdf(name_file_plot)
 
   p <- ggplot2::ggplot(results_parameters_treat) +
-    ggplot2::geom_segment(ggplot2::aes_(
+    ggplot2::geom_segment(ggplot2::aes(
       x = low_diff, xend = upp_diff,
-      y = ~parameter,
-      yend = ~parameter
+      y = parameter,
+      yend = parameter
     ),
     size = 3, color = "orange"
     ) +
-    ggplot2::geom_point(ggplot2::aes_(
+    ggplot2::geom_point(ggplot2::aes(
       x = base_diff,
-      y = ~parameter,
+      y = parameter,
       color = "base value"
     ), size = 4) +
-    ggplot2::geom_point(ggplot2::aes_(
+    ggplot2::geom_point(ggplot2::aes(
       x = low_diff,
-      y = ~parameter,
+      y = parameter,
       color = "lower"
     ), size = 4, shape = 15) +
-    ggplot2::geom_point(ggplot2::aes_(
+    ggplot2::geom_point(ggplot2::aes(
       x = upp_diff,
-      y = ~parameter,
+      y = parameter,
       color = "upper"
     ), size = 4, shape = 15) +
     ggplot2::labs(colour = "", y = "Parameters") +

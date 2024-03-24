@@ -204,7 +204,7 @@ checks_markov_pick_method <- function(current_strategy, initial_state, discount,
     stop("Please provide the discount rates for both qalys and costs")
   }
   # check the class of current strategy
-  if (class(current_strategy) != "strategy") {
+  if (is(current_strategy) != "strategy") {
     stop("Class is not a strategy")
   }
   # check the length of start up cost should be equal to number of states

@@ -1,7 +1,7 @@
 Type: Package
 Package: packDAMipd
 Title: Decision Analysis Modelling Package with Parameters Estimation Ability from Individual Patient Level Data
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(person("Sheeja", "Manchira Krishnan", , "sheejamk@gmail.com", c("aut", "cre")))
 Maintainer: Sheeja Manchira Krishnan <sheejamk@gmail.com>
 Description: A collection of functions to construct Markov model for model-based 
@@ -12,7 +12,7 @@ Description: A collection of functions to construct Markov model for model-based
     data, provided the data file follows some standard data entry rules. 
 License: GPL-3
 Depends:
-    R (>= 3.6.0)
+    R (>= 4.3.0)
 Imports:
     readxl,
     stringr,
@@ -21,8 +21,6 @@ Imports:
     rlang,
     stats,
     lme4,
-    nlme,
-    flexsurv,
     survminer,
     SurvRegCensCov,
     survival,
@@ -39,20 +37,15 @@ Imports:
     gvlma,
     methods,
     relaimpo,
-    tm,
-    tidyverse,
-    tibble,
     dplyr,
     tidyr,
     hash,
     haven,
-    aod,
     flextable,
-    huxtable,
     ggpubr,
     labelled,
-     ISLR,
-     purrr
+     purrr,
+     ISLR
 Suggests: 
     knitr,
     rmarkdown,
@@ -62,7 +55,7 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 URL: https://github.com/sheejamk/packDAMipd
 BugReports: https://github.com/sheejamk/packDAMipd/issues

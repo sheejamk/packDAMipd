@@ -11,7 +11,9 @@
 ^.*\.pdf$
 ^refs$
 ^\.httr-oauth$
-^.*\.pdf$
 ^[.].*$
 ^.*/[.].*$
 ^codecov\.yml$
+^knitr-examples$
+^testthat$
+^tests/testthat\.R$

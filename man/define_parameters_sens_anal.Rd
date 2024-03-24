@@ -3,7 +3,8 @@
 %   R/4a_deterministic_sensitivity_analysis_functions.R
 \name{define_parameters_sens_anal}
 \alias{define_parameters_sens_anal}
-\title{Define parameter lists for deterministic sensitivity analysis}
+\title{ISLR flextable huxtable nlme tm
+Define parameter lists for deterministic sensitivity analysis}
 \usage{
 define_parameters_sens_anal(param_list, low_values, upp_values)
 }
@@ -20,6 +21,7 @@ sensitivity is to be estimated}
 table for sensitivity analysis
 }
 \description{
+ISLR flextable huxtable nlme tm
 Define parameter lists for deterministic sensitivity analysis
 }
 \details{

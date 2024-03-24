@@ -277,6 +277,7 @@ test_that("testing plotting deterministic sensitivity analysis", {
 
   # Error - if plotting for ICER, result_dsa_treat should not be null
   expect_error(plot_dsa(result, "ICER", type = "range"))
+
   plot_dsa(result, "NMB", type = "difference", result_treat,
            20000, comparator = "treat")
 })
@@ -742,3 +743,4 @@ test_that("testing plotting dsa nmb", {
   plot_dsa_difference(ob, "cost", "cost_matrix")
 
 })
+

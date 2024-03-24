@@ -387,6 +387,7 @@ get_extension_file <- function(filename) {
 #' ))
 #' @export
 load_trial_data <- function(file = NULL, sheet = NULL) {
+  trial_data = NULL
   # Load trial data from file input or stored in package
   if (!is.null(file)) {
     if (IPDFileCheck::test_file_exist_read(file) == 0) {
@@ -974,10 +975,10 @@ do_diagnostic_linear_regression <- function(method, fit, expression_recreated,
 
 #######################################################################
 #' Do the prediction for regression
-#' @param method param describing the methods, expects lm
-#' @param expression_recreated the expression recreated for calling lm
-#' @param param_to_be_estimated  parameter of interest
-#' @param dataset data set to be provided
+#' @param method, param describing the methods, expects lm
+#' @param fit results of the regression fit
+#' @param expression_recreated, the expression recreated for calling lm
+#' @param param_to_be_estimated,  parameter of interest
 #' @param indep_var the independent variable (column name in data file)
 #' @param covariates list of covariates - calculations to be done before
 #' passing
@@ -985,6 +986,7 @@ do_diagnostic_linear_regression <- function(method, fit, expression_recreated,
 #' linear regression, false by default
 #' @return the results of the regression analysis
 #' @keywords internal
+#' @importFrom effects predictorEffects
 #' @examples
 #' \donttest{
 #' datafile = system.file("extdata", "binary.csv", package = "packDAMipd")
@@ -994,7 +996,6 @@ do_diagnostic_linear_regression <- function(method, fit, expression_recreated,
 #' predict = prediction_regression("lm",results_logit$fit,
 #' results_logit$fit$call, "admit",covariates = NA,"gre", FALSE )
 #'}
-#' @importFrom effects predictorEffects
 #' @export
 prediction_regression <- function(method, fit, expression_recreated,
                                   param_to_be_estimated, indep_var,
@@ -1371,9 +1372,9 @@ get_slope_intercept_nested <- function(expression, random_intercept_vars,
 }
 #######################################################################
 #' Form expression to use with mixed models
-#' @param param_to_be_estimated column name of dependent variable
-#' @param dataset a dataframe
-#' @param fix_eff names of variables as fixed effect predictors
+#' @param param_to_be_estimated, column name of dependent variable
+#' @param dataset, a dataframe
+#' @param fix_eff, names of variables as fixed effect predictors
 #' @param fix_eff_interact_vars, if interaction -true
 #' @param random_intercept_vars, names of variables for random intercept
 #' @param nested_intercept_vars_pairs, those of the random intercept variables

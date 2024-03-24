@@ -596,7 +596,7 @@ microcosting_patches_wide <- function(ind_part_data,
 #' basis_strength_unit = "mcg/hr")
 #' @export
 #' @importFrom tidyr gather
-#' @importFrom tidyr spread_
+#' @importFrom tidyr spread
 microcosting_patches_long <- function(the_columns,
                                       ind_part_data_long,
                                       name_med,
@@ -619,7 +619,7 @@ microcosting_patches_long <- function(the_columns,
   if (is.null(ind_part_data_long) | is.null(unit_cost_data))
     stop("data should not be NULL")
 
-  ind_part_data_wide <- tidyr::spread_(ind_part_data_long, the_columns[1],
+  ind_part_data_wide <- tidyr::spread(ind_part_data_long, the_columns[1],
                                        the_columns[2])
 
   result_wide <- microcosting_patches_wide(ind_part_data_wide,

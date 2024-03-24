@@ -208,6 +208,7 @@ test_that("get parameter from estimated regression", {
   # testing for linear regression
   datafile <- system.file("extdata", "binary.csv", package = "packDAMipd")
   mydata <- read.csv(datafile)
+
   results <- get_parameter_estimated_regression("gre", data = mydata,
                                     method = "linear",
                                     info_get_method = NULL, indep_var = "gpa",

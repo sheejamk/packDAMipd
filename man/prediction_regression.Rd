@@ -15,11 +15,13 @@ prediction_regression(
 )
 }
 \arguments{
-\item{method}{param describing the methods, expects lm}
+\item{method, }{param describing the methods, expects lm}
 
-\item{expression_recreated}{the expression recreated for calling lm}
+\item{fit}{results of the regression fit}
 
-\item{param_to_be_estimated}{parameter of interest}
+\item{expression_recreated, }{the expression recreated for calling lm}
+
+\item{param_to_be_estimated, }{parameter of interest}
 
 \item{indep_var}{the independent variable (column name in data file)}
 
@@ -28,8 +30,6 @@ passing}
 
 \item{interaction}{boolean value to indicate interaction in the case of
 linear regression, false by default}
-
-\item{dataset}{data set to be provided}
 }
 \value{
 the results of the regression analysis

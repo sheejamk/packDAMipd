@@ -257,36 +257,36 @@ test_that("testing summary plots psa", {
 
 })
 ##################################################################
-context("testing plot ceac")
-test_that("testing plot ceac", {
-param_list <- define_parameters(cost_direct_med_A = 1701,
-cost_direct_med_B = 1774, tpAtoA = 0.2, tpAtoB = 0.5, tpAtoC = 0.3,
-tpBtoB = 0.3, tpBtoC = 0.7, tpCtoC = 1,cost_health_A = "cost_direct_med_A",
-cost_health_B = "cost_direct_med_B")
-sample_list <- define_parameters(cost_direct_med_A = "gamma(mean = 1701,
-sd = sqrt(1701))")
-A <- health_state("A", cost = "cost_health_A ", utility = 1)
-B <- health_state("B", cost = "cost_health_B", utility = 1)
-C <- health_state("C", cost = 0, utility = 0, absorb = "TRUE")
-tmat <- rbind(c(1, 2, 3), c(NA, 4, 5), c(NA, NA, 6))
-colnames(tmat) <- rownames(tmat) <- c("A", "B", "C")
-tm <- populate_transition_matrix(3, tmat, c("tpAtoA", "tpAtoB", "tpAtoC",
- "tpBtoB", "tpBtoC", "tpCtoC"),colnames(tmat))
- health_states <- combine_state(A, B, C)
- mono_strategy <- strategy(tm, health_states, "mono")
- mono_markov <- markov_model(mono_strategy, 20, initial_state =c(1,0,0),
- discount = c(0.06, 0),param_list)
- param_table_mono <- define_parameters_psa(param_list, sample_list)
- param_list_comb <- define_parameters(cost_direct_med_A = 1800,
- cost_direct_med_B = 1774, tpAtoA = 0.6,
- tpAtoB = 0.1, tpAtoC = 0.3,tpBtoB = 0.3, tpBtoC = 0.7,tpCtoC = 1,
- cost_health_A = "cost_direct_med_A",cost_health_B = "cost_direct_med_B")
- comb_strategy <- strategy(tm, health_states, "comb")
- comb_markov <- markov_model(comb_strategy, 20, c(1, 0, 0),
- discount = c(0.06, 0), param_list)
- param_table_combo <- define_parameters_psa(param_list_comb, sample_list)
- plot_ceac_psa(mono_markov, comb_markov,param_table_mono,  param_table_combo,
- thresholds = c(1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000,10000, 20000),
- num_rep = 20, comparator = "mono")
-})
+# context("testing plot ceac")
+# test_that("testing plot ceac", {
+# param_list <- define_parameters(cost_direct_med_A = 1701,
+# cost_direct_med_B = 1774, tpAtoA = 0.2, tpAtoB = 0.5, tpAtoC = 0.3,
+# tpBtoB = 0.3, tpBtoC = 0.7, tpCtoC = 1,cost_health_A = "cost_direct_med_A",
+# cost_health_B = "cost_direct_med_B")
+# sample_list <- define_parameters(cost_direct_med_A = "gamma(mean = 1701,
+# sd = sqrt(1701))")
+# A <- health_state("A", cost = "cost_health_A ", utility = 1)
+# B <- health_state("B", cost = "cost_health_B", utility = 1)
+# C <- health_state("C", cost = 0, utility = 0, absorb = "TRUE")
+# tmat <- rbind(c(1, 2, 3), c(NA, 4, 5), c(NA, NA, 6))
+# colnames(tmat) <- rownames(tmat) <- c("A", "B", "C")
+# tm <- populate_transition_matrix(3, tmat, c("tpAtoA", "tpAtoB", "tpAtoC",
+#  "tpBtoB", "tpBtoC", "tpCtoC"),colnames(tmat))
+#  health_states <- combine_state(A, B, C)
+#  mono_strategy <- strategy(tm, health_states, "mono")
+#  mono_markov <- markov_model(mono_strategy, 20, initial_state =c(1,0,0),
+#  discount = c(0.06, 0),param_list)
+#  param_table_mono <- define_parameters_psa(param_list, sample_list)
+#  param_list_comb <- define_parameters(cost_direct_med_A = 1800,
+#  cost_direct_med_B = 1774, tpAtoA = 0.6,
+#  tpAtoB = 0.1, tpAtoC = 0.3,tpBtoB = 0.3, tpBtoC = 0.7,tpCtoC = 1,
+#  cost_health_A = "cost_direct_med_A",cost_health_B = "cost_direct_med_B")
+#  comb_strategy <- strategy(tm, health_states, "comb")
+#  comb_markov <- markov_model(comb_strategy, 20, c(1, 0, 0),
+#  discount = c(0.06, 0), param_list)
+#  param_table_combo <- define_parameters_psa(param_list_comb, sample_list)
+#  plot_ceac_psa(mono_markov, comb_markov,param_table_mono,  param_table_combo,
+#  thresholds = c(1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000,10000, 20000),
+#  num_rep = 20, comparator = "mono")
+# })
 

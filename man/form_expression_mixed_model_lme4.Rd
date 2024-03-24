@@ -19,11 +19,11 @@ form_expression_mixed_model_lme4(
 )
 }
 \arguments{
-\item{param_to_be_estimated}{column name of dependent variable}
+\item{param_to_be_estimated, }{column name of dependent variable}
 
-\item{dataset}{a dataframe}
+\item{dataset, }{a dataframe}
 
-\item{fix_eff}{names of variables as fixed effect predictors}
+\item{fix_eff, }{names of variables as fixed effect predictors}
 
 \item{fix_eff_interact_vars, }{if interaction -true}
 

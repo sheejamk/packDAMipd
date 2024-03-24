@@ -134,7 +134,7 @@ plot_meanSE_longitudinal_twogroups <- function(thedata, columnnames, timepoints,
   p <- ggplot2::ggplot(data = results, ggplot2::aes(x = timepoints_all,
                                                 y = results$means,
                                                 group = results$trialarm)) +
-    ggplot2::geom_line(ggplot2::aes(color = results$trialarm), size = 2) +
+    ggplot2::geom_line(ggplot2::aes(color = results$trialarm), linewidth = 2) +
     ggplot2::geom_point(show.legend = FALSE) + mytheme +
     ggplot2::geom_errorbar(ggplot2::aes(ymin = results$means - results$se,
                                         ymax = results$means + results$se,
@@ -213,9 +213,9 @@ plot_histogram_onetimepoint_twogroups <- function(thedata, colname, timepointstr
                               round(mean2, 2), sep = ""), y = 0,
           x = mean2), hjust = -1, vjust = -10, col = "black", size = 3)
 
-  figure <- ggpubr::ggarrange(one, two, labels = c(paste("Group",
+  figure <- suppressWarnings(ggpubr::ggarrange(one, two, labels = c(paste("Group",
             trial_arm_codes[1], sep = " "),
-            paste("Group", trial_arm_codes[2], sep = " ")))
+            paste("Group", trial_arm_codes[2], sep = " "))))
   figure
 }
 
